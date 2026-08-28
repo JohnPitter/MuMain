@@ -288,5 +288,6 @@ finally {
     Remove-Item -Force -ErrorAction SilentlyContinue $sourcePath
 }
 
+& (Join-Path $PSScriptRoot "generate-luxview-title-loadings.ps1")
 Write-Output "Generated: $previewPath"
-Write-Output "Updated: LSBg01-04 and both lo_back_im01-06 title themes"
+Write-Output "Updated: LSBg01-04 and two distinct lo_back title themes"
