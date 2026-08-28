@@ -18,9 +18,14 @@ CInGameShopSystem::CInGameShopSystem()
     m_pPackageList = NULL;
     m_pProductList = NULL;
     m_pBannerList = NULL;
+    memset(&m_BannerInfo, 0, sizeof(CBannerInfo));
 
-    memset(&m_ScriptVerInfo, -1, sizeof(CListVersionInfo));
-    memset(&m_BannerVerInfo, -1, sizeof(CListVersionInfo));
+    m_ScriptVerInfo.Zone = 0;
+    m_ScriptVerInfo.year = 2026;
+    m_ScriptVerInfo.yearId = 1;
+    m_BannerVerInfo.Zone = 0;
+    m_BannerVerInfo.year = 2026;
+    m_BannerVerInfo.yearId = 1;
     memset(&m_CurrentScriptVerInfo, -1, sizeof(CListVersionInfo));
     memset(&m_CurrentBannerVerInfo, -1, sizeof(CListVersionInfo));
 
@@ -28,6 +33,7 @@ CInGameShopSystem::CInGameShopSystem()
     m_bIsBanner = false;
     m_bIsRequestEventPackage = false;
     m_plistSelectPackage = NULL;
+    m_bHasAllowedPackages = false;
     m_bFirstScriptDownloaded = false;
     m_bFirstBannerDownloaded = false;
 }
@@ -85,12 +91,6 @@ void CInGameShopSystem::SetScriptVersion(int iSalesZone, int iYear, int iYearId)
     m_ScriptVerInfo.Zone = iSalesZone;
     m_ScriptVerInfo.year = iYear;
     m_ScriptVerInfo.yearId = iYearId;
-}
-
-void CInGameShopSystem::SetBannerVersion(int iSalesZone, int iYear, int iYearId)
-{
-    m_BannerVerInfo.Zone = iSalesZone;
-    m_BannerVerInfo.year = iYear;
 
     // The catalog is bundled locally. Load it as soon as the server announces
     // the script version so pressing X later only shows the ready window.
@@ -100,6 +100,12 @@ void CInGameShopSystem::SetBannerVersion(int iSalesZone, int iYear, int iYearId)
     {
         ScriptDownload();
     }
+}
+
+void CInGameShopSystem::SetBannerVersion(int iSalesZone, int iYear, int iYearId)
+{
+    m_BannerVerInfo.Zone = iSalesZone;
+    m_BannerVerInfo.year = iYear;
     m_BannerVerInfo.yearId = iYearId;
 }
 
@@ -107,7 +113,9 @@ bool CInGameShopSystem::ScriptDownload()
 {
     m_bFirstScriptDownloaded = true;
 
-    ::GetCurrentDirectory(255, m_szScriptLocalPath);
+    wchar_t szCurrentDirectory[MAX_TEXT_LENGTH] = { '\0', };
+    ::GetCurrentDirectory(MAX_TEXT_LENGTH, szCurrentDirectory);
+    wcscpy(m_szScriptLocalPath, szCurrentDirectory);
 
     wchar_t szScriptRemotePathforDMZ[MAX_TEXT_LENGTH];
     mu_swprintf(m_szScriptLocalPath, L"%ls%ls", m_szScriptLocalPath, L"\\data\\InGameShopScript");
@@ -143,6 +151,20 @@ bool CInGameShopSystem::ScriptDownload()
 
     if (!res.IsSuccess())
     {
+        wchar_t szAttemptedScriptPath[MAX_TEXT_LENGTH] = { '\0', };
+        mu_swprintf(szAttemptedScriptPath, L"%ls\\%03d.%04d.%03d\\",
+            m_szScriptLocalPath,
+            m_ScriptVerInfo.Zone,
+            m_ScriptVerInfo.year,
+            m_ScriptVerInfo.yearId);
+        g_ConsoleDebug->Write(MCD_ERROR,
+            L"InGameShop local script load failed: path=%ls version=%03d.%04d.%03d error=%ls",
+            szAttemptedScriptPath,
+            m_ScriptVerInfo.Zone,
+            m_ScriptVerInfo.year,
+            m_ScriptVerInfo.yearId,
+            res.GetErrorMessage());
+
         m_pCategoryList = NULL;
         m_pPackageList = NULL;
         m_pProductList = NULL;
@@ -178,6 +200,14 @@ bool CInGameShopSystem::BannerDownload()
 {
     m_bFirstBannerDownloaded = true;
 
+    // Banner assets are bundled with the client. Keep the window responsive by
+    // avoiding the legacy Webzen image service on every first shop opening.
+    m_CurrentBannerVerInfo = m_BannerVerInfo;
+    m_pBannerList = NULL;
+    m_bIsBanner = false;
+    return true;
+
+#ifdef FOR_WORK
     ::GetCurrentDirectory(255, m_szBannerLocalPath);
 
     wchar_t szBannerRemotePathforDMZ[MAX_TEXT_LENGTH];
@@ -221,7 +251,6 @@ bool CInGameShopSystem::BannerDownload()
         m_BannerVerInfo);
 #endif // KJH_MOD_SHOP_SCRIPT_DOWNLOAD
 
-    // DownLoad & Load
     WZResult res = m_BannerManager.LoadScriptList(false);
 
     // DownLoad & Load
@@ -230,25 +259,36 @@ bool CInGameShopSystem::BannerDownload()
         m_pBannerList = NULL;
         m_bIsBanner = false;
 
-        // MessageBox
-        wchar_t szText[MAX_TEXT_LENGTH] = { '\0', };
-        mu_swprintf(szText, I18N::Game::BannerDownloadFailedVersionDDDS, m_BannerVerInfo.Zone, m_BannerVerInfo.year, m_BannerVerInfo.yearId, res.GetErrorMessage());
-        CMsgBoxIGSCommon* pMsgBox = NULL;
-        CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
-        pMsgBox->Initialize(I18N::Game::Error, szText);
+        g_ConsoleDebug->Write(MCD_ERROR,
+            L"InGameShop banner unavailable: version=%03d.%04d.%03d error=%ls; continuing without banner",
+            m_BannerVerInfo.Zone,
+            m_BannerVerInfo.year,
+            m_BannerVerInfo.yearId,
+            res.GetErrorMessage());
 
-        return false;
+        // Banner delivery is optional; keep the catalog usable when Webzen's
+        // image service is unavailable or its legacy URL has expired.
+        return true;
     }
 
     m_CurrentBannerVerInfo = m_BannerVerInfo;
     m_pBannerList = m_BannerManager.GetListPtr();
+    if (m_pBannerList == NULL)
+    {
+        m_bIsBanner = false;
+        return true;
+    }
 
     m_pBannerList->SetFirst();
     if (m_pBannerList->GetNext(m_BannerInfo) == false)
-        return false;
+    {
+        m_bIsBanner = false;
+        return true;
+    }
 
     m_bIsBanner = true;
     return true;
+#endif // FOR_WORK
 }
 
 #ifdef KJH_MOD_SHOP_SCRIPT_DOWNLOAD
@@ -274,6 +314,14 @@ bool CInGameShopSystem::IsScriptDownload()
 
 bool CInGameShopSystem::IsBannerDownload()
 {
+    const unsigned short InvalidVersion = 0xFFFF;
+    if ((m_BannerVerInfo.Zone == InvalidVersion)
+        || (m_BannerVerInfo.year == InvalidVersion)
+        || (m_BannerVerInfo.yearId == InvalidVersion))
+    {
+        return false;
+    }
+
     if (((m_BannerVerInfo.year == m_CurrentBannerVerInfo.year) && (m_BannerVerInfo.yearId == m_CurrentBannerVerInfo.yearId) && (m_BannerVerInfo.Zone == m_CurrentBannerVerInfo.Zone)) && (m_bFirstBannerDownloaded == true))
     {
         return false;
@@ -358,12 +406,40 @@ void CInGameShopSystem::PrePage()
 
 int CInGameShopSystem::GetTotalPages()
 {
-    return (m_plistSelectPackage->size() / INGAMESHOP_DISPLAY_ITEMLIST_SIZE) + 1;
+    const auto packageCount = m_plistSelectPackage->size();
+    const auto pageCount = (packageCount + INGAMESHOP_DISPLAY_ITEMLIST_SIZE - 1) / INGAMESHOP_DISPLAY_ITEMLIST_SIZE;
+    return static_cast<int>(pageCount > 0 ? pageCount : 1);
 }
 
 int CInGameShopSystem::GetSelectPage()
 {
     return m_iSelectedPage;
+}
+
+void CInGameShopSystem::SetAllowedPackages(const WORD* packageSeq, std::size_t count)
+{
+    m_allowedPackages.clear();
+    for (std::size_t i = 0; i < count; ++i)
+    {
+        m_allowedPackages.insert(packageSeq[i]);
+    }
+    m_bHasAllowedPackages = true;
+
+    if (!m_bSelectEventCategory)
+    {
+        SetNormalPackage();
+    }
+}
+
+void CInGameShopSystem::ResetAllowedPackages()
+{
+    m_allowedPackages.clear();
+    m_bHasAllowedPackages = false;
+}
+
+bool CInGameShopSystem::IsPackageAllowed(WORD packageSeq) const
+{
+    return !m_bHasAllowedPackages || m_allowedPackages.contains(packageSeq);
 }
 
 void CInGameShopSystem::SetNormalPackage()
@@ -380,7 +456,10 @@ void CInGameShopSystem::SetNormalPackage()
         if (!m_pPackageList->GetValueByKey(iPackageSeqIndex, Package))
             break;
 
-        m_listNormalPackage.push_back(Package);
+        if (IsPackageAllowed(static_cast<WORD>(Package.PackageProductSeq)))
+        {
+            m_listNormalPackage.push_back(Package);
+        }
     }
     BeginPage();
 }
@@ -407,7 +486,8 @@ void CInGameShopSystem::InsertEventPackage(int* pPackageSeq)
 
     for (int i = 0; i < INGAMESHOP_DISPLAY_ITEMLIST_SIZE; i++)
     {
-        if (m_pPackageList->GetValueByKey(pPackageSeq[i], Package))
+        if (m_pPackageList->GetValueByKey(pPackageSeq[i], Package)
+            && IsPackageAllowed(static_cast<WORD>(Package.PackageProductSeq)))
         {
             m_listEventPackage.push_back(Package);
         }
@@ -430,7 +510,17 @@ int CInGameShopSystem::GetSizeZones()
 
 int CInGameShopSystem::GetSizeCategoriesAsSelectedZone()
 {
-    return m_SelectedZone.CategoryList.size();
+    int count = 0;
+    int categorySeqIndex = 0;
+    m_SelectedZone.SetCategoryFirst();
+    while (m_SelectedZone.GetCategoryNext(categorySeqIndex))
+    {
+        if (IsCategoryAllowed(categorySeqIndex))
+        {
+            ++count;
+        }
+    }
+    return count;
 }
 
 int CInGameShopSystem::GetSizePackageAsSelectedCategory()
@@ -798,6 +888,11 @@ wchar_t* CInGameShopSystem::GetBannerURL()
 
 void CInGameShopSystem::InitZoneInfo()
 {
+    // m_pCategoryList is NULL when the shop script download failed
+    // (see ScriptDownload failure path). Opening the shop UI must not crash.
+    if (m_pCategoryList == NULL)
+        return;
+
     m_mapZoneSeqIndex.clear();
     m_listZoneName.clear();
 
@@ -852,24 +947,48 @@ int CInGameShopSystem::GetZoneSeqIndexByIndex(int iIndex)
     return (int)iterZoneSeqIndex->second;
 }
 
+bool CInGameShopSystem::IsCategoryAllowed(int iCategorySeqIndex)
+{
+    CShopCategory Category;
+    if (!m_pCategoryList->GetValueByKey(iCategorySeqIndex, Category))
+    {
+        return false;
+    }
+
+    int packageSeq = 0;
+    Category.SetPackagSeqFirst();
+    while (Category.GetPackagSeqNext(packageSeq))
+    {
+        CShopPackage Package;
+        if (m_pPackageList->GetValueByKey(packageSeq, Package)
+            && IsPackageAllowed(static_cast<WORD>(Package.PackageProductSeq)))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 int CInGameShopSystem::GetCategorySeqIndexByIndex(int iIndex)
 {
-    int iCategorySeqIndex = 0;
-    bool bRes = false;
-
     if (GetSizeCategoriesAsSelectedZone() <= 0)
         return INGAMESHOP_ERROR_ZERO_SIZE;
 
+    int categorySeqIndex = 0;
+    int allowedIndex = 0;
     m_SelectedZone.SetCategoryFirst();
-    for (int i = 0; i <= iIndex; i++)
+    while (m_SelectedZone.GetCategoryNext(categorySeqIndex))
     {
-        bRes = m_SelectedZone.GetCategoryNext(iCategorySeqIndex);
+        if (!IsCategoryAllowed(categorySeqIndex))
+        {
+            continue;
+        }
+        if (allowedIndex++ == iIndex)
+        {
+            return categorySeqIndex;
+        }
     }
-
-    if (bRes == false)
-        return INGAMESHOP_ERROR_INVALID_INDEX;
-
-    return iCategorySeqIndex;
+    return INGAMESHOP_ERROR_INVALID_INDEX;
 }
 
 void CInGameShopSystem::SetCategoryName()
@@ -882,6 +1001,10 @@ void CInGameShopSystem::SetCategoryName()
 
     while (m_SelectedZone.GetCategoryNext(iCategorySeqIndex))
     {
+        if (!IsCategoryAllowed(iCategorySeqIndex))
+        {
+            continue;
+        }
         m_pCategoryList->GetValueByKey(iCategorySeqIndex, Category);
         m_listCategoryName.push_back(Category.CategroyName);
     }
