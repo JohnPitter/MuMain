@@ -188,6 +188,98 @@ try {
             Remove-Item -Force -ErrorAction SilentlyContinue $jpegPath
         }
     }
+
+    # The first startup screen uses a separate 1280x735 six-panel background.
+    # Generate both randomized themes so branding never falls back to Webzen art.
+    $titlePreviewPath = Join-Path $previewDir "luxview-title-loading-preview.jpg"
+    $titleCanvas = New-Object System.Drawing.Bitmap(1280, 735, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
+    $titleGraphics = [System.Drawing.Graphics]::FromImage($titleCanvas)
+    try {
+        $titleGraphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+        $titleGraphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+        $titleGraphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+        $titleGraphics.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
+
+        $titleSource = New-Object System.Drawing.Rectangle(0, 71, 1536, 882)
+        $titleTarget = New-Object System.Drawing.Rectangle(0, 0, 1280, 735)
+        $titleGraphics.DrawImage($source, $titleTarget, $titleSource, [System.Drawing.GraphicsUnit]::Pixel)
+
+        $titleTopGradient = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+            (New-Object System.Drawing.Point(0, 0)),
+            (New-Object System.Drawing.Point(0, 190)),
+            [System.Drawing.Color]::FromArgb(210, 5, 10, 20),
+            [System.Drawing.Color]::FromArgb(0, 5, 10, 20))
+        $titleBottomGradient = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+            (New-Object System.Drawing.Point(0, 490)),
+            (New-Object System.Drawing.Point(0, 735)),
+            [System.Drawing.Color]::FromArgb(0, 5, 10, 18),
+            [System.Drawing.Color]::FromArgb(230, 5, 10, 18))
+        try {
+            $titleGraphics.FillRectangle($titleTopGradient, 0, 0, 1280, 190)
+            $titleGraphics.FillRectangle($titleBottomGradient, 0, 490, 1280, 245)
+        }
+        finally {
+            $titleBottomGradient.Dispose()
+            $titleTopGradient.Dispose()
+        }
+
+        Add-LuxviewMark -Graphics $titleGraphics -X 52 -Y 38
+        $titleBrandFont = New-Object System.Drawing.Font("Segoe UI", 34, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+        $titleGamesFont = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+        $titleMainFont = New-Object System.Drawing.Font("Segoe UI", 52, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+        $titleSubFont = New-Object System.Drawing.Font("Segoe UI", 19, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+        try {
+            Draw-OutlinedText -Graphics $titleGraphics -Text "Luxview" -Font $titleBrandFont -Position (New-Object System.Drawing.PointF(108, 38)) -Color ([System.Drawing.Color]::White) -OutlineWidth 1.8
+            Draw-OutlinedText -Graphics $titleGraphics -Text "G A M E S" -Font $titleGamesFont -Position (New-Object System.Drawing.PointF(111, 77)) -Color ([System.Drawing.Color]::FromArgb(255, 255, 212, 71)) -OutlineWidth 1.1
+            Draw-OutlinedText -Graphics $titleGraphics -Text "MU ONLINE" -Font $titleMainFont -Position (New-Object System.Drawing.PointF(835, 590)) -Color ([System.Drawing.Color]::White) -OutlineWidth 3.0
+            Draw-OutlinedText -Graphics $titleGraphics -Text "O CONTINENTE DA NOSTALGIA" -Font $titleSubFont -Position (New-Object System.Drawing.PointF(831, 662)) -Color ([System.Drawing.Color]::FromArgb(255, 255, 212, 71)) -OutlineWidth 1.8
+        }
+        finally {
+            $titleSubFont.Dispose()
+            $titleMainFont.Dispose()
+            $titleGamesFont.Dispose()
+            $titleBrandFont.Dispose()
+        }
+
+        Save-Jpeg -Image $titleCanvas -Path $titlePreviewPath -Quality 94
+
+        $titlePanels = @(
+            @{ Suffix = "01"; X = 0; Y = 0; Width = 512; Height = 512 },
+            @{ Suffix = "02"; X = 512; Y = 0; Width = 512; Height = 512 },
+            @{ Suffix = "03"; X = 1024; Y = 0; Width = 256; Height = 512 },
+            @{ Suffix = "04"; X = 0; Y = 512; Width = 512; Height = 223 },
+            @{ Suffix = "05"; X = 512; Y = 512; Width = 512; Height = 223 },
+            @{ Suffix = "06"; X = 1024; Y = 512; Width = 256; Height = 223 }
+        )
+        foreach ($panel in $titlePanels) {
+            $bitmap = New-Object System.Drawing.Bitmap($panel.Width, $panel.Height, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
+            $panelGraphics = [System.Drawing.Graphics]::FromImage($bitmap)
+            try {
+                $sourcePanel = New-Object System.Drawing.Rectangle($panel.X, $panel.Y, $panel.Width, $panel.Height)
+                $targetPanel = New-Object System.Drawing.Rectangle(0, 0, $panel.Width, $panel.Height)
+                $panelGraphics.DrawImage($titleCanvas, $targetPanel, $sourcePanel, [System.Drawing.GraphicsUnit]::Pixel)
+                foreach ($prefix in @("lo_back_im", "lo_back_s5_im")) {
+                    $name = $prefix + $panel.Suffix + ".OZJ"
+                    $jpegPath = Join-Path $env:TEMP ($name + ".jpg")
+                    try {
+                        Save-Jpeg -Image $bitmap -Path $jpegPath -Quality 94
+                        Write-Ozj -JpegPath $jpegPath -DestinationPath (Join-Path $dataDir $name)
+                    }
+                    finally {
+                        Remove-Item -Force -ErrorAction SilentlyContinue $jpegPath
+                    }
+                }
+            }
+            finally {
+                $panelGraphics.Dispose()
+                $bitmap.Dispose()
+            }
+        }
+    }
+    finally {
+        $titleGraphics.Dispose()
+        $titleCanvas.Dispose()
+    }
 }
 finally {
     $graphics.Dispose()
@@ -197,4 +289,4 @@ finally {
 }
 
 Write-Output "Generated: $previewPath"
-Write-Output "Updated: LSBg01.OZJ, LSBg02.OZJ, LSBg03.OZJ, LSBg04.OZJ"
+Write-Output "Updated: LSBg01-04 and both lo_back_im01-06 title themes"
