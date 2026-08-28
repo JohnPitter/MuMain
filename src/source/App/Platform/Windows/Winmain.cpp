@@ -1756,7 +1756,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, kCoreVersionAttempts[i].major);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, kCoreVersionAttempts[i].minor);
 
-            g_sdlWindow = SDL_CreateWindow("MU Online", static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
+            g_sdlWindow = SDL_CreateWindow("Luxview MU Online - Bem-vindo a nostalgia", static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
             if (g_sdlWindow)
             {
                 g_sdlGLContext = SDL_GL_CreateContext(g_sdlWindow);
@@ -1781,7 +1781,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
     {
         // Compatibility profile: unchanged from pre-GLP-08 behavior -- no explicit version
         // request, takes the driver's highest.
-        g_sdlWindow = SDL_CreateWindow("MU Online", static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
+        g_sdlWindow = SDL_CreateWindow("Luxview MU Online - Bem-vindo a nostalgia", static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
         if (g_sdlWindow)
         {
             g_sdlGLContext = SDL_GL_CreateContext(g_sdlWindow);

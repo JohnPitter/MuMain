@@ -37,6 +37,7 @@ public:
         DWORD dwDownloadMaxTime = 0);
 
     WZResult		LoadScriptList(bool bDonwLoad);
+    WZResult        LoadLocalScriptList();
 
 protected:
     bool			IsScriptFileExist();

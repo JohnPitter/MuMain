@@ -86,6 +86,21 @@ void			CListManager::SetListManagerInfo(DownloaderType type,
     }
 }
 
+WZResult CListManager::LoadLocalScriptList()
+{
+    m_Result.BuildSuccessResult();
+
+    if (!IsScriptFileExist())
+    {
+        const std::wstring scriptPath = GetScriptPath();
+        m_Result.SetResult(DL_NO_INFO, 0, L"Bundled shop catalog is missing: %ls", scriptPath.c_str());
+        return m_Result;
+    }
+
+    m_Result = LoadScript(false);
+    return m_Result;
+}
+
 WZResult		CListManager::LoadScriptList(bool bDonwLoad) // OK
 {
     this->m_Result.BuildSuccessResult();

@@ -130,7 +130,7 @@ bool CInGameShopSystem::ScriptDownload()
         m_ScriptVerInfo,
         10000);
 
-    WZResult res = m_ShopManager.LoadScriptList(false);
+    WZResult res = m_ShopManager.LoadLocalScriptList();
 
     if (!res.IsSuccess())
     {
