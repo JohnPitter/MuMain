@@ -91,6 +91,15 @@ void CInGameShopSystem::SetBannerVersion(int iSalesZone, int iYear, int iYearId)
 {
     m_BannerVerInfo.Zone = iSalesZone;
     m_BannerVerInfo.year = iYear;
+
+    // The catalog is bundled locally. Load it as soon as the server announces
+    // the script version so pressing X later only shows the ready window.
+    if (m_CurrentScriptVerInfo.Zone != m_ScriptVerInfo.Zone
+        || m_CurrentScriptVerInfo.year != m_ScriptVerInfo.year
+        || m_CurrentScriptVerInfo.yearId != m_ScriptVerInfo.yearId)
+    {
+        ScriptDownload();
+    }
     m_BannerVerInfo.yearId = iYearId;
 }
 
