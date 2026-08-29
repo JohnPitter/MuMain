@@ -39,6 +39,10 @@ public:
     int GetServerGroupSize();
 
     void SetSelectServerInfo(wchar_t* pszName, int iIndex, BYTE byNonPvP);
+
+    // Selects a server directly by its ConnectServer index (launcher-driven
+    // startup). Returns false when the server is unknown or full.
+    bool SelectServerByConnectIndex(int iConnectIndex);
     wchar_t* GetSelectServerName();
     int	GetSelectServerIndex();
     BYTE GetNonPVPInfo();

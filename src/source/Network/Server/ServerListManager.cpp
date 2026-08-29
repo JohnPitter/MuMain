@@ -158,6 +158,33 @@ bool CServerListManager::MakeServerGroup(IN int iServerGroupIndex, OUT CServerGr
     return true;
 }
 
+bool CServerListManager::SelectServerByConnectIndex(int iConnectIndex)
+{
+    const int serverGroupIndex = iConnectIndex / MAX_SERVER_PER_GROUP;
+
+    for (auto& entry : m_mapServerGroup)
+    {
+        CServerGroup* pServerGroup = entry.second;
+        if (pServerGroup->m_iServerIndex != serverGroupIndex)
+            continue;
+
+        for (int i = 0; i < pServerGroup->GetServerSize(); i++)
+        {
+            CServerInfo* pServerInfo = pServerGroup->GetServerInfo(i);
+            if (pServerInfo == NULL || pServerInfo->m_iConnectIndex != iConnectIndex)
+                continue;
+
+            if (pServerInfo->m_iPercent >= 100)
+                return false;
+
+            SetSelectServerInfo(pServerGroup->m_szName, pServerInfo->m_iIndex, pServerInfo->m_byNonPvP);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void CServerListManager::InsertServer(CServerGroup* pServerGroup, int iConnectIndex, int iServerPercent)
 {
     auto* pServerInfo = new CServerInfo;

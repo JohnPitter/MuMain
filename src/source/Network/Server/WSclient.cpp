@@ -22,6 +22,7 @@
 #include "Scenes/SceneCore.h"
 #include "Network/Reconnect/ReconnectManager.h"
 #include "Network/IncomingPacketQueue.h"
+#include "App/AutoLaunch.h"
 #include "I18N/All.h"
 
 #include "Audio/DSPlaySound.h"
@@ -497,6 +498,23 @@ void ReceiveServerList(const BYTE* ReceiveBuffer)
     }
 
     CUIMng& rUIMng = CUIMng::Instance();
+
+    // Launcher-driven startup: the player already picked the channel in the
+    // launcher, so join it directly instead of showing the server picker.
+    if (LauncherBoot::HasAutoServer())
+    {
+        const int autoServerId = LauncherBoot::GetAutoServerId();
+        LauncherBoot::ConsumeAutoServer();
+
+        if (g_ServerListManager->SelectServerByConnectIndex(autoServerId))
+        {
+            g_pSystemLogBox->AddText(I18N::Game::ConnectingToTheServer, SEASON3B::TYPE_SYSTEM_MESSAGE);
+            g_pSystemLogBox->AddText(I18N::Game::PleaseWait, SEASON3B::TYPE_SYSTEM_MESSAGE);
+            SocketClient->ToConnectServer()->SendConnectionInfoRequest(static_cast<uint16_t>(autoServerId));
+            return;
+        }
+    }
+
     if (!rUIMng.m_CreditWin.IsShow())
     {
         rUIMng.ShowWin(&rUIMng.m_ServerSelWin);
@@ -552,14 +570,35 @@ void ReceiveJoinServer(const BYTE* ReceiveBuffer)
         switch (Data2->Result)
         {
         case 0x01:
+            HeroKey = ((int)(Data2->NumberH) << 8) + Data2->NumberL;
+            CurrentProtocolState = RECEIVE_JOIN_SERVER_SUCCESS;
+
+            // Launcher-driven startup: log in immediately with the launcher
+            // account so the client lands on the character selection screen.
+            if (LauncherBoot::HasAutoLogin() && !ReconnectManager::Instance().IsActive())
+            {
+                const wchar_t* account = LauncherBoot::GetAutoLoginAccount();
+                const wchar_t* password = LauncherBoot::GetAutoLoginPassword();
+
+                g_ErrorReport.Write(L"> Launcher auto-login request.\r\n");
+
+                LogIn = 1;
+                wcscpy(LogInID, account);
+                CurrentProtocolState = REQUEST_LOG_IN;
+                SocketClient->ToGameServer()->SendLogin(account, password, Version, Serial);
+                ReconnectManager::Instance().CacheCredentials(account, password);
+
+                g_pSystemLogBox->AddText(I18N::Game::VerifyingYourAccount, SEASON3B::TYPE_SYSTEM_MESSAGE);
+                g_pSystemLogBox->AddText(I18N::Game::PleaseWait, SEASON3B::TYPE_SYSTEM_MESSAGE);
+                break;
+            }
+
             // Auto-reconnect logs in on its own and keeps its dialog on top, so
             // don't surface the manual login window underneath it.
             if (!ReconnectManager::Instance().IsActive())
             {
                 rUIMng.ShowWin(&rUIMng.m_LoginWin);
             }
-            HeroKey = ((int)(Data2->NumberH) << 8) + Data2->NumberL;
-            CurrentProtocolState = RECEIVE_JOIN_SERVER_SUCCESS;
             break;
 
         default:
@@ -13178,6 +13217,16 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             break;
         case 0x01: //receive log in
             //AddDebugText(ReceiveBuffer,Size);
+
+            // A failed launcher auto-login falls back to the manual login
+            // window so the player can correct the credentials by hand.
+            if (LauncherBoot::HasAutoLogin() && Data->Value != 0x01 && Data->Value != 0x20)
+            {
+                LauncherBoot::DisableAutoLogin();
+                CurrentProtocolState = RECEIVE_JOIN_SERVER_SUCCESS;
+                CUIMng::Instance().ShowWin(&CUIMng::Instance().m_LoginWin);
+            }
+
             switch (Data->Value)
             {
             case 0x20:

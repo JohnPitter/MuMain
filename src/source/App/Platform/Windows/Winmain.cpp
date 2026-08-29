@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+#include "App/AutoLaunch.h"
 #include "Core/Input/KeyState.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -1618,6 +1619,10 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
     g_ErrorReport.AddSeparator();
     
     g_ErrorReport.Write(L"> To read config.ini.\r\n");
+
+    // Capture launcher-provided server/credentials before anything else can
+    // spawn processes that might inherit them.
+    LauncherBoot::Initialize();
 
     // Load game settings from INI file first
     GameConfig::GetInstance().Load();
