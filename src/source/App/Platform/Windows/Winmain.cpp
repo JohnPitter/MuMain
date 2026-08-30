@@ -1,7 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "App/AntiCheat.h"
 #include "App/AutoLaunch.h"
 #include "Core/Input/KeyState.h"
 
@@ -46,7 +45,6 @@
 #include "Engine/Object/ZzzInventory.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Audio/DSPlaySound.h"
-#include "Audio/VoiceChat.h"
 
 #include "App/Platform/Windows/resource.h"
 #include "Core/Platform/Imm.h"
@@ -511,7 +509,6 @@ void DestroySound()
         ReleaseBuffer(i);
 
     FreeDirectSound();
-    VoiceChat::Shutdown();
     AudioPlayer::Shutdown();
 }
 
@@ -824,10 +821,8 @@ namespace
 {
     void HandleMouseMotion(float winX, float winY)
     {
-        const float pixelX = winX * g_fMouseToPixelX;
-        const float pixelY = winY * g_fMouseToPixelY;
-        MouseX = (g_fScreenRate_x > 0.f) ? static_cast<int>(pixelX / g_fScreenRate_x) : 0;
-        MouseY = (g_fScreenRate_y > 0.f) ? static_cast<int>(pixelY / g_fScreenRate_y) : 0;
+        MouseX = static_cast<int>(winX / g_fScreenRate_x);
+        MouseY = static_cast<int>(winY / g_fScreenRate_y);
         if (MouseX < 0) MouseX = 0;
         if (MouseX > REFERENCE_WIDTH) MouseX = REFERENCE_WIDTH;
         if (MouseY < 0) MouseY = 0;
@@ -897,26 +892,10 @@ namespace
     void HandleWindowResize(int width, int height)
     {
         if (width <= 0 || height <= 0) return;
-
-        int logicalW = width;
-        int logicalH = height;
-        int pixelW = width;
-        int pixelH = height;
-        if (g_sdlWindow)
-        {
-            SDL_GetWindowSize(g_sdlWindow, &logicalW, &logicalH);
-            SDL_GetWindowSizeInPixels(g_sdlWindow, &pixelW, &pixelH);
-            if (logicalW <= 0) logicalW = width;
-            if (logicalH <= 0) logicalH = height;
-            if (pixelW <= 0) pixelW = logicalW;
-            if (pixelH <= 0) pixelH = logicalH;
-        }
-        if (logicalW < 1) logicalW = 1;
-        if (logicalH < 1) logicalH = 1;
-        g_fMouseToPixelX = static_cast<float>(pixelW) / static_cast<float>(logicalW);
-        g_fMouseToPixelY = static_cast<float>(pixelH) / static_cast<float>(logicalH);
-
-        ApplyScreenLayout(static_cast<unsigned int>(pixelW), static_cast<unsigned int>(pixelH));
+        WindowWidth = width;
+        WindowHeight = height;
+        g_fScreenRate_x = static_cast<float>(WindowWidth) / static_cast<float>(REFERENCE_WIDTH);
+        g_fScreenRate_y = static_cast<float>(WindowHeight) / static_cast<float>(REFERENCE_HEIGHT);
         OpenglWindowWidth = WindowWidth;
         OpenglWindowHeight = WindowHeight;
         RHI::OnResize(WindowWidth, WindowHeight); // no-op on GL
@@ -1271,11 +1250,6 @@ MSG MainLoop()
                 }
             }
         }
-
-        // Capture and encode microphone frames before processing the game update.
-        // VoiceChat is a self-contained audio/network component; the server
-        // decides which nearby players receive each frame.
-        VoiceChat::Update();
 
         // Process server packets handed over from the network thread. Replaces
         // the old WM_RECEIVE_BUFFER message round-trip; runs on the main thread.
@@ -1715,7 +1689,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
         GameConfig::GetInstance().DecryptCredentials(m_Username, m_Password, _countof(m_Username), _countof(m_Password));
     }
 
-    ApplyScreenLayout(WindowWidth, WindowHeight);
+    g_fScreenRate_x = (float)WindowWidth / (float)REFERENCE_WIDTH;
+    g_fScreenRate_y = (float)WindowHeight / (float)REFERENCE_HEIGHT;
 
 
     pMultiLanguage = new CMultiLanguage(g_strSelectedML);
@@ -1827,21 +1802,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
 
     g_ErrorReport.Write(L"> Start window success.\r\n");
 
-    {
-        int logicalW = 0, logicalH = 0;
-        int pixelW = 0, pixelH = 0;
-        SDL_GetWindowSize(g_sdlWindow, &logicalW, &logicalH);
-        SDL_GetWindowSizeInPixels(g_sdlWindow, &pixelW, &pixelH);
-        if (logicalW <= 0) logicalW = static_cast<int>(WindowWidth);
-        if (logicalH <= 0) logicalH = static_cast<int>(WindowHeight);
-        if (pixelW <= 0) pixelW = logicalW;
-        if (pixelH <= 0) pixelH = logicalH;
-        if (logicalW < 1) logicalW = 1;
-        if (logicalH < 1) logicalH = 1;
-        g_fMouseToPixelX = static_cast<float>(pixelW) / static_cast<float>(logicalW);
-        g_fMouseToPixelY = static_cast<float>(pixelH) / static_cast<float>(logicalH);
-        ApplyScreenLayout(static_cast<unsigned int>(pixelW), static_cast<unsigned int>(pixelH));
-    }
+    // Initialize OpenGL viewport dimensions to match window dimensions
+    // This ensures they're correct even if WM_SIZE hasn't fired yet or sent wrong values
     OpenglWindowWidth = WindowWidth;
     OpenglWindowHeight = WindowHeight;
 
@@ -1991,7 +1953,6 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
 
     // Always initialize sound so it can be toggled at runtime
     InitDirectSound(g_hWnd);
-    VoiceChat::Initialize();
 
     {
         int value = AudioPlayer::ClampVolume(GameConfig::GetInstance().GetSoundVolume());
@@ -2076,10 +2037,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
     }
 #endif // _WIN32
 
-    AntiCheat::Start();
     std::thread cpuUsageRecorder(RecordCpuUsage);
     const MSG msg = MainLoop();
-    AntiCheat::Stop();
 
     // Teardown that used to run in WM_DESTROY, now after the loop exits (SDL owns
     // the window/GL context, so they must not be destroyed from a message).
