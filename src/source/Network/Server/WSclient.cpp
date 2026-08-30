@@ -1,6 +1,8 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "UI/Chat/Chat.h"
 #include <memory>
+#include <unordered_set>
+#include <algorithm>
 #include "UI/Legacy/UIManager.h"
 #include "Guild/GuildCache.h"
 #include "Render/Models/ZzzBMD.h"
@@ -26,6 +28,7 @@
 #include "I18N/All.h"
 
 #include "Audio/DSPlaySound.h"
+#include "Audio/VoiceChat.h"
 
 #include "GameLogic/Events/MatchEvent.h"
 #include "Engine/AI/GOBoid.h"
@@ -528,6 +531,10 @@ void ReceiveServerList(const BYTE* ReceiveBuffer)
 }
 void ReceiveServerConnect(const BYTE* ReceiveBuffer)
 {
+    ResetChannelWarpList();
+#ifdef KJH_ADD_INGAMESHOP_UI_SYSTEM
+    g_InGameShopSystem->ResetAllowedPackages();
+#endif // KJH_ADD_INGAMESHOP_UI_SYSTEM
     auto Data = (LPPRECEIVE_SERVER_ADDRESS)ReceiveBuffer;
     wchar_t IP[16];
     CMultiLanguage::ConvertFromUtf8(IP, Data->IP);
@@ -763,17 +770,22 @@ void ReceiveCharacterCard_New(const BYTE* ReceiveBuffer)
     g_CharCardEnable.bCharacterEnable[0] = false;
     g_CharCardEnable.bCharacterEnable[1] = false;
     g_CharCardEnable.bCharacterEnable[2] = false;
+    g_CharCardEnable.bCharacterEnable[3] = false;
 
-    if ((Data->CharacterCard & CLASS_DARK_CARD) == CLASS_DARK_CARD)
+    if ((Data->CharacterCard & CLASS_SUMMONER_CARD) == CLASS_SUMMONER_CARD)
         g_CharCardEnable.bCharacterEnable[0] = true;
 
     if ((Data->CharacterCard & CLASS_DARK_LORD_CARD) == CLASS_DARK_LORD_CARD)
         g_CharCardEnable.bCharacterEnable[1] = true;
 
-    if ((Data->CharacterCard & CLASS_SUMMONER_CARD) == CLASS_SUMMONER_CARD)
+    if ((Data->CharacterCard & CLASS_MAGICGLADIATOR_CARD) == CLASS_MAGICGLADIATOR_CARD)
         g_CharCardEnable.bCharacterEnable[2] = true;
 
-    g_ConsoleDebug->Write(MCD_NORMAL, L"[BOTH MESSAGE] CharacterCard Recv %d = %d %d %d", Data->CharacterCard, g_CharCardEnable.bCharacterEnable[0], g_CharCardEnable.bCharacterEnable[1], g_CharCardEnable.bCharacterEnable[2]);
+    if ((Data->CharacterCard & CLASS_RAGEFIGHTER_CARD) == CLASS_RAGEFIGHTER_CARD)
+        g_CharCardEnable.bCharacterEnable[3] = true;
+
+    CUIMng::Instance().m_CharMakeWin.UpdateDisplay();
+    g_ConsoleDebug->Write(MCD_NORMAL, L"[BOTH MESSAGE] CharacterCard Recv %d = %d %d %d %d", Data->CharacterCard, g_CharCardEnable.bCharacterEnable[0], g_CharCardEnable.bCharacterEnable[1], g_CharCardEnable.bCharacterEnable[2], g_CharCardEnable.bCharacterEnable[3]);
 }
 
 void ReceiveCreateCharacter(const BYTE* ReceiveBuffer)
@@ -1100,6 +1112,19 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
     CharacterAttribute->MagicSpeed = Data->MagicSpeed;
     CharacterAttribute->MaxAttackSpeed = Data->MaxAttackSpeed;
     CharacterMachine->Gold = Data->Gold;
+
+    if (Hero != nullptr && CurrentProtocolState == RECEIVE_JOIN_MAP_SERVER)
+    {
+        // OpenMU reuses CharacterInformation (F3 03) for in-game stat updates,
+        // such as the inventory expansion purchased in the cash shop. Keep the
+        // existing hero and world objects so NPCs and other characters survive.
+        Hero->PositionX = Data->PositionX;
+        Hero->PositionY = Data->PositionY;
+        Hero->PK = Data->PK;
+        Hero->CtlCode = Data->CtlCode;
+        Hero->Object.Angle[2] = ((float)Data->Angle - 1.f) * 45.f;
+        return true;
+    }
 
     gMapManager.WorldActive = Data->Map;
     gMapManager.LoadWorld(gMapManager.WorldActive);
@@ -5758,16 +5783,13 @@ BOOL ReceiveDieExpLarge(const BYTE* ReceiveBuffer, BOOL bEncrypted)
     switch(experienceType)
     {
     case eExperienceType_MaxLevelReached:
-        // TODO: show message "You already reached maximum Level."
-        g_pSystemLogBox->AddText(L"You already reached maximum Level.", SEASON3B::TYPE_SYSTEM_MESSAGE);
+        g_pSystemLogBox->AddText(I18N::Game::YouAlreadyReachedMaximumLevel, SEASON3B::TYPE_SYSTEM_MESSAGE);
         return TRUE;
     case eExperienceType_MaxMasterLevelReached:
-        // TODO: show message "You already reached maximum master Level."
-        g_pSystemLogBox->AddText(L"You already reached maximum master Level.", SEASON3B::TYPE_SYSTEM_MESSAGE);
+        g_pSystemLogBox->AddText(I18N::Game::YouAlreadyReachedMaximumMasterLevel, SEASON3B::TYPE_SYSTEM_MESSAGE);
         return TRUE;
     case eExperienceType_MonsterLevelTooLowForMasterExperience:
-        // TODO: You need to kill stronger monsters to gain master experience.
-        g_pSystemLogBox->AddText(L"You need to kill stronger monsters to gain master experience.", SEASON3B::TYPE_SYSTEM_MESSAGE);
+        g_pSystemLogBox->AddText(I18N::Game::YouNeedToKillStrongerMonstersToGainMasterExperience, SEASON3B::TYPE_SYSTEM_MESSAGE);
         return TRUE;
     }
 
@@ -6524,7 +6546,7 @@ BOOL ReceiveTalk(const BYTE* ReceiveBuffer, BOOL bEncrypted)
     {
 #endif	// WINDOWMODE
         int x = 260 * MouseX / REFERENCE_WIDTH;
-        SetCursorPos((x)*WindowWidth / REFERENCE_WIDTH, (MouseY)*WindowHeight / REFERENCE_HEIGHT);
+        SetCursorPos(static_cast<int>(ConvertPosX(static_cast<float>(x))), static_cast<int>(ConvertPosY(static_cast<float>(MouseY))));
 #ifdef WINDOWMODE
     }
 #endif	// WINDOWMODE
@@ -12560,6 +12582,35 @@ bool ReceiveIGS_CashPoint(const BYTE* pReceiveBuffer)
     return true;
 }
 
+// (0xD2)(0x21)
+bool ReceiveIGS_AllowedPackages(const BYTE* pReceiveBuffer, int32_t packetSize)
+{
+    constexpr int HeaderAndCountSize = 6;
+    constexpr int PackageSeqSize = sizeof(WORD);
+    constexpr int MaxPackageCount = 255;
+    if (packetSize < HeaderAndCountSize)
+    {
+        return false;
+    }
+
+    const BYTE count = pReceiveBuffer[5];
+    const int availableCount = (packetSize - HeaderAndCountSize) / PackageSeqSize;
+    if (count > MaxPackageCount || count > availableCount)
+    {
+        return false;
+    }
+
+    WORD packageSeq[MaxPackageCount] = {};
+    for (int i = 0; i < count; ++i)
+    {
+        const int offset = HeaderAndCountSize + i * PackageSeqSize;
+        packageSeq[i] = static_cast<WORD>(pReceiveBuffer[offset] | (pReceiveBuffer[offset + 1] << 8));
+    }
+
+    g_InGameShopSystem->SetAllowedPackages(packageSeq, count);
+    return true;
+}
+
 // (0xD2)(0x02)
 bool ReceiveIGS_ShopOpenResult(const BYTE* pReceiveBuffer)
 {
@@ -12899,6 +12950,20 @@ bool ReceiveIGS_UseStorageItem(const BYTE* pReceiveBuffer)
         g_pInGameShop->UpdateStorageItemList();
     }
     break;
+    case 32:
+    {
+        if (CharacterAttribute)
+        {
+            CharacterAttribute->IsVaultExtended = 1;
+        }
+
+        CMsgBoxIGSCommon* pMsgBox = nullptr;
+        CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
+        pMsgBox->Initialize(I18N::Game::ItemUsed, I18N::Game::TheItemHasBeenUsed);
+
+        g_pInGameShop->UpdateStorageItemList();
+    }
+    break;
     case 1:
     {
         CMsgBoxIGSCommon* pMsgBox = nullptr;
@@ -12926,6 +12991,20 @@ bool ReceiveIGS_UseStorageItem(const BYTE* pReceiveBuffer)
         CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
         pMsgBox->Initialize(I18N::Game::FailedToUse, I18N::Game::AnActivePersonalFixedPlanExistsInTheSelectedPeriod);
     }break;
+    case 30:
+    {
+        CMsgBoxIGSCommon* pMsgBox = nullptr;
+        CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
+        pMsgBox->Initialize(I18N::Game::CashShopVaultAlreadyExpandedTitle, I18N::Game::CashShopVaultAlreadyExpanded);
+    }
+    break;
+    case 31:
+    {
+        CMsgBoxIGSCommon* pMsgBox = nullptr;
+        CreateMessageBox(MSGBOX_LAYOUT_CLASS(CMsgBoxIGSCommonLayout), &pMsgBox);
+        pMsgBox->Initialize(I18N::Game::CashShopInventoryMaxExtensionsTitle, I18N::Game::CashShopInventoryMaxExtensions);
+    }
+    break;
     case 21:
     {
         CMsgBoxIGSCommon* pMsgBox = nullptr;
@@ -13191,6 +13270,54 @@ void ReceiveDarkside(const BYTE* ReceiveBuffer)
     }
 }
 
+namespace
+{
+    std::unordered_set<WORD> g_channelWarpIndices;
+    bool g_hasChannelWarpList = false;
+}
+
+bool IsChannelWarpAllowed(WORD warpInfoIndex)
+{
+    return !g_hasChannelWarpList || g_channelWarpIndices.contains(warpInfoIndex);
+}
+
+bool HasChannelWarpList()
+{
+    return g_hasChannelWarpList;
+}
+
+void ResetChannelWarpList()
+{
+    g_channelWarpIndices.clear();
+    g_hasChannelWarpList = false;
+}
+
+static void ReceiveChannelWarpList(const BYTE* ReceiveBuffer, int32_t Size)
+{
+    constexpr int HeaderAndCountSize = 6;
+    constexpr int IndexSize = 2;
+    if (Size < HeaderAndCountSize)
+    {
+        return;
+    }
+
+    const auto count = ReceiveBuffer[5];
+    const auto available = (Size - HeaderAndCountSize) / IndexSize;
+    if (count > available)
+    {
+        return;
+    }
+
+    g_channelWarpIndices.clear();
+    for (int i = 0; i < count; ++i)
+    {
+        const auto offset = HeaderAndCountSize + i * IndexSize;
+        const WORD index = static_cast<WORD>(ReceiveBuffer[offset] | (ReceiveBuffer[offset + 1] << 8));
+        g_channelWarpIndices.insert(index);
+    }
+    g_hasChannelWarpList = true;
+}
+
 static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
 {
     auto received_span = std::span<const BYTE>(ReceiveBuffer, Size);
@@ -13352,6 +13479,9 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
 
         switch (subcode)
         {
+        case 0xE9:
+            ReceiveChannelWarpList(ReceiveBuffer, Size);
+            break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer);
             break;
@@ -13473,6 +13603,13 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         case 0x05:
             ReceiveServerConnectBusy(ReceiveBuffer);
             break;
+        case VoiceChat::FrameSubCode:
+        {
+            constexpr int kC1HeaderBytes = 4;
+            if (bIsC1C3 && Size >= kC1HeaderBytes)
+                VoiceChat::ReceiveFrame(ReceiveBuffer + kC1HeaderBytes, static_cast<std::size_t>(Size - kC1HeaderBytes));
+            break;
+        }
         }
         break;
     }
@@ -14640,8 +14777,8 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
 #ifdef KJH_PBG_ADD_INGAMESHOP_SYSTEM
     case 0xD2:
     {
-        auto* Data = (PBMSG_HEADER2*)ReceiveBuffer;
-        switch (Data->m_bySubCode)
+        const BYTE subcode = ReceiveBuffer[bIsC1C3 ? 3 : 4];
+        switch (subcode)
         {
         case 0x01:
             ReceiveIGS_CashPoint(ReceiveBuffer);
@@ -14688,6 +14825,9 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         case 0x15:
             ReceiveIGS_UpdateBanner(ReceiveBuffer);
             break;
+        case 0x21:
+            ReceiveIGS_AllowedPackages(ReceiveBuffer, Size);
+            break;
 #ifdef KJH_ADD_PERIOD_ITEM_SYSTEM
         case 0x11:
             ReceivePeriodItemListCount(ReceiveBuffer);
@@ -14696,10 +14836,37 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             ReceivePeriodItemList(ReceiveBuffer);
             break;
 #endif // KJH_ADD_PERIOD_ITEM_SYSTEM
+        default:
+            break;
         }
     }break;
 
 #endif // KJH_PBG_ADD_INGAMESHOP_SYSTEM
+    case 0xD3:
+    {
+        const BYTE subcode = ReceiveBuffer[bIsC1C3 ? 3 : 4];
+        switch (subcode)
+        {
+        case 0x00:
+            if (g_pMarketplace)
+                g_pMarketplace->ReceiveList(ReceiveBuffer);
+            break;
+        case 0x10:
+            if (g_pMarketplace)
+                g_pMarketplace->ReceiveResult(ReceiveBuffer[bIsC1C3 ? 4 : 5]);
+            break;
+        default:
+            break;
+        }
+    }
+    break;
+    case 0xD5:
+    {
+        const BYTE subcode = ReceiveBuffer[bIsC1C3 ? 3 : 4];
+        if (subcode == 0x10 && g_pAutoBattler && Size >= 15)
+            g_pAutoBattler->ReceiveStatus(ReceiveBuffer);
+    }
+    break;
     case 0x4A:
         ReceiveStraightAttack(ReceiveBuffer, Size, bEncrypted);
         break;
