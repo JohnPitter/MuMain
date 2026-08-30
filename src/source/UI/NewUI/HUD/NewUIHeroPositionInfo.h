@@ -18,6 +18,7 @@ namespace SEASON3B
         enum IMAGE_LIST
         {
             IMAGE_HERO_POSITION_INFO_BASE_WINDOW = BITMAP_HERO_POSITION_INFO_BEGIN,		// newui_position02.tga			(70, 25)
+            IMAGE_HERO_POSITION_INFO_MARKET = BITMAP_HERO_POSITION_INFO_BEGIN + 6,
         };
     private:
         static constexpr float HERO_POSITION_INFO_BASEA_WINDOW_WIDTH = 22.0f;

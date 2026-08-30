@@ -32,6 +32,7 @@ namespace Core::Input
             case VK_RETURN:  return SDL_SCANCODE_RETURN;
             case VK_ESCAPE:  return SDL_SCANCODE_ESCAPE;
             case VK_TAB:     return SDL_SCANCODE_TAB;
+            case VK_CAPITAL: return SDL_SCANCODE_CAPSLOCK;
             case VK_BACK:    return SDL_SCANCODE_BACKSPACE;
             case VK_F1:      return SDL_SCANCODE_F1;
             case VK_F2:      return SDL_SCANCODE_F2;

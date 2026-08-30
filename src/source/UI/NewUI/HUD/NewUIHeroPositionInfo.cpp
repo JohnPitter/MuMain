@@ -7,10 +7,29 @@
 
 #include "Audio/DSPlaySound.h"
 #include "UI/NewUI/NewUISystem.h"
+#include "UI/NewUI/NewUICommon.h"
 #include "World/MapInfra/MapManager.h"
 #include "MUHelper/MuHelper.h"
+#include "Render/Textures/ZzzOpenglUtil.h"
 
 using namespace SEASON3B;
+
+namespace
+{
+    CNewUIButton s_BtnMarket;
+    CNewUIButton s_BtnAuto;
+
+    // Minimap_positionC.tga is 73x20. Stretching the whole cap to fit extra
+    // buttons distorts the round end. Slice the flat body and keep the cap 1:1.
+    constexpr float kCapNativeW = 73.f;
+    constexpr float kCapH = 20.f;
+    constexpr float kCapRound = 18.f;
+    constexpr float kCapExtra = 36.f; // Auto + Market only (voice lives under minimap)
+    constexpr float kCapBody = kCapNativeW - kCapRound;
+    constexpr float kCapBodyDest = kCapBody + kCapExtra;
+    constexpr float kCapTotal = kCapBodyDest + kCapRound;
+    constexpr float kCashFrame = 25.f;
+}
 
 CNewUIHeroPositionInfo::CNewUIHeroPositionInfo()
 {
@@ -88,9 +107,41 @@ bool CNewUIHeroPositionInfo::Create(CNewUIManager* pNewUIMng, int x, int y)
         &I18N::Game::StopOfficialMUHelper,
         0);
 
+    SetButtonInfo(
+        &s_BtnAuto,
+        IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3,
+        x + WidenX + 77,
+        y,
+        18,
+        13,
+        1,
+        0,
+        1,
+        1u,
+        nullptr,
+        &I18N::Game::AutoBattlerTitle,
+        0);
+
+    SetButtonInfo(
+        &s_BtnMarket,
+        IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3,
+        x + WidenX + 95,
+        y,
+        18,
+        13,
+        1,
+        0,
+        1,
+        1u,
+        nullptr,
+        &I18N::Game::MarketplaceTitle,
+        0);
+
     MoveTextTipPos(&m_BtnConfig, -20, 9);
     MoveTextTipPos(&m_BtnStart, -20, 9);
     MoveTextTipPos(&m_BtnStop, -20, 9);
+    MoveTextTipPos(&s_BtnAuto, -20, 9);
+    MoveTextTipPos(&s_BtnMarket, -20, 9);
 
     Show(true);
 
@@ -131,6 +182,20 @@ bool CNewUIHeroPositionInfo::BtnProcess()
         return true;
     }
 
+    if (s_BtnAuto.UpdateMouseEvent())
+    {
+        g_pNewUISystem->Toggle(SEASON3B::INTERFACE_AUTOBATTLER);
+        PlayBuffer(SOUND_CLICK01);
+        return true;
+    }
+
+    if (s_BtnMarket.UpdateMouseEvent())
+    {
+        g_pNewUISystem->Toggle(SEASON3B::INTERFACE_MARKETPLACE);
+        PlayBuffer(SOUND_CLICK01);
+        return true;
+    }
+
     return false;
 }
 
@@ -141,7 +206,7 @@ bool CNewUIHeroPositionInfo::UpdateMouseEvent()
         return false;
     }
 
-    int Width = HERO_POSITION_INFO_BASEA_WINDOW_WIDTH + WidenX + 73;
+    int Width = static_cast<int>(HERO_POSITION_INFO_BASEA_WINDOW_WIDTH + WidenX + kCapTotal);
 
     if (CheckMouseIn(m_Pos.x, m_Pos.y, Width, HERO_POSITION_INFO_BASE_WINDOW_HEIGHT))
     {
@@ -164,6 +229,9 @@ bool CNewUIHeroPositionInfo::Update()
         m_CurHeroPosition.y = (Hero->PositionY);
     }
 
+    if (g_pAutoBattler)
+        g_pAutoBattler->TickSession();
+
     return true;
 }
 
@@ -182,11 +250,59 @@ bool CNewUIHeroPositionInfo::Render()
 
     RenderImage(IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 1, m_Pos.x + HERO_POSITION_INFO_BASEA_WINDOW_WIDTH, m_Pos.y, float(WidenX), float(HERO_POSITION_INFO_BASE_WINDOW_HEIGHT), 0.1f, 0.f, 22.4f / 32.f, 25.f / 32.f);
 
-    RenderImage(IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 2, m_Pos.x + HERO_POSITION_INFO_BASEA_WINDOW_WIDTH + WidenX, m_Pos.y, 73.f, 20.f);
+    const float capX = m_Pos.x + HERO_POSITION_INFO_BASEA_WINDOW_WIDTH + WidenX;
+    RenderImageStretch(
+        IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 2,
+        capX,
+        static_cast<float>(m_Pos.y),
+        kCapBodyDest,
+        kCapH,
+        0.f,
+        0.f,
+        kCapBody,
+        kCapH);
+    RenderImageStretch(
+        IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 2,
+        capX + kCapBodyDest,
+        static_cast<float>(m_Pos.y),
+        kCapRound,
+        kCapH,
+        kCapBody,
+        0.f,
+        kCapRound,
+        kCapH);
     //--
     m_BtnConfig.Render();
 
     MUHelper::g_MuHelper.IsActive() ? m_BtnStop.Render() : m_BtnStart.Render();
+
+    s_BtnAuto.Render();
+    {
+        const POINT pos = s_BtnAuto.GetPos();
+        g_pRenderText->SetFont(g_hFontBold);
+        g_pRenderText->SetTextColor(255, 238, 161, 255);
+        g_pRenderText->SetBgColor(0, 0, 0, 0);
+        g_pRenderText->RenderText(pos.x, pos.y + 1, L"A", 18, 11, RT3_SORT_CENTER);
+        g_pRenderText->SetFont(g_hFont);
+        g_pRenderText->SetTextColor(255, 255, 255, 255);
+    }
+
+    s_BtnMarket.Render();
+    {
+        const POINT pos = s_BtnMarket.GetPos();
+        RenderImageStretch(
+            IMAGE_HERO_POSITION_INFO_MARKET,
+            static_cast<float>(pos.x),
+            static_cast<float>(pos.y),
+            18.f,
+            13.f,
+            0.f,
+            0.f,
+            kCashFrame,
+            kCashFrame);
+    }
+
+    // Voice M/S buttons live under the corner minimap (MiniMapCorner).
     //--
     mu_swprintf(szText, L"%ls (%d , %d)", gMapManager.GetMapName(gMapManager.WorldActive), m_CurHeroPosition.x, m_CurHeroPosition.y);
 
@@ -223,6 +339,7 @@ void CNewUIHeroPositionInfo::LoadImages()
     LoadBitmap(L"Interface\\MacroUI\\MacroUI_Setup.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3, GL_LINEAR);
     LoadBitmap(L"Interface\\MacroUI\\MacroUI_Start.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 4, GL_LINEAR);
     LoadBitmap(L"Interface\\MacroUI\\MacroUI_Stop.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 5, GL_LINEAR);
+    LoadBitmap(L"Interface\\InGameShop\\Ingame_Bt_Cash.tga", IMAGE_HERO_POSITION_INFO_MARKET, GL_LINEAR);
 }
 
 void CNewUIHeroPositionInfo::UnloadImages()
@@ -230,6 +347,7 @@ void CNewUIHeroPositionInfo::UnloadImages()
     DeleteBitmap(IMAGE_HERO_POSITION_INFO_BASE_WINDOW);
     DeleteBitmap(IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 1);
     DeleteBitmap(IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 2);
+    DeleteBitmap(IMAGE_HERO_POSITION_INFO_MARKET);
 }
 
 void CNewUIHeroPositionInfo::SetButtonInfo(CNewUIButton* m_Btn, int imgindex, int x, int y, int sx, int sy, bool overflg, bool isimgwidth, bool bClickEffect, bool MoveTxt, const wchar_t* const* btnameSlot, const wchar_t* const* tooltipSlot, bool istoppos)

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "World/MapInfra/MapManager.h"
+#include "World/MapInfra/LorenciaCombatPlaza.h"
 #include "Camera/CameraMove.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "Audio/DSPlaySound.h"
@@ -1508,6 +1509,12 @@ void CMapManager::LoadWorld(int Map)
     }
 
     CreateTerrainVBO();
+
+    // Auto Battler 3D cards: queue this map's hunt models for 1/frame preload
+    // (OpenMonsterModel during UI open heap-corrupts — see NewUIAutoBattler).
+    SEASON3B::CNewUIAutoBattler::NotifyWorldLoaded(this->WorldActive);
+
+    World::Lorencia::ApplyFountainCombatPlaza();
 }
 
 void CMapManager::DeleteObjects()

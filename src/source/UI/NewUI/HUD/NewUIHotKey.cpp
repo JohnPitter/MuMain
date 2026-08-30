@@ -21,6 +21,7 @@
 #endif // KJH_ADD_INGAMESHOP_UI_SYSTEM
 
 #include "MUHelper/MuHelper.h"
+#include "UI/NewUI/HUD/MiniMapCorner.h"
 
 using namespace SEASON3B;
 
@@ -226,16 +227,14 @@ bool SEASON3B::CNewUIHotKey::UpdateKeyEvent()
         PlayBuffer(SOUND_CLICK01);
         return false;
     }
-    else if (SEASON3B::IsPress('A'))
+    else if (SEASON3B::IsPress('A') && g_pChatInputBox->HaveFocus() == false)
     {
-        if (gCharacterManager.IsMasterLevel(Hero->Class) == true
-            && Hero->Class != CLASS_TEMPLENIGHT)
-        {
-            g_pNewUISystem->Toggle(SEASON3B::INTERFACE_MASTER_LEVEL);
-        }
+        if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_AUTOBATTLER))
+            g_pNewUISystem->Hide(SEASON3B::INTERFACE_AUTOBATTLER);
+        else
+            g_pNewUISystem->Show(SEASON3B::INTERFACE_AUTOBATTLER);
 
         PlayBuffer(SOUND_CLICK01);
-
         return false;
     }
     else if (SEASON3B::IsPress('U'))
@@ -300,6 +299,17 @@ bool SEASON3B::CNewUIHotKey::UpdateKeyEvent()
         PlayBuffer(SOUND_CLICK01);
         return false;
     }
+    else if (SEASON3B::IsPress(VK_CAPITAL) == true)
+    {
+        // Caps Lock toggles the always-on corner minimap (TAB keeps the
+        // full-screen map). Voice buttons under the box stay available either way.
+        if (g_pNewUIMiniMap && g_pNewUIMiniMap->m_bSuccess)
+        {
+            UI::HUD::MiniMap::ToggleVisible();
+            PlayBuffer(SOUND_CLICK01);
+        }
+        return false;
+    }
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
     else if (SEASON3B::IsPress('X') == true)
     {
@@ -342,6 +352,16 @@ bool SEASON3B::CNewUIHotKey::UpdateKeyEvent()
         return false;
     }
 #endif // PBG_ADD_INGAMESHOP_UI_MAINFRAME
+    else if (SEASON3B::IsPress('L') == true && g_pChatInputBox->HaveFocus() == false)
+    {
+        if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MARKETPLACE))
+            g_pNewUISystem->Hide(SEASON3B::INTERFACE_MARKETPLACE);
+        else
+            g_pNewUISystem->Show(SEASON3B::INTERFACE_MARKETPLACE);
+
+        PlayBuffer(SOUND_CLICK01);
+        return false;
+    }
     else if (SEASON3B::IsPress('B'))
     {
         if (!g_pNewUIGensRanking->SetGensInfo())
