@@ -5066,6 +5066,8 @@ void MoveCharacter(CHARACTER* c, OBJECT* o)
             case AT_SKILL_FIREBURST_STR:
             case AT_SKILL_FIREBURST_MASTERY:
             {
+                // Classic Fire Burst: three fire bolts in a fan, one small caster swirl.
+                // SubType 4 on MODEL_DARKLORD_SKILL is the quieter burst (see ZzzEffect.cpp).
                 vec3_t Angle = { 0.f, 0.f, o->Angle[2] };
                 vec3_t Pos = { 0.f, 0.f, (to->BoundingBoxMax[2] / 1.f) };
 
@@ -5079,9 +5081,8 @@ void MoveCharacter(CHARACTER* c, OBJECT* o)
                 Angle[2] = o->Angle[2] - 90;
                 CreateEffect(MODEL_PIER_PART, Position, Angle, Pos, 0, to);
 
-                Vector(1.f, 0.6f, 0.3f, Light);
-                CreateEffect(MODEL_DARKLORD_SKILL, Position, o->Angle, Light, 0);
-                CreateEffect(MODEL_DARKLORD_SKILL, Position, o->Angle, Light, 1);
+                Vector(0.75f, 0.42f, 0.18f, Light);
+                CreateEffect(MODEL_DARKLORD_SKILL, Position, o->Angle, Light, 4);
             }
             break;
 
