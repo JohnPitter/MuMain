@@ -468,7 +468,10 @@ bool CNewUIMyInventory::UpdateMouseEvent()
         return false;
 
     CNewUIPickedItem* pPickedItem = CNewUIInventoryCtrl::GetPickedItem();
-    if (pPickedItem && IsPress(VK_LBUTTON) && CheckMouseIn(0, 0, GetScreenWidth(), 429))
+    // Hidden picked items are in-flight wear/unequip requests. Dropping them
+    // would send DropItem for the same equipment slot and throw the piece on the floor.
+    if (pPickedItem && pPickedItem->IsVisible() && !EquipmentItem
+        && IsPress(VK_LBUTTON) && CheckMouseIn(0, 0, GetScreenWidth(), 429))
     {
         if (g_pNewUISystem->IsVisible(INTERFACE_NPCSHOP) == true
             || g_pNewUISystem->IsVisible(INTERFACE_TRADE) == true
@@ -1405,12 +1408,6 @@ bool CNewUIMyInventory::EquipmentWindowProcess()
                 CNewUIInventoryCtrl::BackupPickedItem();
 
                 ResetMouseLButton();
-                return false;
-            }
-
-            ITEM* pEquipmentItemSlot = &CharacterMachine->Equipment[iTargetIndex];
-            if (pEquipmentItemSlot && pEquipmentItemSlot->Type != -1)
-            {
                 return true;
             }
 
@@ -1425,7 +1422,7 @@ bool CNewUIMyInventory::EquipmentWindowProcess()
                     CNewUIInventoryCtrl::BackupPickedItem();
 
                     ResetMouseLButton();
-                    return false;
+                    return true;
                 }
             }
 
@@ -1439,10 +1436,14 @@ bool CNewUIMyInventory::EquipmentWindowProcess()
                 }
                 else
                 {
+                    // Occupied slot: server swaps the old piece into a free inventory slot.
                     SendRequestEquipmentItem(sourceType, iSourceIndex, pItemObj, STORAGE_TYPE::INVENTORY, iTargetIndex);
-                    return true;
                 }
             }
+
+            // Always consume clicks on equipment slots so a failed wear never
+            // falls through to the world-drop handler below.
+            return true;
         }
         else // pPickedItem == NULL
         {
@@ -1528,7 +1529,7 @@ bool CNewUIMyInventory::EquipmentWindowProcess()
 
             if (pEquippedItem->Type >= 0)
             {
-                const int emptySlotIndex = FindEmptySlot(pEquippedItem);
+                const int emptySlotIndex = FindEmptySlotIncludingExtensions(pEquippedItem);
 
                 if (emptySlotIndex != -1)
                 {
@@ -1562,7 +1563,10 @@ bool CNewUIMyInventory::InventoryProcess() const
         return false;
     }
 
-    return m_ActionController.HandleInventoryActions(m_pNewInventoryCtrl);
+    m_ActionController.HandleInventoryActions(m_pNewInventoryCtrl);
+    // Mouse is inside the inventory window. Consume the click even if the
+    // placement failed — otherwise UpdateMouseEvent falls through to SendDropItemRequest.
+    return true;
 }
 
 bool CNewUIMyInventory::BtnProcess()

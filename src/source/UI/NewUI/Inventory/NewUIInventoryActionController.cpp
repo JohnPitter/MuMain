@@ -314,11 +314,7 @@ bool CNewUIInventoryActionController::HandleInventoryRightClickActions(CNewUIInv
         }
     }
 
-    if (TryDropItem(targetControl, pItem))
-    {
-        return true;
-    }
-
+    // Right-click never drops. Drop is drag-outside / drop key only.
     return false;
 }
 
@@ -378,10 +374,7 @@ bool CNewUIInventoryActionController::TryEquipItem(CNewUIInventoryCtrl* targetCo
         {
             nDstIndex = nAltSlot;
         }
-        else
-        {
-            return true;
-        }
+        // else: keep the occupied slot — the server swaps the old piece into inventory.
     }
 
     if (!m_pContext->IsEquipable(nDstIndex, pItem))
