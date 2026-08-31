@@ -1853,7 +1853,7 @@ void CUIPhotoViewer::RenderPhotoCharacter()
     memcpy(s_PrePhotoView, GlobalUBO::Instance().GetView(), sizeof(s_PrePhotoView));
 
     SaveCameraPerspective();
-    glViewport2(m_iPos_x * g_fScreenRate_x, m_iPos_y * g_fScreenRate_y, m_iWidth * g_fScreenRate_x, 141 * g_fScreenRate_y);
+    glViewport2(static_cast<int>(ConvertPosX(static_cast<float>(m_iPos_x))), static_cast<int>(ConvertPosY(static_cast<float>(m_iPos_y))), static_cast<int>(ConvertX(static_cast<float>(m_iWidth))), static_cast<int>(ConvertY(141.f)));
     gluPerspective2(1.f, (float)(m_iWidth * g_fScreenRate_x) / (float)(141 * g_fScreenRate_y), 2000, 20000);//g_Camera.ViewNear,g_Camera.ViewFar);
 
     // DXP-08a: the matching glMatrixMode/glPushMatrix/glLoadIdentity(x2) bracket and

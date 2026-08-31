@@ -114,8 +114,10 @@ namespace MUHelper
 
 		netData.RepairItem = gameData.bRepairItem ? 1 : 0;
 		netData.ObtainRange = static_cast<BYTE>(gameData.iObtainingRange & 0x0F);
-		netData.PickAllNearItems = gameData.bPickAllItems ? 1 : 0;
-		netData.PickSelectedItems = gameData.bPickSelectItems ? 1 : 0;
+		const bool bPickAllItems = gameData.bPickAllItems;
+		const bool bPickSelectedItems = gameData.bPickSelectItems && !bPickAllItems;
+		netData.PickAllNearItems = bPickAllItems ? 1 : 0;
+		netData.PickSelectedItems = bPickSelectedItems ? 1 : 0;
 		netData.Zen = gameData.bPickZen ? 1 : 0;
 		netData.JewelOrGem = gameData.bPickJewel ? 1 : 0;
 		netData.ExcellentItem = gameData.bPickExcellent ? 1 : 0;
@@ -219,14 +221,10 @@ namespace MUHelper
 		{
 			memset(wsExtraItemBuffer, 0, sizeof(wsExtraItemBuffer));
 
-			size_t n = std::mbstowcs(wsExtraItemBuffer, &netData.ExtraItems[i][0], 15);
-			if (n > 0 && n <= 15)
+			CMultiLanguage::ConvertFromUtf8(wsExtraItemBuffer, &netData.ExtraItems[i][0], 15, 16);
+			if (wsExtraItemBuffer[0] != L'\0')
 			{
-				wsExtraItemBuffer[n] = L'\0';
-				if (wsExtraItemBuffer[0] != L'\0')
-				{
-					gameData.aExtraItems.insert(std::wstring(wsExtraItemBuffer));
-				}
+				gameData.aExtraItems.insert(std::wstring(wsExtraItemBuffer));
 			}
 		}
 

@@ -31,6 +31,7 @@ namespace SEASON3B
     public:
         void Reset();
         void LoadSavedConfig(const MUHelper::ConfigData& config);
+        void PersistCurrentConfigToServer();
         void AssignSkill(int iSkill);
         static int GetIntFromTextInput(wchar_t* pstrInput);
 

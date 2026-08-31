@@ -79,6 +79,7 @@ int CutStr(const wchar_t* pszSrcText, wchar_t* pTextOut, const int iTargetPixelW
         {
             // we can copy that to the destination
             tempString.copy(pTextOut, tempString.length(), 0);
+            pTextOut[tempString.length()] = L'\0';
             iLineIndex++;
             processedSourceCharacters += tempString.length();
 
@@ -2826,7 +2827,10 @@ void CUIRenderTextOriginal::UploadText(int sx, int sy, int Width, int Height)
         // checkboxes, etc.) left the blend state as -- a default set once at the top of
         // BeginBitmap() didn't survive that gauntlet (confirmed: had zero effect on the
         // reported flicker), so pin it right at the point of use instead.
-        EnableAlphaTest();
+        // Additive names (character-select balloon) keep GL_ONE, GL_ONE so the
+        // antialiased glyph edges bloom instead of being alpha-tested flat.
+        if (!IsAdditiveBlendActive())
+            EnableAlphaTest();
         RenderBitmap(BITMAP_FONT, (float)sx, (float)sy, (float)Width, (float)Height,
             TextureU, TextureV, TextureUWidth, TextureVHeight, false, false);
     }
@@ -2847,7 +2851,7 @@ void CUIRenderTextOriginal::RenderText(int iPos_x, int iPos_y, const wchar_t* ps
     else
         GetTextExtentPoint32(m_hFontDC, pszText, lstrlen(pszText), &RealTextSize);
 
-    MU_POINTF RealBoxPos = { (float)iPos_x * g_fScreenRate_x, (float)iPos_y * g_fScreenRate_y };
+    MU_POINTF RealBoxPos = { ConvertPosX((float)iPos_x), ConvertPosY((float)iPos_y) };
     SIZEF RealBoxSize = { (float)iBoxWidth * g_fScreenRate_x, (float)iBoxHeight * g_fScreenRate_y };
     SIZE RealRenderingSize = { RealTextSize.cx, RealTextSize.cy };
 
@@ -2930,7 +2934,7 @@ void CUIRenderTextOriginal::RenderText(int iPos_x, int iPos_y, const wchar_t* ps
         EnableAlphaTest();
         glColor4ub(GetRed(m_dwBackColor), GetGreen(m_dwBackColor),
             GetBlue(m_dwBackColor), GetAlpha(m_dwBackColor));
-        RenderColor(RealBoxPos.x / g_fScreenRate_x, RealBoxPos.y / g_fScreenRate_y,
+        RenderColor((RealBoxPos.x - g_fScreenOff_x) / g_fScreenRate_x, (RealBoxPos.y - g_fScreenOff_y) / g_fScreenRate_y,
             RealBoxSize.cx / g_fScreenRate_x, RealBoxSize.cy / g_fScreenRate_y);
         EndRenderColor();
     }
@@ -3758,12 +3762,16 @@ void CUITextInputBox::RenderPortableSingleLine(const std::wstring& display, int 
         }
     }
 
-    // Visible text.
+    // Visible text. Glyph color is baked into BITMAP_FONT; RenderBitmap then
+    // modulates by g_CurrentColor (Alpha defaults to 0), so a leftover black
+    // current-color would make even white glyphs invisible on a dark field.
     const int iVisibleLen = iLength - m_iFirstVisible;
     if (iVisibleLen > 0)
     {
+        glColor4f(1.f, 1.f, 1.f, 1.f);
         g_pRenderText->SetBgColor(0);
-        g_pRenderText->SetTextColor(m_dwTextColor);
+        g_pRenderText->SetTextColor(GetRed(m_dwTextColor), GetGreen(m_dwTextColor),
+            GetBlue(m_dwTextColor), GetAlpha(m_dwTextColor));
         g_pRenderText->RenderText(m_iPos_x, m_iPos_y, display.c_str() + m_iFirstVisible, m_iWidth, m_iHeight, RT3_SORT_LEFT);
     }
 
@@ -3857,7 +3865,9 @@ void CUITextInputBox::RenderPortableMultiline(const std::wstring& display, int i
         if (lineLen > 0)
         {
             const std::wstring lineStr(lineText, lineLen);
-            g_pRenderText->SetTextColor(m_dwTextColor);
+            glColor4f(1.f, 1.f, 1.f, 1.f);
+            g_pRenderText->SetTextColor(GetRed(m_dwTextColor), GetGreen(m_dwTextColor),
+                GetBlue(m_dwTextColor), GetAlpha(m_dwTextColor));
             g_pRenderText->RenderText(m_iPos_x, y, lineStr.c_str(), m_iWidth, iLineHeight, RT3_SORT_LEFT);
         }
 
@@ -4523,9 +4533,11 @@ void CSlideHelpMgr::OpenSlideTextFile(const wchar_t* szFileName)
         for (int j = 0; j < m_iTextNumber[i]; ++j)
         {
             auto charText = SlideHelp.SlideHelp[i].szSlideHelpText[j];
-            int iLength = MultiByteToWideChar(CP_UTF8, 0, charText, -1, 0, 0);
-            auto pszText = new wchar_t[iLength + 1];
-            MultiByteToWideChar(CP_UTF8, 0, charText, -1, pszText, iLength);
+            wchar_t wide[257] = {};
+            CMultiLanguage::ConvertFromUtf8(wide, charText, 256, 257);
+            const int n = static_cast<int>(wcslen(wide));
+            auto pszText = new wchar_t[n + 1];
+            wcscpy(pszText, wide);
             m_SlideTextList[i].push_back(pszText);
         }
     }
@@ -6264,9 +6276,10 @@ void CUIBuyingListBox::AddText(const wchar_t* pszExplanationText)
     if (pszExplanationText == nullptr || pszExplanationText[0] == '\0')
         return;
 
-    static IGS_BuyList sIGS_Buying;
+    IGS_BuyList sIGS_Buying = {};
     sIGS_Buying.m_bIsSelected = FALSE;
-    wcsncpy(sIGS_Buying.m_pszItemExplanation, pszExplanationText, LINE_TEXTMAX);
+    wcsncpy(sIGS_Buying.m_pszItemExplanation, pszExplanationText, LINE_TEXTMAX - 1);
+    sIGS_Buying.m_pszItemExplanation[LINE_TEXTMAX - 1] = L'\0';
     m_TextList.push_front(sIGS_Buying);
 
     RemoveText();

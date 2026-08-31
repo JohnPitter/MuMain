@@ -190,10 +190,12 @@ namespace SEASON3B
 
     class CNewUI3DItemCommonMsgBox : public CNewUIMessageBoxBase, public INewUI3DRenderObj
     {
-        static constexpr float MSGBOX_TEXT_MAXWIDTH_3DITEM = 120.0f;
-        static constexpr float MSGBOX_TEXT_LEFT_BLANK_3DITEM = 60.0f;
-        static constexpr float MSGBOX_3DITEM_WIDTH = 40.0f;
-        static constexpr float MSGBOX_3DITEM_HEIGHT = 40.0f;
+        static constexpr float MSGBOX_TEXT_MAXWIDTH_3DITEM = 126.0f;
+        static constexpr float MSGBOX_TEXT_LEFT_BLANK_3DITEM = 88.0f;
+        static constexpr float MSGBOX_3DITEM_WIDTH = 68.0f;
+        static constexpr float MSGBOX_3DITEM_HEIGHT = 72.0f;
+        static constexpr float MSGBOX_3DITEM_POS_X = 8.0f;
+        static constexpr float MSGBOX_3DITEM_POS_Y = 36.0f;
     public:
         CNewUI3DItemCommonMsgBox();
         ~CNewUI3DItemCommonMsgBox();
@@ -209,6 +211,7 @@ namespace SEASON3B
         void Set3DItem(ITEM* pItem);
         void SetItemValue(int iValue);
         int GetItemValue();
+        void SetCancelAsTextButton(const wchar_t* text);
 
         static CALLBACK_RESULT LButtonUp(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam);
         static CALLBACK_RESULT Close(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam);

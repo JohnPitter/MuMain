@@ -21,7 +21,9 @@ public:
     WPARAM ConvertFulltoHalfWidthChar(DWORD wParam);
 
     static int32_t ConvertFromUtf8(wchar_t* target, const char* source, int maxSourceLength = -1);
+    static int32_t ConvertFromUtf8(wchar_t* target, const char* source, int maxSourceLength, int maxTargetChars);
     static int32_t ConvertToUtf8(char* target, const wchar_t* source, int maxSourceLength = -1);
+    static int32_t ConvertFromUtf8OrAnsi(wchar_t* target, const char* source, int maxSourceLength = -1, int maxTargetChars = 0);
 
     static CMultiLanguage* GetSingletonPtr() { return ms_Singleton; };
 };

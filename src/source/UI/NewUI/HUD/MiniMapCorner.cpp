@@ -7,30 +7,28 @@
 #include "Audio/DSPlaySound.h"
 #include "Audio/VoiceChat.h"
 #include "Engine/Object/ZzzCharacter.h"
+#include "Engine/Object/ZzzInventory.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
+#include "World/MapInfra/MapManager.h"
 #include "UI/NewUI/HUD/NewUIMiniMap.h"
+#include "UI/NewUI/Inventory/NewUIInventoryCtrl.h"
 #include "UI/NewUI/NewUICommon.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "UI/NewUI/Widgets/NewUIButton.h"
+#include "GameLogic/Social/PartyManager.h"
 
 namespace
 {
-    // Map viewport size; frame wraps map + voice footer like MacroUI / MU Helper.
+    // Square map + voice strip, wrapped by the same 14px table chrome as MU Helper.
     constexpr float kMapSize = 128.f;
-    constexpr float kFooterH = 22.f;
-    constexpr float kPad = 4.f;
+    constexpr float kFooterH = 18.f;
+    constexpr float kPad = 6.f;
     constexpr float kFrameW = kMapSize + (kPad * 2.f);
     constexpr float kFrameH = kMapSize + kFooterH + (kPad * 2.f);
     constexpr float kMarginTop = 0.f;
     constexpr float kMarginRight = 0.f;
     constexpr float kZoomSpan = 0.16f;
-
-    // Native mini_map_ui_* frame (same UVs as CNewUIMiniMap::Render).
-    constexpr float kFrameUv = 41.7f / 64.f;
-    constexpr float kFrameUvLine = 1.f;
-    constexpr float kCornerSize = 35.f;
-    constexpr float kLineW = 35.f;
-    constexpr float kLineH = 6.f;
+    constexpr float kTable = 14.f;
 
     constexpr float kVoiceBtnW = 20.f;
     constexpr float kVoiceBtnH = 14.f;
@@ -51,53 +49,42 @@ namespace
         *outY = kMarginTop;
     }
 
-    void DrawNativeFrame(float frameX, float frameY)
+    void VoiceOrigin(float* outX, float* outY)
     {
-        EnableAlphaTest();
-        glColor4f(1.f, 1.f, 1.f, 1.f);
-
-        const int horiz = static_cast<int>(std::ceil(kFrameW / kLineW)) + 1;
-        for (int i = 0; i < horiz; ++i)
-        {
-            SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 2,
-                frameX + (i * kLineW), frameY,
-                kLineW, kLineH, 0.f, 1.f, kFrameUv, -kFrameUvLine);
-            SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 2,
-                frameX + (i * kLineW), frameY + kFrameH - kLineH,
-                kLineW, kLineH, 0.f, 0.f, kFrameUv, kFrameUvLine);
-        }
-
-        const int vert = static_cast<int>(std::ceil(kFrameH / (kLineW - 3.f))) + 1;
-        for (int i = 0; i < vert; ++i)
-        {
-            RenderBitmapRotate(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 2,
-                frameX + (kLineH / 2.f), frameY + (i * (kLineW - 3.f)),
-                kLineW, kLineH, -90.f, 0.f, 0.f, kFrameUv, kFrameUvLine);
-            RenderBitmapRotate(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 2,
-                frameX + kFrameW - (kLineH / 2.f), frameY + (i * (kLineW - 3.f)),
-                kLineW, kLineH, 90.f, 0.f, 0.f, kFrameUv, kFrameUvLine);
-        }
-
-        // Corner ornaments (native mini_map_ui_corner.tga).
-        SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 1,
-            frameX, frameY, kCornerSize, kCornerSize, 0.f, 0.f, kFrameUv, kFrameUv);
-        SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 1,
-            frameX + kFrameW - kCornerSize, frameY, kCornerSize, kCornerSize,
-            kFrameUv, 0.f, -kFrameUv, kFrameUv);
-        SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 1,
-            frameX, frameY + kFrameH - kCornerSize, kCornerSize, kCornerSize,
-            0.f, kFrameUv, kFrameUv, -kFrameUv);
-        SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE + 1,
-            frameX + kFrameW - kCornerSize, frameY + kFrameH - kCornerSize, kCornerSize, kCornerSize,
-            kFrameUv, kFrameUv, -kFrameUv, -kFrameUv);
+        *outX = REFERENCE_WIDTH - kPad - kVoiceBtnW;
+        *outY = REFERENCE_HEIGHT * 0.5f;
     }
 
-    void EnsureVoiceButtons(float frameX, float frameY)
+    void DrawHelperFrame(float x, float y)
     {
-        // Inside the frame footer — same idea as MU Helper controls in its bar.
-        const float footerY = frameY + kPad + kMapSize + 3.f;
-        const float listenX = frameX + kFrameW - kPad - kVoiceBtnW;
-        const float micX = listenX - kVoiceGap - kVoiceBtnW;
+        using Img = SEASON3B::CNewUIInventoryCtrl;
+
+        EnableAlphaTest();
+        glColor4f(0.f, 0.f, 0.f, 0.55f);
+        RenderColor(x + 3.f, y + 2.f, kFrameW - 7.f, kFrameH - 7.f);
+        EndRenderColor();
+
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_TOP_LEFT, x, y, kTable, kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_TOP_RIGHT, x + kFrameW - kTable, y, kTable, kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_BOTTOM_LEFT, x, y + kFrameH - kTable, kTable, kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_BOTTOM_RIGHT,
+            x + kFrameW - kTable, y + kFrameH - kTable, kTable, kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_TOP_PIXEL, x + 6.f, y, kFrameW - 12.f, kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_RIGHT_PIXEL,
+            x + kFrameW - kTable, y + 6.f, kTable, kFrameH - kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_BOTTOM_PIXEL,
+            x + 6.f, y + kFrameH - kTable, kFrameW - 12.f, kTable);
+        SEASON3B::RenderImage(Img::IMAGE_ITEM_TABLE_LEFT_PIXEL, x, y + 6.f, kTable, kFrameH - kTable);
+    }
+
+    void EnsureVoiceButtons(float /*frameX*/, float /*frameY*/)
+    {
+        float voiceX = 0.f, voiceY = 0.f;
+        VoiceOrigin(&voiceX, &voiceY);
+        const float listenX = voiceX;
+        const float micX = voiceX;
+        const float footerY = voiceY;
+        const float listenY = voiceY + kVoiceBtnH + kVoiceGap;
 
         if (!s_voiceReady)
         {
@@ -108,7 +95,7 @@ namespace
             s_BtnVoiceMicrophone.MoveTextTipPos(-20, 9);
 
             s_BtnVoiceListening.ChangeButtonImgState(1, BITMAP_HERO_POSITION_INFO_BEGIN + 3, 1, 0, 1);
-            s_BtnVoiceListening.ChangeButtonInfo(static_cast<int>(listenX), static_cast<int>(footerY),
+            s_BtnVoiceListening.ChangeButtonInfo(static_cast<int>(listenX), static_cast<int>(listenY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
             s_BtnVoiceListening.ChangeToolTipText(&kVoiceListeningTooltip, 0);
             s_BtnVoiceListening.MoveTextTipPos(-20, 9);
@@ -118,7 +105,7 @@ namespace
         {
             s_BtnVoiceMicrophone.ChangeButtonInfo(static_cast<int>(micX), static_cast<int>(footerY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
-            s_BtnVoiceListening.ChangeButtonInfo(static_cast<int>(listenX), static_cast<int>(footerY),
+            s_BtnVoiceListening.ChangeButtonInfo(static_cast<int>(listenX), static_cast<int>(listenY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
         }
     }
@@ -173,6 +160,13 @@ namespace UI::HUD::MiniMap
 
     void GetBoxRect(float* outX, float* outY, float* outSize)
     {
+        if (!s_visible)
+        {
+            if (outX) *outX = 0.f;
+            if (outY) *outY = 0.f;
+            if (outSize) *outSize = 0.f;
+            return;
+        }
         float x = 0.f, y = 0.f;
         FrameOrigin(&x, &y);
         if (outX) *outX = x;
@@ -182,6 +176,8 @@ namespace UI::HUD::MiniMap
 
     void Render()
     {
+        if (!s_visible)
+            return;
         if (!Hero || !g_pNewUIMiniMap || !g_pNewUIMiniMap->m_bSuccess)
             return;
 
@@ -190,46 +186,71 @@ namespace UI::HUD::MiniMap
         const float mapX = frameX + kPad;
         const float mapY = frameY + kPad;
 
+        DrawHelperFrame(frameX, frameY);
+
+        const int clipX = static_cast<int>(ConvertPosX(mapX));
+        const int clipY = static_cast<int>(ConvertPosY(mapY));
+        const int clipW = static_cast<int>(ConvertX(kMapSize));
+        const int clipH = static_cast<int>(ConvertY(kMapSize));
+        EnableScissorTest();
+        SetScissor(clipX, static_cast<int>(WindowHeight) - clipY - clipH, clipW, clipH);
+
+        const float halfSpan = kZoomSpan / 2.f;
+        const float centerU = std::clamp(static_cast<float>(Hero->PositionY) / 256.f, halfSpan, 1.f - halfSpan);
+        const float centerV = std::clamp(static_cast<float>(Hero->PositionX) / 256.f, halfSpan, 1.f - halfSpan);
+
         EnableAlphaTest();
         glColor4f(1.f, 1.f, 1.f, 1.f);
+        SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE, mapX, mapY, kMapSize, kMapSize,
+            centerU - halfSpan, centerV - halfSpan, kZoomSpan, kZoomSpan);
 
-        // Dim panel behind map+footer (MU Helper style filled chrome).
-        EnableAlphaBlend();
-        glColor4f(0.f, 0.f, 0.f, 0.55f);
-        RenderColor(frameX, frameY, kFrameW, kFrameH);
-        glColor4f(1.f, 1.f, 1.f, 1.f);
-        EnableAlphaTest();
-
-        HandleVoiceInput(frameX, frameY);
-
-        if (s_visible)
+        if (PartyNumber > 0)
         {
-            const int clipX = static_cast<int>(ConvertPosX(mapX));
-            const int clipY = static_cast<int>(ConvertPosY(mapY));
-            const int clipW = static_cast<int>(ConvertX(kMapSize));
-            const int clipH = static_cast<int>(ConvertY(kMapSize));
-            EnableScissorTest();
-            SetScissor(clipX, static_cast<int>(WindowHeight) - clipY - clipH, clipW, clipH);
+            g_pPartyManager->SyncLivePartyPositions();
+            g_pPartyManager->RequestPartyListIfDue();
+            for (int i = 0; i < PartyNumber; ++i)
+            {
+                const PARTY_t* member = &Party[i];
+                if (member->Name[0] == 0)
+                    continue;
+                if (g_pPartyManager->IsLocalHero(member))
+                    continue;
+                if (member->Map != static_cast<BYTE>(gMapManager.WorldActive))
+                    continue;
 
-            const float halfSpan = kZoomSpan / 2.f;
-            const float centerU = std::clamp(static_cast<float>(Hero->PositionY) / 256.f, halfSpan, 1.f - halfSpan);
-            const float centerV = std::clamp(static_cast<float>(Hero->PositionX) / 256.f, halfSpan, 1.f - halfSpan);
+                const float memberU = static_cast<float>(member->y) / 256.f;
+                const float memberV = static_cast<float>(member->x) / 256.f;
+                const float dx = (memberU - centerU) / kZoomSpan;
+                const float dy = (memberV - centerV) / kZoomSpan;
+                const float px = mapX + (kMapSize / 2.f) + (dx * kMapSize);
+                const float py = mapY + (kMapSize / 2.f) + (dy * kMapSize);
+                if (px < mapX || py < mapY || px > mapX + kMapSize || py > mapY + kMapSize)
+                    continue;
 
-            glColor4f(1.f, 1.f, 1.f, 1.f);
-            SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE, mapX, mapY, kMapSize, kMapSize,
-                centerU - halfSpan, centerV - halfSpan, kZoomSpan, kZoomSpan);
-
-            glColor4f(0.1f, 0.1f, 0.1f, 1.f);
-            RenderColor(mapX + (kMapSize / 2.f) - 2.5f, mapY + (kMapSize / 2.f) - 2.5f, 5.f, 5.f);
-            glColor4f(1.f, 0.9f, 0.2f, 1.f);
-            RenderColor(mapX + (kMapSize / 2.f) - 2.f, mapY + (kMapSize / 2.f) - 2.f, 4.f, 4.f);
-            glColor4f(1.f, 1.f, 1.f, 1.f);
-            DisableScissorTest();
+                glColor4f(0.05f, 0.15f, 0.2f, 1.f);
+                RenderColor(px - 2.5f, py - 2.5f, 5.f, 5.f);
+                glColor4f(0.25f, 0.85f, 1.f, 1.f);
+                RenderColor(px - 2.f, py - 2.f, 4.f, 4.f);
+            }
         }
 
-        // Frame + voice on top (corners over map; M/S inside footer).
-        DrawNativeFrame(frameX, frameY);
-        DrawVoiceActions(frameX, frameY);
+        glColor4f(0.1f, 0.1f, 0.1f, 1.f);
+        RenderColor(mapX + (kMapSize / 2.f) - 2.5f, mapY + (kMapSize / 2.f) - 2.5f, 5.f, 5.f);
+        glColor4f(1.f, 0.9f, 0.2f, 1.f);
+        RenderColor(mapX + (kMapSize / 2.f) - 2.f, mapY + (kMapSize / 2.f) - 2.f, 4.f, 4.f);
+        EndRenderColor();
+        DisableScissorTest();
+
+        EnableAlphaTest();
+    }
+
+    void RenderCommands()
+    {
+        // Voice buttons live outside the map scissor; input + draw happen here.
+        float voiceX = 0.f, voiceY = 0.f;
+        VoiceOrigin(&voiceX, &voiceY);
+        HandleVoiceInput(voiceX, voiceY);
+        DrawVoiceActions(voiceX, voiceY);
         EnableAlphaTest();
     }
 }

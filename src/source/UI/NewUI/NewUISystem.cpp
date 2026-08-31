@@ -103,6 +103,9 @@ CNewUISystem::CNewUISystem()
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
     m_pNewInGameShop = nullptr;
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+    m_pNewMarketplace = nullptr;
+    m_pNewAutoBattler = nullptr;
+    m_pNewHuntAnalyzer = nullptr;
     m_pNewDoppelGangerWindow = nullptr;
     m_pNewDoppelGangerFrame = nullptr;
     m_pNewNPCDialogue = nullptr;
@@ -473,6 +476,8 @@ bool CNewUISystem::LoadMainSceneInterface()
         return false;
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
 
+    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: skip Create (lazy)");
+
     m_pNewDoppelGangerWindow = new CNewUIDoppelGangerWindow;
     if (m_pNewDoppelGangerWindow->Create(m_pNewUIMng, m_pNewUI3DRenderMng, PanelColumnX(1), 0) == false)
         return false;
@@ -602,6 +607,9 @@ void CNewUISystem::UnloadMainSceneInterface()
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
     SAFE_DELETE(m_pNewInGameShop);
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+    SAFE_DELETE(m_pNewMarketplace);
+    SAFE_DELETE(m_pNewAutoBattler);
+    SAFE_DELETE(m_pNewHuntAnalyzer);
     SAFE_DELETE(m_pNewDoppelGangerWindow);
     SAFE_DELETE(m_pNewDoppelGangerFrame);
     SAFE_DELETE(m_pNewNPCDialogue);
@@ -641,13 +649,19 @@ bool CNewUISystem::IsVisible(DWORD dwKey)
 void CNewUISystem::Show(DWORD dwKey)
 {
 #ifdef PBG_ADD_INGAMESHOP_UI_ITEMSHOP
-    if (g_pInGameShop->IsInGameShop())
+    if (g_pInGameShop->IsInGameShop() && dwKey != INTERFACE_MARKETPLACE && dwKey != INTERFACE_AUTOBATTLER)
         return;
 #endif //PBG_ADD_INGAMESHOP_UI_ITEMSHOP
     if (!m_pNewUIMng)
     {
         return;
     }
+
+    if (IsVisible(INTERFACE_MARKETPLACE) && dwKey != INTERFACE_MARKETPLACE && dwKey != INTERFACE_INGAMESHOP && dwKey != INTERFACE_AUTOBATTLER)
+        return;
+
+    if (IsVisible(INTERFACE_AUTOBATTLER) && dwKey != INTERFACE_AUTOBATTLER && dwKey != INTERFACE_INGAMESHOP && dwKey != INTERFACE_MARKETPLACE)
+        return;
 
     /*
     std::list<INewUIBase*> visiblePages = {};
@@ -1073,6 +1087,26 @@ void CNewUISystem::Show(DWORD dwKey)
 #endif // KJH_MOD_SHOP_SCRIPT_DOWNLOAD
     }
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+    else if (dwKey == INTERFACE_MARKETPLACE)
+    {
+        if (!EnsureMarketplace())
+            return;
+        HideAll();
+        g_pMarketplace->OpeningProcess();
+    }
+    else if (dwKey == INTERFACE_AUTOBATTLER)
+    {
+        if (!EnsureAutoBattler())
+            return;
+        HideAllGroupA();
+        g_pAutoBattler->OpeningProcess();
+    }
+    else if (dwKey == INTERFACE_HUNTANALYZER)
+    {
+        // Manual opens are handled by the analyzer itself (session-driven);
+        // a direct Show just guarantees the instance exists.
+        EnsureHuntAnalyzer();
+    }
     else if (dwKey == INTERFACE_DOPPELGANGER_NPC)
     {
         m_pNewDoppelGangerWindow->OpeningProcess();
@@ -1513,6 +1547,21 @@ void CNewUISystem::Hide(DWORD dwKey)
         g_pMainFrame->SetBtnState(MAINFRAME_BTN_PARTCHARGE, false);
     }
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+    else if (dwKey == INTERFACE_MARKETPLACE)
+    {
+        if (m_pNewMarketplace)
+            m_pNewMarketplace->ClosingProcess();
+    }
+    else if (dwKey == INTERFACE_AUTOBATTLER)
+    {
+        if (m_pNewAutoBattler)
+            m_pNewAutoBattler->ClosingProcess();
+    }
+    else if (dwKey == INTERFACE_HUNTANALYZER)
+    {
+        if (m_pNewHuntAnalyzer)
+            m_pNewHuntAnalyzer->ClosingProcess();
+    }
     else if (dwKey == INTERFACE_DOPPELGANGER_NPC)
     {
         m_pNewDoppelGangerWindow->ClosingProcess();
@@ -1631,6 +1680,7 @@ void CNewUISystem::HideAllGroupA()
         INTERFACE_KANTURU2ND_ENTERNPC,
         INTERFACE_DUELWATCH,
         INTERFACE_DOPPELGANGER_NPC,
+        INTERFACE_AUTOBATTLER,
         //SEASON3B::INTERFACE_HELP,
         //SEASON3B::INTERFACE_ITEM_EXPLANATION,
         //SEASON3B::INTERFACE_SETITEM_EXPLANATION,
@@ -1693,6 +1743,7 @@ void CNewUISystem::HideAllGroupB()
         INTERFACE_CURSEDTEMPLE_NPC,
         INTERFACE_DUELWATCH,
         INTERFACE_DOPPELGANGER_NPC,
+        INTERFACE_AUTOBATTLER,
         //SEASON3B::INTERFACE_HELP,
         //SEASON3B::INTERFACE_ITEM_EXPLANATION,
         //SEASON3B::INTERFACE_SETITEM_EXPLANATION,
@@ -1852,6 +1903,8 @@ bool CNewUISystem::HandleFrameCornerClose(const POINT& winPos, DWORD dwKey)
 
 bool CNewUISystem::Update()
 {
+    CNewUIAutoBattler::TickPreviewPreload();
+
     if (m_pNewItemMng)
     {
         m_pNewItemMng->Update();
@@ -1915,6 +1968,8 @@ bool CNewUISystem::IsImpossibleTradeInterface()
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
         || IsVisible(INTERFACE_INGAMESHOP)
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+        || IsVisible(INTERFACE_MARKETPLACE)
+        || IsVisible(INTERFACE_AUTOBATTLER)
         || IsVisible(SEASON3B::INTERFACE_LUCKYITEMWND)
         )
     {
@@ -1933,6 +1988,8 @@ bool CNewUISystem::IsImpossibleDuelInterface()
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
         || IsVisible(INTERFACE_INGAMESHOP)
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+        || IsVisible(INTERFACE_MARKETPLACE)
+        || IsVisible(INTERFACE_AUTOBATTLER)
         || IsVisible(SEASON3B::INTERFACE_LUCKYITEMWND)
         )
     {
@@ -2412,6 +2469,74 @@ CNewUIInGameShop* CNewUISystem::GetUI_pNewInGameShop() const
     return m_pNewInGameShop;
 }
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+
+bool CNewUISystem::EnsureMarketplace()
+{
+    if (m_pNewMarketplace)
+        return true;
+    if (m_pNewUIMng == nullptr)
+        return false;
+
+    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: lazy new");
+    m_pNewMarketplace = CNewUIMarketplace::NewInstance();
+    if (m_pNewMarketplace->Create(m_pNewUIMng, 0, 0) == false)
+    {
+        SAFE_DELETE(m_pNewMarketplace);
+        g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: lazy Create failed");
+        return false;
+    }
+    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: lazy Create ok");
+    return true;
+}
+
+bool CNewUISystem::EnsureAutoBattler()
+{
+    if (m_pNewAutoBattler)
+        return true;
+    if (m_pNewUIMng == nullptr)
+        return false;
+
+    m_pNewAutoBattler = CNewUIAutoBattler::NewInstance();
+    if (m_pNewAutoBattler->Create(m_pNewUIMng, (640 - 580) / 2, (480 - 460) / 2) == false)
+    {
+        SAFE_DELETE(m_pNewAutoBattler);
+        return false;
+    }
+    // The analyzer lives and dies with the Auto Battler instance.
+    EnsureHuntAnalyzer();
+    return true;
+}
+
+CNewUIMarketplace* CNewUISystem::GetUI_pNewMarketplace() const
+{
+    return m_pNewMarketplace;
+}
+
+bool CNewUISystem::EnsureHuntAnalyzer()
+{
+    if (m_pNewHuntAnalyzer)
+        return true;
+    if (m_pNewUIMng == nullptr)
+        return false;
+
+    m_pNewHuntAnalyzer = new CNewUIHuntAnalyzer();
+    if (m_pNewHuntAnalyzer->Create(m_pNewUIMng, 640 - 170 - 4, 112) == false)
+    {
+        SAFE_DELETE(m_pNewHuntAnalyzer);
+        return false;
+    }
+    return true;
+}
+
+CNewUIAutoBattler* CNewUISystem::GetUI_pNewAutoBattler() const
+{
+    return m_pNewAutoBattler;
+}
+
+CNewUIHuntAnalyzer* CNewUISystem::GetUI_pNewHuntAnalyzer() const
+{
+    return m_pNewHuntAnalyzer;
+}
 
 CNewUIDoppelGangerWindow* CNewUISystem::GetUI_pNewDoppelGangerWindow() const
 {

@@ -7,6 +7,7 @@
 #include "Network/Server/CSMapServer.h"
 #include <span>
 #include <typeinfo>
+#include <cstddef>
 
 #define WM_ASYNCSELECTMSG (WM_USER+0)
 
@@ -80,6 +81,11 @@
 #define PACKET_ATTACK       0x11
 
 extern int CurrentProtocolState;
+
+// Channel-specific movement-menu permissions. No packet received means legacy allow-all behavior.
+bool IsChannelWarpAllowed(WORD warpInfoIndex);
+bool HasChannelWarpList();
+void ResetChannelWarpList();
 
 inline uint64_t ntoh64(uint64_t value)
 {
@@ -187,8 +193,9 @@ typedef struct
 
 #define CLASS_SUMMONER_CARD		0x01
 #define CLASS_DARK_LORD_CARD	0x02
-#define CLASS_DARK_CARD			0x04
-#define CLASS_CHARACTERCARD_TOTALCNT	3
+#define CLASS_MAGICGLADIATOR_CARD	0x04
+#define CLASS_RAGEFIGHTER_CARD		0x08
+#define CLASS_CHARACTERCARD_TOTALCNT	4
 
 typedef struct
 {
@@ -3234,6 +3241,15 @@ typedef struct
     PBMSG_HEADER2		h;
 }PMSG_CASHSHOP_CASHPOINT_REQ, * LPPMSG_CASHSHOP_CASHPOINT_REQ;
 
+// Channel package allow-list (0xD2)(0x21). The array extends to packet size.
+typedef struct
+{
+    PWMSG_HEADER h;
+    BYTE bySubCode;
+    BYTE byCount;
+    WORD wPackageSeq[1];
+} PMSG_CASHSHOP_ALLOWED_PACKAGES, * LPPMSG_CASHSHOP_ALLOWED_PACKAGES;
+
 //----------------------------------------------------------------------------
 // (0xD2)(0x01)
 //----------------------------------------------------------------------------
@@ -3586,6 +3602,10 @@ void DeleteSocket();
 // Tears the live game session down to a clean login-scene state (matching the
 // in-game logout path). Used by the auto-reconnect flow before it replays login.
 void ResetClientToLoginScene();
+
+// Menu Exit / character select / server select. Suppresses auto-reconnect
+// (the server closes the socket after CloseGame) and sends the logout packet.
+void RequestUserLogOut(LogOutType type);
 
 void ReceiveMovePosition(const BYTE* ReceiveBuffer);
 

@@ -155,7 +155,7 @@ void CMsgBoxIGSBuySelectItem::RenderTexts()
     g_pRenderText->SetTextColor(255, 0, 0, 255);
     if (m_wItemCode == 65535)
     {
-        mu_swprintf(szText, L"Bad item index.");
+        mu_swprintf(szText, I18N::Game::InvalidItemIndexBuySelect);
     }
     else
     {

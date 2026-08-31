@@ -1,7 +1,7 @@
 #ifndef __WINMAIN_H__
 #define __WINMAIN_H__
 
-#define FOR_WORK
+//#define FOR_WORK
 /*--------------------------------------------------------------------------------------*/
 
 #define LANGUAGE_KOREAN			( 0 )

@@ -19,8 +19,10 @@
 #include "Core/Platform/PathResolve.h"
 
 #include "UI/Legacy/UIControls.h"
+#include "Render/Sprites/Sprite.h"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cstdio>
 #include <cwchar>
@@ -48,6 +50,35 @@ namespace
         {L"Interface\\im8_1.jpg", L"Interface\\im8_2.jpg"},
     }};
 
+    constexpr float kIllustContentWidth = 800.0f;
+    constexpr float kIllustTileWidth = 400.0f;
+    constexpr float kIllustContentHeight = 400.0f;
+
+    struct IllustCover
+    {
+        float scale;
+        int originX;
+        int originY;
+    };
+
+    IllustCover ComputeIllustCover()
+    {
+        CInput input = CInput::Instance();
+        const float screenW = static_cast<float>(input.GetScreenWidth());
+        const float screenH = static_cast<float>(input.GetScreenHeight());
+        IllustCover cover{};
+        cover.scale = (std::max)(screenW / kIllustContentWidth, screenH / kIllustContentHeight);
+        cover.originX = static_cast<int>((screenW / cover.scale - kIllustContentWidth) * 0.5f);
+        cover.originY = static_cast<int>((screenH / cover.scale - kIllustContentHeight) * 0.5f);
+        return cover;
+    }
+
+    void PlaceIllustSprites(CSprite& left, CSprite& right, const IllustCover& cover)
+    {
+        left.SetPosition(cover.originX, cover.originY);
+        right.SetPosition(cover.originX + static_cast<int>(kIllustTileWidth), cover.originY);
+    }
+
     template<typename T>
     short IncreaseAlpha(short alpha, T ratio)
     {
@@ -71,8 +102,7 @@ namespace
             return;
         }
 
-        std::mbstowcs(destination, source, N);
-        destination[N - 1] = L'\0';
+        CMultiLanguage::ConvertFromUtf8(destination, source, -1, static_cast<int>(N));
     }
 
     void FontDeleter(HFONT font)
@@ -153,8 +183,7 @@ void CCreditWin::PreRelease()
 
 void CCreditWin::SetPosition()
 {
-	m_aSpr[CRW_SPR_PIC_L].SetPosition(0, 126);
-	m_aSpr[CRW_SPR_PIC_R].SetPosition(400, 126);
+	PlaceIllustSprites(m_aSpr[CRW_SPR_PIC_L], m_aSpr[CRW_SPR_PIC_R], ComputeIllustCover());
 	m_aSpr[CRW_SPR_LOGO].SetPosition(241, 549);
 
 
@@ -180,7 +209,13 @@ void CCreditWin::Show(bool bShow)
 	m_btnClose.Show(bShow);
 
 	if (bShow)
+	{
+		CUIMng& ui = CUIMng::Instance();
+		ui.m_LoginMainWin.Show(false);
+		ui.m_ServerSelWin.Show(false);
+		ui.m_LoginWin.Show(false);
 		Init();
+	}
 	else
 		m_eIllustState = HIDE;
 }
@@ -280,7 +315,9 @@ void CCreditWin::RenderControls()
 
 void CCreditWin::CloseWin()
 {
-	CUIMng::Instance().HideWin(this);
+	CUIMng& ui = CUIMng::Instance();
+	ui.HideWin(this);
+	ui.ShowWin(&ui.m_LoginMainWin);
 
 	SocketClient->ToConnectServer()->SendServerListRequest();
 
@@ -305,9 +342,7 @@ void CCreditWin::Init()
 
 void CCreditWin::LoadIllust()
 {
-	CInput rInput = CInput::Instance();
-	float fScaleX = (float)rInput.GetScreenWidth() / 800.0f;
-	float fScaleY = (float)rInput.GetScreenHeight() / 600.0f;
+	const IllustCover cover = ComputeIllustCover();
 
 	for (int i = 0; i < 2; ++i)
 	{
@@ -315,13 +350,12 @@ void CCreditWin::LoadIllust()
 		LoadBitmap(illustPath, BITMAP_TEMP + i, GL_LINEAR);
 
 		m_aSpr[i].Create(400, 400, BITMAP_TEMP + i, 0, NULL, 0, 0,
-			false, SPR_SIZING_DATUMS_LT, fScaleX, fScaleY);
+			false, SPR_SIZING_DATUMS_LT, cover.scale, cover.scale);
 		m_aSpr[i].SetAlpha(0);
 		m_aSpr[i].Show(true);
 	}
 
-	m_aSpr[CRW_SPR_PIC_L].SetPosition(0, 126);
-	m_aSpr[CRW_SPR_PIC_R].SetPosition(400, 126);
+	PlaceIllustSprites(m_aSpr[CRW_SPR_PIC_L], m_aSpr[CRW_SPR_PIC_R], cover);
 }
 
 

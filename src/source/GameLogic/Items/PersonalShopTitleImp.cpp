@@ -405,9 +405,9 @@ void CPersonalShopTitleImp::CalculateBooleanPos(IN CHARACTER* pPlayer, IN const 
     POINT ptFloating;
     CameraProjection::WorldToScreen(g_Camera, posTemp, (int*)&ptFloating.x, (int*)&ptFloating.y);
 
-    //. pos : real position
-    pos.x = (ptFloating.x * (int)WindowWidth / REFERENCE_WIDTH) - size.cx / 2;
-    pos.y = (ptFloating.y * (int)WindowHeight / REFERENCE_HEIGHT) - (12 * 3 * (int)WindowHeight / REFERENCE_HEIGHT);
+    //. pos : drawable pixels (letterboxed 4:3)
+    pos.x = static_cast<LONG>(ConvertPosX(static_cast<float>(ptFloating.x))) - size.cx / 2;
+    pos.y = static_cast<LONG>(ConvertPosY(static_cast<float>(ptFloating.y))) - static_cast<LONG>(12 * 3 * g_fScreenRate_y);
 }
 
 CPersonalShopTitleImp::CShopTitleDrawObj::CShopTitleDrawObj() { Init(); }
@@ -542,7 +542,7 @@ void CPersonalShopTitleImp::CShopTitleDrawObj::Draw(int iPkLevel)
 
     
     
-    POINT RenderPos = { static_cast<LONG>(m_pos.x / g_fScreenRate_x), static_cast<LONG>(m_pos.y / g_fScreenRate_y) };
+    POINT RenderPos = { static_cast<LONG>((m_pos.x - g_fScreenOff_x) / g_fScreenRate_x), static_cast<LONG>((m_pos.y - g_fScreenOff_y) / g_fScreenRate_y) };
     SIZE RenderBoxSize = { static_cast<LONG>(m_size.cx / g_fScreenRate_x), static_cast<LONG>(m_size.cy / g_fScreenRate_y) };
     SIZE RenderIconSize = { static_cast<LONG>(m_icon.cx / g_fScreenRate_x), static_cast<LONG>(m_icon.cy / g_fScreenRate_y) };
     int iLineHeight = FontHeight / g_fScreenRate_y;

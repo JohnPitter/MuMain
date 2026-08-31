@@ -35,6 +35,11 @@ int DivideStringByPixel(wchar_t* alpszDst, int nDstRow, int nDstColumn, const wc
     if (nullptr == alpszDst || 0 >= nDstRow || 0 >= nDstColumn || nullptr == lpszSrc || 16 > nPixelPerLine)
         return 0;
 
+    for (int i = 0; i < nDstRow * nDstColumn; ++i)
+    {
+        alpszDst[i] = L'\0';
+    }
+
     std::wstring szWorkSrc(lpszSrc);  // Convert lpszSrc to std::wstring
 
     wchar_t szWorkToken[1024];

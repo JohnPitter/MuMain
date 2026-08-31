@@ -83,6 +83,8 @@ public:
 
     float GetScaleX() { return m_fScaleX; }
     float GetScaleY() { return m_fScaleY; }
+    void SetScale(float fScaleX, float fScaleY);
+    void FlipHorizontal();
     void Show(bool bShow = true) { m_bShow = bShow; }
     bool IsShow() const { return m_bShow; }
     int GetSizingDatums() { return m_nSizingDatums; }

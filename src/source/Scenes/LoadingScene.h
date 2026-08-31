@@ -25,4 +25,8 @@ public:
     void Render();
 };
 
+void RenderLoadingSceneOverlay();
+bool IsLoadingSceneOverlayActive();
+void ReleaseLoadingSceneOverlay();
+
 #endif // !defined(AFX_LOADINGSCENE_H__D5107C47_C7D8_49B8_8056_B21DDC7DACE0__INCLUDED_)

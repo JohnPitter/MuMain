@@ -57,8 +57,10 @@ void CMsgBoxIGSBuyConfirm::Initialize(WORD wItemCode, int iPackageSeq, int iDisp
     mu_swprintf(m_szItemPrice, I18N::Game::PriceS, pszPrice);
     mu_swprintf(m_szItemPeriod, I18N::Game::DurationS, pszPeriod);
 
-    //int m_iNumNoticeLine = SeparateTextIntoLines( I18N::Game::BoughtItemsUsedOrTakenOutOfStorageCannotBeReturned, txtline[0], NUM_LINE_CMB, MAX_LENGTH_CMB);
-    m_iNumNoticeLine = ::DivideStringByPixel(&m_szNotice[0][0], NUM_LINE_CMB, MAX_TEXT_LENGTH, I18N::Game::BoughtItemsUsedOrTakenOutOfStorageCannotBeReturned, IGS_TEXT_NOTICE_WIDTH);
+    // int m_iNumNoticeLine = SeparateTextIntoLines( I18N::Game::BoughtItemsUsedOrTakenOutOfStorageCannotBeReturned, txtline[0], NUM_LINE_CMB, MAX_LENGTH_CMB);
+    ZeroMemory(m_szNotice, sizeof(m_szNotice));
+    m_iNumNoticeLine = ::DivideStringByPixel(&m_szNotice[0][0], NUM_LINE_CMB, MAX_TEXT_LENGTH,
+        I18N::Game::BoughtItemsUsedOrTakenOutOfStorageCannotBeReturned, IGS_TEXT_NOTICE_WIDTH);
 }
 
 void CMsgBoxIGSBuyConfirm::Release()
@@ -139,7 +141,7 @@ void CMsgBoxIGSBuyConfirm::SetButtonInfo()
 {
     m_BtnOk.SetInfo(IMAGE_IGS_BUTTON, GetPos().x + IGS_BTN_OK_POS_X, GetPos().y + IGS_BTN_POS_Y, IMAGE_IGS_BTN_WIDTH, IMAGE_IGS_BTN_HEIGHT, CNewUIMessageBoxButton::MSGBOX_BTN_CUSTOM, true);
     m_BtnOk.MoveTextPos(0, -1);
-    m_BtnOk.SetText(I18N::Game::OK);
+    m_BtnOk.SetText(I18N::Game::CashShopConfirmPurchase);
     m_BtnCancel.SetInfo(IMAGE_IGS_BUTTON, GetPos().x + IGS_BTN_CANCEL_POS_X, GetPos().y + IGS_BTN_POS_Y, IMAGE_IGS_BTN_WIDTH, IMAGE_IGS_BTN_HEIGHT, CNewUIMessageBoxButton::MSGBOX_BTN_CUSTOM, true);
     m_BtnCancel.MoveTextPos(0, -1);
     m_BtnCancel.SetText(I18N::Game::Cancel);
@@ -185,7 +187,7 @@ void CMsgBoxIGSBuyConfirm::RenderTexts()
     g_pRenderText->SetTextColor(255, 0, 0, 255);
     if (m_wItemCode == 65535)
     {
-        mu_swprintf(szText, L"Bad Item index");
+        mu_swprintf(szText, I18N::Game::InvalidItemIndexBuyConfirm);
     }
     else
     {

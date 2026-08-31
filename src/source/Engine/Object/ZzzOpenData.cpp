@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "UI/Legacy/UIControls.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Engine/Object/ZzzInfomation.h"
@@ -33,12 +33,45 @@
 
 #include "Data/DataHandler/ItemData/ItemDataHandler.h"
 #include "Network/Server/SocketSystem.h"
+#include "Network/Server/WSclient.h"
+#include "Scenes/SceneCore.h"
 
 ///////////////////////////////////////////
 extern BOOL g_bUseChatListBox;
 ///////////////////////////////////////////
 
 bool Flip = false;
+
+namespace
+{
+    constexpr DWORD kStartupLoadingFrameIntervalMs = 33;
+    constexpr DWORD kStartupLoadingStageCount = 11;
+
+    HDC g_startupLoadingHdc = nullptr;
+    DWORD g_startupLoadingStage = 0;
+    DWORD g_startupLoadingLastFrameTick = 0;
+
+    void RenderStartupLoadingStage(HDC hDC, DWORD stage)
+    {
+        g_startupLoadingStage = stage;
+        g_startupLoadingLastFrameTick = ::GetTickCount();
+        CUIMng::Instance().RenderTitleSceneUI(hDC, stage, kStartupLoadingStageCount);
+    }
+
+    void RenderStartupLoadingFrame()
+    {
+        if (g_startupLoadingHdc == nullptr)
+            return;
+
+        const DWORD now = ::GetTickCount();
+        if (now - g_startupLoadingLastFrameTick < kStartupLoadingFrameIntervalMs)
+            return;
+
+        g_startupLoadingLastFrameTick = now;
+        CUIMng::Instance().RenderTitleSceneUI(
+            g_startupLoadingHdc, g_startupLoadingStage, kStartupLoadingStageCount);
+    }
+}
 
 void OpenModel(int Type, wchar_t* Dir, wchar_t* ModelFileName, ...)
 {
@@ -2548,7 +2581,13 @@ static const wchar_t* GetMonsterModelName(EMonsterModelType Type)
 
 void OpenMonsterModel(EMonsterModelType Type)
 {
-    g_ErrorReport.Write(L"OpenMonsterModel(%ls = %d)\r\n", GetMonsterModelName(Type), Type);
+    OpenMonsterModel(Type, true);
+}
+
+void OpenMonsterModel(EMonsterModelType Type, bool loadSounds)
+{
+    g_ErrorReport.Write(L"OpenMonsterModel(%ls = %d)%ls\r\n", GetMonsterModelName(Type), Type,
+        loadSounds ? L"" : L" [visual]");
 
     if (Type < 0 || Type >= MONSTER_MODEL_COUNT)   // guard the Models[] indexing below
         return;
@@ -2556,797 +2595,825 @@ void OpenMonsterModel(EMonsterModelType Type)
     int Index = static_cast<int>(MODEL_MONSTER01) + Type;
 
     BMD* b = &Models[Index];
-    if (b->NumActions > 0 || b->NumMeshs > 0) return;
+    // Visual already parsed: skip AccessModel/OpenTexture. Do NOT return yet when
+    // loadSounds is true — Auto Battler previews open geometry without WAV banks,
+    // and the world spawn must still be able to attach sounds/BoneHead afterwards.
+    // A previous failed/partial parse can leave NumActions/NumMeshs set with
+    // m_bCompletedAlloc == false; reusing that state renders/animates incomplete
+    // allocations (heap corruption).
+    const bool visualReady = b->m_bCompletedAlloc && (b->NumActions > 0 || b->NumMeshs > 0);
+    if (visualReady && !loadSounds)
+        return;
 
-    gLoadData.AccessModel(Index, L"Data\\Monster\\", L"Monster", Type + 1);
+    int maxAction = b->NumActions;
+    auto SetPlaySpeed = [b, &maxAction](int action, float speed)
+    {
+        if (action >= 0 && action < maxAction)
+            b->Actions[action].PlaySpeed = speed;
+    };
 
-    if (b->NumMeshs == 0) return;
+    if (!visualReady)
+    {
+        gLoadData.AccessModel(Index, L"Data\\Monster\\", L"Monster", Type + 1);
 
-    if (gMapManager.InChaosCastle() == true && Type >= 70 && Type <= 72)
-    {
-        gLoadData.OpenTexture(Index, L"Npc\\");
-    }
-    else if (gMapManager.InBattleCastle() == true && Type == 74)
-    {
-        gLoadData.OpenTexture(Index, L"Object31\\");
-    }
-    else
-    {
-        gLoadData.OpenTexture(Index, L"Monster\\");
+        // Only a fully parsed model is safe to touch below. NumMeshs alone can be
+        // stale from a failed/partial Open2 while the Actions/Meshs arrays are
+        // missing or sized differently (heap corruption when writing play speeds).
+        if (!b->m_bCompletedAlloc || b->NumMeshs == 0 || b->Actions == nullptr)
+            return;
+
+        maxAction = b->NumActions;
+
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.2f);
+        SetPlaySpeed(MONSTER01_WALK, 0.34f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.33f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.5f);
+        SetPlaySpeed(MONSTER01_DIE, 0.55f);
+        if (maxAction > MONSTER01_DIE)
+            b->Actions[MONSTER01_DIE].Loop = true;
+
+        // DXP-AB3: this stray `for` had no body — the if/else below was its loop
+        // body, re-running OpenTexture up to maxAction times per model and
+        // inflating every bitmap's Ref count. Load the textures once.
+        if (gMapManager.InChaosCastle() == true && Type >= 70 && Type <= 72)
+        {
+            gLoadData.OpenTexture(Index, L"Npc\\");
+        }
+        else if (gMapManager.InBattleCastle() == true && Type == 74)
+        {
+            gLoadData.OpenTexture(Index, L"Object31\\");
+        }
+        else
+        {
+            gLoadData.OpenTexture(Index, L"Monster\\");
+        }
+
+        switch (Type)
+        {
+        case MONSTER_MODEL_ICE_GIANT:
+        {
+            gLoadData.AccessModel(MODEL_ICE_GIANT_PART1, L"Data\\Monster\\", L"icegiantpart_1");
+            gLoadData.OpenTexture(MODEL_ICE_GIANT_PART1, L"Monster\\");
+            gLoadData.AccessModel(MODEL_ICE_GIANT_PART2, L"Data\\Monster\\", L"icegiantpart_2");
+            gLoadData.OpenTexture(MODEL_ICE_GIANT_PART2, L"Monster\\");
+            gLoadData.AccessModel(MODEL_ICE_GIANT_PART3, L"Data\\Monster\\", L"icegiantpart_3");
+            gLoadData.OpenTexture(MODEL_ICE_GIANT_PART3, L"Monster\\");
+            gLoadData.AccessModel(MODEL_ICE_GIANT_PART4, L"Data\\Monster\\", L"icegiantpart_4");
+            gLoadData.OpenTexture(MODEL_ICE_GIANT_PART4, L"Monster\\");
+            gLoadData.AccessModel(MODEL_ICE_GIANT_PART5, L"Data\\Monster\\", L"icegiantpart_5");
+            gLoadData.OpenTexture(MODEL_ICE_GIANT_PART5, L"Monster\\");
+            gLoadData.AccessModel(MODEL_ICE_GIANT_PART6, L"Data\\Monster\\", L"icegiantpart_6");
+            gLoadData.OpenTexture(MODEL_ICE_GIANT_PART6, L"Monster\\");
+        }
+        break;
+        }
+
+        for (int j = MONSTER01_STOP1; j < MONSTER01_DIE && j < maxAction; j++)
+        {
+            if (Type == 3)
+                b->Actions[j].PlaySpeed *= 1.2f;
+            if (Type == 5 || Type == 25)
+                b->Actions[j].PlaySpeed *= 0.7f;
+            if (Type == 37 || Type == 42)
+                b->Actions[j].PlaySpeed *= 0.4f;
+        }
     }
 
     switch (Type)
     {
-    case MONSTER_MODEL_ICE_GIANT:
-    {
-        gLoadData.AccessModel(MODEL_ICE_GIANT_PART1, L"Data\\Monster\\", L"icegiantpart_1");
-        gLoadData.OpenTexture(MODEL_ICE_GIANT_PART1, L"Monster\\");
-        gLoadData.AccessModel(MODEL_ICE_GIANT_PART2, L"Data\\Monster\\", L"icegiantpart_2");
-        gLoadData.OpenTexture(MODEL_ICE_GIANT_PART2, L"Monster\\");
-        gLoadData.AccessModel(MODEL_ICE_GIANT_PART3, L"Data\\Monster\\", L"icegiantpart_3");
-        gLoadData.OpenTexture(MODEL_ICE_GIANT_PART3, L"Monster\\");
-        gLoadData.AccessModel(MODEL_ICE_GIANT_PART4, L"Data\\Monster\\", L"icegiantpart_4");
-        gLoadData.OpenTexture(MODEL_ICE_GIANT_PART4, L"Monster\\");
-        gLoadData.AccessModel(MODEL_ICE_GIANT_PART5, L"Data\\Monster\\", L"icegiantpart_5");
-        gLoadData.OpenTexture(MODEL_ICE_GIANT_PART5, L"Monster\\");
-        gLoadData.AccessModel(MODEL_ICE_GIANT_PART6, L"Data\\Monster\\", L"icegiantpart_6");
-        gLoadData.OpenTexture(MODEL_ICE_GIANT_PART6, L"Monster\\");
-    }
-    break;
-    }
-
-    b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-    b->Actions[MONSTER01_STOP2].PlaySpeed = 0.2f;
-    b->Actions[MONSTER01_WALK].PlaySpeed = 0.34f;
-    b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-    b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.33f;
-    b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.5f;
-    b->Actions[MONSTER01_DIE].PlaySpeed = 0.55f;
-    b->Actions[MONSTER01_DIE].Loop = true;
-
-    for (int j = MONSTER01_STOP1; j < MONSTER01_DIE; j++)
-    {
-        if (Type == 3)
-            b->Actions[j].PlaySpeed *= 1.2f;
-        if (Type == 5 || Type == 25)
-            b->Actions[j].PlaySpeed *= 0.7f;
-        if (Type == 37 || Type == 42)
-            b->Actions[j].PlaySpeed *= 0.4f;
-    }
-
-    switch (Type)
-    {
-    case MONSTER_MODEL_BUDGE_DRAGON:b->Actions[MONSTER01_WALK].PlaySpeed = 0.7f; break;
-    case MONSTER_MODEL_LARVA:b->Actions[MONSTER01_WALK].PlaySpeed = 0.6f; break;
-    case MONSTER_MODEL_HELL_SPIDER:b->Actions[MONSTER01_WALK].PlaySpeed = 0.7f; break;
-    case MONSTER_MODEL_SPIDER:b->Actions[MONSTER01_WALK].PlaySpeed = 1.2f; break;
-    case MONSTER_MODEL_CYCLOPS:b->Actions[MONSTER01_WALK].PlaySpeed = 0.28f; break;
-    case MONSTER_MODEL_YETI:b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f; break;
-    case MONSTER_MODEL_ELITE_YETI:b->Actions[MONSTER01_WALK].PlaySpeed = 0.28f; break;
-    case MONSTER_MODEL_WORM:b->Actions[MONSTER01_WALK].PlaySpeed = 0.5f; break;
-    case MONSTER_MODEL_GOBLIN:b->Actions[MONSTER01_WALK].PlaySpeed = 0.6f; break;
-    case MONSTER_MODEL_CHAIN_SCORPION:b->Actions[MONSTER01_WALK].PlaySpeed = 0.4f; break;
-    case MONSTER_MODEL_BEETLE_MONSTER:b->Actions[MONSTER01_WALK].PlaySpeed = 0.5f; break;
-    case MONSTER_MODEL_SHADOW:b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f; break;
-    case MONSTER_MODEL_TITAN:b->Actions[MONSTER01_WALK].PlaySpeed = 0.22f; break;
-    case MONSTER_MODEL_GOLDEN_WHEEL:b->Actions[MONSTER01_WALK].PlaySpeed = 0.18f; break;
+    case MONSTER_MODEL_BUDGE_DRAGON:SetPlaySpeed(MONSTER01_WALK, 0.7f); break;
+    case MONSTER_MODEL_LARVA:SetPlaySpeed(MONSTER01_WALK, 0.6f); break;
+    case MONSTER_MODEL_HELL_SPIDER:SetPlaySpeed(MONSTER01_WALK, 0.7f); break;
+    case MONSTER_MODEL_SPIDER:SetPlaySpeed(MONSTER01_WALK, 1.2f); break;
+    case MONSTER_MODEL_CYCLOPS:SetPlaySpeed(MONSTER01_WALK, 0.28f); break;
+    case MONSTER_MODEL_YETI:SetPlaySpeed(MONSTER01_WALK, 0.3f); break;
+    case MONSTER_MODEL_ELITE_YETI:SetPlaySpeed(MONSTER01_WALK, 0.28f); break;
+    case MONSTER_MODEL_WORM:SetPlaySpeed(MONSTER01_WALK, 0.5f); break;
+    case MONSTER_MODEL_GOBLIN:SetPlaySpeed(MONSTER01_WALK, 0.6f); break;
+    case MONSTER_MODEL_CHAIN_SCORPION:SetPlaySpeed(MONSTER01_WALK, 0.4f); break;
+    case MONSTER_MODEL_BEETLE_MONSTER:SetPlaySpeed(MONSTER01_WALK, 0.5f); break;
+    case MONSTER_MODEL_SHADOW:SetPlaySpeed(MONSTER01_WALK, 0.3f); break;
+    case MONSTER_MODEL_TITAN:SetPlaySpeed(MONSTER01_WALK, 0.22f); break;
+    case MONSTER_MODEL_GOLDEN_WHEEL:SetPlaySpeed(MONSTER01_WALK, 0.18f); break;
     case MONSTER_MODEL_TANTALLOS:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.35f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.35f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.35f);
         break;
     case MONSTER_MODEL_BEAM_KNIGHT:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
     case MONSTER_MODEL_DEATH_ANGEL:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.1f;
+        SetPlaySpeed(MONSTER01_DIE, 0.1f);
         break;
     case MONSTER_MODEL_ILLUSION_OF_KUNDUN:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.15f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_AEGIS:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.1f;
+        SetPlaySpeed(MONSTER01_DIE, 0.1f);
         break;
     case MONSTER_MODEL_DEATH_CENTURION:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.2f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.2f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.3f);
         break;
     case MONSTER_MODEL_SHRIKER:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.1f;
+        SetPlaySpeed(MONSTER01_DIE, 0.1f);
         break;
     case MONSTER_MODEL_CHAOSCASTLE_KNIGHT:	//
     case MONSTER_MODEL_CHAOSCASTLE_ELF:	//
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.5f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.5f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
         break;
     case MONSTER_MODEL_CHAOSCASTLE_WIZARD:
         //    case MONSTER_MODEL_CASTLE_GATE1:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.4f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.4f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
         break;
     case MONSTER_MODEL_BALGASS:
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK4].PlaySpeed = 0.33f;
+        SetPlaySpeed(MONSTER01_APEAR, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK4, 0.33f);
         break;
     case MONSTER_MODEL_SORAM:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_WALK, 0.20f);
         break;
     case MONSTER_MODEL_DARK_ELF_1:
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.33f;
+        SetPlaySpeed(MONSTER01_APEAR, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.33f);
         break;
     case MONSTER_MODEL_BALLISTA:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.37f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.37f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.15f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.37f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.37f);
+        SetPlaySpeed(MONSTER01_DIE, 0.15f);
         break;
     case MONSTER_MODEL_WITCH_QUEEN:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
         break;
     case MONSTER_MODEL_GOLDEN_STONE_GOLEM:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
     case MONSTER_MODEL_DEATH_RIDER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.15f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.15f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.15f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.23f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.23f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
+        SetPlaySpeed(MONSTER01_DIE, 0.15f);
         break;
     case MONSTER_MODEL_DEATH_TREE:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
         break;
     case MONSTER_MODEL_HELL_MAINE:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.15f;
+        SetPlaySpeed(MONSTER01_WALK, 0.15f);
         break;
     case MONSTER_MODEL_BERSERK:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.19f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.23f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.28f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.28f);
+        SetPlaySpeed(MONSTER01_DIE, 0.19f);
         break;
     case MONSTER_MODEL_SPLINTER_WOLF:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.30f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.30f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
         break;
     case MONSTER_MODEL_IRON_RIDER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_SATYROS:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.3f);
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
     case MONSTER_MODEL_BLADE_HUNTER:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.23f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.23f);
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
         break;
     case MONSTER_MODEL_KENTAUROS:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.27f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_GIGANTIS:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.26f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.26f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.21f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.26f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.26f);
+        SetPlaySpeed(MONSTER01_DIE, 0.21f);
         break;
     case MONSTER_MODEL_GENOCIDER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.3f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.5f);
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
     case MONSTER_MODEL_PERSONA:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.34f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.23f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.34f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.33f);
+        SetPlaySpeed(MONSTER01_DIE, 0.23f);
         break;
     case MONSTER_MODEL_TWIN_TAIL:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.34f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.23f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.34f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.23f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.23f);
+        SetPlaySpeed(MONSTER01_DIE, 0.23f);
         break;
     case MONSTER_MODEL_DREADFEAR:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.34f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.34f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_DARK_SKULL_SOLDIER_5:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.22f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.22f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.12f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.22f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK4].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.22f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.22f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.12f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.22f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK4, 0.25f);
         break;
     case MONSTER_MODEL_MAYA_HAND_LEFT:
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.12f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.12f;
+        SetPlaySpeed(MONSTER01_APEAR, 0.12f);
+        SetPlaySpeed(MONSTER01_DIE, 0.12f);
     case MONSTER_MODEL_MAYA_HAND_RIGHT:
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.12f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.12f;
+        SetPlaySpeed(MONSTER01_APEAR, 0.12f);
+        SetPlaySpeed(MONSTER01_DIE, 0.12f);
     case MONSTER_MODEL_MAYA:
         break;
     case MONSTER_MODEL_POUCH_OF_BLESSING:
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_SHOCK, 0.3f);
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         break;
     case MONSTER_MODEL_LUNAR_RABBIT:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.50f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.40f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.40f);
+        SetPlaySpeed(MONSTER01_WALK, 0.40f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.40f);
+        SetPlaySpeed(MONSTER01_DIE, 0.50f);
         break;
     case MONSTER_MODEL_FIRE_FLAME_GHOST:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.50f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.60f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.50f);
         break;
     case MONSTER_MODEL_ZOMBIE_FIGHTER:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.17f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.28f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.17f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
     }
     break;
     case MONSTER_MODEL_GLADIATOR:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.2f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.18f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.28f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.2f);
+        SetPlaySpeed(MONSTER01_DIE, 0.18f);
     }
     break;
     case MONSTER_MODEL_SLAUGTHERER:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.2f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.17f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.2f);
+        SetPlaySpeed(MONSTER01_WALK, 0.4f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.17f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
     }
     break;
     case MONSTER_MODEL_BLOOD_ASSASSIN:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.17f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.4f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.28f);
+        SetPlaySpeed(MONSTER01_WALK, 0.5f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.17f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.4f);
     }
     break;
     case MONSTER_MODEL_CRUEL_BLOOD_ASSASSIN:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.17f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.4f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.28f);
+        SetPlaySpeed(MONSTER01_WALK, 0.5f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.17f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.4f);
     }
     break;
     case MONSTER_MODEL_LAVA_GIANT:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.28f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
     }
     break;
     case MONSTER_MODEL_BURNING_LAVA_GIANT:
     {
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.28f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
     }
     break;
     case MONSTER_MODEL_RABBIT:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.28f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_BUTTERFLY:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.23f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.20f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.20f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.30f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.30f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.23f);
         break;
     case MONSTER_MODEL_HIDEOUS_RABBIT:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.50f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.50f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
         break;
     case MONSTER_MODEL_WEREWOLF2:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.45f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.45f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.45f);
+        SetPlaySpeed(MONSTER01_WALK, 0.45f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.45f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.45f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.45f);
+        SetPlaySpeed(MONSTER01_DIE, 0.45f);
         break;
     case MONSTER_MODEL_CURSED_LICH:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.35;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.20f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.20f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.35);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.35f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
         break;
     case MONSTER_MODEL_TOTEM_GOLEM:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.35;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.20f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.35);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.35f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
         break;
     case MONSTER_MODEL_GRIZZLY:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.33f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         break;
     case MONSTER_MODEL_CAPTAIN_GRIZZLY:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.28f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.30f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.30f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.28f);
         break;
     case MONSTER_MODEL_SAPIUNUS:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_SAPIDUO:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_SAPITRES:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_SHADOW_PAWN:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.4f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.4f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_SHADOW_KNIGHT:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.45f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.45f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_SHADOW_LOOK:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_NAPIN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
         break;
     case MONSTER_MODEL_GHOST_NAPIN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
         break;
     case MONSTER_MODEL_BLAZE_NAPIN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
         break;
     case MONSTER_MODEL_ICE_WALKER:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.6f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.35f;
+        SetPlaySpeed(MONSTER01_WALK, 0.6f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.4f);
+        SetPlaySpeed(MONSTER01_DIE, 0.35f);
         break;
     case MONSTER_MODEL_GIANT_MAMMOTH:
         break;
     case MONSTER_MODEL_ICE_GIANT:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.13f;
+        SetPlaySpeed(MONSTER01_DIE, 0.13f);
         break;
     case MONSTER_MODEL_COOLUTIN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.46f;
+        SetPlaySpeed(MONSTER01_WALK, 0.46f);
         break;
     case MONSTER_MODEL_IRON_KNIGHT:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.21f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.23f;
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.21f);
+        SetPlaySpeed(MONSTER01_DIE, 0.23f);
         break;
     case MONSTER_MODEL_SELUPAN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.18f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK4].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_WALK, 0.20f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.35f);
+        SetPlaySpeed(MONSTER01_DIE, 0.18f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK4, 0.25f);
         break;
     case MONSTER_MODEL_SPIDER_EGGS_1:
     case MONSTER_MODEL_SPIDER_EGGS_2:
     case MONSTER_MODEL_SPIDER_EGGS_3:
         break;
     case MONSTER_MODEL_CURSED_SANTA:
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.29f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.4f;
+        SetPlaySpeed(MONSTER01_STOP2, 0.3f);
+        SetPlaySpeed(MONSTER01_WALK, 0.29f);
+        SetPlaySpeed(MONSTER01_DIE, 0.4f);
         break;
     case MONSTER_MODEL_GAYION:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.38f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.38f;
-        b->Actions[MONSTER01_ATTACK4].PlaySpeed = 0.38f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.38f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.40f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.38f);
+        SetPlaySpeed(MONSTER01_ATTACK4, 0.38f);
         break;
     case MONSTER_MODEL_JERRY:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.86f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.86f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.76f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.50f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.86f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.86f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.40f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.76f);
         break;
     case MONSTER_MODEL_RAYMOND:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.55f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.75f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.80f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.60f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.60f);
+        SetPlaySpeed(MONSTER01_WALK, 0.55f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.75f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.50f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.50f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.80f);
         break;
     case MONSTER_MODEL_LUCAS:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.71f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.40f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.60f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.60f);
+        SetPlaySpeed(MONSTER01_WALK, 0.50f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.71f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.40f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.80f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.40f);
         break;
     case MONSTER_MODEL_FRED:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.38f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK4].PlaySpeed = 0.45f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.38f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK4, 0.45f);
         break;
     case MONSTER_MODEL_HAMMERIZE:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.45f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.35f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.45f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.40f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.45f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.45f);
         break;
     case MONSTER_MODEL_DUAL_BERSERKER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.40f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.35f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.35f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.35f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.40f);
         break;
     case MONSTER_MODEL_DEVIL_LORD:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.45f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.45f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.50f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.45f);
         break;
     case MONSTER_MODEL_QUARTER_MASTER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.66f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.55f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.20f);
+        SetPlaySpeed(MONSTER01_WALK, 0.50f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.66f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.33f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.55f);
         break;
     case MONSTER_MODEL_COMBAT_INSTRUCTOR:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.36f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.40f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.20f);
+        SetPlaySpeed(MONSTER01_WALK, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.36f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.40f);
         break;
     case MONSTER_MODEL_ATICLES_HEAD:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.65f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.86f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.86f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.86f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.65f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.86f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.86f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.86f);
         break;
     case MONSTER_MODEL_DARK_GHOST:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.60f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.96f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.96f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 1.00f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.60f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.60f);
+        SetPlaySpeed(MONSTER01_WALK, 0.80f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.96f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.96f);
+        SetPlaySpeed(MONSTER01_SHOCK, 1.00f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
         break;
     case MONSTER_MODEL_BANSHEE:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.38f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.38f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.20f);
+        SetPlaySpeed(MONSTER01_WALK, 0.20f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.38f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.38f);
         break;
     case MONSTER_MODEL_HEAD_MOUNTER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.37f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.37f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.33f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
         break;
     case MONSTER_MODEL_DEFENDER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.45f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.40f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.40f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.40f);
+        SetPlaySpeed(MONSTER01_WALK, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.40f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.40f);
+        SetPlaySpeed(MONSTER01_DIE, 0.45f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.40f);
         break;
 #ifdef LDS_ADD_EG_2_MONSTER_GUARDIANPRIEST
     case MONSTER_MODEL_FORSAKER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.40f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.80f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.80f);
+        SetPlaySpeed(MONSTER01_WALK, 0.80f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.80f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.80f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.40f);
+        SetPlaySpeed(MONSTER01_DIE, 0.40f);
         break;
 #endif // LDS_ADD_EG_2_MONSTER_GUARDIANPRIEST
     case MONSTER_MODEL_OCELOT:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.20f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.55f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.66f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.66f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.55f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.20f);
+        SetPlaySpeed(MONSTER01_WALK, 0.55f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.66f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.66f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.55f);
         break;
     case MONSTER_MODEL_ERIC:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.35f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.33f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.50f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30f);
+        SetPlaySpeed(MONSTER01_WALK, 0.35f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.33f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.33f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.50f);
+        SetPlaySpeed(MONSTER01_DIE, 0.30f);
         break;
     case MONSTER_MODEL_MAD_BUTCHER:
     case MONSTER_MODEL_TERRIBLE_BUTCHER:
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
     case MONSTER_MODEL_DOPPELGANGER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f * 2.0f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.2f * 2.0f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.34f * 2.0f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.25f * 2.0f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.25f * 2.0f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.5f * 2.0f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.55f * 2.0f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.33f * 3.0f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f * 2.0f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.2f * 2.0f);
+        SetPlaySpeed(MONSTER01_WALK, 0.34f * 2.0f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.25f * 2.0f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.25f * 2.0f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.5f * 2.0f);
+        SetPlaySpeed(MONSTER01_DIE, 0.55f * 2.0f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.33f * 3.0f);
         break;
     case MONSTER_MODEL_MEDUSA:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.30f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.30;
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.30;
+        SetPlaySpeed(MONSTER01_STOP1, 0.30f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.30);
+        SetPlaySpeed(MONSTER01_WALK, 0.30);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.30);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.30);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.30);
+        SetPlaySpeed(MONSTER01_DIE, 0.30);
+        SetPlaySpeed(MONSTER01_APEAR, 0.30);
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.30);
         break;
     case MONSTER_MODEL_DARK_MAMMOTH:
         break;
     case MONSTER_MODEL_DARK_GIANT:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.13f;
+        SetPlaySpeed(MONSTER01_DIE, 0.13f);
         break;
     case MONSTER_MODEL_DARK_COOLUTIN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.46f;
+        SetPlaySpeed(MONSTER01_WALK, 0.46f);
         break;
     case MONSTER_MODEL_DARK_IRON_KNIGHT:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.21f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.23f;
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.21f);
+        SetPlaySpeed(MONSTER01_DIE, 0.23f);
         break;
     case MONSTER_MODEL_BLOODY_ORC:
         break;
     case MONSTER_MODEL_BLOODY_DEATH_RIDER:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.15f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.15f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.15f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.23f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.23f);
+        SetPlaySpeed(MONSTER01_WALK, 0.3f);
+        SetPlaySpeed(MONSTER01_DIE, 0.15f);
         break;
     case MONSTER_MODEL_BLOODY_GOLEM:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
         break;
     case MONSTER_MODEL_BLOODY_WITCH_QUEEN:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
         break;
     case MONSTER_MODEL_SAPI_QUEEN:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_ICE_NAPIN:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
         break;
     case MONSTER_MODEL_SHADOW_MASTER:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_BERSERKER_WARRIOR:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.23f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.28f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.19f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.23f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.28f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.28f);
+        SetPlaySpeed(MONSTER01_DIE, 0.19f);
         break;
     case MONSTER_MODEL_KENTAUROS_WARRIOR:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.27f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.27f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.27f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_GIGANTIS_WARRIOR:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.26f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.26f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.21f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.26f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.26f);
+        SetPlaySpeed(MONSTER01_DIE, 0.21f);
         break;
     case MONSTER_MODEL_SOCCERBALL:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.3f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.25f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.25f);
+        SetPlaySpeed(MONSTER01_WALK, 0.25f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.3f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.3f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.5f);
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
 #ifdef ASG_ADD_KARUTAN_MONSTERS
     case MONSTER_MODEL_VENOMOUS_CHAIN_SCORPION:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.95f;
+        SetPlaySpeed(MONSTER01_WALK, 0.95f);
         break;
     case MONSTER_MODEL_BONE_SCORPION:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 1.00f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.40f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.20f;
+        SetPlaySpeed(MONSTER01_WALK, 1.00f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.40f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.40f);
+        SetPlaySpeed(MONSTER01_DIE, 0.20f);
         break;
     case MONSTER_MODEL_ORCUS:
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.7f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.7f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.6f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.8f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.8f;
-        b->Actions[MONSTER01_SHOCK].PlaySpeed = 0.25f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.7f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.7f);
+        SetPlaySpeed(MONSTER01_WALK, 0.6f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.8f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.8f);
+        SetPlaySpeed(MONSTER01_SHOCK, 0.25f);
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
     case MONSTER_MODEL_GOLLOCK:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.3f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.4f);
+        SetPlaySpeed(MONSTER01_DIE, 0.3f);
         break;
     case MONSTER_MODEL_CRYPTA:
     case MONSTER_MODEL_CRYPOS:
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.9f;
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.37f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.37f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.25f;
+        SetPlaySpeed(MONSTER01_WALK, 0.9f);
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.37f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.37f);
+        SetPlaySpeed(MONSTER01_DIE, 0.25f);
         break;
     case MONSTER_MODEL_CONDRA:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.80f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.80f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.80f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.80f);
         break;
     case MONSTER_MODEL_NACONDRA:
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.75f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.75f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.75f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.75f);
         break;
 #endif	// ASG_ADD_KARUTAN_MONSTERS
     }
@@ -3356,9 +3423,17 @@ void OpenMonsterModel(EMonsterModelType Type)
     case MONSTER_MODEL_DRAGON:
     case MONSTER_MODEL_TITAN:
     case MONSTER_MODEL_SOLDIER:
-        b->Actions[MONSTER01_STOP2].Loop = true;
+        if (maxAction > MONSTER01_STOP2) // DXP-AB3: guard like the PlaySpeed writes above
+            b->Actions[MONSTER01_STOP2].Loop = true;
         break;
     }
+
+    // UI previews (Auto Battler) only need the BMD. Loading several audio banks
+    // synchronously on window open crashed the heap inside LoadWaveFile /
+    // waveIO::LoadWaveHeader (WER c0000374). World/CreateMonster still uses
+    // loadSounds=true; LoadWaveFile is a no-op when the buffer is already loaded.
+    if (!loadSounds)
+        return;
 
     int Channel = 2;
     bool Enable = true;
@@ -3514,7 +3589,7 @@ void OpenMonsterModel(EMonsterModelType Type)
         LoadWaveFile(SOUND_MONSTER_ASSASSINDIE, L"Data\\Sound\\mAssassinDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, -1, -1, 65, 66, 67);
         Models[static_cast<int>(MODEL_MONSTER01) + Type].BoneHead = 20;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.35f;
+        SetPlaySpeed(MONSTER01_STOP2, 0.35f);
         break;
     case MONSTER_MODEL_YETI:
     case MONSTER_MODEL_ELITE_YETI:
@@ -3618,10 +3693,11 @@ void OpenMonsterModel(EMonsterModelType Type)
         LoadWaveFile(SOUND_MONSTER_BULLATTACK1, L"Data\\Sound\\mBullAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_YETIDIE, L"Data\\Sound\\mYetiDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 123, 123, 124, 124, 125);
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.7f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.8f;
-        b->Actions[MONSTER01_DIE + 1].PlaySpeed = 0.8f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.5f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.7f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.8f);
+        if (maxAction > MONSTER01_DIE + 1) // DXP-AB3: bounds guard
+            b->Actions[MONSTER01_DIE + 1].PlaySpeed = 0.8f;
         break;
     case MONSTER_MODEL_BALI:
         LoadWaveFile(SOUND_MONSTER_BALI1, L"Data\\Sound\\mBali1.wav", Channel, Enable);
@@ -3629,10 +3705,10 @@ void OpenMonsterModel(EMonsterModelType Type)
         LoadWaveFile(SOUND_MONSTER_BALIATTACK1, L"Data\\Sound\\mBaliAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_BALIATTACK2, L"Data\\Sound\\mBaliAttack2.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 126, 127, 128, 129, 127);
-        b->Actions[MONSTER01_ATTACK3].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_ATTACK4].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_APEAR].PlaySpeed = 0.4f;
-        b->Actions[MONSTER01_RUN].PlaySpeed = 0.4f;
+        SetPlaySpeed(MONSTER01_ATTACK3, 0.4f);
+        SetPlaySpeed(MONSTER01_ATTACK4, 0.4f);
+        SetPlaySpeed(MONSTER01_APEAR, 0.4f);
+        SetPlaySpeed(MONSTER01_RUN, 0.4f);
         b->BoneHead = 6;
         break;
 
@@ -3646,8 +3722,8 @@ void OpenMonsterModel(EMonsterModelType Type)
         LoadWaveFile(SOUND_MONSTER_BEPAR2, L"Data\\Sound\\mBepar2.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_BALROG1, L"Data\\Sound\\mBalrog1.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 132, 133, 104, 104, 133);
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.5f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.5f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.5f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.5f);
         b->BoneHead = 20;//인어
         break;
     case MONSTER_MODEL_VALKYRIE:
@@ -3672,9 +3748,9 @@ void OpenMonsterModel(EMonsterModelType Type)
         LoadWaveFile(SOUND_MONSTER_HYDRA1, L"Data\\Sound\\mHydra1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_HYDRAATTACK1, L"Data\\Sound\\mHydraAttack1.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 141, 141, 142, 142, 141);
-        b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.15f;
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.2f;
+        SetPlaySpeed(MONSTER01_ATTACK1, 0.15f);
+        SetPlaySpeed(MONSTER01_ATTACK2, 0.15f);
+        SetPlaySpeed(MONSTER01_DIE, 0.2f);
         break;
     case MONSTER_MODEL_GOLDEN_WHEEL:
         LoadWaveFile(SOUND_MONSTER_IRON1, L"Data\\Sound\\iron1.wav", Channel, Enable);
@@ -3738,42 +3814,42 @@ void OpenMonsterModel(EMonsterModelType Type)
     case MONSTER_MODEL_CRUST:
         LoadBitmap(L"Monster\\iui02.tga", BITMAP_ROBE + 3);
         LoadBitmap(L"Monster\\iui03.tga", BITMAP_ROBE + 5);
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         LoadWaveFile(SOUND_MONSTER_MEGACRUST1, L"Data\\Sound\\mMegaCrust1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_MEGACRUSTATTACK1, L"Data\\Sound\\mMegaCrustAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_MEGACRUSTDIE, L"Data\\Sound\\mMegaCrustDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 180, 180, 181, 181, 182);
         break;
     case MONSTER_MODEL_MOLT:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         LoadWaveFile(SOUND_MONSTER_MOLT1, L"Data\\Sound\\mMolt1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_MOLTATTACK1, L"Data\\Sound\\mMoltAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_MOLTDIE, L"Data\\Sound\\mMoltDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 177, 177, 178, 178, 179);
         break;
     case MONSTER_MODEL_ALQUAMOS:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         //LoadWaveFile(SOUND_MONSTER+174,"Data\\Sound\\mAlquamos1.wav"    ,Channel,Enable);
         LoadWaveFile(SOUND_MONSTER_ALQUAMOSATTACK1, L"Data\\Sound\\mAlquamosAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_ALQUAMOSDIE, L"Data\\Sound\\mAlquamosDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 175, 175, 175, 175, 176);
         break;
     case MONSTER_MODEL_QUEEN_RAINER:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         LoadWaveFile(SOUND_MONSTER_RAINNER1, L"Data\\Sound\\mRainner1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_RAINNERATTACK1, L"Data\\Sound\\mRainnerAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_RAINNERDIE, L"Data\\Sound\\mRainnerDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 171, -1, 172, 172, 173);
         break;
     case MONSTER_MODEL_PHANTOM_KNIGHT:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         LoadWaveFile(SOUND_MONSTER_PHANTOM1, L"Data\\Sound\\mPhantom1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_PHANTOMATTACK1, L"Data\\Sound\\mPhantomAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_PHANTOMDIE, L"Data\\Sound\\mPhantomDie.wav", Channel, Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 168, 168, 169, 169, 170);
         break;
     case MONSTER_MODEL_DRAKAN:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
         LoadWaveFile(SOUND_MONSTER_DRAKAN1, L"Data\\Sound\\mDrakan1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_DRAKANATTACK1, L"Data\\Sound\\mDrakanAttack1.wav", Channel, Enable);
         LoadWaveFile(SOUND_MONSTER_DRAKANDIE, L"Data\\Sound\\mDrakanDie.wav", Channel, Enable);
@@ -3786,9 +3862,9 @@ void OpenMonsterModel(EMonsterModelType Type)
         //LoadWaveFile(SOUND_MONSTER+186,"Data\\Sound\\mDarkPhoenixDie.wav"    ,Channel,Enable);
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, 183, 184, 185, 185, -1);
     case MONSTER_MODEL_DARK_PHOENIX:
-        b->Actions[MONSTER01_DIE].PlaySpeed = 0.22f;
-        //b->Actions[MONSTER01_ATTACK1].PlaySpeed = 0.01f;
-        //b->Actions[MONSTER01_ATTACK2].PlaySpeed = 0.01f;
+        SetPlaySpeed(MONSTER01_DIE, 0.22f);
+        //SetPlaySpeed(MONSTER01_ATTACK1, 0.01f);
+        //SetPlaySpeed(MONSTER01_ATTACK2, 0.01f);
         break;
     case MONSTER_MODEL_MAGIC_SKELETON:
         LoadWaveFile(SOUND_MONSTER_MAGICSKULL1, L"Data\\Sound\\mMagicSkull.wav", Channel, Enable);
@@ -3884,9 +3960,9 @@ void OpenMonsterModel(EMonsterModelType Type)
         break;
     case MONSTER_MODEL_LIFE_STONE:
         SetMonsterSound(static_cast<int>(MODEL_MONSTER01) + Type, -1, -1, -1, -1, -1);
-        b->Actions[MONSTER01_STOP1].PlaySpeed = 0.05f;
-        b->Actions[MONSTER01_STOP2].PlaySpeed = 0.05f;
-        b->Actions[MONSTER01_WALK].PlaySpeed = 0.1f;
+        SetPlaySpeed(MONSTER01_STOP1, 0.05f);
+        SetPlaySpeed(MONSTER01_STOP2, 0.05f);
+        SetPlaySpeed(MONSTER01_WALK, 0.1f);
         break;
     case MONSTER_MODEL_BATTLE_GUARD1:
         LoadWaveFile(SOUND_MONSTER_BOWMERCATTACK, L"Data\\Sound\\BattleCastle\\mBowMercAttack.wav", Channel, Enable);
@@ -4983,8 +5059,72 @@ void OpenMacro(const wchar_t* FileName)
     fclose(fp);
 }
 
+namespace
+{
+    constexpr DWORD kSkillConfigDebounceMs = 400;
+    constexpr DWORD kSkillConfigPeriodicMs = 15000;
+
+    bool s_canSaveSkillBar = false;
+    bool s_canSaveHelper = false;
+    bool s_skillBarDirty = false;
+    DWORD s_lastSkillBarSaveTick = 0;
+    DWORD s_lastPeriodicSaveTick = 0;
+
+    bool CanSendToGameServer()
+    {
+        return SocketClient != nullptr
+            && SocketClient->IsConnected()
+            && SocketClient->ToGameServer() != nullptr;
+    }
+
+    void PersistHelperConfig()
+    {
+        if (!s_canSaveHelper || !CanSendToGameServer())
+            return;
+        if (g_pNewUIMuHelper == nullptr)
+            return;
+        g_pNewUIMuHelper->PersistCurrentConfigToServer();
+    }
+}
+
+void ResetSkillConfigPersistGate()
+{
+    s_canSaveSkillBar = false;
+    s_canSaveHelper = false;
+    s_skillBarDirty = false;
+    s_lastSkillBarSaveTick = 0;
+    s_lastPeriodicSaveTick = 0;
+}
+
+void OnSkillBarRestoredFromServer()
+{
+    s_canSaveSkillBar = true;
+}
+
+void OnHelperConfigRestoredFromServer()
+{
+    s_canSaveHelper = true;
+}
+
+void AllowHelperConfigSave()
+{
+    s_canSaveHelper = true;
+}
+
+void MarkSkillBarDirty()
+{
+    if (!s_canSaveSkillBar)
+        return;
+    s_skillBarDirty = true;
+}
+
 void SaveOptions()
 {
+    if (!s_canSaveSkillBar || !CanSendToGameServer())
+        return;
+    if (g_pMainFrame == nullptr || CharacterAttribute == nullptr || g_pOption == nullptr || g_pChatListBox == nullptr)
+        return;
+
     // 0 ~ 19 skill hotkey
     BYTE options[30]{};
 
@@ -5046,6 +5186,33 @@ void SaveOptions()
     options[29] = g_pMainFrame->GetItemHotKeyLevel(SEASON3B::HOTKEY_R);
 
     SocketClient->ToGameServer()->SendSaveKeyConfiguration(options, sizeof options);
+    s_skillBarDirty = false;
+    s_lastSkillBarSaveTick = GetTickCount();
+}
+
+void TickSkillConfigPersist()
+{
+    if (SceneFlag != MAIN_SCENE || !CanSendToGameServer())
+        return;
+
+    const DWORD now = GetTickCount();
+    if (s_skillBarDirty && (now - s_lastSkillBarSaveTick) >= kSkillConfigDebounceMs)
+        SaveOptions();
+
+    if ((now - s_lastPeriodicSaveTick) >= kSkillConfigPeriodicMs)
+    {
+        s_lastPeriodicSaveTick = now;
+        if (s_canSaveSkillBar)
+            SaveOptions();
+        PersistHelperConfig();
+    }
+}
+
+void PersistSkillConfigNow()
+{
+    if (s_canSaveSkillBar)
+        SaveOptions();
+    PersistHelperConfig();
 }
 
 void OpenLogoSceneData()
@@ -5133,9 +5300,12 @@ void ReleaseCharacterSceneData()
 
 void OpenBasicData(HDC hDC)
 {
-    CUIMng& rUIMng = CUIMng::Instance();
+    g_startupLoadingHdc = hDC;
+    g_startupLoadingStage = 0;
+    g_startupLoadingLastFrameTick = 0;
+    SetLoadBitmapProgressCallback(RenderStartupLoadingFrame);
 
-    rUIMng.RenderTitleSceneUI(hDC, 0, 11);
+    RenderStartupLoadingStage(hDC, 0);
 
     LoadBitmap(L"Interface\\Cursor.tga", BITMAP_CURSOR, GL_LINEAR, GL_CLAMP_TO_EDGE);
     LoadBitmap(L"Interface\\CursorPush.tga", BITMAP_CURSOR + 1, GL_LINEAR, GL_CLAMP_TO_EDGE);
@@ -5452,7 +5622,7 @@ void OpenBasicData(HDC hDC)
     LoadBitmap(L"Effect\\lightmarks.jpg", BITMAP_LIGHTMARKS, GL_LINEAR, GL_CLAMP_TO_EDGE);
     LoadBitmap(L"Effect\\lightmarks.jpg", BITMAP_LIGHTMARKS_FOREIGN, GL_LINEAR, GL_CLAMP_TO_EDGE);
 
-    rUIMng.RenderTitleSceneUI(hDC, 1, 11);
+    RenderStartupLoadingStage(hDC, 1);
 
     ::LoadBitmap(L"Item\\partCharge1\\entrance_R.jpg", BITMAP_FREETICKET_R, GL_LINEAR, GL_CLAMP_TO_EDGE);
     ::LoadBitmap(L"Item\\partCharge1\\juju_R.jpg", BITMAP_CHAOSCARD_R, GL_LINEAR, GL_CLAMP_TO_EDGE);
@@ -5564,25 +5734,25 @@ void OpenBasicData(HDC hDC)
 
     OpenPlayers();
 
-    rUIMng.RenderTitleSceneUI(hDC, 2, 11);
+    RenderStartupLoadingStage(hDC, 2);
 
     OpenPlayerTextures();
-    rUIMng.RenderTitleSceneUI(hDC, 3, 11);
+    RenderStartupLoadingStage(hDC, 3);
 
     OpenItems();
-    rUIMng.RenderTitleSceneUI(hDC, 4, 11);
+    RenderStartupLoadingStage(hDC, 4);
 
     OpenItemTextures();
-    rUIMng.RenderTitleSceneUI(hDC, 5, 11);
+    RenderStartupLoadingStage(hDC, 5);
 
     OpenSkills();
-    rUIMng.RenderTitleSceneUI(hDC, 6, 11);
+    RenderStartupLoadingStage(hDC, 6);
 
     OpenImages();
-    rUIMng.RenderTitleSceneUI(hDC, 7, 11);
+    RenderStartupLoadingStage(hDC, 7);
 
     OpenSounds();
-    rUIMng.RenderTitleSceneUI(hDC, 8, 11);
+    RenderStartupLoadingStage(hDC, 8);
 
     wchar_t Text[100];
 
@@ -5630,7 +5800,7 @@ void OpenBasicData(HDC hDC)
     g_pMasterLevelInterface->OpenMasterSkillTreeData(L"Data\\Local\\MasterSkillTreeData.bmd");
     g_pMasterLevelInterface->OpenMasterSkillTooltip(L"Data\\Local\\Eng\\MasterSkillTooltip_eng.bmd");
 
-    rUIMng.RenderTitleSceneUI(hDC, 9, 11);
+    RenderStartupLoadingStage(hDC, 9);
 
     LoadWaveFile(SOUND_TITLE01, L"Data\\Sound\\iTitle.wav", 1);
     LoadWaveFile(SOUND_MENU01, L"Data\\Sound\\iButtonMove.wav", 2);
@@ -5649,7 +5819,10 @@ void OpenBasicData(HDC hDC)
     LoadWaveFile(SOUND_RING_EVENT_START, L"Data\\Sound\\iEventStart.wav", 1);
     LoadWaveFile(SOUND_RING_EVENT_END, L"Data\\Sound\\iEventEnd.wav", 1);
 
-    rUIMng.RenderTitleSceneUI(hDC, 10, 11);
+    RenderStartupLoadingStage(hDC, 10);
+
+    SetLoadBitmapProgressCallback(nullptr);
+    g_startupLoadingHdc = nullptr;
 }
 
 void ReleaseMainData()

@@ -74,8 +74,11 @@ void ReconnectManager::CacheCharacter(const wchar_t* characterName)
     wcscpy_s(m_characterName, _countof(m_characterName), characterName);
 
     // A full session is only usable once we know the server, the account, and
-    // the character to resume.
+    // the character to resume. Joining a character also clears a previous
+    // voluntary logout so a later drop can auto-reconnect again.
     m_hasSession = m_serverIp[0] != L'\0' && m_username[0] != L'\0' && m_characterName[0] != L'\0';
+    m_voluntaryLogout = false;
+    m_closeProcess = false;
 }
 
 void ReconnectManager::ClearSession()
@@ -87,9 +90,22 @@ void ReconnectManager::ClearSession()
     m_characterName[0] = L'\0';
 }
 
+void ReconnectManager::NotifyVoluntaryLogout(bool closeProcess)
+{
+    m_voluntaryLogout = true;
+    m_closeProcess = closeProcess;
+    m_hasSession = false;
+    CloseProbe();
+    m_active = false;
+    m_beginPending = false;
+    m_cancelRequested = false;
+    m_abortAfterTeardown = false;
+    m_phase = Phase::Idle;
+}
+
 void ReconnectManager::RequestBegin()
 {
-    if (m_active || m_beginPending || !m_hasSession)
+    if (m_active || m_beginPending || !m_hasSession || m_voluntaryLogout)
     {
         return;
     }

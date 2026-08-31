@@ -24,6 +24,8 @@
 #include "GameLogic/Skills/SkillManager.h"
 #include "Engine/Object/ZzzInterface.h"
 #include "I18N/All.h"
+#include "Render/Textures/ZzzOpenglUtil.h"
+#include "UI/NewUI/NewUICommon.h"
 
 using namespace SEASON3B;
 
@@ -263,8 +265,8 @@ void SEASON3B::CNewUIMessageBoxButton::Render()
 
         GetTextExtentPoint32(g_pRenderText->GetFontDC(), m_strText.c_str(), m_strText.size(), &Fontsize);
 
-        Fontsize.cx = Fontsize.cx / ((float)WindowWidth / REFERENCE_WIDTH);
-        Fontsize.cy = Fontsize.cy / ((float)WindowHeight / REFERENCE_HEIGHT);
+        Fontsize.cx = Fontsize.cx / g_fScreenRate_x;
+        Fontsize.cy = Fontsize.cy / g_fScreenRate_y;
 
         int x = m_x + ((m_width / 2) - (Fontsize.cx / 2));
         int y = m_y + ((m_height / 2) - (Fontsize.cy / 2));
@@ -808,6 +810,15 @@ void SEASON3B::CNewUI3DItemCommonMsgBox::SetItemValue(int iValue)
     m_iItemValue = iValue;
 }
 
+void SEASON3B::CNewUI3DItemCommonMsgBox::SetCancelAsTextButton(const wchar_t* text)
+{
+    const float x = GetPos().x + (GetSize().cx / 2) + (((GetSize().cx / 2) - MSGBOX_BTN_EMPTY_SMALL_WIDTH) / 2);
+    const float y = GetPos().y + GetSize().cy - (MSGBOX_BTN_EMPTY_HEIGHT + MSGBOX_BTN_BOTTOM_BLANK);
+    m_BtnCancel.SetInfo(CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_SMALL, x, y, MSGBOX_BTN_EMPTY_SMALL_WIDTH, MSGBOX_BTN_EMPTY_HEIGHT, CNewUIMessageBoxButton::MSGBOX_BTN_SIZE_EMPTY_SMALL);
+    if (text != nullptr && text[0] != 0)
+        m_BtnCancel.SetText(text);
+}
+
 int SEASON3B::CNewUI3DItemCommonMsgBox::GetItemValue()
 {
     return m_iItemValue;
@@ -916,6 +927,7 @@ int SEASON3B::CNewUI3DItemCommonMsgBox::SeparateText(const type_string& strMsg, 
     size_t TextExtentWidth;
     int iLine = 0;
 
+    g_pRenderText->SetFont(byFontType == MSGBOX_FONT_BOLD ? g_hFontBold : g_hFixFont);
     GetTextExtentPoint32(g_pRenderText->GetFontDC(), strMsg.c_str(), strMsg.size(), &TextSize);
     TextExtentWidth = (size_t)(TextSize.cx / g_fScreenRate_x);
 
@@ -938,22 +950,33 @@ int SEASON3B::CNewUI3DItemCommonMsgBox::SeparateText(const type_string& strMsg, 
     while (bLoop)
     {
         int prev_offset = 0;
-
         for (int cur_offset = 0; cur_offset < (int)strRemainText.size(); )
         {
             prev_offset = cur_offset;
-            size_t offset = _mbclen((const unsigned char*)(strRemainText.c_str() + cur_offset));
-            cur_offset += offset;
+            ++cur_offset;
 
-            type_string strTemp(strRemainText, 0, cur_offset/* size */);
-
+            type_string strTemp(strRemainText, 0, cur_offset);
             GetTextExtentPoint32(g_pRenderText->GetFontDC(), strTemp.c_str(), strTemp.size(), &TextSize);
             TextExtentWidth = (size_t)(TextSize.cx / g_fScreenRate_x);
 
             if (TextExtentWidth > MSGBOX_TEXT_MAXWIDTH_3DITEM && cur_offset != 0)
             {
-                strCutText = type_string(strRemainText, 0, prev_offset/* size */);
-                strRemainText = type_string(strRemainText, prev_offset, strRemainText.size() - prev_offset/* size */);
+                int cutSize = cur_offset;
+                int nextStart = cur_offset;
+                if (prev_offset > 0)
+                {
+                    cutSize = prev_offset;
+                    nextStart = prev_offset;
+                    size_t spacePos = strRemainText.rfind(L' ', (size_t)prev_offset);
+                    if (spacePos != type_string::npos && spacePos > 0)
+                    {
+                        cutSize = (int)spacePos;
+                        nextStart = (int)spacePos + 1;
+                    }
+                }
+
+                strCutText = type_string(strRemainText, 0, cutSize);
+                strRemainText = type_string(strRemainText, nextStart, strRemainText.size() - nextStart);
 
                 auto* pMsg = new MSGBOX_TEXTDATA;
                 pMsg->strMsg = strCutText;
@@ -967,11 +990,11 @@ int SEASON3B::CNewUI3DItemCommonMsgBox::SeparateText(const type_string& strMsg, 
 
                 if (TextExtentWidth <= MSGBOX_TEXT_MAXWIDTH_3DITEM)
                 {
-                    auto* pMsg = new MSGBOX_TEXTDATA;
-                    pMsg->strMsg = strRemainText;
-                    pMsg->dwColor = dwColor;
-                    pMsg->byFontType = byFontType;
-                    m_MsgDataList.push_back(pMsg);
+                    auto* pRemain = new MSGBOX_TEXTDATA;
+                    pRemain->strMsg = strRemainText;
+                    pRemain->dwColor = dwColor;
+                    pRemain->byFontType = byFontType;
+                    m_MsgDataList.push_back(pRemain);
                     iLine++;
 
                     bLoop = false;
@@ -1054,14 +1077,22 @@ bool SEASON3B::CNewUI3DItemCommonMsgBox::Render()
 
 void SEASON3B::CNewUI3DItemCommonMsgBox::Render3D()
 {
-    float x, y, width, height;
+    const float x = GetPos().x + MSGBOX_3DITEM_POS_X;
+    const float y = GetPos().y + MSGBOX_3DITEM_POS_Y;
+    const float width = MSGBOX_3DITEM_WIDTH;
+    const float height = MSGBOX_3DITEM_HEIGHT;
 
-    x = GetPos().x + 30;
-    y = GetPos().y + 30;
-    width = MSGBOX_3DITEM_WIDTH;
-    height = MSGBOX_3DITEM_HEIGHT;
-
-    RenderItem3D(x, y, width, height, m_Item.Type, m_Item.Level, m_Item.ExcellentFlags, m_Item.AncientDiscriminator, true);		// PickUp
+    const int px = static_cast<int>(ConvertPosX(x));
+    const int py = static_cast<int>(ConvertPosY(y));
+    const int pw = static_cast<int>(ConvertX(width));
+    const int ph = static_cast<int>(ConvertY(height));
+    if (pw > 0 && ph > 0)
+    {
+        EnableScissorTest();
+        SetScissor(px, static_cast<int>(WindowHeight) - py - ph, pw, ph);
+        RenderItem3D(x, y, width, height, m_Item.Type, m_Item.Level, m_Item.ExcellentFlags, m_Item.AncientDiscriminator, true);
+        DisableScissorTest();
+    }
 }
 
 bool SEASON3B::CNewUI3DItemCommonMsgBox::IsVisible() const
@@ -1100,7 +1131,8 @@ void SEASON3B::CNewUI3DItemCommonMsgBox::RenderTexts()
 {
     float x, y;
 
-    x = GetPos().x + MSGBOX_TEXT_LEFT_BLANK_3DITEM; y = GetPos().y + MSGBOX_TEXT_TOP_BLANK;
+    x = GetPos().x + MSGBOX_TEXT_LEFT_BLANK_3DITEM;
+    y = GetPos().y + MSGBOX_TEXT_TOP_BLANK;
     auto vi = m_MsgDataList.begin();
     for (; vi != m_MsgDataList.end(); vi++)
     {
@@ -1109,7 +1141,7 @@ void SEASON3B::CNewUI3DItemCommonMsgBox::RenderTexts()
         switch ((*vi)->byFontType)
         {
         case MSGBOX_FONT_NORMAL:
-            g_pRenderText->SetFont(g_hFont);
+            g_pRenderText->SetFont(g_hFixFont);
             break;
         case MSGBOX_FONT_BOLD:
             g_pRenderText->SetFont(g_hFontBold);
@@ -1117,15 +1149,17 @@ void SEASON3B::CNewUI3DItemCommonMsgBox::RenderTexts()
         }
 
         SIZE TextSize;
-        size_t TextExtentWidth, TextExtentHeight;
-
         GetTextExtentPoint32(g_pRenderText->GetFontDC(), (*vi)->strMsg.c_str(), (*vi)->strMsg.size(), &TextSize);
-        TextExtentWidth = (size_t)(TextSize.cx / g_fScreenRate_x);
-        TextExtentHeight = (size_t)(TextSize.cy / g_fScreenRate_y);
+        const size_t TextExtentHeight = (size_t)(TextSize.cy / g_fScreenRate_y);
 
-        x = GetPos().x + 60 + ((GetSize().cx - 60) / 2) - (TextExtentWidth / 2);
-        g_pRenderText->RenderText((int)x, (int)y, (*vi)->strMsg.c_str());
-        y += (TextExtentHeight + 4);
+        g_pRenderText->RenderText(
+            (int)x,
+            (int)y,
+            (*vi)->strMsg.c_str(),
+            (int)MSGBOX_TEXT_MAXWIDTH_3DITEM,
+            0,
+            RT3_SORT_LEFT);
+        y += (TextExtentHeight + 2);
     }
 }
 

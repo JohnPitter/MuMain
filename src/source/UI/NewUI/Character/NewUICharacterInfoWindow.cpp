@@ -1,4 +1,4 @@
-﻿// NewUICharacterInfoWindow.cpp: implementation of the CNewUICharacterInfoWindow class.
+// NewUICharacterInfoWindow.cpp: implementation of the CNewUICharacterInfoWindow class.
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -23,6 +23,9 @@ using namespace SEASON3B;
 
 namespace
 {
+    DWORD s_SubjectTick = 0;
+    int s_SubjectIndex = 0;
+
     float GetMasterSkillValue(ActionSkillType skill)
     {
         return CharacterAttribute->MasterSkillInfo[skill].GetSkillValue();
@@ -306,23 +309,65 @@ void SEASON3B::CNewUICharacterInfoWindow::RenderSubjectTexts()
     wchar_t strClassName[256];
     mu_swprintf(strClassName, L"(%ls)", gCharacterManager.GetCharacterClassText(CharacterAttribute->Class));
 
-    g_pRenderText->SetFont(g_hFontBold);
-    g_pRenderText->SetBgColor(20, 20, 20, 20);
-    UI::Chat::SetPlayerColor(Hero->PK);
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 12, strID, 190, 0, RT3_SORT_CENTER);
-
     wchar_t strServerName[MAX_TEXT_LENGTH];
-
     const wchar_t* apszGlobalText[4]
         = { I18N::Game::SDServer, I18N::Game::SDNonPvPServer, I18N::Game::SDGoldPvPServer, I18N::Game::SDGoldServer };
-    mu_swprintf(strServerName, apszGlobalText[g_ServerListManager->GetNonPVPInfo()],
+    BYTE pvpIndex = g_ServerListManager->GetNonPVPInfo();
+    if (pvpIndex > 3)
+        pvpIndex = 0;
+    mu_swprintf(strServerName, apszGlobalText[pvpIndex],
         g_ServerListManager->GetSelectServerName(), g_ServerListManager->GetSelectServerIndex());
 
-    float fAlpha = sinf(WorldTime * 0.001f) + 1.f;
-    g_pRenderText->SetTextColor(255, 255, 255, 127 * (2.f - fAlpha));
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 27, strClassName, 190, 0, RT3_SORT_CENTER);
-    g_pRenderText->SetTextColor(255, 255, 255, 127 * fAlpha);
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 27, strServerName, 190, 0, RT3_SORT_CENTER);
+    constexpr DWORD kFadeMs = 350;
+    constexpr DWORD kHoldMs = 2200;
+    constexpr DWORD kCycleMs = kHoldMs + (kFadeMs * 2);
+    const DWORD now = GetTickCount();
+    if (s_SubjectTick == 0)
+        s_SubjectTick = now;
+
+    DWORD elapsed = now - s_SubjectTick;
+    if (elapsed >= kCycleMs)
+    {
+        s_SubjectTick = now;
+        s_SubjectIndex = (s_SubjectIndex + 1) % 3;
+        elapsed = 0;
+    }
+
+    BYTE alpha = 255;
+    if (elapsed < kFadeMs)
+        alpha = static_cast<BYTE>((elapsed * 255) / kFadeMs);
+    else if (elapsed > kHoldMs + kFadeMs)
+        alpha = static_cast<BYTE>(((kCycleMs - elapsed) * 255) / kFadeMs);
+
+    g_pRenderText->SetBgColor(0);
+    const int y = m_Pos.y + 20;
+    if (s_SubjectIndex == 0)
+    {
+        g_pRenderText->SetFont(g_hFontBold);
+        g_pRenderText->SetBgColor(20, 20, 20, static_cast<BYTE>((20 * alpha) / 255));
+        switch (Hero->PK)
+        {
+        case 0: g_pRenderText->SetTextColor(150, 255, 240, alpha); break;
+        case 1: g_pRenderText->SetTextColor(100, 120, 255, alpha); break;
+        case 2: g_pRenderText->SetTextColor(140, 180, 255, alpha); break;
+        case 3: g_pRenderText->SetTextColor(200, 220, 255, alpha); break;
+        case 4: g_pRenderText->SetTextColor(255, 150, 60, alpha); break;
+        case 5: g_pRenderText->SetTextColor(255, 80, 30, alpha); break;
+        default: g_pRenderText->SetTextColor(255, 0, 0, alpha); break;
+        }
+        g_pRenderText->RenderText(m_Pos.x, y, strID, 190, 0, RT3_SORT_CENTER);
+        return;
+    }
+
+    g_pRenderText->SetFont(g_hFixFont);
+    g_pRenderText->SetTextColor(255, 255, 255, alpha);
+    g_pRenderText->RenderText(
+        m_Pos.x,
+        y,
+        s_SubjectIndex == 1 ? strClassName : strServerName,
+        190,
+        0,
+        RT3_SORT_CENTER);
 }
 
 void SEASON3B::CNewUICharacterInfoWindow::RenderTableTexts()
@@ -1613,6 +1658,8 @@ void SEASON3B::CNewUICharacterInfoWindow::UnloadImages()
 
 void SEASON3B::CNewUICharacterInfoWindow::OpenningProcess()
 {
+    s_SubjectTick = 0;
+    s_SubjectIndex = 0;
     ResetEquipmentLevel();
 
     if (gCharacterManager.IsMasterLevel(Hero->Class) == true && Hero->Class != CLASS_TEMPLENIGHT)

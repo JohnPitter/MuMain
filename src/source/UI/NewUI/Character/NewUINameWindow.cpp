@@ -17,6 +17,8 @@
 #include "World/MapInfra/MapManager.h"
 #include "Camera/CameraProjection.h"
 #include "Camera/CameraState.h"
+#include "UI/NewUI/HUD/MiniMapCorner.h"
+#include "UI/Voice/VoiceSpeakingIndicator.h"
 
 // DevEditor forward declarations (must be at global scope)
 #ifdef _EDITOR
@@ -161,6 +163,9 @@ bool SEASON3B::CNewUINameWindow::Render()
     UI::Chat::RenderBooleans();
     RenderMonsterHealthBars();
     DrawPersonalShopTitleImp();
+    UI::Voice::RenderSpeakingIndicators();
+    UI::HUD::MiniMap::Render();
+    UI::HUD::MiniMap::RenderCommands();
     DisableAlphaBlend();
     return true;
 }

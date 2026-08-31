@@ -15,7 +15,6 @@
 #include "SceneCommon.h"
 #include "UI/NewUI/Dialogs/ReconnectDialog.h"
 
-
 #ifdef _EDITOR
 #include "Core/MuEditorCore.h"
 #endif
@@ -66,6 +65,41 @@ extern int LoadingWorld;
 extern bool FogEnable;
 extern EGameScene SceneFlag;
 
+void RenderLoadingSceneOverlay()
+{
+    CUIMng& rUIMng = CUIMng::Instance();
+    if (rUIMng.m_pLoadingScene == nullptr)
+        return;
+
+    FogEnable = true;
+    ::BeginOpengl();
+    ::ClearColorAndDepthBuffers();
+    ::BeginBitmap();
+
+    rUIMng.m_pLoadingScene->Render();
+
+    ::EndBitmap();
+    ::EndOpengl();
+    ::FlushGL();
+}
+
+bool IsLoadingSceneOverlayActive()
+{
+    return CUIMng::Instance().m_pLoadingScene != nullptr
+        && (LoadingWorld > 30 || !EnableMainRender);
+}
+
+void ReleaseLoadingSceneOverlay()
+{
+    CUIMng& rUIMng = CUIMng::Instance();
+    if (rUIMng.m_pLoadingScene == nullptr)
+        return;
+
+    SAFE_DELETE(rUIMng.m_pLoadingScene);
+    for (int i = 0; i < LDS_BACK_MAX; ++i)
+        ::DeleteBitmap(BITMAP_TITLE + i);
+}
+
 void LoadingScene(HDC hDC)
 {
     g_ConsoleDebug->Write(MCD_NORMAL, L"LoadingScene_Start");
@@ -83,20 +117,12 @@ void LoadingScene(HDC hDC)
 
         ::StopMp3(MUSIC_LOGIN_THEME);
 
+        SAFE_DELETE(rUIMng.m_pLoadingScene);
         rUIMng.m_pLoadingScene = new CLoadingScene;
         rUIMng.m_pLoadingScene->Create();
     }
 
-    FogEnable = true;
-    ::BeginOpengl();
-    ::ClearColorAndDepthBuffers();
-    ::BeginBitmap();
-
-    rUIMng.m_pLoadingScene->Render();
-
-    ::EndBitmap();
-    ::EndOpengl();
-    ::FlushGL();
+    RenderLoadingSceneOverlay();
 #ifdef _EDITOR
     // Always render ImGui (shows "Open Editor" button when closed, or full UI when open)
     g_MuEditorCore.Render();
@@ -113,12 +139,10 @@ void LoadingScene(HDC hDC)
     UI::Reconnect::RenderDialog();
     PlatformSwapBuffers();
 
-    SAFE_DELETE(rUIMng.m_pLoadingScene);
-
+    // Keep the loading scene alive after handing updates to MAIN_SCENE. The
+    // main loop continues server/map loading while RenderCurrentScene keeps
+    // presenting this overlay until RenderMainScene() would be able to draw.
     SceneFlag = MAIN_SCENE;
-    for (int i = 0; i < 4; ++i)
-        ::DeleteBitmap(BITMAP_TITLE + i);
-
     ::ClearInput();
 
     g_ConsoleDebug->Write(MCD_NORMAL, L"LoadingScene_End");

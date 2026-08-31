@@ -90,6 +90,7 @@ namespace SEASON3B
             IMAGE_IGS_ZONE_BTN_POS_Y = 0,
             IMAGE_IGS_VIEWDETAIL_BTN_POS_X = 162,		// View Detail Button
             IMAGE_IGS_VIEWDETAIL_BTN_POS_Y = 126,
+            IMAGE_IGS_PRESENT_BTN_POS_X = 108,			// Presentear, left of Comprar
             IMAGE_IGS_VIEWDETAIL_BTN_DISTANCE_X = 122,
             IMAGE_IGS_VIEWDETAIL_BTN_DISTANCE_Y = 121,
             IMAGE_IGS_ITEMGIFT_BTN_POS_X = 519,		// Item Gift Button
@@ -206,6 +207,7 @@ namespace SEASON3B
 
         void InitBanner(wchar_t* pszFileName, wchar_t* pszBannerURL);
         void ReleaseBanner();
+        void EnsureLocalBanner();
 
         void SetRateScale(int _ItemType);
         float GetRateScale() { return m_fRate_Scale; }
@@ -231,6 +233,7 @@ namespace SEASON3B
 
         void RenderBanner();
         bool UpdateBanner();
+        void OpenGiftForPackage(CShopPackage* pPackage);
 
     private:
         CNewUIManager* m_pNewUIMng;
@@ -241,6 +244,7 @@ namespace SEASON3B
         CNewUIRadioGroupButton	m_CategoryButton;
         CNewUIRadioGroupButton	m_ListBoxTabButton;
         CNewUIButton	m_ViewDetailButton[INGAMESHOP_DISPLAY_ITEMLIST_SIZE];
+        CNewUIButton	m_PresentItemButton[INGAMESHOP_DISPLAY_ITEMLIST_SIZE];
         CNewUIButton	m_CashGiftButton;
         CNewUIButton	m_CashChargeButton;
         CNewUIButton	m_CashRefreshButton;

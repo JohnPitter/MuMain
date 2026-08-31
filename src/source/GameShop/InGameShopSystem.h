@@ -10,6 +10,7 @@
 
 #include "GameShop/ShopListManager/ShopListManager.h"
 #include "GameShop/ShopListManager/BannerListManager.h"
+#include <unordered_set>
 
 #define INGAMESHOP_ERROR_ZERO_SIZE		(-1)
 #define INGAMESHOP_ERROR_INVALID_INDEX	(-2)
@@ -119,6 +120,9 @@ public:
     bool GetProductInfoFromProductSeq(int iProductSeq, int iAttrType, OUT int& iValue, OUT wchar_t* pszUnitName);
 
     void SetNormalPackage();
+    void SetAllowedPackages(const WORD* packageSeq, std::size_t count);
+    void ResetAllowedPackages();
+    bool IsPackageAllowed(WORD packageSeq) const;
     void InitEventPackage(int iTotalEventPackage);
     void InsertEventPackage(int* pPackageSeq);
 
@@ -150,6 +154,7 @@ protected:
     int GetCategorySeqIndexByIndex(int iIndex);
 
     void SetCategoryName();
+    bool IsCategoryAllowed(int iCategorySeqIndex);
 
 #ifndef KJH_MOD_SHOP_SCRIPT_DOWNLOAD
     void ShopOpenLock();
@@ -188,6 +193,8 @@ protected:
     type_listPackage		m_listNormalPackage;
     type_listPackage		m_listEventPackage;
     type_listPackage* m_plistSelectPackage;
+    std::unordered_set<WORD> m_allowedPackages;
+    bool m_bHasAllowedPackages;
     type_listName			m_listZoneName;
     type_listName			m_listCategoryName;
 

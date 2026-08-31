@@ -1,0 +1,8 @@
+
+## Font/BMD follow-up
+
+- Windows text path is direct GDI wide rendering, not a prebuilt charset atlas: `IUIRenderText::RenderText(const wchar_t*)` (`src/source/UI/Legacy/UIControls.h:757`), `CUIRenderTextOriginal::RenderText` calls `GetTextExtentPoint32` and `TextOut` with that wide pointer (`UIControls.cpp:2835-2943`), and `WinGdi.h:148` declares `TextOut(... LPCWSTR ...)`. It rasterizes into a 24bpp DIB then uploads pixels; no glyph-index table or narrow conversion in this path.
+- Fonts: Windows startup registers bundled TTFs and creates `CreateFont(... DEFAULT_CHARSET, face)` (`App/Platform/Windows/Winmain.cpp:1348-1385`), default face Tahoma; selectable bundled faces are Liberation Sans and DejaVu Sans (`Core/Platform/BundledFonts.h:19-21`). These fonts include Latin accents. Linux shim similarly renders wide codepoints with stb_truetype.
+- Search found no wchar->char conversion in renderer. The only relevant game-side conversion is slide-help BMD UTF-8 -> UTF-16 (`UIControls.cpp:4526-4528`), explicitly CP_UTF8.
+- QuestWords loader decrypts each header/payload with `BuxConvert`, then calls `CMultiLanguage::ConvertFromUtf8` (`GameLogic/Quests/QuestMng.cpp:102-140`). `QuestWords_por.bmd` raw header starts encrypted (`253 207 171 252...`); decrypting first record with per-record XOR yields ASCII text containing literal `0x3F` bytes where expected `herói`/`você` accents occur (no C3/C2 UTF-8 sequences). This asset is already lossy before rendering; likely BMD generation/export encoding, not font/renderer. NPCDialogue/QuestProgress hold indexes; QuestWords carries actual text.
+- Build succeeded with `cmd.exe /c 'call VsDevCmd.bat -arch=x86 && cmake --build --preset windows-x86-release'` (exit 0).

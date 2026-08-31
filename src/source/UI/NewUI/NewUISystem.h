@@ -69,6 +69,9 @@
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "GameShop/NewUIInGameShop.h"
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+#include "GameShop/NewUIMarketplace.h"
+#include "GameShop/NewUIAutoBattler.h"
+#include "GameShop/NewUIHuntAnalyzer.h"
 #include "UI/NewUI/Events/NewUIDoppelGangerWindow.h"
 #include "UI/NewUI/Events/NewUIDoppelGangerFrame.h"
 #include "UI/NewUI/Quests/NewUIQuestProgress.h"
@@ -144,6 +147,9 @@ namespace SEASON3B
         void UpdateHeroPositionInfoVisibilityForLayoutChange(DWORD dwKey);
         void SyncHeroPositionInfoVisibility();
         bool ShouldHideHeroPositionInfo();
+        bool EnsureMarketplace();
+        bool EnsureAutoBattler();
+        bool EnsureHuntAnalyzer();
 
         /* Interface classes */
     private:
@@ -214,6 +220,9 @@ namespace SEASON3B
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
         CNewUIInGameShop* m_pNewInGameShop;
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+        CNewUIMarketplace* m_pNewMarketplace;
+        CNewUIAutoBattler* m_pNewAutoBattler;
+        CNewUIHuntAnalyzer* m_pNewHuntAnalyzer;
         CNewUIDoppelGangerWindow* m_pNewDoppelGangerWindow;
         CNewUIDoppelGangerFrame* m_pNewDoppelGangerFrame;
         CNewUINPCDialogue* m_pNewNPCDialogue;
@@ -295,6 +304,9 @@ namespace SEASON3B
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
         CNewUIInGameShop* GetUI_pNewInGameShop() const;
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+        CNewUIMarketplace* GetUI_pNewMarketplace() const;
+        CNewUIAutoBattler* GetUI_pNewAutoBattler() const;
+        CNewUIHuntAnalyzer* GetUI_pNewHuntAnalyzer() const;
         CNewUIDoppelGangerWindow* GetUI_pNewDoppelGangerWindow() const;
         CNewUIDoppelGangerFrame* GetUI_pNewDoppelGangerFrame() const;
         CNewUINPCDialogue* GetUI_NewNPCDialogue() const;
@@ -383,6 +395,9 @@ namespace SEASON3B
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #define g_pInGameShop SEASON3B::CNewUISystem::GetInstance()->GetUI_pNewInGameShop()
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+#define g_pMarketplace SEASON3B::CNewUISystem::GetInstance()->GetUI_pNewMarketplace()
+#define g_pAutoBattler SEASON3B::CNewUISystem::GetInstance()->GetUI_pNewAutoBattler()
+#define g_pHuntAnalyzer SEASON3B::CNewUISystem::GetInstance()->GetUI_pNewHuntAnalyzer()
 #define g_pDoppelGangerWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_pNewDoppelGangerWindow()
 #define g_pDoppelGangerFrame SEASON3B::CNewUISystem::GetInstance()->GetUI_pNewDoppelGangerFrame()
 #define g_pNPCDialogue SEASON3B::CNewUISystem::GetInstance()->GetUI_NewNPCDialogue()

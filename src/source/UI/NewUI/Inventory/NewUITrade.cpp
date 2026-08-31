@@ -9,6 +9,8 @@
 #include "UI/NewUI/NewUISystem.h"
 #include "UI/NewUI/Dialogs/NewUICustomMessageBox.h"
 
+#include "Render/Textures/ZzzOpenglUtil.h"
+
 #include "GameLogic/Items/CComGem.h"
 #include "Audio/DSPlaySound.h"
 
@@ -619,7 +621,7 @@ void CNewUITrade::ProcessToReceiveTradeResult(LPPTRADE pTradeData)
         InitTradeInfo();
 
         int x = 260 * MouseX / REFERENCE_WIDTH;
-        SetCursorPos(x * WindowWidth / REFERENCE_WIDTH, MouseY * WindowHeight / REFERENCE_HEIGHT);
+        SetCursorPos(static_cast<int>(ConvertPosX(static_cast<float>(x))), static_cast<int>(ConvertPosY(static_cast<float>(MouseY))));
 
         wchar_t szTempID[MAX_USERNAME_SIZE + 1]{ };
         CMultiLanguage::ConvertFromUtf8(szTempID, pTradeData->ID, MAX_USERNAME_SIZE);

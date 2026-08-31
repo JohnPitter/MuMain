@@ -56,6 +56,7 @@ void EnableAlphaTest(bool DepthMake = true);
 // Sets glAlphaFunc(GL_GREATER, ref) and mirrors it to the shader-side alpha-test ref (DXP-01).
 void SetAlphaFuncRef(float ref);
 void EnableAlphaBlend();
+bool IsAdditiveBlendActive();
 void EnableAlphaBlendMinus();
 void EnableAlphaBlend2();
 void EnableAlphaBlend3();
@@ -76,6 +77,9 @@ void EnableFog();
 void DisableFog();
 void EnableBlend();
 void DisableBlend();
+void EnableScissorTest();
+void DisableScissorTest();
+void SetScissor(int x, int y, int width, int height);
 void SetBlendFuncAlpha();
 void SetDepthFuncLEqual();
 void ClearColorBuffer();
@@ -85,6 +89,14 @@ void SetClearColor(float r, float g, float b, float a = 1.0f);
 void FlushGL();
 void BeginOpengl(int x = 0, int y = 0, int Width = REFERENCE_WIDTH, int Height = REFERENCE_HEIGHT);
 void EndOpengl();
+
+// Map 640×480 UI space to window pixels. ConvertX/Y scale; ConvertPos* adds
+// g_fScreenOff (0 unless a future layout needs a non-origin mapping).
+float ConvertX(float x);
+float ConvertY(float y);
+float ConvertPosX(float x);
+float ConvertPosY(float y);
+void ApplyScreenLayout(unsigned int width, unsigned int height);
 
 // Perspective setup for item/3D-UI rendering. Sets g_Camera perspective state
 // so item rendering can compute screen positions. Use SaveCameraPerspective /
@@ -106,6 +118,8 @@ int GetFPSLimit();
 
 // Present the current GL frame via SDL (replaces the Win32 ::SwapBuffers, #442).
 void PlatformSwapBuffers();
+// Pump OS events while a synchronous loading step keeps the main loop busy.
+void PumpLoadingEvents();
 
 void UpdateMousePositionn();
 inline void TEXCOORD(float* c, float u, float v)

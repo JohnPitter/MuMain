@@ -32,6 +32,10 @@ namespace SEASON3B
         bool IsPartyMember(int index);
         bool IsPartyMemberChar(CHARACTER* c);
         CHARACTER* GetPartyMemberChar(PARTY_t* pMember);
+        static bool NamesEqual(const wchar_t* left, const wchar_t* right);
+        bool IsLocalHero(const PARTY_t* member);
+        void SyncLivePartyPositions();
+        void RequestPartyListIfDue();
 
     public:
         static CPartyManager* GetInstance();

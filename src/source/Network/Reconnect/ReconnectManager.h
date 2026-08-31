@@ -42,6 +42,14 @@ public:
     void ClearSession();
     bool HasSession() const { return m_hasSession; }
 
+    // User clicked Exit / character select / server select. Stops auto-reconnect
+    // from treating the following socket close as an unexpected drop.
+    // closeProcess: Exit Game — finish by quitting if the socket dies before
+    // the logout packet is handled.
+    void NotifyVoluntaryLogout(bool closeProcess);
+    bool IsVoluntaryLogout() const { return m_voluntaryLogout; }
+    bool ShouldCloseProcess() const { return m_voluntaryLogout && m_closeProcess; }
+
     // Lifecycle.
     void RequestBegin();  // detector asks to start reconnect (begins probing)
     void Begin();         // performs the teardown between frames; the main loop calls it once m_beginPending is set
@@ -81,6 +89,8 @@ private:
     bool m_cancelRequested = false;    // Cancel clicked, Abort not yet run
     bool m_abortAfterTeardown = false; // cancel during Probing: tear down, then abort
     bool m_hasSession = false;
+    bool m_voluntaryLogout = false;   // user-initiated logout; do not auto-reconnect
+    bool m_closeProcess = false;      // Exit Game (as opposed to char/server select)
     bool m_muHelperWasActive = false; // MU Helper state to restore after reconnect
     Phase m_phase = Phase::Idle;
     double m_phaseStartTime = 0.0;

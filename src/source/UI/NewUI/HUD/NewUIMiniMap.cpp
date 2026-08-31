@@ -15,6 +15,9 @@
 #include "UI/NewUI/Inventory/NewUIMyInventory.h"
 #include "GameLogic/Items/CSItemOption.h"
 #include "World/MapInfra/MapManager.h"
+#include "Engine/Object/ZzzCharacter.h"
+#include "Engine/Object/ZzzInventory.h"
+#include "GameLogic/Social/PartyManager.h"
 
 extern BYTE m_OccupationState;
 
@@ -174,6 +177,29 @@ bool SEASON3B::CNewUIMiniMap::Render()
             break;
     }
 
+    if (PartyNumber > 0)
+    {
+        g_pPartyManager->SyncLivePartyPositions();
+        g_pPartyManager->RequestPartyListIfDue();
+        const int partyWidth = 12;
+        for (int p = 0; p < PartyNumber; ++p)
+        {
+            const PARTY_t* member = &Party[p];
+            if (member->Name[0] == 0)
+                continue;
+            if (g_pPartyManager->IsLocalHero(member))
+                continue;
+            if (member->Map != static_cast<BYTE>(gMapManager.WorldActive))
+                continue;
+
+            Ty1 = (float)(((float)member->x / 256.f) * m_Lenth[m_MiniPos].y);
+            Tx1 = (float)(((float)member->y / 256.f) * m_Lenth[m_MiniPos].x);
+            glColor4f(0.25f, 0.85f, 1.f, 1.f);
+            RenderPointRotate(IMAGE_MINIMAP_INTERFACE + 3, Tx1, Ty1, partyWidth, partyWidth, m_Lenth[m_MiniPos].x - Tx, m_Lenth[m_MiniPos].y - Ty, m_Lenth[m_MiniPos].x, m_Lenth[m_MiniPos].y, Rot, 0.f, 17.5f / 32.f, 17.5f / 32.f, 200 + p);
+            glColor4f(1.f, 1.f, 1.f, 1.f);
+        }
+    }
+
     float Ch_wid = 12;
     RenderImage(IMAGE_MINIMAP_INTERFACE + 3, 325, 230, Ch_wid, Ch_wid, 0.f, 0.f, 17.5f / 32.f, 17.5f / 32.f);
 
@@ -267,7 +293,7 @@ void SEASON3B::CNewUIMiniMap::LoadImages(const wchar_t* Filename)
                 memcpy(&current, pSeek, Size);
                 memcpy(target, pSeek, Size);
 
-                CMultiLanguage::ConvertFromUtf8(target->Name, current.Name);
+                CMultiLanguage::ConvertFromUtf8(target->Name, current.Name, MAX_MINIMAP_NAME, MAX_MINIMAP_NAME);
                 /*int wchars_num = MultiByteToWideChar(CP_UTF8, 0, current.Name, -1, NULL, 0);
                 MultiByteToWideChar(CP_UTF8, 0, current.Name, -1, target->Name, wchars_num);
                 target->Name[wchars_num] = L'\0';*/
@@ -330,8 +356,8 @@ bool SEASON3B::CNewUIMiniMap::Check_Btn(int mx, int my)
                 g_pRenderText->SetFont(g_hFont);
                 GetTextExtentPoint32(g_pRenderText->GetFontDC(), m_TooltipText.c_str(), m_TooltipText.size(), &Fontsize);
 
-                Fontsize.cx = Fontsize.cx / ((float)WindowWidth / REFERENCE_WIDTH);
-                Fontsize.cy = Fontsize.cy / ((float)WindowHeight / REFERENCE_HEIGHT);
+                Fontsize.cx = Fontsize.cx / g_fScreenRate_x;
+                Fontsize.cy = Fontsize.cy / g_fScreenRate_y;
 
                 int x = m_Btn_Loc[i][0] + ((m_Btn_Loc[i][2] / 2) - (Fontsize.cx / 2));
                 int y = m_Btn_Loc[i][1] + m_Btn_Loc[i][3] + 2;

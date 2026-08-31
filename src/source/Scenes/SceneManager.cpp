@@ -424,7 +424,16 @@ static bool RenderCurrentScene(HDC hDC)
     }
     else if (SceneFlag == MAIN_SCENE)
     {
-        Success = RenderMainScene();
+        if (IsLoadingSceneOverlayActive())
+        {
+            RenderLoadingSceneOverlay();
+            Success = true;
+        }
+        else
+        {
+            ReleaseLoadingSceneOverlay();
+            Success = RenderMainScene();
+        }
     }
 
     g_PhysicsManager.Render();
@@ -442,11 +451,11 @@ static void RenderFrameGraph(float graphX, float graphY, float graphW, float gra
     if (s_frameCount < 2)
         return;
 
-    // Convert virtual 640x480 coords to actual window pixels
-    float gx = graphX * (float)WindowWidth / (float)REFERENCE_WIDTH;
-    float gy = graphY * (float)WindowHeight / (float)REFERENCE_HEIGHT;
-    float gw = graphW * (float)WindowWidth / (float)REFERENCE_WIDTH;
-    float gh = graphH * (float)WindowHeight / (float)REFERENCE_HEIGHT;
+    // Convert virtual 640x480 coords to drawable pixels (letterboxed).
+    float gx = ConvertPosX(graphX);
+    float gy = ConvertPosY(graphY);
+    float gw = ConvertX(graphW);
+    float gh = ConvertY(graphH);
 
     // Flip Y for OpenGL (origin bottom-left)
     float glBottom = (float)WindowHeight - gy - gh;
@@ -800,6 +809,19 @@ static void CheckServerConnection()
 {
     if (SocketClient != nullptr && SocketClient->IsConnected())
     {
+        return;
+    }
+
+    // A user-initiated logout (Exit / character / server select) closes the
+    // socket on purpose — OpenMU even disconnects after CloseGame — so that
+    // must not be treated as a drop. Otherwise the reconnect replays login and
+    // the player is dumped back into the world (they have to mash Exit).
+    if (ReconnectManager::Instance().IsVoluntaryLogout())
+    {
+        if (ReconnectManager::Instance().ShouldCloseProcess() && SceneFlag == MAIN_SCENE)
+        {
+            PostMessage(g_hWnd, WM_DESTROY, 0, 0);
+        }
         return;
     }
 

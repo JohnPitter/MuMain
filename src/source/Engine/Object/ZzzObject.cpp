@@ -30,6 +30,7 @@
 #include "GameLogic/Events/CSChaosCastle.h"
 #include "Scenes/MainScene.h"
 #include "World/MapInfra/MapManager.h"
+#include "World/MapInfra/LorenciaCombatPlaza.h"
 #include "UI/Legacy/UIManager.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "GameLogic/Items/CComGem.h"
@@ -43,6 +44,8 @@
 #include "Camera/CameraProjection.h"
 #include "Camera/OrbitalCamera.h"
 #include "Engine/Object/CullingConstants.h"
+
+static bool IsRenderableModelType(int Type);
 
 // DevEditor function declarations
 #ifdef _EDITOR
@@ -2693,6 +2696,21 @@ void RenderObject(OBJECT* o, bool Translate, int Select, int ExtraMon)
 {
     if (Calc_RenderObject(o, Translate, Select, ExtraMon) == false)
     {
+        return;
+    }
+    if (gMapManager.WorldActive == WD_0LORENCIA
+        && World::Lorencia::ShouldHideNearFountain(o->Type, o->Position[0], o->Position[1]))
+    {
+        return;
+    }
+    if (gMapManager.WorldActive == WD_0LORENCIA && World::Lorencia::IsCombatPlazaFloor(o->Type))
+    {
+        // Ground decal: keep depth test so walls still occlude the stone,
+        // but do not write depth or the disc eats character feet.
+        BMD* b = &Models[o->Type];
+        DisableDepthMask();
+        b->RenderBody(RENDER_TEXTURE, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV, o->HiddenMesh);
+        EnableDepthMask();
         return;
     }
     Draw_RenderObject(o, Translate, Select, ExtraMon);
@@ -6446,7 +6464,11 @@ void RenderItems()
 #else
             float cullRadius = DEFAULT_CULL_RADIUS_ITEM;
 #endif
-            o->Visible = TestFrustrum(o->Position, cullRadius);
+            // 3D planes can disagree with the 2D ground hull after camera-matrix
+            // changes; items sit on the terrain so the 2D test is the fallback
+            // characters already use (Position is world units, hull is tiles).
+            o->Visible = TestFrustrum(o->Position, cullRadius)
+                || TestFrustrum2D(o->Position[0] * 0.01f, o->Position[1] * 0.01f, -20.f);
 
 #ifdef _EDITOR
             // Debug visualization: frustum-cull sphere (NOT the pick volume)
@@ -6469,46 +6491,49 @@ void RenderItems()
                     else if (Level == 2)
                         Type = MODEL_EVENT + 1;
                 }
-                BMD* b = &Models[Type];
-                b->CurrentAction = 0;
-                b->Skin = gCharacterManager.GetBaseClass(Hero->Class); // ???
-                b->CurrentAction = o->CurrentAction;
-                VectorCopy(o->Position, b->BodyOrigin);
-                ItemHeight(o->Type, b);
-                b->Animation(BoneTransform, o->AnimationFrame, o->PriorAnimationFrame, o->PriorAction, o->Angle, o->HeadAngle, false, false);
+                if (IsRenderableModelType(Type))
+                {
+                    BMD* b = &Models[Type];
+                    b->CurrentAction = 0;
+                    b->Skin = gCharacterManager.GetBaseClass(Hero->Class); // ???
+                    b->CurrentAction = o->CurrentAction;
+                    VectorCopy(o->Position, b->BodyOrigin);
+                    ItemHeight(o->Type, b);
+                    b->Animation(BoneTransform, o->AnimationFrame, o->PriorAnimationFrame, o->PriorAction, o->Angle, o->HeadAngle, false, false);
 
-                if (o->Type >= MODEL_HELM && o->Type < MODEL_BOOTS + MAX_ITEM_INDEX)
-                    Type = o->Type;
-                b = &Models[Type];
-                vec3_t Light;
-                RequestTerrainLight(o->Position[0], o->Position[1], Light);
-                VectorAdd(Light, o->Light, Light);
-                if (o->Type == MODEL_ZEN) // Zen
-                {
-                    RenderZen(i, &Items[i], Light);
-                }
-                else if (o->Type == MODEL_CAPE_OF_OVERRULE)
-                {
-                    Vector(1.0f, 1.0f, 1.0f, Light);
-                }
+                    if (o->Type >= MODEL_HELM && o->Type < MODEL_BOOTS + MAX_ITEM_INDEX)
+                        Type = o->Type;
+                    b = &Models[Type];
+                    vec3_t Light;
+                    RequestTerrainLight(o->Position[0], o->Position[1], Light);
+                    VectorAdd(Light, o->Light, Light);
+                    if (o->Type == MODEL_ZEN) // Zen
+                    {
+                        RenderZen(i, &Items[i], Light);
+                    }
+                    else if (o->Type == MODEL_CAPE_OF_OVERRULE)
+                    {
+                        Vector(1.0f, 1.0f, 1.0f, Light);
+                    }
 
-                vec3_t vBackup;
-                VectorCopy(o->Position, vBackup);
-                if (gMapManager.WorldActive == WD_10HEAVEN)
-                {
-                    o->Position[2] += 10.0f * (float)sinf((float)(i * 1237 + WorldTime) * 0.002f);
-                }
-                else if (gMapManager.WorldActive == WD_39KANTURU_3RD && g_Direction.m_CKanturu.IsMayaScene())
-                {
-                    o->Position[2] += 10.0f * (float)sinf((float)(i * 1237 + WorldTime) * 0.002f);
-                }
-                else if (gMapManager.InHellas() == true)
-                {
-                    o->Position[2] = GetWaterTerrain(o->Position[0], o->Position[1]) + 180;
-                }
+                    vec3_t vBackup;
+                    VectorCopy(o->Position, vBackup);
+                    if (gMapManager.WorldActive == WD_10HEAVEN)
+                    {
+                        o->Position[2] += 10.0f * (float)sinf((float)(i * 1237 + WorldTime) * 0.002f);
+                    }
+                    else if (gMapManager.WorldActive == WD_39KANTURU_3RD && g_Direction.m_CKanturu.IsMayaScene())
+                    {
+                        o->Position[2] += 10.0f * (float)sinf((float)(i * 1237 + WorldTime) * 0.002f);
+                    }
+                    else if (gMapManager.InHellas() == true)
+                    {
+                        o->Position[2] = GetWaterTerrain(o->Position[0], o->Position[1]) + 180;
+                    }
 
-                RenderPartObject(o, o->Type, NULL, Light, o->Alpha, Items[i].Item.Level, Items[i].Item.ExcellentFlags, Items[i].Item.AncientDiscriminator, true, true, true);
-                VectorCopy(vBackup, o->Position);
+                    RenderPartObject(o, o->Type, NULL, Light, o->Alpha, Items[i].Item.Level, Items[i].Item.ExcellentFlags, Items[i].Item.AncientDiscriminator, true, true, true);
+                    VectorCopy(vBackup, o->Position);
+                }
 
 #ifdef _EDITOR
                 // Debug visualization: OBB used by SelectItem for ray-vs-pickup test.
@@ -9469,6 +9494,34 @@ void NextGradeObjectRender(CHARACTER* c)
 
 extern float g_Luminosity;
 
+static bool IsRenderableModelType(int Type)
+{
+    static int loggedTypes[32] = {};
+    static int loggedCount = 0;
+
+    if (Type < 0 || Type >= MAX_MODELS || Models == nullptr)
+    {
+        bool alreadyLogged = false;
+        for (int i = 0; i < loggedCount; ++i)
+        {
+            if (loggedTypes[i] == Type)
+            {
+                alreadyLogged = true;
+                break;
+            }
+        }
+        if (!alreadyLogged && loggedCount < 32)
+        {
+            loggedTypes[loggedCount++] = Type;
+            g_ConsoleDebug->Write(MCD_ERROR, L"RenderPartObject: invalid model Type=%d", Type);
+        }
+        return false;
+    }
+
+    BMD* model = &Models[Type];
+    return model->m_bCompletedAlloc && model->NumMeshs > 0 && model->Meshs != nullptr;
+}
+
 void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int ItemLevel, int ExcellentFlags, int ancientDiscriminator, int Select, int RenderType)
 {
     int Level = ItemLevel;
@@ -9476,6 +9529,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
     {
         Level = 0;
     }
+    if (!IsRenderableModelType(Type)) return;
     BMD* b = &Models[Type];
 
     if (o->EnableShadow == true)
@@ -10703,6 +10757,7 @@ void RenderPartObject(OBJECT* o, int Type, void* p2, vec3_t Light, float Alpha, 
         }
     }
 
+    if (!IsRenderableModelType(Type)) return;
     BMD* b = &Models[Type];
     b->HideSkin = HideSkin;
     b->BodyScale = o->Scale;

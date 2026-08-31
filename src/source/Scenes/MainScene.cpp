@@ -13,6 +13,7 @@
 #include "Engine/Object/ZzzCharacter.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Engine/Object/ZzzInterface.h"
+#include "Engine/Object/ZzzOpenData.h"
 #include "Input/Selection.h"
 #include "Render/Effects/ZzzEffect.h"
 #include "World/MapInfra/MapManager.h"
@@ -129,6 +130,7 @@ static bool ShouldRenderLeaves()
 static void InitializeMainScene()
 {
     g_pMainFrame->ResetSkillHotKey();
+    ResetSkillConfigPersistGate();
 
     g_ConsoleDebug->Write(MCD_NORMAL, L"Join the game with the following character: %ls", CharactersClient[SelectedHero].ID);
     g_ErrorReport.Write(L"> Character selected <%d> \"%ls\"\r\n", SelectedHero + 1, CharactersClient[SelectedHero].ID);
@@ -227,6 +229,7 @@ static void UpdateUIAndInput()
 
     g_pPartyManager->Update();
     g_pNewUISystem->Update();
+    TickSkillConfigPersist();
 
     if (MouseLButton == true &&
         false == g_pNewUISystem->CheckMouseUse() &&

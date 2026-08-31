@@ -251,6 +251,7 @@ void CCharMakeWin::Show(bool bShow)
 
     if (bShow)
     {
+        UpdateDisplay();
         InputTextWidth = 73;
         ClearInput();
         InputEnable = true;
@@ -295,11 +296,14 @@ void CCharMakeWin::UpdateDisplay()
         button.SetEnable(true);
 
 #ifdef PBG_ADD_CHARACTERCARD
-    for (int i = 0; i < CLASS_CHARACTERCARD_TOTALCNT; ++i)
-    {
-        if (!g_CharCardEnable.bCharacterEnable[i])
-            m_abtnJob[i + CLASS_DARK].SetEnable(false);
-    }
+    if (!g_CharCardEnable.bCharacterEnable[0])
+        m_abtnJob[CLASS_SUMMONER].SetEnable(false);
+    if (!g_CharCardEnable.bCharacterEnable[1])
+        m_abtnJob[CLASS_DARK_LORD].SetEnable(false);
+    if (!g_CharCardEnable.bCharacterEnable[2])
+        m_abtnJob[CLASS_DARK].SetEnable(false);
+    if (!g_CharCardEnable.bCharacterEnable[3])
+        m_abtnJob[CLASS_RAGEFIGHTER].SetEnable(false);
 #else //PBG_ADD_CHARACTERCARD
     m_abtnJob[CLASS_SUMMONER].SetEnable(true);
 #endif //PBG_ADD_CHARACTERCARD
@@ -390,6 +394,8 @@ void CCharMakeWin::RequestCreateCharacter()
 void CCharMakeWin::RenderControls()
 {
     RenderCreateCharacter();
+    // Restore the 2D projection after the character's 3D render; EndOpengl() is empty.
+    BeginBitmap();
     ::EnableAlphaTest();
 
     for (auto& sprite : m_asprBack)

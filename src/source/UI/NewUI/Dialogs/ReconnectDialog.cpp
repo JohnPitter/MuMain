@@ -35,7 +35,7 @@ namespace
     constexpr float PANEL_W = MSGBOX_WIDTH;
     constexpr float PANEL_H = 122.0f;
     constexpr float PANEL_X = (REFERENCE_WIDTH - PANEL_W) / 2.0f;
-    constexpr float PANEL_Y = (REFERENCE_HEIGHT - PANEL_H) / 2.0f + 100.0f;
+    constexpr float PANEL_Y = (REFERENCE_HEIGHT - PANEL_H) / 2.0f;
     constexpr float MIDDLE_FILL_H = PANEL_H - TOP_H - BOTTOM_H;
 
     constexpr float TITLE_Y = PANEL_Y + 12.0f;

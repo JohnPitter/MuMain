@@ -116,10 +116,11 @@ void CCharInfoBalloon::Render()
     CameraProjection::WorldToScreen(g_Camera, afPos, &nPosX, &nPosY);
 
     CSprite::SetPosition(
-        int(nPosX * g_fScreenRate_x),
-        int(nPosY * g_fScreenRate_y)
+        int(ConvertPosX(static_cast<float>(nPosX))),
+        int(ConvertPosY(static_cast<float>(nPosY)))
     );
 
+    EnableAlphaBlend();
     g_pRenderText->SetFont(g_hFixFont);
     g_pRenderText->SetBgColor(0);
 
@@ -127,14 +128,15 @@ void CCharInfoBalloon::Render()
     const int spriteY = CSprite::GetYPos();
     const int spriteW = CSprite::GetWidth();
 
-    const int nTextPosX = int(spriteX / g_fScreenRate_x);
+    const int nTextPosX = int((spriteX - g_fScreenOff_x) / g_fScreenRate_x);
+    const int boxW = spriteW / g_fScreenRate_x;
 
     g_pRenderText->SetTextColor(m_dwNameColor);
     g_pRenderText->RenderText(
         nTextPosX,
-        int((spriteY + 6) / g_fScreenRate_y),
+        int((spriteY + 6 - g_fScreenOff_y) / g_fScreenRate_y),
         m_szName,
-        spriteW / g_fScreenRate_x,
+        boxW,
         0,
         RT3_SORT_CENTER
     );
@@ -142,9 +144,9 @@ void CCharInfoBalloon::Render()
     g_pRenderText->SetTextColor(CLRDW_WHITE);
     g_pRenderText->RenderText(
         nTextPosX,
-        int((spriteY + 22) / g_fScreenRate_y),
+        int((spriteY + 22 - g_fScreenOff_y) / g_fScreenRate_y),
         m_szGuild,
-        spriteW / g_fScreenRate_x,
+        boxW,
         0,
         RT3_SORT_CENTER
     );
@@ -152,12 +154,13 @@ void CCharInfoBalloon::Render()
     g_pRenderText->SetTextColor(CLRDW_BR_ORANGE);
     g_pRenderText->RenderText(
         nTextPosX,
-        int((spriteY + 38) / g_fScreenRate_y),
+        int((spriteY + 38 - g_fScreenOff_y) / g_fScreenRate_y),
         m_szClass,
-        spriteW / g_fScreenRate_x,
+        boxW,
         0,
         RT3_SORT_CENTER
     );
+    EnableAlphaTest();
 }
 
 void CCharInfoBalloon::SetInfo()

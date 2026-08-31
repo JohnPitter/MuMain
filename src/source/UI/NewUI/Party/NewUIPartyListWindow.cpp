@@ -12,6 +12,7 @@
 #include "GameLogic/Skills/SkillManager.h"
 #include "Engine/Object/ZzzInterface.h"
 #include "Camera/CameraProjection.h"
+#include "GameLogic/Social/PartyManager.h"
 
 using namespace SEASON3B;
 
@@ -193,6 +194,9 @@ bool CNewUIPartyListWindow::Update()
     {
         Party[i].index = -2;
     }
+
+    g_pPartyManager->SyncLivePartyPositions();
+    g_pPartyManager->RequestPartyListIfDue();
 
     return true;
 }

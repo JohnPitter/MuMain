@@ -361,7 +361,8 @@ int OpenTerrainMapping(wchar_t* FileName) {
 
     TerrainGrassEnable = true;
 
-    if (gMapManager.InChaosCastle() || gMapManager.InBattleCastle()) {
+    if (gMapManager.InChaosCastle() || gMapManager.InBattleCastle()
+        || gMapManager.WorldActive == WD_0LORENCIA) {
         TerrainGrassEnable = false;
     }
 
@@ -2676,8 +2677,8 @@ void CreateFrustrum2D(vec3_t Position)
                 refHeight = REFERENCE_HEIGHT - 48;
             else if (SceneFlag == CHARACTER_SCENE || SceneFlag == LOG_IN_SCENE)
                 refHeight = 430;
-            float vpW = (float)(refWidth * WindowWidth) / (float)REFERENCE_WIDTH;
-            float vpH = (float)(refHeight * WindowHeight) / (float)REFERENCE_HEIGHT;
+            float vpW = ConvertX(static_cast<float>(refWidth));
+            float vpH = ConvertY(static_cast<float>(refHeight));
             float aspect = vpW / vpH;
 
 #ifdef _EDITOR

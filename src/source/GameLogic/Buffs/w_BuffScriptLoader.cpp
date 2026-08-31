@@ -109,8 +109,8 @@ bool BuffScriptLoader::Load(const std::wstring& pchFileName)
                 buffinfo.s_ItemType = tempbuffinfo.s_ItemType;
                 buffinfo.s_ItemIndex = tempbuffinfo.s_ItemIndex;
 
-                CMultiLanguage::ConvertFromUtf8(buffinfo.s_BuffName, tempbuffinfo.s_BuffName, MAX_BUFF_NAME_LENGTH);
-                CMultiLanguage::ConvertFromUtf8(buffinfo.s_BuffDescript, tempbuffinfo.s_BuffDescript, MAX_DESCRIPT_LENGTH);
+                CMultiLanguage::ConvertFromUtf8(buffinfo.s_BuffName, tempbuffinfo.s_BuffName, MAX_BUFF_NAME_LENGTH, MAX_BUFF_NAME_LENGTH);
+                CMultiLanguage::ConvertFromUtf8(buffinfo.s_BuffDescript, tempbuffinfo.s_BuffDescript, MAX_DESCRIPT_LENGTH, MAX_DESCRIPT_LENGTH);
 
                 buffinfo.s_BuffClassType = tempbuffinfo.s_BuffClassType;
                 buffinfo.s_NoticeType = tempbuffinfo.s_NoticeType;

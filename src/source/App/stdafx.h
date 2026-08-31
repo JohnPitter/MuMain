@@ -208,6 +208,12 @@ inline constexpr int REFERENCE_HEIGHT = 480;
 #include "Core/Globals/_crypt.h"
 
 inline std::wstring g_strSelectedML = L"";
-// Scale factors from REFERENCE_WIDTH/HEIGHT (above) to the actual window size.
+// Scale from REFERENCE_WIDTH/HEIGHT to the window. X and Y are independent so
+// the 640×480 HUD fills the window (MU's layout). Offset stays 0; ConvertPos*
+// exists so callers can share one mapping.
 inline float g_fScreenRate_x = 0;
 inline float g_fScreenRate_y = 0;
+inline float g_fScreenOff_x = 0;
+inline float g_fScreenOff_y = 0;
+inline float g_fMouseToPixelX = 1.f;
+inline float g_fMouseToPixelY = 1.f;

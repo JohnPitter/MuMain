@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "Core/Platform/WinCompat.h"
+#include "Core/Utilities/Log/ErrorReport.h"
 #ifdef _WIN32
 #include <mmsystem.h>
 #endif
@@ -37,6 +38,14 @@ void ReportWaveWarning(const wchar_t* message, const wchar_t* filename = nullptr
         editor_fwprintf(stderr, L"%ls\n", message);
 #endif
     }
+}
+
+void ReportWaveFailure(const wchar_t* stage, const wchar_t* filename, long result)
+{
+    const DWORD lastError = GetLastError();
+    g_ErrorReport.Write(L"waveIO::LoadWaveHeader - %ls failed for %ls (result=0x%08lX, lastError=%lu)\r\n",
+        stage, filename, static_cast<unsigned long>(result), static_cast<unsigned long>(lastError));
+    ReportWaveWarning(stage, filename);
 }
 } // namespace
 
@@ -89,6 +98,7 @@ bool waveIO::LoadWaveHeader(const wchar_t* filename)
 {
     if (filename == nullptr || !IsInputMode())
     {
+        ReportWaveFailure(L"invalid input arguments", filename != nullptr ? filename : L"<null>", E_INVALIDARG);
         return false;
     }
 
@@ -97,37 +107,40 @@ bool waveIO::LoadWaveHeader(const wchar_t* filename)
     m_hmmio = mmioOpenW(const_cast<wchar_t*>(filename), nullptr, MMIO_ALLOCBUF | MMIO_READ);
     if (m_hmmio == nullptr)
     {
-        ReportWaveWarning(L"Cannot find wave file", filename);
+        ReportWaveFailure(L"mmioOpenW", filename, GetLastError());
         return false;
     }
 
     MMCKINFO riffChunk {};
-    if (mmioDescend(m_hmmio, &riffChunk, nullptr, 0) != 0)
+    const MMRESULT riffResult = mmioDescend(m_hmmio, &riffChunk, nullptr, 0);
+    if (riffResult != 0)
     {
-        ReportWaveWarning(L"Cannot descend into RIFF chunk", filename);
+        ReportWaveFailure(L"mmioDescend RIFF", filename, riffResult);
         CloseWaveFile();
         return false;
     }
 
     if (riffChunk.ckid != FOURCC_RIFF || riffChunk.fccType != mmioFOURCC('W', 'A', 'V', 'E'))
     {
-        ReportWaveWarning(L"File is not a valid WAVE container", filename);
+        ReportWaveFailure(L"RIFF/WAVE validation", filename, riffChunk.ckid);
         CloseWaveFile();
         return false;
     }
 
     MMCKINFO formatChunk {};
     formatChunk.ckid = mmioFOURCC('f', 'm', 't', ' ');
-    if (mmioDescend(m_hmmio, &formatChunk, &riffChunk, MMIO_FINDCHUNK) != 0)
+    const MMRESULT formatResult = mmioDescend(m_hmmio, &formatChunk, &riffChunk, MMIO_FINDCHUNK);
+    if (formatResult != 0)
     {
-        ReportWaveWarning(L"Failed to locate fmt chunk", filename);
+        ReportWaveFailure(L"mmioDescend fmt", filename, formatResult);
         CloseWaveFile();
         return false;
     }
 
-    if (mmioRead(m_hmmio, reinterpret_cast<char*>(&m_wfex), sizeof(PCMWAVEFORMAT)) == -1)
+    const LONG formatBytesRead = mmioRead(m_hmmio, reinterpret_cast<char*>(&m_wfex), sizeof(PCMWAVEFORMAT));
+    if (formatBytesRead != sizeof(PCMWAVEFORMAT))
     {
-        ReportWaveWarning(L"Failed to read wave format", filename);
+        ReportWaveFailure(L"mmioRead fmt", filename, formatBytesRead);
         CloseWaveFile();
         return false;
     }
@@ -139,23 +152,25 @@ bool waveIO::LoadWaveHeader(const wchar_t* filename)
 
     if (m_wfex.wFormatTag != WAVE_FORMAT_PCM)
     {
-        ReportWaveWarning(L"Unsupported wave format (expecting PCM)", filename);
+        ReportWaveFailure(L"PCM format validation", filename, m_wfex.wFormatTag);
         CloseWaveFile();
         return false;
     }
 
-    if (mmioAscend(m_hmmio, &formatChunk, 0) != 0)
+    const MMRESULT formatAscendResult = mmioAscend(m_hmmio, &formatChunk, 0);
+    if (formatAscendResult != 0)
     {
-        ReportWaveWarning(L"Failed to ascend fmt chunk", filename);
+        ReportWaveFailure(L"mmioAscend fmt", filename, formatAscendResult);
         CloseWaveFile();
         return false;
     }
 
     MMCKINFO dataChunk {};
     dataChunk.ckid = mmioFOURCC('d', 'a', 't', 'a');
-    if (mmioDescend(m_hmmio, &dataChunk, &riffChunk, MMIO_FINDCHUNK) != 0)
+    const MMRESULT dataResult = mmioDescend(m_hmmio, &dataChunk, &riffChunk, MMIO_FINDCHUNK);
+    if (dataResult != 0)
     {
-        MessageBoxW(nullptr, L"Bad Format in Wave file!", L"WaveLoad", MB_OK | MB_ICONSTOP);
+        ReportWaveFailure(L"mmioDescend data", filename, dataResult);
         CloseWaveFile();
         return false;
     }

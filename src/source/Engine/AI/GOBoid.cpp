@@ -1379,7 +1379,7 @@ void MoveBoids()
                         Hero->Object.Position[1] + (float)(rand() % 1024 - 512),
                         Hero->Object.Position[2], o->Position);
                     o->Position[2] = RequestTerrainHeight(o->Position[0], o->Position[1]) + (float)(rand() % 200 + 150);
-                    Vector(0.f, 0.f, 0.f, o->Angle);
+                    Vector(0.f, 0.f, (float)(rand() % 360), o->Angle);
                 }
             }
         }

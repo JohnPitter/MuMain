@@ -17,6 +17,7 @@
 #include "Engine/Object/ZzzCharacter.h"
 #include "Engine/Object/ZzzInterface.h"
 #include "Engine/Object/ZzzInventory.h"
+#include "Engine/Object/ZzzOpenData.h"
 
 #include "GameLogic/Items/CSItemOption.h"
 #include "GameLogic/Events/CSChaosCastle.h"
@@ -1194,11 +1195,13 @@ void SEASON3B::CNewUIItemHotKey::SetHotKey(int iHotKey, int iItemType, int iItem
     {
         m_iHotKeyItemType[iHotKey] = iItemType;
         m_iHotKeyItemLevel[iHotKey] = iItemLevel;
+        MarkSkillBarDirty();
     }
     else
     {
         m_iHotKeyItemType[iHotKey] = -1;
         m_iHotKeyItemLevel[iHotKey] = 0;
+        MarkSkillBarDirty();
     }
 }
 
@@ -1816,6 +1819,7 @@ void SEASON3B::CNewUISkillList::SetHotKey(int iHotKey, int iSkillType)
     }
 
     m_iHotKeySkillType[iHotKey] = iSkillType;
+    MarkSkillBarDirty();
 }
 
 int SEASON3B::CNewUISkillList::GetHotKey(int iHotKey)

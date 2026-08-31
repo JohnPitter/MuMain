@@ -399,7 +399,7 @@ bool NewRenderLogInScene(HDC hDC)
 #endif
     g_Camera.ViewNear = 100.f;  // Push near plane out to preserve z-buffer precision
 
-    BeginOpengl(0, 25, REFERENCE_WIDTH, 430);
+    BeginOpengl();
 
     // LoginScene doesn't call CreateFrustrum (DefaultCamera tour mode angles differ from
     // legacy hardcoded values). Instead, TestFrustrum2D is bypassed for LOG_IN_SCENE and
@@ -429,7 +429,8 @@ bool NewRenderLogInScene(HDC hDC)
     EndSprite();
     BeginBitmap();
 
-    if (CCameraMove::GetInstancePtr()->IsTourMode())
+    if (CCameraMove::GetInstancePtr()->IsTourMode()
+        && !CUIMng::Instance().m_CreditWin.IsShow())
     {
         g_fMULogoAlpha += 0.02f;
         if (g_fMULogoAlpha > 10.0f) g_fMULogoAlpha = 10.0f;

@@ -126,14 +126,15 @@ void SEASON3B::CNewUIMessageBoxBase::RenderMsgBackColor(bool _bRender)
     float fPosX = 0.0f, fPosY = 0.0f;
     if (_bRender)
     {
-        EnableAlphaTestRaw();
+        // Keep SRC_ALPHA blending on. DisableBlend() here used to leave AlphaBlendType
+        // stuck at "on" while GL_BLEND was actually off, so the option-window chrome
+        // (transparent holes in option_top / side slats / item_back03) wrote RGB 0 as
+        // opaque black over newui_msgbox_back — black bands inside the frame.
+        EnableAlphaTest();
         glColor4f(m_vColor[0], m_vColor[1], m_vColor[2], m_fOpacityAlpha);
         RenderColor(fPosX, fPosY, fWidth, fHeight - 50.0f);
-
-        EnableTexture2D();
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        DisableBlend();
-        EnableAlphaTestRaw();
+        EndRenderColor();
     }
 }
 

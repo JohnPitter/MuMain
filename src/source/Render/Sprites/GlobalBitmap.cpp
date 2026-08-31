@@ -728,7 +728,10 @@ bool CGlobalBitmap::OpenTga(GLuint uiBitmapIndex, const std::wstring& filename, 
     std::vector<unsigned char> pakBuffer((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
     input.close();
 
-    if (pakBuffer.size() < 18) // minimal TGA header length check for OZT payload
+    // Header runs through byte 21 (dimensions at 12..19, depth at 20, descriptor
+    // at 21); reading it with only size>=18 validated read up to 4 bytes past
+    // the buffer on truncated files.
+    if (pakBuffer.size() < 22) // TGA header (18) + OZT width/height/depth fields
     {
         return false;
     }
@@ -743,6 +746,17 @@ bool CGlobalBitmap::OpenTga(GLuint uiBitmapIndex, const std::wstring& filename, 
 
     if (bit != 32 || nx <= 0 || ny <= 0 || nx > MAX_WIDTH || ny > MAX_HEIGHT)
     {
+        return false;
+    }
+
+    // Pixel rows start at `index` and occupy nx*ny*4 bytes. Without this check
+    // a truncated OZT sent the copy loop reading megabytes past the heap block
+    // (the crash-ab3 OpenTga path). Reject instead of overread.
+    const std::size_t pixelBytes = static_cast<std::size_t>(nx) * static_cast<std::size_t>(ny) * 4u;
+    if (static_cast<std::size_t>(index) + pixelBytes > pakBuffer.size())
+    {
+        g_ErrorReport.Write(L"OpenTga: truncated OZT payload (%ls): need %u, have %u\r\n",
+            filename.c_str(), static_cast<unsigned>(pixelBytes + index), static_cast<unsigned>(pakBuffer.size()));
         return false;
     }
 

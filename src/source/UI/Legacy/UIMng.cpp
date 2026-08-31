@@ -108,7 +108,6 @@ void CUIMng::CreateTitleSceneUI()
         false, SPR_SIZING_DATUMS_LT, _fScaleXTemp, _fScaleYTemp);
     m_asprTitle[UIM_TS_BACK9].SetPosition(1024, 512 + 119);
 
-  
     m_asprTitle[UIM_TS_121518].Create(256, 206, BITMAP_TITLE + 3, 0, NULL, 0, 0,
         false, SPR_SIZING_DATUMS_LT, fScaleX, fScaleY);
     m_asprTitle[UIM_TS_121518].SetPosition(544, 60);
@@ -138,6 +137,8 @@ void CUIMng::ReleaseTitleSceneUI()
 
 void CUIMng::RenderTitleSceneUI(HDC hDC, DWORD dwNow, DWORD dwTotal)
 {
+    PumpLoadingEvents();
+
     ::BeginOpengl();
     ::ClearColorAndDepthBuffers();
     ::BeginBitmap();
@@ -213,8 +214,7 @@ void CUIMng::CreateLoginScene()
     m_LoginMainWin.Create();
     m_WinList.AddHead(&m_LoginMainWin);
 
-    int nBaseY = int(567.0f / 600.0f * (float)rInput.GetScreenHeight());
-    m_LoginMainWin.SetPosition(30, nBaseY - m_LoginMainWin.GetHeight() - 11);
+    m_LoginMainWin.SetPosition(30, 567 - 30 - 11);
 
     m_ServerSelWin.Create();
     m_WinList.AddHead(&m_ServerSelWin);

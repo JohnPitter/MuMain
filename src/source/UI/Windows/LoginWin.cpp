@@ -346,8 +346,12 @@ void CLoginWin::RenderControls()
     g_pRenderText->RenderText(int((baseX + 30) / g_fScreenRate_x), int((baseY + 139) / g_fScreenRate_y), I18N::Game::Password);
 
     wchar_t szServerName[MAX_TEXT_LENGTH] = {};
-    const wchar_t* pServerStatus = g_ServerListManager->GetNonPVPInfo() ? I18N::Game::SDServer : I18N::Game::SDNonPvPServer;
-    mu_swprintf(szServerName, pServerStatus, g_ServerListManager->GetSelectServerName(), g_ServerListManager->GetSelectServerIndex());
+    const wchar_t* apszServerStatus[4]
+        = { I18N::Game::SDServer, I18N::Game::SDNonPvPServer, I18N::Game::SDGoldPvPServer, I18N::Game::SDGoldServer };
+    BYTE pvpIndex = g_ServerListManager->GetNonPVPInfo();
+    if (pvpIndex > 3)
+        pvpIndex = 0;
+    mu_swprintf(szServerName, apszServerStatus[pvpIndex], g_ServerListManager->GetSelectServerName(), g_ServerListManager->GetSelectServerIndex());
     g_pRenderText->RenderText(int((baseX + 111) / g_fScreenRate_x), int((baseY + 80) / g_fScreenRate_y), szServerName);
 
     g_pRenderText->RenderText(int((baseX + 130) / g_fScreenRate_x), int((baseY + 159) / g_fScreenRate_y), I18N::Game::LoginRememberUsername);

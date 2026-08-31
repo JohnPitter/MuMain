@@ -9,10 +9,28 @@
 #include "UI/Legacy/UIMng.h"
 #include "Network/Server/WSclient.h"
 
-//=============================================================================
-// Global Variables
-//=============================================================================
+namespace
+{
+    constexpr int kLayoutWidth = 800;
+    constexpr int kLayoutHeight = 600;
+    constexpr int kButtonWidth = 54;
+    constexpr int kButtonHeight = 30;
+    constexpr int kDecoWidth = 189;
+    constexpr int kDecoHeight = 103;
+    constexpr int kDecoDatumX = 105;
+    constexpr int kDecoDatumY = 59;
 
+    void LoginLayoutScale(float& scaleX, float& scaleY)
+    {
+        CInput& input = CInput::Instance();
+        scaleX = static_cast<float>(input.GetScreenWidth()) / static_cast<float>(kLayoutWidth);
+        scaleY = static_cast<float>(input.GetScreenHeight()) / static_cast<float>(kLayoutHeight);
+        if (scaleX <= 0.f)
+            scaleX = 1.f;
+        if (scaleY <= 0.f)
+            scaleY = 1.f;
+    }
+}
 
 //=============================================================================
 // Constructor / Destructor
@@ -32,41 +50,60 @@ CLoginMainWin::~CLoginMainWin()
 
 void CLoginMainWin::Create()
 {
+    float scaleX = 1.f;
+    float scaleY = 1.f;
+    LoginLayoutScale(scaleX, scaleY);
+
     for (int i = 0; i <= LMW_BTN_CREDIT; ++i)
-        m_aBtn[i].Create(54, 30, BITMAP_LOG_IN + 4 + i, 3, 2, 1);
+    {
+        m_aBtn[i].Create(kButtonWidth, kButtonHeight, BITMAP_LOG_IN + 4 + i, 3, 2, 1);
+        m_aBtn[i].SetScale(scaleX, scaleY);
+    }
 
     CWin::Create(
-        CInput::Instance().GetScreenWidth() - 30 * 2,
-        m_aBtn[0].GetHeight(),
+        static_cast<int>(kLayoutWidth * scaleX),
+        static_cast<int>(kButtonHeight * scaleY),
         -2
     );
 
     for (int i = 0; i < LMW_BTN_MAX; ++i)
         CWin::RegisterButton(&m_aBtn[i]);
 
-    m_sprDeco.Create(189, 103, BITMAP_LOG_IN + 6, 0, nullptr, 105, 59);
+    m_sprDecoCredit.Create(kDecoWidth, kDecoHeight, BITMAP_LOG_IN + 6, 0, nullptr,
+        kDecoDatumX, kDecoDatumY, false, SPR_SIZING_DATUMS_LT, scaleX, scaleY);
+
+    const int menuDatumX = kDecoWidth - kDecoDatumX;
+    m_sprDecoMenu.Create(kDecoWidth, kDecoHeight, BITMAP_LOG_IN + 6, 0, nullptr,
+        menuDatumX, kDecoDatumY, false, SPR_SIZING_DATUMS_LT, scaleX, scaleY);
+    m_sprDecoMenu.FlipHorizontal();
 }
 
 void CLoginMainWin::PreRelease()
 {
-    m_sprDeco.Release();
+    m_sprDecoMenu.Release();
+    m_sprDecoCredit.Release();
 }
 
-void CLoginMainWin::SetPosition(int nXCoord, int nYCoord)
+void CLoginMainWin::SetPosition(int, int)
 {
-    CWin::SetPosition(nXCoord, nYCoord);
+    float scaleX = 1.f;
+    float scaleY = 1.f;
+    LoginLayoutScale(scaleX, scaleY);
 
-    m_aBtn[LMW_BTN_MENU].SetPosition(nXCoord, nYCoord);
+    const int decoRightOverhang = kDecoWidth - kDecoDatumX;
+    const int decoBottomOverhang = kDecoHeight - kDecoDatumY;
+    const int btnY = kLayoutHeight - decoBottomOverhang;
+    const int menuX = decoRightOverhang;
+    const int creditX = kLayoutWidth - decoRightOverhang;
 
-    m_aBtn[LMW_BTN_CREDIT].SetPosition(
-        nXCoord + CWin::GetWidth() - m_aBtn[LMW_BTN_CREDIT].GetWidth(),
-        nYCoord
-    );
+    CWin::SetPosition(0, static_cast<int>(btnY * scaleY));
+    (void)scaleX;
 
-    m_sprDeco.SetPosition(
-        m_aBtn[LMW_BTN_CREDIT].GetXPos(),
-        m_aBtn[LMW_BTN_CREDIT].GetYPos()
-    );
+    m_aBtn[LMW_BTN_MENU].SetPosition(menuX, btnY);
+    m_aBtn[LMW_BTN_CREDIT].SetPosition(creditX, btnY);
+
+    m_sprDecoMenu.SetPosition(menuX, btnY);
+    m_sprDecoCredit.SetPosition(creditX, btnY);
 }
 
 void CLoginMainWin::Show(bool bShow)
@@ -76,7 +113,8 @@ void CLoginMainWin::Show(bool bShow)
     for (int i = 0; i < LMW_BTN_MAX; ++i)
         m_aBtn[i].Show(bShow);
 
-    m_sprDeco.Show(bShow);
+    m_sprDecoMenu.Show(bShow);
+    m_sprDecoCredit.Show(bShow);
 }
 
 bool CLoginMainWin::CursorInWin(int nArea)
@@ -115,6 +153,7 @@ void CLoginMainWin::UpdateWhileActive(double dDeltaTick)
 
 void CLoginMainWin::RenderControls()
 {
-    m_sprDeco.Render();
+    m_sprDecoMenu.Render();
+    m_sprDecoCredit.Render();
     CWin::RenderButtons();
 }

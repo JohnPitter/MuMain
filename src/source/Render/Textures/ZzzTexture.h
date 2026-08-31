@@ -17,6 +17,8 @@ bool LoadBitmap(const wchar_t* szFileName, GLuint uiTextureIndex, GLuint uiFilte
 bool LoadBitmap(const wchar_t* szFileName, GLuint uiTextureIndex, GLuint uiFilter = GL_NEAREST, GLuint uiWrapMode = GL_CLAMP_TO_EDGE, bool bCheck = true);
 #endif // KJH_ADD_INGAMESHOP_UI_SYSTEM
 void DeleteBitmap(GLuint uiTextureIndex, bool bForce = false);
+typedef void (*LoadBitmapProgressCallback)();
+void SetLoadBitmapProgressCallback(LoadBitmapProgressCallback callback);
 void PopUpErrorCheckMsgBox(const wchar_t* szErrorMsg, bool bForceDestroy = false);
 
 #endif// __ZZZTEXTURE_H__

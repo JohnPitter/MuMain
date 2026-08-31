@@ -18,7 +18,8 @@ class CLoginMainWin : public CWin
 {
 protected:
     CButton	m_aBtn[LMW_BTN_MAX];
-    CSprite	m_sprDeco;
+    CSprite	m_sprDecoMenu;
+    CSprite	m_sprDecoCredit;
 
 public:
     CLoginMainWin();

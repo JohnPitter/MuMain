@@ -81,43 +81,43 @@
     <comment>legacy_id=19</comment>
   </data>
   <data name="Dark Wizard" xml:space="preserve">
-    <value>Mago das Trevas</value>
+    <value>Dark Wizard</value>
     <comment>legacy_id=20</comment>
   </data>
   <data name="Dark Knight" xml:space="preserve">
-    <value>Cavaleiro das Trevas</value>
+    <value>Dark Knight</value>
     <comment>legacy_id=21</comment>
   </data>
   <data name="Elf" xml:space="preserve">
-    <value>Duende</value>
+    <value>Fairy Elf</value>
     <comment>legacy_id=22</comment>
   </data>
   <data name="Magic Gladiator" xml:space="preserve">
-    <value>Gladiador Mágico</value>
+    <value>Magic Gladiator</value>
     <comment>legacy_id=23</comment>
   </data>
   <data name="Dark Lord" xml:space="preserve">
-    <value>Senhor das Trevas</value>
+    <value>Dark Lord</value>
     <comment>legacy_id=24</comment>
   </data>
   <data name="Soul Master" xml:space="preserve">
-    <value>Mestre da Alma</value>
+    <value>Soul Master</value>
     <comment>legacy_id=25</comment>
   </data>
   <data name="Blade Knight" xml:space="preserve">
-    <value>Cavaleiro da Lâmina</value>
+    <value>Blade Knight</value>
     <comment>legacy_id=26</comment>
   </data>
   <data name="Muse Elf" xml:space="preserve">
-    <value>Elfa Musa</value>
+    <value>Muse Elf</value>
     <comment>legacy_id=27</comment>
   </data>
   <data name="Reserve : Job" xml:space="preserve">
-    <value>Reserva: Trabalho</value>
+    <value>Reserva: Classe</value>
     <comment>legacy_id=28,29</comment>
   </data>
   <data name="Lorencia" xml:space="preserve">
-    <value>Lorência</value>
+    <value>Lorencia</value>
     <comment>legacy_id=30</comment>
   </data>
   <data name="Dungeon" xml:space="preserve">
@@ -145,7 +145,7 @@
     <comment>legacy_id=36,1141</comment>
   </data>
   <data name="Atlans" xml:space="preserve">
-    <value>Atlantes</value>
+    <value>Atlans</value>
     <comment>legacy_id=37</comment>
   </data>
   <data name="Tarkan" xml:space="preserve">
@@ -153,7 +153,7 @@
     <comment>legacy_id=38</comment>
   </data>
   <data name="Devil Square" xml:space="preserve">
-    <value>Praça do Diabo</value>
+    <value>Devil Square</value>
     <comment>legacy_id=39,1145</comment>
   </data>
   <data name="One-Handed Damage" xml:space="preserve">
@@ -193,7 +193,7 @@
     <comment>legacy_id=48,2642</comment>
   </data>
   <data name="Poison" xml:space="preserve">
-    <value>Tóxico</value>
+    <value>Veneno</value>
     <comment>legacy_id=49</comment>
   </data>
   <data name="Lightning" xml:space="preserve">
@@ -217,7 +217,7 @@
     <comment>legacy_id=54,2641</comment>
   </data>
   <data name="Icarus" xml:space="preserve">
-    <value>Ícaro</value>
+    <value>Icarus</value>
     <comment>legacy_id=55</comment>
   </data>
   <data name="Blood Castle" xml:space="preserve">
@@ -225,7 +225,7 @@
     <comment>legacy_id=56,1146</comment>
   </data>
   <data name="Chaos Castle" xml:space="preserve">
-    <value>Castelo do Caos</value>
+    <value>Chaos Castle</value>
     <comment>legacy_id=57,1147</comment>
   </data>
   <data name="Kalima" xml:space="preserve">
@@ -317,27 +317,27 @@
     <comment>legacy_id=79</comment>
   </data>
   <data name="Defend skill (Mana:%d)" xml:space="preserve">
-    <value>Habilidade de defesa (Mana:%d)</value>
+    <value>Habilidade Defesa (Mana:%d)</value>
     <comment>legacy_id=80</comment>
   </data>
   <data name="Falling Slash skill (Mana:%d)" xml:space="preserve">
-    <value>Habilidade de Corte de Queda (Mana: %d)</value>
+    <value>Habilidade Corte Descendente (Mana:%d)</value>
     <comment>legacy_id=81</comment>
   </data>
   <data name="Lunge skill (Mana:%d)" xml:space="preserve">
-    <value>Habilidade de estocada (Mana:%d)</value>
+    <value>Habilidade Investida (Mana:%d)</value>
     <comment>legacy_id=82</comment>
   </data>
   <data name="Uppercut skill (Mana:%d)" xml:space="preserve">
-    <value>Habilidade de Uppercut (Mana:%d)</value>
+    <value>Habilidade Investida (Mana:%d)</value>
     <comment>legacy_id=83</comment>
   </data>
   <data name="Cyclone Cutting skill (Mana:%d)" xml:space="preserve">
-    <value>Habilidade de Corte Ciclone (Mana:%d)</value>
+    <value>Habilidade Corte Ciclônico (Mana:%d)</value>
     <comment>legacy_id=84</comment>
   </data>
   <data name="Slashing skill (Mana:%d)" xml:space="preserve">
-    <value>Habilidade de corte (Mana:%d)</value>
+    <value>Habilidade Corte Ciclônico (Mana:%d)</value>
     <comment>legacy_id=85</comment>
   </data>
   <data name="Triple Shot skill (Mana:%d)" xml:space="preserve">
@@ -345,7 +345,7 @@
     <comment>legacy_id=86</comment>
   </data>
   <data name="Luck (success rate of Jewel of Soul +25%%)" xml:space="preserve">
-    <value>Sorte (taxa de sucesso da Jóia da Alma +25%%)</value>
+    <value>Sorte (taxa de sucesso da Soul +25%%)</value>
     <comment>legacy_id=87</comment>
   </data>
   <data name="Additional Dmg +%d" xml:space="preserve">
@@ -353,7 +353,7 @@
     <comment>legacy_id=88</comment>
   </data>
   <data name="Additional Wizardry Dmg +%d" xml:space="preserve">
-    <value>Dano Adicional de Magia +%d</value>
+    <value>Dano adicional +%d</value>
     <comment>legacy_id=89</comment>
   </data>
   <data name="Additional defense rate +%d" xml:space="preserve">
@@ -397,7 +397,7 @@
     <comment>legacy_id=99,3512</comment>
   </data>
   <data name="Zen" xml:space="preserve">
-    <value>zen</value>
+    <value>Zen</value>
     <comment>legacy_id=100,224,1246,3523</comment>
   </data>
   <data name="Heart" xml:space="preserve">
@@ -417,7 +417,7 @@
     <comment>legacy_id=104</comment>
   </data>
   <data name="Star of Sacred Birth" xml:space="preserve">
-    <value>Estrela do Nascimento Sagrado</value>
+    <value>Vale-presente do Evento Chaos</value>
     <comment>legacy_id=105</comment>
   </data>
   <data name="Firecracker" xml:space="preserve">
@@ -433,7 +433,7 @@
     <comment>legacy_id=108</comment>
   </data>
   <data name="Silver medal" xml:space="preserve">
-    <value>Medalha de prata</value>
+    <value>Azeitona do Amor</value>
     <comment>legacy_id=109</comment>
   </data>
   <data name="Gold medal" xml:space="preserve">
@@ -481,7 +481,7 @@
     <comment>legacy_id=120</comment>
   </data>
   <data name="F1 : Help On/Off" xml:space="preserve">
-    <value>F1: Ajuda ativada/desativada</value>
+    <value>Função das teclas</value>
     <comment>legacy_id=121</comment>
   </data>
   <data name="F2 : Chat window on/off" xml:space="preserve">
@@ -489,7 +489,7 @@
     <comment>legacy_id=122</comment>
   </data>
   <data name="F3 : Whisper Mode window on/off" xml:space="preserve">
-    <value>F3: Liga/desliga a janela do modo Whisper</value>
+    <value>F3: ativar/desativar a janela de sussurro</value>
     <comment>legacy_id=123</comment>
   </data>
   <data name="F4 : Adjust Chat Window size" xml:space="preserve">
@@ -512,7 +512,7 @@
     <value>Home - Alternar MU Helper</value>
   </data>
   <data name="Enter: Chatting Mode" xml:space="preserve">
-    <value>Entre: modo de bate-papo</value>
+    <value>Enter: Modo de bate-papo</value>
     <comment>legacy_id=125</comment>
   </data>
   <data name="C : Character Info" xml:space="preserve">
@@ -524,7 +524,7 @@
     <comment>legacy_id=127</comment>
   </data>
   <data name="P : Party Window" xml:space="preserve">
-    <value>P: Janela da Festa</value>
+    <value>P: Janela do Grupo</value>
     <comment>legacy_id=128</comment>
   </data>
   <data name="G : Guild Window" xml:space="preserve">
@@ -532,7 +532,7 @@
     <comment>legacy_id=129</comment>
   </data>
   <data name="Q : Use Healing Potion" xml:space="preserve">
-    <value>Q: Use Poção de Cura</value>
+    <value>Q: Usar Poção de Cura</value>
     <comment>legacy_id=130</comment>
   </data>
   <data name="W : Use Mana Potion" xml:space="preserve">
@@ -544,11 +544,11 @@
     <comment>legacy_id=132</comment>
   </data>
   <data name="Shift: Character lockup key" xml:space="preserve">
-    <value>Shift: tecla de bloqueio de personagem</value>
+    <value>Shift: tecla para travar o personagem</value>
     <comment>legacy_id=133</comment>
   </data>
   <data name="Ctrl+Num: Set hot keys for skills" xml:space="preserve">
-    <value>Ctrl+Num: Defina teclas de atalho para habilidades</value>
+    <value>Ctrl+Num: Defina atalhos para habilidades</value>
     <comment>legacy_id=134</comment>
   </data>
   <data name="Num: Use skill hot keys" xml:space="preserve">
@@ -564,7 +564,7 @@
     <comment>legacy_id=137</comment>
   </data>
   <data name="Ctrl+Click: PvP mode, attack other players" xml:space="preserve">
-    <value>Ctrl + Clique: modo PvP, ataque outros jogadores</value>
+    <value>Alt+itens: Selecionar itens na ordem principal</value>
     <comment>legacy_id=138</comment>
   </data>
   <data name="Print Screen: Save screenshots" xml:space="preserve">
@@ -572,15 +572,15 @@
     <comment>legacy_id=139</comment>
   </data>
   <data name="Chatting Instructions" xml:space="preserve">
-    <value>Instruções de bate-papo</value>
+    <value>Print Screen: Salvar capturas de tela</value>
     <comment>legacy_id=140</comment>
   </data>
   <data name="Tab: switch to the ID window" xml:space="preserve">
-    <value>Guia: mude para a janela de ID</value>
+    <value>Tab: alternar para a janela de ID</value>
     <comment>legacy_id=141</comment>
   </data>
   <data name="Right click on msg: Whispering ID" xml:space="preserve">
-    <value>Clique com o botão direito na mensagem: Whispering ID</value>
+    <value>Tab: alternar para a janela de ID</value>
     <comment>legacy_id=142</comment>
   </data>
   <data name="Up/Down: View Chatting History" xml:space="preserve">
@@ -588,7 +588,7 @@
     <comment>legacy_id=143</comment>
   </data>
   <data name="PageUP, PageDN: Scroll Message" xml:space="preserve">
-    <value>PageUP, PageDN: mensagem de rolagem</value>
+    <value>PageUp, PageDown: rolar mensagens</value>
     <comment>legacy_id=144</comment>
   </data>
   <data name="~ &lt;msg&gt;: Message to party members" xml:space="preserve">
@@ -612,7 +612,7 @@
     <comment>legacy_id=149</comment>
   </data>
   <data name="/party(pointing player): form a party" xml:space="preserve">
-    <value>/party(jogador apontador): forma um grupo</value>
+    <value>/trade(jogador apontado): trocar</value>
     <comment>legacy_id=150</comment>
   </data>
   <data name="/guild(pointing player): form a guild" xml:space="preserve">
@@ -620,7 +620,7 @@
     <comment>legacy_id=151</comment>
   </data>
   <data name="/war &lt;guild name&gt;: Declare Guild War" xml:space="preserve">
-    <value>/war &lt;nome da guilda&gt;: Declara Guerra da Guilda</value>
+    <value>/guild(jogador apontado): formar uma guilda</value>
     <comment>legacy_id=152</comment>
   </data>
   <data name="/&lt;item name&gt;: item info" xml:space="preserve">
@@ -636,7 +636,7 @@
     <comment>legacy_id=155</comment>
   </data>
   <data name="Move cursor down-&gt; Adjust chat window" xml:space="preserve">
-    <value>Mova o cursor para baixo-&gt; Ajustar janela de bate-papo</value>
+    <value>/filter word1 word2: ver conversas com a palavra</value>
     <comment>legacy_id=156</comment>
   </data>
   <data name="Warp to the corresponding area after %d seconds" xml:space="preserve">
@@ -644,7 +644,7 @@
     <comment>legacy_id=157</comment>
   </data>
   <data name="%s Warp scroll" xml:space="preserve">
-    <value>%s Rolagem de distorção</value>
+    <value>Teleportar para a área correspondente após %d segundos</value>
     <comment>legacy_id=158</comment>
   </data>
   <data name="Item option info" xml:space="preserve">
@@ -656,7 +656,7 @@
     <comment>legacy_id=160</comment>
   </data>
   <data name="LV" xml:space="preserve">
-    <value>LV</value>
+    <value>Nível</value>
     <comment>legacy_id=161</comment>
   </data>
   <data name="ATK Dmg" xml:space="preserve">
@@ -664,11 +664,11 @@
     <comment>legacy_id=162</comment>
   </data>
   <data name="WIZ Dmg" xml:space="preserve">
-    <value>WIZ Dano</value>
+    <value>Dano de MAG</value>
     <comment>legacy_id=163</comment>
   </data>
   <data name="DEF" xml:space="preserve">
-    <value>DEF</value>
+    <value>Dano de MAG</value>
     <comment>legacy_id=164</comment>
   </data>
   <data name="DEF rate" xml:space="preserve">
@@ -676,7 +676,7 @@
     <comment>legacy_id=165</comment>
   </data>
   <data name="STR" xml:space="preserve">
-    <value>FOR</value>
+    <value>Taxa de DEF</value>
     <comment>legacy_id=166</comment>
   </data>
   <data name="AGI" xml:space="preserve">
@@ -684,7 +684,7 @@
     <comment>legacy_id=167</comment>
   </data>
   <data name="ENG" xml:space="preserve">
-    <value>POR</value>
+    <value>Energia</value>
     <comment>legacy_id=168</comment>
   </data>
   <data name="STA" xml:space="preserve">
@@ -692,7 +692,7 @@
     <comment>legacy_id=169</comment>
   </data>
   <data name="Wizardry Dmg:%d~%d" xml:space="preserve">
-    <value>Magia Dmg:%d~%d</value>
+    <value>VIT</value>
     <comment>legacy_id=170</comment>
   </data>
   <data name="Healing: %d" xml:space="preserve">
@@ -732,7 +732,7 @@
     <comment>legacy_id=179</comment>
   </data>
   <data name="Guild" xml:space="preserve">
-    <value>Guilda</value>
+    <value>Habilidade específica de cavaleiro</value>
     <comment>legacy_id=180,946</comment>
   </data>
   <data name="Do you wish to be the guild master?" xml:space="preserve">
@@ -748,11 +748,11 @@
     <comment>legacy_id=183</comment>
   </data>
   <data name="the mouse, please draw." xml:space="preserve">
-    <value>o mouse, por favor desenhe.</value>
+    <value>Depois de selecionar uma cor com</value>
     <comment>legacy_id=184</comment>
   </data>
   <data name="Type /guild in front of" xml:space="preserve">
-    <value>Digite /guilda na frente de</value>
+    <value>Digite /guild na frente de</value>
     <comment>legacy_id=185</comment>
   </data>
   <data name="the guild master you want to join" xml:space="preserve">
@@ -772,7 +772,7 @@
     <comment>legacy_id=189</comment>
   </data>
   <data name="Party" xml:space="preserve">
-    <value>Festa</value>
+    <value>Sair</value>
     <comment>legacy_id=190,944,3515,3554</comment>
   </data>
   <data name="Type /party with the mouse cursor on" xml:space="preserve">
@@ -780,11 +780,11 @@
     <comment>legacy_id=191</comment>
   </data>
   <data name="the player you would like" xml:space="preserve">
-    <value>o jogador que você gostaria</value>
+    <value>Digite /party com o cursor do mouse sobre</value>
     <comment>legacy_id=192</comment>
   </data>
   <data name="to create a party with" xml:space="preserve">
-    <value>para criar uma festa com</value>
+    <value>para criar um grupo com</value>
     <comment>legacy_id=193</comment>
   </data>
   <data name="and you can create" xml:space="preserve">
@@ -792,7 +792,7 @@
     <comment>legacy_id=194</comment>
   </data>
   <data name="a party with them." xml:space="preserve">
-    <value>uma festa com eles.</value>
+    <value>um grupo com eles.</value>
     <comment>legacy_id=195</comment>
   </data>
   <data name="You can share more Exp with" xml:space="preserve">
@@ -812,7 +812,7 @@
     <comment>legacy_id=199</comment>
   </data>
   <data name="Level: %d" xml:space="preserve">
-    <value>Nível: %d</value>
+    <value>Pontos disponíveis: %d / %d</value>
     <comment>legacy_id=200,1774,2654</comment>
   </data>
   <data name="Exp : %u/%u" xml:space="preserve">
@@ -828,7 +828,7 @@
     <comment>legacy_id=203</comment>
   </data>
   <data name="Dmg: %d~%d" xml:space="preserve">
-    <value>Dano: %d~%d</value>
+    <value>Dano (taxa): %d~%d (%d)</value>
     <comment>legacy_id=204</comment>
   </data>
   <data name="Agility: %d" xml:space="preserve">
@@ -868,7 +868,7 @@
     <comment>legacy_id=214</comment>
   </data>
   <data name="Wizardry Dmg: %d~%d (+%d)" xml:space="preserve">
-    <value>Dano de Magia: %d~%d (+%d)</value>
+    <value>AG: %d / %d</value>
     <comment>legacy_id=215</comment>
   </data>
   <data name="WizardryDmgDD216" xml:space="preserve">
@@ -876,7 +876,7 @@
     <comment>legacy_id=216</comment>
   </data>
   <data name="Point: %d" xml:space="preserve">
-    <value>Ponto: %d</value>
+    <value>Pontos: %d</value>
     <comment>legacy_id=217</comment>
   </data>
   <data name="Explanation" xml:space="preserve">
@@ -892,7 +892,7 @@
     <comment>legacy_id=220</comment>
   </data>
   <data name="Close Party Window (P)" xml:space="preserve">
-    <value>Fechar janela da festa (P)</value>
+    <value>Fechar janela do grupo (P)</value>
     <comment>legacy_id=221</comment>
   </data>
   <data name="Close Character Info Window (C)" xml:space="preserve">
@@ -912,7 +912,7 @@
     <comment>legacy_id=226,943,3465</comment>
   </data>
   <data name="Zen Trade" xml:space="preserve">
-    <value>Comércio Zen</value>
+    <value>Troca de Zen</value>
     <comment>legacy_id=227</comment>
   </data>
   <data name="OK" xml:space="preserve">
@@ -940,7 +940,7 @@
     <comment>legacy_id=233</comment>
   </data>
   <data name="Storage" xml:space="preserve">
-    <value>Armazenar</value>
+    <value>Armazém</value>
     <comment>legacy_id=234,2888</comment>
   </data>
   <data name="Deposit" xml:space="preserve">
@@ -972,7 +972,7 @@
     <comment>legacy_id=241</comment>
   </data>
   <data name="Warehouse Lock/Unlock" xml:space="preserve">
-    <value>Bloqueio/desbloqueio de armazém</value>
+    <value>Bloquear/desbloquear armazém</value>
     <comment>legacy_id=242</comment>
   </data>
   <data name="Registering Rena" xml:space="preserve">
@@ -980,7 +980,7 @@
     <comment>legacy_id=243</comment>
   </data>
   <data name="Selecting Lucky number" xml:space="preserve">
-    <value>Selecionando o número da sorte</value>
+    <value>Registrando Rena</value>
     <comment>legacy_id=244</comment>
   </data>
   <data name="Number of Rena you have collected" xml:space="preserve">
@@ -988,7 +988,7 @@
     <comment>legacy_id=245</comment>
   </data>
   <data name="Number of Registered Rena" xml:space="preserve">
-    <value>Número de Rena Registrada</value>
+    <value>Quantidade de Rena coletada</value>
     <comment>legacy_id=246</comment>
   </data>
   <data name="Lucky number" xml:space="preserve">
@@ -996,7 +996,7 @@
     <comment>legacy_id=247</comment>
   </data>
   <data name="/Battle" xml:space="preserve">
-    <value>/Batalha</value>
+    <value>/Battle</value>
     <comment>legacy_id=248</comment>
   </data>
   <data name="/Battle Soccer" xml:space="preserve">
@@ -1012,15 +1012,15 @@
     <comment>legacy_id=251</comment>
   </data>
   <data name="Storage must be closed to warp" xml:space="preserve">
-    <value>O armazenamento deve ser fechado para deformar</value>
+    <value>Feche o armazém antes de usar /warp</value>
     <comment>legacy_id=252</comment>
   </data>
   <data name="Your level must be over %d to warp" xml:space="preserve">
-    <value>Seu nível deve estar acima de %d para distorcer</value>
+    <value>Seu nível deve ser superior a %d para teleportar</value>
     <comment>legacy_id=253</comment>
   </data>
   <data name="Guild254" xml:space="preserve">
-    <value>/guilda</value>
+    <value>Seu nível deve ser superior a %d para teleportar</value>
     <comment>legacy_id=254</comment>
   </data>
   <data name="You are already in a guild" xml:space="preserve">
@@ -1028,11 +1028,11 @@
     <comment>legacy_id=255</comment>
   </data>
   <data name="Party256" xml:space="preserve">
-    <value>/festa</value>
+    <value>/party</value>
     <comment>legacy_id=256</comment>
   </data>
   <data name="You are already in a party" xml:space="preserve">
-    <value>Você já está em uma festa</value>
+    <value>Você já está em um grupo</value>
     <comment>legacy_id=257</comment>
   </data>
   <data name="/exchange" xml:space="preserve">
@@ -1040,11 +1040,11 @@
     <comment>legacy_id=258</comment>
   </data>
   <data name="Trade259" xml:space="preserve">
-    <value>/troca</value>
+    <value>/trade</value>
     <comment>legacy_id=259</comment>
   </data>
   <data name="/warp" xml:space="preserve">
-    <value>/urdidura</value>
+    <value>/trade</value>
     <comment>legacy_id=260</comment>
   </data>
   <data name="You cannot go to Atlans while riding a Unicorn" xml:space="preserve">
@@ -1052,15 +1052,15 @@
     <comment>legacy_id=261</comment>
   </data>
   <data name="You can enter Altans only after joining a party." xml:space="preserve">
-    <value>Você só pode entrar em Altans depois de entrar em um grupo.</value>
+    <value>Você não pode ir para Atlans enquanto estiver montado em um Uniria</value>
     <comment>legacy_id=262</comment>
   </data>
   <data name="You can enter Icarus only with wings, dinorant, fenrirr" xml:space="preserve">
-    <value>Você só pode entrar em Ícaro com asas, dinorant, fenrirr</value>
+    <value>Você só pode entrar em Icarus com asas, dinorant, fenrirr</value>
     <comment>legacy_id=263</comment>
   </data>
   <data name="/whisper off" xml:space="preserve">
-    <value>/sussurro</value>
+    <value>Você só pode entrar em Icarus com asas, Dinorant ou Fenrir</value>
     <comment>legacy_id=264</comment>
   </data>
   <data name="/whisper on" xml:space="preserve">
@@ -1068,7 +1068,7 @@
     <comment>legacy_id=265</comment>
   </data>
   <data name="Storage fee" xml:space="preserve">
-    <value>Taxa de armazenamento</value>
+    <value>/whisper on</value>
     <comment>legacy_id=266</comment>
   </data>
   <data name="Whisper function is now off" xml:space="preserve">
@@ -1076,7 +1076,7 @@
     <comment>legacy_id=267</comment>
   </data>
   <data name="Whisper function is now on" xml:space="preserve">
-    <value>A função Whisper está agora ativada</value>
+    <value>A função de sussurro está desativada</value>
     <comment>legacy_id=268</comment>
   </data>
   <data name="You are not allowed to drop this expensive item" xml:space="preserve">
@@ -1084,7 +1084,7 @@
     <comment>legacy_id=269</comment>
   </data>
   <data name="Hello" xml:space="preserve">
-    <value>Olá</value>
+    <value>Você não pode descartar este item valioso</value>
     <comment>legacy_id=270</comment>
   </data>
   <data name="Hi" xml:space="preserve">
@@ -1196,7 +1196,7 @@
     <comment>legacy_id=316</comment>
   </data>
   <data name="Great" xml:space="preserve">
-    <value>Ótimo</value>
+    <value>Hihi</value>
     <comment>legacy_id=317,318,338</comment>
   </data>
   <data name="Oh Yeah" xml:space="preserve">
@@ -1204,7 +1204,7 @@
     <comment>legacy_id=319</comment>
   </data>
   <data name="OhYeah320" xml:space="preserve">
-    <value>Oh sim</value>
+    <value>Ah, sim</value>
     <comment>legacy_id=320</comment>
   </data>
   <data name="beat it" xml:space="preserve">
@@ -1236,7 +1236,7 @@
     <comment>legacy_id=332,333,334</comment>
   </data>
   <data name="Again" xml:space="preserve">
-    <value>De novo</value>
+    <value>Ferir</value>
     <comment>legacy_id=335,336</comment>
   </data>
   <data name="Respect" xml:space="preserve">
@@ -1260,7 +1260,7 @@
     <comment>legacy_id=346,347</comment>
   </data>
   <data name="Look around" xml:space="preserve">
-    <value>Olhe ao redor</value>
+    <value>Vamos, vamos!</value>
     <comment>legacy_id=348</comment>
   </data>
   <data name="/mu" xml:space="preserve">
@@ -1276,7 +1276,7 @@
     <comment>legacy_id=351</comment>
   </data>
   <data name="Bolts: %d (%d)" xml:space="preserve">
-    <value>Parafusos: %d (%d)</value>
+    <value>Flechas: %d (%d)</value>
     <comment>legacy_id=352</comment>
   </data>
   <data name="Guardian Angel" xml:space="preserve">
@@ -1312,7 +1312,7 @@
     <comment>legacy_id=360</comment>
   </data>
   <data name="Party (P)" xml:space="preserve">
-    <value>Festa (P)</value>
+    <value>Grupo (P)</value>
     <comment>legacy_id=361</comment>
   </data>
   <data name="Character (C)" xml:space="preserve">
@@ -1328,11 +1328,11 @@
     <comment>legacy_id=364</comment>
   </data>
   <data name="Notice! Please check out" xml:space="preserve">
-    <value>Perceber! Por favor confira</value>
+    <value>Atenção! Confira</value>
     <comment>legacy_id=365</comment>
   </data>
   <data name="the level of the player" xml:space="preserve">
-    <value>o nível do jogador</value>
+    <value>Atenção! Confira</value>
     <comment>legacy_id=366</comment>
   </data>
   <data name="and the items before trading." xml:space="preserve">
@@ -1340,7 +1340,7 @@
     <comment>legacy_id=367</comment>
   </data>
   <data name="Level" xml:space="preserve">
-    <value>Nível</value>
+    <value>e os itens antes de negociar.</value>
     <comment>legacy_id=368</comment>
   </data>
   <data name="About %d" xml:space="preserve">
@@ -1364,11 +1364,11 @@
     <comment>legacy_id=373</comment>
   </data>
   <data name="the same item that you want to trade." xml:space="preserve">
-    <value>o mesmo item que você deseja negociar.</value>
+    <value>Verifique se o item é</value>
     <comment>legacy_id=374</comment>
   </data>
   <data name="Inventory is full." xml:space="preserve">
-    <value>O estoque está cheio.</value>
+    <value>O inventário está cheio.</value>
     <comment>legacy_id=375</comment>
   </data>
   <data name="Do you want to use the fruit?" xml:space="preserve">
@@ -1380,7 +1380,7 @@
     <comment>legacy_id=377</comment>
   </data>
   <data name="stat creation failed from fruit combination." xml:space="preserve">
-    <value>a criação de estatísticas falhou devido à combinação de frutas.</value>
+    <value>Foram gerados %d pontos de atributo (%s).</value>
     <comment>legacy_id=378</comment>
   </data>
   <data name="(%s fruit) stat %d points have been %s." xml:space="preserve">
@@ -1388,7 +1388,7 @@
     <comment>legacy_id=379</comment>
   </data>
   <data name="You will exit game in %d seconds." xml:space="preserve">
-    <value>Você sairá do jogo em %d segundos.</value>
+    <value>(%s) Foram %d pontos de atributo %s.</value>
     <comment>legacy_id=380</comment>
   </data>
   <data name="Exit Game" xml:space="preserve">
@@ -1396,7 +1396,7 @@
     <comment>legacy_id=381</comment>
   </data>
   <data name="Select Server" xml:space="preserve">
-    <value>Selecione Servidor</value>
+    <value>Selecionar servidor</value>
     <comment>legacy_id=382</comment>
   </data>
   <data name="Switch Character" xml:space="preserve">
@@ -1454,7 +1454,7 @@
     <comment>legacy_id=392</comment>
   </data>
   <data name="included." xml:space="preserve">
-    <value>incluído.</value>
+    <value>As palavras restritas estão</value>
     <comment>legacy_id=393</comment>
   </data>
   <data name="Invalid character name" xml:space="preserve">
@@ -1478,7 +1478,7 @@
     <comment>legacy_id=398</comment>
   </data>
   <data name="You cannot delete characters" xml:space="preserve">
-    <value>Você não pode excluir caracteres</value>
+    <value>será necessário informar a senha do cofre.</value>
     <comment>legacy_id=399</comment>
   </data>
   <data name="over level 40." xml:space="preserve">
@@ -1574,7 +1574,7 @@
     <comment>legacy_id=422</comment>
   </data>
   <data name="You are short of Zen." xml:space="preserve">
-    <value>Você está com falta de Zen.</value>
+    <value>Você não tem Zen suficiente.</value>
     <comment>legacy_id=423</comment>
   </data>
   <data name="You can not trade over 50 million Zen at once" xml:space="preserve">
@@ -1582,7 +1582,7 @@
     <comment>legacy_id=424</comment>
   </data>
   <data name="Someone requests you to join their a party" xml:space="preserve">
-    <value>Alguém pede que você participe de uma festa</value>
+    <value>Alguém pede que você participe de um grupo</value>
     <comment>legacy_id=425</comment>
   </data>
   <data name="Please draw your guild emblem" xml:space="preserve">
@@ -1614,7 +1614,7 @@
     <comment>legacy_id=432</comment>
   </data>
   <data name="No charge info" xml:space="preserve">
-    <value>Informações sem custos</value>
+    <value>Sem informações de cobrança</value>
     <comment>legacy_id=433</comment>
   </data>
   <data name="This is a blocked character" xml:space="preserve">
@@ -1630,7 +1630,7 @@
     <comment>legacy_id=436</comment>
   </data>
   <data name="Please check on http://muonline.webzen.com site" xml:space="preserve">
-    <value>Por favor, verifique no site http://muonline.webzen.com</value>
+    <value>Os itens desta conta estão bloqueados.</value>
     <comment>legacy_id=437</comment>
   </data>
   <data name="You cannot remove your character since the guild cannot be removed" xml:space="preserve">
@@ -1638,7 +1638,7 @@
     <comment>legacy_id=438</comment>
   </data>
   <data name="The character is item blocked" xml:space="preserve">
-    <value>O personagem está com item bloqueado</value>
+    <value>Você não pode remover o personagem porque a guilda não pode ser removida.</value>
     <comment>legacy_id=439</comment>
   </data>
   <data name="Incorrect password" xml:space="preserve">
@@ -1654,7 +1654,7 @@
     <comment>legacy_id=442</comment>
   </data>
   <data name="if you want to lock the inventory," xml:space="preserve">
-    <value>se você quiser bloquear o inventário,</value>
+    <value>não é permitido usar os mesmos 4 números</value>
     <comment>legacy_id=443</comment>
   </data>
   <data name="No more stats would be increased on your level." xml:space="preserve">
@@ -1662,7 +1662,7 @@
     <comment>legacy_id=446</comment>
   </data>
   <data name="Agree with the above agreement" xml:space="preserve">
-    <value>Concordo com o acordo acima</value>
+    <value>Nenhum atributo adicional poderá ser aumentado no seu nível.</value>
     <comment>legacy_id=447</comment>
   </data>
   <data name="Do you want to move your account into the divided server?" xml:space="preserve">
@@ -1670,7 +1670,7 @@
     <comment>legacy_id=448</comment>
   </data>
   <data name="Dissolve or leave your guild" xml:space="preserve">
-    <value>Dissolva ou saia da sua guilda</value>
+    <value>Deseja mover sua conta para o servidor dividido?</value>
     <comment>legacy_id=449</comment>
   </data>
   <data name="Account" xml:space="preserve">
@@ -1681,16 +1681,40 @@
     <value>Senha</value>
     <comment>legacy_id=451</comment>
   </data>
+  <data name="LoginRememberUsername" xml:space="preserve">
+    <value>Lembrar usuário</value>
+    <comment>Login screen: remember-username checkbox label.</comment>
+  </data>
+  <data name="LoginRememberPassword" xml:space="preserve">
+    <value>Lembrar senha</value>
+    <comment>Login screen: remember-password checkbox label.</comment>
+  </data>
+  <data name="LoginTrustWarning" xml:space="preserve">
+    <value>Salve a senha apenas em um computador confiável.</value>
+    <comment>Login screen: warning under the remember-password checkbox.</comment>
+  </data>
+  <data name="LoginSavePasswordWarningTitle" xml:space="preserve">
+    <value>AVISO!!!</value>
+    <comment>Remember-password confirmation dialog: header.</comment>
+  </data>
+  <data name="LoginSavePasswordWarningBody" xml:space="preserve">
+    <value>Salvar a senha permite que qualquer pessoa neste computador entre na sua conta. Faça isso apenas em um computador confiável. Salvar a senha?</value>
+    <comment>Remember-password confirmation dialog: body.</comment>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Créditos</value>
+    <comment>Login screen: credits button.</comment>
+  </data>
   <data name="Connect" xml:space="preserve">
-    <value>Conectar</value>
+    <value />
     <comment>legacy_id=452,562</comment>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>Saída</value>
+    <value>Sair</value>
     <comment>legacy_id=453</comment>
   </data>
   <data name="(c) Copyright 2001 Webzen" xml:space="preserve">
-    <value>(c) Direitos autorais 2001 Webzen</value>
+    <value>(c) Direitos autorais 2026 Luxview Gaming</value>
     <comment>legacy_id=454</comment>
   </data>
   <data name=" All Rights Reserved." xml:space="preserve">
@@ -1702,7 +1726,7 @@
     <comment>legacy_id=456</comment>
   </data>
   <data name="Operation" xml:space="preserve">
-    <value>Operação</value>
+    <value>Versão %s</value>
     <comment>legacy_id=457</comment>
   </data>
   <data name="WEBZEN" xml:space="preserve">
@@ -1714,11 +1738,11 @@
     <comment>legacy_id=459</comment>
   </data>
   <data name="[%s-%d(Non-PvP) Server]" xml:space="preserve">
-    <value>[Servidor %s-%d (não PvP)]</value>
+    <value>[%s-%d (Não-PvP)]</value>
     <comment>legacy_id=460</comment>
   </data>
   <data name="[%s-%d Server]" xml:space="preserve">
-    <value>[Servidor %s-%d]</value>
+    <value>[%s-%d (PVP)]</value>
     <comment>legacy_id=461</comment>
   </data>
   <data name="1)After moving your account into the divided server," xml:space="preserve">
@@ -1726,7 +1750,7 @@
     <comment>legacy_id=462</comment>
   </data>
   <data name="you can not move your account back to the previous server." xml:space="preserve">
-    <value>você não pode mover sua conta de volta para o servidor anterior.</value>
+    <value>1) Após mover sua conta para o servidor dividido,</value>
     <comment>legacy_id=463</comment>
   </data>
   <data name="2)After moving your account into the divided server," xml:space="preserve">
@@ -1734,7 +1758,7 @@
     <comment>legacy_id=464</comment>
   </data>
   <data name="all the character info and items under your account" xml:space="preserve">
-    <value>todas as informações do personagem e itens da sua conta</value>
+    <value>2) Após mover sua conta para o servidor dividido,</value>
     <comment>legacy_id=465</comment>
   </data>
   <data name="will move into the divided server" xml:space="preserve">
@@ -1742,7 +1766,7 @@
     <comment>legacy_id=466</comment>
   </data>
   <data name="when you login the divided server." xml:space="preserve">
-    <value>quando você faz login no servidor dividido.</value>
+    <value>serão movidos para o servidor dividido</value>
     <comment>legacy_id=467</comment>
   </data>
   <data name="3)After moving your account into the divided server" xml:space="preserve">
@@ -1750,7 +1774,7 @@
     <comment>legacy_id=468</comment>
   </data>
   <data name="game will be automatically closed" xml:space="preserve">
-    <value>o jogo será fechado automaticamente</value>
+    <value>3) Após mover sua conta para o servidor dividido,</value>
     <comment>legacy_id=469</comment>
   </data>
   <data name="Connecting to the server" xml:space="preserve">
@@ -1758,7 +1782,7 @@
     <comment>legacy_id=470</comment>
   </data>
   <data name="Please wait" xml:space="preserve">
-    <value>Por favor, aguarde</value>
+    <value>Aguarde</value>
     <comment>legacy_id=471,473</comment>
   </data>
   <data name="Verifying your account" xml:space="preserve">
@@ -1790,7 +1814,7 @@
     <comment>legacy_id=479</comment>
   </data>
   <data name="Tied!!!" xml:space="preserve">
-    <value>Ligado!!!</value>
+    <value>Você pode usar o comando de sussurro a partir do nível 6 do personagem.</value>
     <comment>legacy_id=480</comment>
   </data>
   <data name="You are connected to the server" xml:space="preserve">
@@ -1806,7 +1830,7 @@
     <comment>legacy_id=483</comment>
   </data>
   <data name="Welcome to" xml:space="preserve">
-    <value>Bem-vindo ao %s</value>
+    <value>[Aviso aos membros da guilda] %s</value>
     <comment>legacy_id=484</comment>
   </data>
   <data name="Of" xml:space="preserve">
@@ -1830,7 +1854,7 @@
     <comment>legacy_id=489</comment>
   </data>
   <data name="1st Stage Outlaw" xml:space="preserve">
-    <value>1ª Fase Fora da Lei</value>
+    <value>Aviso de fora da lei</value>
     <comment>legacy_id=490</comment>
   </data>
   <data name="2nd Stage Outlaw" xml:space="preserve">
@@ -1838,7 +1862,7 @@
     <comment>legacy_id=491</comment>
   </data>
   <data name="Your trade has been canceled." xml:space="preserve">
-    <value>Sua negociação foi cancelada.</value>
+    <value>Fora da lei — estágio 2</value>
     <comment>legacy_id=492</comment>
   </data>
   <data name="You cannot trade right now." xml:space="preserve">
@@ -1866,11 +1890,11 @@
     <comment>legacy_id=498</comment>
   </data>
   <data name="Party is full." xml:space="preserve">
-    <value>A festa está cheia.</value>
+    <value>O grupo está cheio.</value>
     <comment>legacy_id=499</comment>
   </data>
   <data name="The user has left the game." xml:space="preserve">
-    <value>O usuário saiu do jogo.</value>
+    <value>O grupo está cheio.</value>
     <comment>legacy_id=500,506</comment>
   </data>
   <data name="The user is already in another party." xml:space="preserve">
@@ -1878,7 +1902,7 @@
     <comment>legacy_id=501</comment>
   </data>
   <data name="You have just left the party." xml:space="preserve">
-    <value>Você acabou de sair da festa.</value>
+    <value>Você saiu do grupo.</value>
     <comment>legacy_id=502</comment>
   </data>
   <data name="Guild master has refused your request to join the guild." xml:space="preserve">
@@ -1886,7 +1910,7 @@
     <comment>legacy_id=503</comment>
   </data>
   <data name="You have just joined the guild." xml:space="preserve">
-    <value>Você acabou de entrar na guilda.</value>
+    <value>O mestre da guilda recusou seu pedido para entrar na guilda.</value>
     <comment>legacy_id=504</comment>
   </data>
   <data name="The guild is full." xml:space="preserve">
@@ -1910,7 +1934,7 @@
     <comment>legacy_id=510</comment>
   </data>
   <data name="You have left the guild." xml:space="preserve">
-    <value>Você saiu da guilda.</value>
+    <value>Personagens acima do nível 6 podem entrar em uma guilda.</value>
     <comment>legacy_id=512</comment>
   </data>
   <data name="Only a guild master can disband a guild." xml:space="preserve">
@@ -1918,7 +1942,7 @@
     <comment>legacy_id=513</comment>
   </data>
   <data name="You have failed from the guild" xml:space="preserve">
-    <value>Você falhou na guilda</value>
+    <value>Somente o mestre da guilda pode dissolver uma guilda.</value>
     <comment>legacy_id=514</comment>
   </data>
   <data name="The guild has been dissolved" xml:space="preserve">
@@ -1958,7 +1982,7 @@
     <comment>legacy_id=524</comment>
   </data>
   <data name="Your request for a Guild War is refused." xml:space="preserve">
-    <value>Seu pedido para uma Guerra de Guildas foi recusado.</value>
+    <value>Somente mestres de guilda podem declarar uma Guerra de Guildas.</value>
     <comment>legacy_id=525</comment>
   </data>
   <data name="A Guild War against %s guild has started!" xml:space="preserve">
@@ -1966,7 +1990,7 @@
     <comment>legacy_id=526</comment>
   </data>
   <data name="You have lost the Guild War!!!" xml:space="preserve">
-    <value>Você perdeu a Guerra das Guildas!!!</value>
+    <value>Você perdeu a Guerra de Guildas!!!</value>
     <comment>legacy_id=527</comment>
   </data>
   <data name="You have won the Guild War!!!" xml:space="preserve">
@@ -1982,7 +2006,7 @@
     <comment>legacy_id=530</comment>
   </data>
   <data name="You have won the Guild War!!!(Opposing guild disbanded)" xml:space="preserve">
-    <value>Você venceu a Guerra de Guildas!!!(Guilda adversária dissolvida)</value>
+    <value>Você perdeu a Guerra de Guildas!!! (O mestre da guilda saiu.)</value>
     <comment>legacy_id=531</comment>
   </data>
   <data name="You have lost the Guild War!!!(Guild disbanded)" xml:space="preserve">
@@ -1990,7 +2014,7 @@
     <comment>legacy_id=532</comment>
   </data>
   <data name="A Battle Soccer has started with %s guild." xml:space="preserve">
-    <value>Uma batalha de futebol começou com a guilda %s.</value>
+    <value>Você perdeu a Guerra de Guildas!!! (A guilda foi dissolvida.)</value>
     <comment>legacy_id=533</comment>
   </data>
   <data name="%s guild wins a point." xml:space="preserve">
@@ -1998,7 +2022,7 @@
     <comment>legacy_id=534</comment>
   </data>
   <data name="The level gap between you two has to be less than 130" xml:space="preserve">
-    <value>A diferença de nível entre vocês dois deve ser inferior a 130</value>
+    <value>A guilda %s marcou um ponto.</value>
     <comment>legacy_id=535</comment>
   </data>
   <data name="An expensive item!" xml:space="preserve">
@@ -2102,7 +2126,7 @@
     <comment>legacy_id=560</comment>
   </data>
   <data name="(Full)" xml:space="preserve">
-    <value>(Completo)</value>
+    <value>Preparando</value>
     <comment>legacy_id=561</comment>
   </data>
   <data name="The TEST server is intended for testing," xml:space="preserve">
@@ -2110,7 +2134,7 @@
     <comment>legacy_id=563</comment>
   </data>
   <data name="therefore, data loss may occur." xml:space="preserve">
-    <value>portanto, pode ocorrer perda de dados.</value>
+    <value>O servidor TEST é destinado a testes;</value>
     <comment>legacy_id=564</comment>
   </data>
   <data name="Since Helheim server" xml:space="preserve">
@@ -2118,7 +2142,7 @@
     <comment>legacy_id=565</comment>
   </data>
   <data name="tends to be crowded" xml:space="preserve">
-    <value>tende a ficar lotado</value>
+    <value>Como o servidor Helheim</value>
     <comment>legacy_id=566</comment>
   </data>
   <data name="we recommend that you use other servers." xml:space="preserve">
@@ -2126,15 +2150,15 @@
     <comment>legacy_id=567</comment>
   </data>
   <data name="guild member has been withdrawn." xml:space="preserve">
-    <value>membro da guilda foi retirado.</value>
+    <value>recomendamos usar outros servidores.</value>
     <comment>legacy_id=568</comment>
   </data>
   <data name="You cannot warp while riding on a unicorn" xml:space="preserve">
-    <value>Você não pode se deformar enquanto monta um unicórnio</value>
+    <value>Você não pode se teleportar enquanto monta um unicórnio</value>
     <comment>legacy_id=569</comment>
   </data>
   <data name="Pwned by the Filter!" xml:space="preserve">
-    <value>Possuído pelo Filtro!</value>
+    <value>Você não pode se teletransportar enquanto monta um unicórnio</value>
     <comment>legacy_id=570</comment>
   </data>
   <data name="Throw it and you may receive some Zen or items" xml:space="preserve">
@@ -2142,7 +2166,7 @@
     <comment>legacy_id=571</comment>
   </data>
   <data name="It is used to increase your item level up to 6" xml:space="preserve">
-    <value>É usado para aumentar o nível do seu item até 6</value>
+    <value>Jogue-o para receber Zen ou itens.</value>
     <comment>legacy_id=572</comment>
   </data>
   <data name="It is used to increase your item level up to 7,8,9" xml:space="preserve">
@@ -2150,31 +2174,31 @@
     <comment>legacy_id=573</comment>
   </data>
   <data name="It is used to combine Chaos items" xml:space="preserve">
-    <value>É usado para combinar itens do Caos</value>
+    <value>Usado para aumentar o nível do item até 7, 8 ou 9.</value>
     <comment>legacy_id=574</comment>
   </data>
   <data name="Absorb 30%% of damage" xml:space="preserve">
-    <value>Absorva 30% de dano % of</value>
+    <value>Absorve 30%% do dano</value>
     <comment>legacy_id=575</comment>
   </data>
   <data name="Increase 30%% of attacking &amp; Wizardry Dmg" xml:space="preserve">
-    <value>Aumenta em 30% o dano de ataque e magia de % of</value>
+    <value>Absorve 30%% do dano</value>
     <comment>legacy_id=576</comment>
   </data>
   <data name="Increase %d%% of Damage" xml:space="preserve">
-    <value>Aumentar o dano de %d%% of</value>
+    <value>Aumenta o dano em %d%%</value>
     <comment>legacy_id=577</comment>
   </data>
   <data name="Absorb %d%% of Damage" xml:space="preserve">
-    <value>Absorver Dano %d%% of</value>
+    <value>Aumenta o dano em %d%%</value>
     <comment>legacy_id=578</comment>
   </data>
   <data name="Increase speed" xml:space="preserve">
-    <value>Aumentar a velocidade</value>
+    <value>Aumenta a velocidade</value>
     <comment>legacy_id=579</comment>
   </data>
   <data name="You are lack of %s items." xml:space="preserve">
-    <value>Faltam itens %s.</value>
+    <value>Aumenta a velocidade</value>
     <comment>legacy_id=580</comment>
   </data>
   <data name="Combine items after organizing your inventory." xml:space="preserve">
@@ -2182,7 +2206,7 @@
     <comment>legacy_id=581</comment>
   </data>
   <data name="Skill Damage: %d%%" xml:space="preserve">
-    <value>Dano de habilidade: %d%%</value>
+    <value>Combine os itens depois de organizar o inventário.</value>
     <comment>legacy_id=582</comment>
   </data>
   <data name="Chaos" xml:space="preserve">
@@ -2190,7 +2214,7 @@
     <comment>legacy_id=583</comment>
   </data>
   <data name="%s Success rate: %d%%" xml:space="preserve">
-    <value>Taxa de sucesso de %s: %d%%</value>
+    <value>Chaos</value>
     <comment>legacy_id=584</comment>
   </data>
   <data name="%s Required Zen: %s" xml:space="preserve">
@@ -2198,7 +2222,7 @@
     <comment>legacy_id=585</comment>
   </data>
   <data name="when %s, You must have a Jewel of Chaos" xml:space="preserve">
-    <value>quando %s, você deve ter uma joia do caos</value>
+    <value>Zen necessário para %s: %s</value>
     <comment>legacy_id=586</comment>
   </data>
   <data name="in order to combine items" xml:space="preserve">
@@ -2206,7 +2230,7 @@
     <comment>legacy_id=587</comment>
   </data>
   <data name="in case you fail on" xml:space="preserve">
-    <value>caso você falhe</value>
+    <value>para combinar os itens</value>
     <comment>legacy_id=588</comment>
   </data>
   <data name="Please note that" xml:space="preserve">
@@ -2214,7 +2238,7 @@
     <comment>legacy_id=589</comment>
   </data>
   <data name="the level of items decreases" xml:space="preserve">
-    <value>o nível dos itens diminui</value>
+    <value>Observe que</value>
     <comment>legacy_id=590</comment>
   </data>
   <data name="Combining" xml:space="preserve">
@@ -2422,7 +2446,7 @@
     <comment>legacy_id=642</comment>
   </data>
   <data name="You can enter Devil Square now!!" xml:space="preserve">
-    <value>Você pode entrar na Praça do Diabo agora!!</value>
+    <value>Você pode entrar na Devil Square agora!!</value>
     <comment>legacy_id=643</comment>
   </data>
   <data name="Devil Square will open in %d minutes." xml:space="preserve">
@@ -2454,15 +2478,15 @@
     <comment>legacy_id=650</comment>
   </data>
   <data name="If you want to find out about the Devil Square, go meet Charon in Noria" xml:space="preserve">
-    <value>Se você quiser saber mais sobre a Praça do Diabo, vá conhecer Caronte em Noria</value>
+    <value>Se você quiser saber mais sobre a Devil Square, vá conhecer Caronte em Noria</value>
     <comment>legacy_id=651</comment>
   </data>
   <data name="TheDevilSquareIsAPlace" xml:space="preserve">
-    <value>A Praça do Diabo é um lugar onde os guerreiros provam sua coragem. Guerreiros qualificados receberão o convite do Diabo. Vá para o Chaos Goblin em Noria com o olho do diabo, chave do diabo, jóia do caos e Zen suficiente.</value>
+    <value>A Devil Square é um lugar onde os guerreiros provam sua coragem. Guerreiros qualificados receberão o convite do Diabo. Vá para o Chaos Goblin em Noria com o olho do diabo, chave do diabo, jóia do caos e Zen suficiente.</value>
     <comment>legacy_id=652</comment>
   </data>
   <data name="YouHaveComeTooSoonYou" xml:space="preserve">
-    <value>Você veio cedo demais. Você poderá entrar na Praça do Diabo se esperar a hora e revisitar mais tarde.</value>
+    <value>Você veio cedo demais. Você poderá entrar na Devil Square se esperar a hora e revisitar mais tarde.</value>
     <comment>legacy_id=653</comment>
   </data>
   <data name="SomeSayThatTheDevilEyes" xml:space="preserve">
@@ -2470,11 +2494,11 @@
     <comment>legacy_id=654</comment>
   </data>
   <data name="ManyAdventurersAndWarriorsAreCrowding" xml:space="preserve">
-    <value>Muitos aventureiros e guerreiros estão lotando a Devil Square para provar sua coragem. Guerreiro, você está a caminho da Praça do Diabo?</value>
+    <value>Muitos aventureiros e guerreiros estão lotando a Devil Square para provar sua coragem. Guerreiro, você está a caminho da Devil Square?</value>
     <comment>legacy_id=655</comment>
   </data>
   <data name="DoNotYouWantToProve" xml:space="preserve">
-    <value>Você não quer provar que é o mais corajoso dos mais corajosos. A oportunidade está à sua frente. Se você obtiver o Devil Eye and Key, estará um passo mais perto dessa oportunidade.</value>
+    <value>Você não quer provar que é o mais corajoso dos mais corajosos. A oportunidade está à sua frente. Se você obtiver o Olho do Diabo e Chave do Diabo, estará um passo mais perto dessa oportunidade.</value>
     <comment>legacy_id=656</comment>
   </data>
   <data name="ThousandsOfYearsAgoTheDevil" xml:space="preserve">
@@ -2486,7 +2510,7 @@
     <comment>legacy_id=658</comment>
   </data>
   <data name="BringMeTheDevilEyeDevil" xml:space="preserve">
-    <value>Traga-me o Olho do Diabo, a Chave do Diabo e uma Jóia do Caos. O convite do Diabo só será concedido a você depois que você me trouxer esses três itens.</value>
+    <value>Traga-me o Olho do Diabo, a Chave do Diabo e uma Chaos. O convite do Diabo só será concedido a você depois que você me trouxer esses três itens.</value>
     <comment>legacy_id=659</comment>
   </data>
   <data name="YouVeBroughtTheDevilS" xml:space="preserve">
@@ -2494,7 +2518,7 @@
     <comment>legacy_id=660</comment>
   </data>
   <data name="FinallyTheGateOfDevilSquare" xml:space="preserve">
-    <value>Finalmente, o portão da Devil Square foi aberto novamente. Caronte, o porteiro, permitirá que você entre na Praça do Diabo</value>
+    <value>Finalmente, o portão da Devil Square foi aberto novamente. Caronte, o porteiro, permitirá que você entre na Devil Square</value>
     <comment>legacy_id=661</comment>
   </data>
   <data name="ManyAdventurersAreLookingForThe" xml:space="preserve">
@@ -2530,7 +2554,7 @@
     <comment>legacy_id=670</comment>
   </data>
   <data name="No one has ever entered the Devil Square yet." xml:space="preserve">
-    <value>Ninguém jamais entrou na Praça do Diabo ainda.</value>
+    <value>Ninguém jamais entrou na Devil Square ainda.</value>
     <comment>legacy_id=671</comment>
   </data>
   <data name="No human has ever gone there." xml:space="preserve">
@@ -2558,11 +2582,11 @@
     <comment>legacy_id=677</comment>
   </data>
   <data name="You've come too late to enter the Devil Square." xml:space="preserve">
-    <value>Você chegou tarde demais para entrar na Praça do Diabo.</value>
+    <value>Você chegou tarde demais para entrar na Devil Square.</value>
     <comment>legacy_id=678</comment>
   </data>
   <data name="Devil Square is full." xml:space="preserve">
-    <value>A Praça do Diabo está lotada.</value>
+    <value>A Devil Square está lotada.</value>
     <comment>legacy_id=679</comment>
   </data>
   <data name="Rank" xml:space="preserve">
@@ -2598,7 +2622,7 @@
     <comment>legacy_id=687</comment>
   </data>
   <data name="Firecracker688" xml:space="preserve">
-    <value>/Foguete</value>
+    <value>/Firecracker</value>
     <comment>legacy_id=688</comment>
   </data>
   <data name="Must be over level 15 to combine a Cloak of Invisibility." xml:space="preserve">
@@ -2790,11 +2814,11 @@
     <comment>legacy_id=735</comment>
   </data>
   <data name="Chaos Weapon Combination" xml:space="preserve">
-    <value>Combinação de Arma do Caos</value>
+    <value>Combinação de Arma Chaos</value>
     <comment>legacy_id=736</comment>
   </data>
   <data name="Master Level" xml:space="preserve">
-    <value>Nível Mestre</value>
+    <value>Nível Master</value>
     <comment>legacy_id=737</comment>
   </data>
   <data name="Summon" xml:space="preserve">
@@ -2814,7 +2838,7 @@
     <comment>legacy_id=741</comment>
   </data>
   <data name="Ignor opponent's defensive power by %d%%" xml:space="preserve">
-    <value>Ignora o poder defensivo do oponente em %d%%</value>
+    <value>Ignora %d%% da defesa do oponente</value>
     <comment>legacy_id=742</comment>
   </data>
   <data name="Max AG +%d increased" xml:space="preserve">
@@ -2822,7 +2846,7 @@
     <comment>legacy_id=743</comment>
   </data>
   <data name="Absorb %d%% additional damage" xml:space="preserve">
-    <value>Absorva %d%% adano adicional</value>
+    <value>Absorve %d%% de dano adicional</value>
     <comment>legacy_id=744</comment>
   </data>
   <data name="Raid Skill (Mana:%d)" xml:space="preserve">
@@ -2830,7 +2854,7 @@
     <comment>legacy_id=745</comment>
   </data>
   <data name="Parrying 10%% increased" xml:space="preserve">
-    <value>Aparar 10%% iaumentado</value>
+    <value>Aparada aumentada em 10%%</value>
     <comment>legacy_id=746</comment>
   </data>
   <data name="You have exchanged Dinorants" xml:space="preserve">
@@ -2846,7 +2870,7 @@
     <comment>legacy_id=749</comment>
   </data>
   <data name="Chat display On/Off (F2)" xml:space="preserve">
-    <value>Exibição de bate-papo ativada/desativada (F2)</value>
+    <value>Exibir/ocultar chat (F2)</value>
     <comment>legacy_id=750</comment>
   </data>
   <data name="Size Adjustment (F4)" xml:space="preserve">
@@ -3166,7 +3190,7 @@
     <comment>legacy_id=849</comment>
   </data>
   <data name="You can enter %s now." xml:space="preserve">
-    <value>Você pode inserir %s agora.</value>
+    <value>Você já pode entrar em %s.</value>
     <comment>legacy_id=850</comment>
   </data>
   <data name="After %d minutes you may enter %s." xml:space="preserve">
@@ -3174,7 +3198,7 @@
     <comment>legacy_id=851</comment>
   </data>
   <data name="The time to enter %s has passed." xml:space="preserve">
-    <value>O tempo para entrar em %s já passou.</value>
+    <value>O prazo para entrar em %s já terminou.</value>
     <comment>legacy_id=852</comment>
   </data>
   <data name="The maximum capacity of %s has been reached. The max. number allowed is %d." xml:space="preserve">
@@ -3186,7 +3210,7 @@
     <comment>legacy_id=854</comment>
   </data>
   <data name="EvenIfYouDieOrUse" xml:space="preserve">
-    <value>Mesmo se você morrer ou usar o 'comando de transporte' ou o 'Town Portal Scroll' durante a missão, não desconecte até que a missão termine. Se você se desconectar, não poderá receber nenhuma recompensa por completar a missão.</value>
+    <value>Mesmo se você morrer ou usar o 'comando de transporte' ou o 'Pergaminho de Portal da Cidade' durante a missão, não desconecte até que a missão termine. Se você se desconectar, não poderá receber nenhuma recompensa por completar a missão.</value>
     <comment>legacy_id=855</comment>
   </data>
   <data name="TheWeaponHasBeenFoundThank" xml:space="preserve">
@@ -3238,7 +3262,7 @@
     <comment>legacy_id=867</comment>
   </data>
   <data name="Entrance is allowed for %d times" xml:space="preserve">
-    <value>A entrada é permitida nos horários %d</value>
+    <value>É permitido entrar %d vezes.</value>
     <comment>legacy_id=868</comment>
   </data>
   <data name="%d %s %s Schedule" xml:space="preserve">
@@ -3274,7 +3298,7 @@
     <comment>legacy_id=880</comment>
   </data>
   <data name="Duration: %dseconds" xml:space="preserve">
-    <value>Duração: %dsegundos</value>
+    <value>Duração: %d segundos</value>
     <comment>legacy_id=881</comment>
   </data>
   <data name="Using accumulated stone" xml:space="preserve">
@@ -3490,7 +3514,7 @@
     <comment>legacy_id=935</comment>
   </data>
   <data name="You must be in a party" xml:space="preserve">
-    <value>Você deve estar em uma festa</value>
+    <value>Você deve estar em um grupo</value>
     <comment>legacy_id=937</comment>
   </data>
   <data name="Command Window" xml:space="preserve">
@@ -4262,7 +4286,7 @@
     <comment>legacy_id=1139</comment>
   </data>
   <data name="Quest" xml:space="preserve">
-    <value>Busca</value>
+    <value>Missão</value>
     <comment>legacy_id=1140,3427</comment>
   </data>
   <data name="Castle" xml:space="preserve">
@@ -4282,7 +4306,7 @@
     <comment>legacy_id=1148</comment>
   </data>
   <data name="Can't be in Chaos Castle" xml:space="preserve">
-    <value>Não posso estar no Castelo do Caos</value>
+    <value>Não posso estar no Chaos Castle</value>
     <comment>legacy_id=1150</comment>
   </data>
   <data name="The spirit of the guard has been purified" xml:space="preserve">
@@ -4306,7 +4330,7 @@
     <comment>legacy_id=1157</comment>
   </data>
   <data name="DisguiseYourselfWithTheArmorOf" xml:space="preserve">
-    <value>Disfarce-se com a Armadura do Guarda e infiltre-se no Castelo do Caos!</value>
+    <value>Disfarce-se com a Armadura do Guarda e infiltre-se no Chaos Castle!</value>
     <comment>legacy_id=1158</comment>
   </data>
   <data name="Please save the souls exploited by the demon, Kundun." xml:space="preserve">
@@ -4638,7 +4662,7 @@
     <comment>legacy_id=1241</comment>
   </data>
   <data name="Magic Gladiator, Dark lord" xml:space="preserve">
-    <value>Gladiador Mágico, Lorde das Trevas</value>
+    <value>Magic Gladiator, Lorde das Trevas</value>
     <comment>legacy_id=1242</comment>
   </data>
   <data name="Character that can't be created" xml:space="preserve">
@@ -5262,11 +5286,11 @@
     <comment>legacy_id=1412</comment>
   </data>
   <data name="Potion of bless" xml:space="preserve">
-    <value>Poção de bênção</value>
+    <value>Poção Bless</value>
     <comment>legacy_id=1413</comment>
   </data>
   <data name="Potion of soul" xml:space="preserve">
-    <value>Poção da alma</value>
+    <value>Poção Soul</value>
     <comment>legacy_id=1414</comment>
   </data>
   <data name="Life Stone" xml:space="preserve">
@@ -5578,7 +5602,7 @@
     <comment>legacy_id=1500</comment>
   </data>
   <data name="Unusual castle information" xml:space="preserve">
-    <value>Informações incomuns sobre o castelo</value>
+    <value>Informações incomuns do castelo</value>
     <comment>legacy_id=1501</comment>
   </data>
   <data name="Castle guild is disappeared" xml:space="preserve">
@@ -5586,19 +5610,19 @@
     <comment>legacy_id=1502</comment>
   </data>
   <data name="Failed to register for Castle Siege" xml:space="preserve">
-    <value>Falha ao registrar-se no Castle Siege</value>
+    <value>Falha ao se registrar no Castle Siege</value>
     <comment>legacy_id=1503</comment>
   </data>
   <data name="Castle Siege registration is successful" xml:space="preserve">
-    <value>O registro do Castle Siege foi realizado com sucesso</value>
+    <value>Registro no Castle Siege realizado com sucesso</value>
     <comment>legacy_id=1504</comment>
   </data>
   <data name="Already registered in Castle Siege." xml:space="preserve">
-    <value>Já registrado no Castle Siege.</value>
+    <value>Você já está registrado no Castle Siege.</value>
     <comment>legacy_id=1505</comment>
   </data>
   <data name="You belong to the guild of the defending team." xml:space="preserve">
-    <value>Você pertence à guilda do time defensor.</value>
+    <value>Você pertence à guilda da equipe defensora.</value>
     <comment>legacy_id=1506</comment>
   </data>
   <data name="Incorrect guild." xml:space="preserve">
@@ -5614,19 +5638,19 @@
     <comment>legacy_id=1509</comment>
   </data>
   <data name="It's not a registration period for Castle Siege." xml:space="preserve">
-    <value>Não é um período de inscrição para Castle Siege.</value>
+    <value>Não é o período de registro do Castle Siege.</value>
     <comment>legacy_id=1510</comment>
   </data>
   <data name="Number of guild members is lacking." xml:space="preserve">
-    <value>Falta o número de membros da guilda.</value>
+    <value>Número insuficiente de membros na guilda.</value>
     <comment>legacy_id=1511</comment>
   </data>
   <data name="Surrendering Castle Siege has failed." xml:space="preserve">
-    <value>A rendição do cerco ao castelo falhou.</value>
+    <value>Falha ao se render no Castle Siege.</value>
     <comment>legacy_id=1512</comment>
   </data>
   <data name="Surrendering Castle Siege is successful." xml:space="preserve">
-    <value>A rendição do Castle Siege foi bem-sucedida.</value>
+    <value>Rendição no Castle Siege realizada com sucesso.</value>
     <comment>legacy_id=1513</comment>
   </data>
   <data name="This guild is not registered in Castle Siege." xml:space="preserve">
@@ -5634,11 +5658,11 @@
     <comment>legacy_id=1514</comment>
   </data>
   <data name="It's not a surrendering period for Castle Siege." xml:space="preserve">
-    <value>Não é um período de rendição para Castle Siege.</value>
+    <value>Não é o período de rendição do Castle Siege.</value>
     <comment>legacy_id=1515</comment>
   </data>
   <data name="Registration of sign has failed." xml:space="preserve">
-    <value>O registro do sinal falhou.</value>
+    <value>Falha ao registrar o sinal.</value>
     <comment>legacy_id=1516</comment>
   </data>
   <data name="This guild has not participated in Castle Siege." xml:space="preserve">
@@ -5646,19 +5670,19 @@
     <comment>legacy_id=1517</comment>
   </data>
   <data name="Incorrect item was registered." xml:space="preserve">
-    <value>Item incorreto foi registrado.</value>
+    <value>O item registrado está incorreto.</value>
     <comment>legacy_id=1518</comment>
   </data>
   <data name="Failed to purchase." xml:space="preserve">
-    <value>Falha ao comprar.</value>
+    <value>Falha na compra.</value>
     <comment>legacy_id=1519</comment>
   </data>
   <data name="Purchasing cost is insufficient." xml:space="preserve">
-    <value>O custo de aquisição é insuficiente.</value>
+    <value>Zen insuficiente para a compra.</value>
     <comment>legacy_id=1520</comment>
   </data>
   <data name="Jewel is lacking." xml:space="preserve">
-    <value>Falta joia.</value>
+    <value>Joia insuficiente.</value>
     <comment>legacy_id=1521</comment>
   </data>
   <data name="Incorrect type." xml:space="preserve">
@@ -5670,11 +5694,11 @@
     <comment>legacy_id=1523</comment>
   </data>
   <data name="NPC does not exist." xml:space="preserve">
-    <value>NPC não existe.</value>
+    <value>O NPC não existe.</value>
     <comment>legacy_id=1524</comment>
   </data>
   <data name="Acquiring tax rate information has failed" xml:space="preserve">
-    <value>Falha ao adquirir informações sobre taxas de imposto</value>
+    <value>Falha ao obter as informações da taxa de imposto</value>
     <comment>legacy_id=1525</comment>
   </data>
   <data name="Changing tax rate information has failed" xml:space="preserve">
@@ -5682,15 +5706,15 @@
     <comment>legacy_id=1526</comment>
   </data>
   <data name="Withdrawal failed" xml:space="preserve">
-    <value>Falha na retirada</value>
+    <value>Falha ao sacar</value>
     <comment>legacy_id=1527</comment>
   </data>
   <data name="No. Reg." xml:space="preserve">
-    <value>Não. Reg.</value>
+    <value>Nº de registro</value>
     <comment>legacy_id=1528</comment>
   </data>
   <data name="Stat" xml:space="preserve">
-    <value>Estatística</value>
+    <value>Atributo</value>
     <comment>legacy_id=1529</comment>
   </data>
   <data name="Order" xml:space="preserve">
@@ -5698,35 +5722,35 @@
     <comment>legacy_id=1530</comment>
   </data>
   <data name="Processing" xml:space="preserve">
-    <value>Processamento</value>
+    <value>Processando</value>
     <comment>legacy_id=1532</comment>
   </data>
   <data name="Starting %u-%u-%u %u : %u" xml:space="preserve">
-    <value>Iniciando %u-%u-%u %u: %u</value>
+    <value>Início: %u-%u-%u %u: %u</value>
     <comment>legacy_id=1533</comment>
   </data>
   <data name="untill %u-%u-%u %u : %u" xml:space="preserve">
-    <value>até %u-%u-%u %u: %u</value>
+    <value>Término: %u-%u-%u %u: %u</value>
     <comment>legacy_id=1534</comment>
   </data>
   <data name="Siege period is over." xml:space="preserve">
-    <value>O período de cerco acabou.</value>
+    <value>O período do cerco terminou.</value>
     <comment>legacy_id=1535</comment>
   </data>
   <data name="Siege registration period." xml:space="preserve">
-    <value>Período de registro de cerco.</value>
+    <value>Período de registro do cerco.</value>
     <comment>legacy_id=1536</comment>
   </data>
   <data name="Standby period for sign registration." xml:space="preserve">
-    <value>Período de espera para registro de sinalização.</value>
+    <value>Período de espera para registro do sinal.</value>
     <comment>legacy_id=1537,1548</comment>
   </data>
   <data name="Period for sign registration." xml:space="preserve">
-    <value>Período para registro de sinal.</value>
+    <value>Período de registro do sinal.</value>
     <comment>legacy_id=1538</comment>
   </data>
   <data name="Standby period for announcement." xml:space="preserve">
-    <value>Período de espera para anúncio.</value>
+    <value>Período de espera para o anúncio.</value>
     <comment>legacy_id=1539</comment>
   </data>
   <data name="Announcement period." xml:space="preserve">
@@ -5734,19 +5758,19 @@
     <comment>legacy_id=1540</comment>
   </data>
   <data name="Siege preparation period." xml:space="preserve">
-    <value>Período de preparação para o cerco.</value>
+    <value>Período de preparação do cerco.</value>
     <comment>legacy_id=1541</comment>
   </data>
   <data name="Siege period." xml:space="preserve">
-    <value>Período de cerco.</value>
+    <value>Período do cerco.</value>
     <comment>legacy_id=1542</comment>
   </data>
   <data name="Siege is over." xml:space="preserve">
-    <value>O cerco acabou.</value>
+    <value>O cerco terminou.</value>
     <comment>legacy_id=1544</comment>
   </data>
   <data name="Expected siege period is" xml:space="preserve">
-    <value>O período de cerco esperado é</value>
+    <value>O período previsto do cerco é</value>
     <comment>legacy_id=1545</comment>
   </data>
   <data name="%u-%u-%u %u : %u." xml:space="preserve">
@@ -5758,7 +5782,7 @@
     <comment>legacy_id=1547</comment>
   </data>
   <data name="Abandon Castle Siege" xml:space="preserve">
-    <value>Abandonar o cerco ao castelo</value>
+    <value>Abandonar o Castle Siege</value>
     <comment>legacy_id=1549</comment>
   </data>
   <data name="Improve" xml:space="preserve">
@@ -5766,31 +5790,31 @@
     <comment>legacy_id=1550</comment>
   </data>
   <data name="To purchase selected castle gate" xml:space="preserve">
-    <value>Para comprar o portão do castelo selecionado</value>
+    <value>Comprar o portão do castelo selecionado</value>
     <comment>legacy_id=1551</comment>
   </data>
   <data name="To repair selected castle gate" xml:space="preserve">
-    <value>Para reparar o portão do castelo selecionado</value>
+    <value>Reparar o portão do castelo selecionado</value>
     <comment>legacy_id=1552</comment>
   </data>
   <data name="%d Guardian jewel and %d zen are required." xml:space="preserve">
-    <value>%d Guardian Jewel e %d zen são necessários.</value>
+    <value>%d Jóia do Guardião e %d zen são necessários.</value>
     <comment>legacy_id=1553</comment>
   </data>
   <data name="Would you like to repair?" xml:space="preserve">
-    <value>Você gostaria de consertar?</value>
+    <value>Deseja reparar?</value>
     <comment>legacy_id=1554</comment>
   </data>
   <data name="Upgrading the durability of selected castle gate" xml:space="preserve">
-    <value>Atualizando a durabilidade do portão do castelo selecionado</value>
+    <value>Melhorando a durabilidade do portão do castelo selecionado</value>
     <comment>legacy_id=1555</comment>
   </data>
   <data name="Upgrading the defensive power of selected castle gate" xml:space="preserve">
-    <value>Atualizando o poder defensivo do portão do castelo selecionado</value>
+    <value>Melhorando o poder defensivo do portão do castelo selecionado</value>
     <comment>legacy_id=1556</comment>
   </data>
   <data name="Purchase and repair" xml:space="preserve">
-    <value>Compra e reparo</value>
+    <value>Comprar e reparar</value>
     <comment>legacy_id=1557</comment>
   </data>
   <data name="Repair" xml:space="preserve">
@@ -5798,7 +5822,7 @@
     <comment>legacy_id=1559</comment>
   </data>
   <data name="DUR : %d/%d" xml:space="preserve">
-    <value>DUR : %d/%d</value>
+    <value>DUR: %d/%d</value>
     <comment>legacy_id=1560</comment>
   </data>
   <data name="DP : %d" xml:space="preserve">
@@ -5822,11 +5846,11 @@
     <comment>legacy_id=1565</comment>
   </data>
   <data name="Chaos combination Goblin tax rate %d%%" xml:space="preserve">
-    <value>Combinação do caos Taxa de imposto Goblin %d%%</value>
+    <value>Taxa de imposto do Goblin da combinação do Chaos: %d%%</value>
     <comment>legacy_id=1566</comment>
   </data>
   <data name="Various NPC tax rate %d%%" xml:space="preserve">
-    <value>Várias taxas de imposto NPC %d%%</value>
+    <value>Taxa de imposto dos NPCs: %d%%</value>
     <comment>legacy_id=1567</comment>
   </data>
   <data name="Apply1568" xml:space="preserve">
@@ -5834,23 +5858,23 @@
     <comment>legacy_id=1568</comment>
   </data>
   <data name="Enter the deposit amount." xml:space="preserve">
-    <value>Insira o valor do depósito.</value>
+    <value>Digite o valor do depósito.</value>
     <comment>legacy_id=1569</comment>
   </data>
   <data name="(Maximum 15,000,000 Zen)" xml:space="preserve">
-    <value>(Máximo 15.000.000 Zen)</value>
+    <value>(Máximo: 15.000.000 Zen)</value>
     <comment>legacy_id=1570</comment>
   </data>
   <data name="Enter the withdrawal amount." xml:space="preserve">
-    <value>Insira o valor da retirada.</value>
+    <value>Digite o valor do saque.</value>
     <comment>legacy_id=1571</comment>
   </data>
   <data name="Adjust tax rate" xml:space="preserve">
-    <value>Ajustar taxa de imposto</value>
+    <value>Ajustar a taxa de imposto</value>
     <comment>legacy_id=1572</comment>
   </data>
   <data name="Chaos combination Goblin: %d(%d)%%" xml:space="preserve">
-    <value>Goblin da combinação do caos: %d(%d)%%</value>
+    <value>Goblin da combinação do Chaos: %d(%d)%%</value>
     <comment>legacy_id=1573</comment>
   </data>
   <data name="NPC: %d(%d)%%" xml:space="preserve">
@@ -5866,7 +5890,7 @@
     <comment>legacy_id=1576</comment>
   </data>
   <data name="Tax adjustment available" xml:space="preserve">
-    <value>Ajuste fiscal disponível</value>
+    <value>Ajuste da taxa de imposto disponível</value>
     <comment>legacy_id=1577</comment>
   </data>
   <data name="during Truce Period." xml:space="preserve">
@@ -5874,27 +5898,27 @@
     <comment>legacy_id=1578</comment>
   </data>
   <data name="Maximum Tax rates: 3%%" xml:space="preserve">
-    <value>Taxas máximas de imposto: 3%%</value>
+    <value>Taxa máxima de imposto: 3%%</value>
     <comment>legacy_id=1579</comment>
   </data>
   <data name="NPCs include" xml:space="preserve">
-    <value>NPCs incluem</value>
+    <value>Os NPCs incluem</value>
     <comment>legacy_id=1580</comment>
   </data>
   <data name="Elf Lala, Potion Girl" xml:space="preserve">
-    <value>Elfa Lala, Garota das Poções</value>
+    <value>Elf Lala, Potion Girl</value>
     <comment>legacy_id=1581</comment>
   </data>
   <data name="Wizard, Arena Guard" xml:space="preserve">
-    <value>Mago, Guarda da Arena</value>
+    <value>Wizard, Arena Guard</value>
     <comment>legacy_id=1582</comment>
   </data>
   <data name="and etc." xml:space="preserve">
-    <value>e etc.</value>
+    <value>e outros.</value>
     <comment>legacy_id=1583</comment>
   </data>
   <data name="Retaining zen of castle: %I64d" xml:space="preserve">
-    <value>Retendo o zen do castelo: %I64d</value>
+    <value>Zen retido no castelo: %I64d</value>
     <comment>legacy_id=1584</comment>
   </data>
   <data name="Tax belongs to the castle" xml:space="preserve">
@@ -5906,15 +5930,15 @@
     <comment>legacy_id=1586</comment>
   </data>
   <data name="to operate the castle." xml:space="preserve">
-    <value>para operar o castelo.</value>
+    <value>para administrar o castelo.</value>
     <comment>legacy_id=1587</comment>
   </data>
   <data name="Senior NPC" xml:space="preserve">
-    <value>NPC Sênior</value>
+    <value>NPC sênior</value>
     <comment>legacy_id=1588</comment>
   </data>
   <data name="Castle Gate" xml:space="preserve">
-    <value>Portão do Castelo</value>
+    <value>Portão do castelo</value>
     <comment>legacy_id=1589</comment>
   </data>
   <data name="Guardian Statue" xml:space="preserve">
@@ -5930,15 +5954,15 @@
     <comment>legacy_id=1592,1599</comment>
   </data>
   <data name="Enter" xml:space="preserve">
-    <value>Digitar</value>
+    <value>Entrar</value>
     <comment>legacy_id=1593,2147,3457</comment>
   </data>
   <data name="Enter the entrance fee." xml:space="preserve">
-    <value>Insira a taxa de entrada.</value>
+    <value>Digite a taxa de entrada.</value>
     <comment>legacy_id=1594</comment>
   </data>
   <data name="(Maximum 100,000 Zen)" xml:space="preserve">
-    <value>(Máximo de 100.000 Zen)</value>
+    <value>(Máximo: 100.000 Zen)</value>
     <comment>legacy_id=1595</comment>
   </data>
   <data name="Entrance restriction" xml:space="preserve">
@@ -5946,11 +5970,11 @@
     <comment>legacy_id=1597</comment>
   </data>
   <data name="Open it to non-members." xml:space="preserve">
-    <value>Abra-o para não-membros.</value>
+    <value>Abrir para não membros.</value>
     <comment>legacy_id=1598</comment>
   </data>
   <data name="Entrance fee range: 0 ~ %s zen" xml:space="preserve">
-    <value>Faixa de taxa de entrada: 0 ~ %s zen</value>
+    <value>Faixa da taxa de entrada: 0 ~ %s zen</value>
     <comment>legacy_id=1600</comment>
   </data>
   <data name="for setting" xml:space="preserve">
@@ -5962,7 +5986,7 @@
     <comment>legacy_id=1602</comment>
   </data>
   <data name="Camp" xml:space="preserve">
-    <value>Acampar</value>
+    <value>Acampamento</value>
     <comment>legacy_id=1603,2415</comment>
   </data>
   <data name="Maintain" xml:space="preserve">
@@ -5978,35 +6002,35 @@
     <comment>legacy_id=1606</comment>
   </data>
   <data name="Assist" xml:space="preserve">
-    <value>Ajuda</value>
+    <value>Assistência</value>
     <comment>legacy_id=1608</comment>
   </data>
   <data name="Has not been confirmed yet." xml:space="preserve">
-    <value>Ainda não foi confirmado.</value>
+    <value>Ainda não confirmado.</value>
     <comment>legacy_id=1609</comment>
   </data>
   <data name="To purchase selected statue" xml:space="preserve">
-    <value>Para comprar a estátua selecionada</value>
+    <value>Comprar a estátua selecionada</value>
     <comment>legacy_id=1610</comment>
   </data>
   <data name="To repair selected statue" xml:space="preserve">
-    <value>Para reparar a estátua selecionada</value>
+    <value>Reparar a estátua selecionada</value>
     <comment>legacy_id=1611</comment>
   </data>
   <data name="Would you like to purchase?" xml:space="preserve">
-    <value>Você gostaria de comprar?</value>
+    <value>Deseja comprar?</value>
     <comment>legacy_id=1612</comment>
   </data>
   <data name="Upgrading durability of selected castle gate" xml:space="preserve">
-    <value>Atualizando a durabilidade do portão do castelo selecionado</value>
+    <value>Melhorando a durabilidade do portão do castelo selecionado</value>
     <comment>legacy_id=1613</comment>
   </data>
   <data name="Upgrading defensive power of selected statue" xml:space="preserve">
-    <value>Atualizando o poder defensivo da estátua selecionada</value>
+    <value>Melhorando o poder defensivo da estátua selecionada</value>
     <comment>legacy_id=1614</comment>
   </data>
   <data name="Upgrading recovery power of selected statue" xml:space="preserve">
-    <value>Atualizando o poder de recuperação da estátua selecionada</value>
+    <value>Melhorando o poder de recuperação da estátua selecionada</value>
     <comment>legacy_id=1615</comment>
   </data>
   <data name="Already exists." xml:space="preserve">
@@ -6018,7 +6042,7 @@
     <comment>legacy_id=1617</comment>
   </data>
   <data name="(Increase unit:%s zen)" xml:space="preserve">
-    <value>(Unidade de aumento: %s zen)</value>
+    <value>(Aumento por unidade: %s zen)</value>
     <comment>legacy_id=1618</comment>
   </data>
   <data name="Confirm" xml:space="preserve">
@@ -6034,7 +6058,7 @@
     <comment>legacy_id=1621</comment>
   </data>
   <data name="Required zen: %s(%s)" xml:space="preserve">
-    <value>Zen necessário: %s(%s)</value>
+    <value>Zen necessário: %s (%s)</value>
     <comment>legacy_id=1622</comment>
   </data>
   <data name="Tax rate: %d%% (changed in real-time)" xml:space="preserve">
@@ -6042,15 +6066,15 @@
     <comment>legacy_id=1623</comment>
   </data>
   <data name="Only the guild members" xml:space="preserve">
-    <value>Somente os membros da guilda</value>
+    <value>Somente membros da guilda</value>
     <comment>legacy_id=1624</comment>
   </data>
   <data name="are allowed to enter." xml:space="preserve">
-    <value>estão autorizados a entrar.</value>
+    <value>podem entrar.</value>
     <comment>legacy_id=1625</comment>
   </data>
   <data name="is allowed" xml:space="preserve">
-    <value>é permitido</value>
+    <value>tem permissão</value>
     <comment>legacy_id=1626</comment>
   </data>
   <data name="Entering is not allowed" xml:space="preserve">
@@ -6062,7 +6086,7 @@
     <comment>legacy_id=1628</comment>
   </data>
   <data name="Approval from the lord of a castle is required" xml:space="preserve">
-    <value>É necessária a aprovação do senhor de um castelo</value>
+    <value>É necessária a aprovação do senhor do castelo</value>
     <comment>legacy_id=1629</comment>
   </data>
   <data name="for entering" xml:space="preserve">
@@ -6070,11 +6094,11 @@
     <comment>legacy_id=1630</comment>
   </data>
   <data name="Please go back" xml:space="preserve">
-    <value>Por favor volte</value>
+    <value>Volte</value>
     <comment>legacy_id=1631</comment>
   </data>
   <data name="Entrance fee %szen" xml:space="preserve">
-    <value>Taxa de entrada %szen</value>
+    <value>Taxa de entrada: %s zen</value>
     <comment>legacy_id=1632</comment>
   </data>
   <data name="Pay entrance fee to enter" xml:space="preserve">
@@ -6082,27 +6106,27 @@
     <comment>legacy_id=1633</comment>
   </data>
   <data name="Would you like to enter?" xml:space="preserve">
-    <value>Você gostaria de entrar?</value>
+    <value>Deseja entrar?</value>
     <comment>legacy_id=1634</comment>
   </data>
   <data name="DisbandOfAllianceGuildOrRequest" xml:space="preserve">
-    <value>Dissolver aliança (guilda) ou solicitar aliança não é permitido durante o período de cerco</value>
+    <value>Não é permitido dissolver a aliança (guilda) nem solicitar uma aliança durante o período do cerco</value>
     <comment>legacy_id=1635</comment>
   </data>
   <data name="Required zen for potion: %s(%s)" xml:space="preserve">
-    <value>Zen necessário para poção: %s(%s)</value>
+    <value>Zen necessário para a poção: %s (%s)</value>
     <comment>legacy_id=1636</comment>
   </data>
   <data name="Alliance function will be restricted due to the Castle Siege." xml:space="preserve">
-    <value>A função da Aliança será restrita devido ao Castle Siege.</value>
+    <value>A função de aliança ficará restrita devido ao Castle Siege.</value>
     <comment>legacy_id=1637</comment>
   </data>
   <data name="Increase +8 AG recovery speed" xml:space="preserve">
-    <value>Aumenta a velocidade de recuperação de +8 AG</value>
+    <value>Aumenta a velocidade de recuperação de AG em +8</value>
     <comment>legacy_id=1638</comment>
   </data>
   <data name="Increase resistance of Lightning and Ice" xml:space="preserve">
-    <value>Aumenta a resistência de Raios e Gelo</value>
+    <value>Aumenta a resistência a Lightning e Ice</value>
     <comment>legacy_id=1639</comment>
   </data>
   <data name="Store1640" xml:space="preserve">
@@ -6110,19 +6134,19 @@
     <comment>legacy_id=1640</comment>
   </data>
   <data name="Empty the items in castle lord's store." xml:space="preserve">
-    <value>Esvazie os itens na loja do senhor do castelo.</value>
+    <value>Esvazie os itens da loja do senhor do castelo.</value>
     <comment>legacy_id=1641</comment>
   </data>
   <data name="Can only be used by a Castle lord" xml:space="preserve">
-    <value>Só pode ser usado por um senhor do castelo</value>
+    <value>Só pode ser usado pelo senhor do castelo</value>
     <comment>legacy_id=1642</comment>
   </data>
   <data name="There should be a 4x5 empty space." xml:space="preserve">
-    <value>Deve haver um espaço vazio 4x5.</value>
+    <value>Deve haver um espaço vazio de 4x5.</value>
     <comment>legacy_id=1643</comment>
   </data>
   <data name="Brave one," xml:space="preserve">
-    <value>Corajoso,</value>
+    <value>Bravo guerreiro,</value>
     <comment>legacy_id=1644</comment>
   </data>
   <data name="now you have become" xml:space="preserve">
@@ -6130,7 +6154,7 @@
     <comment>legacy_id=1645</comment>
   </data>
   <data name="a lord of the castle." xml:space="preserve">
-    <value>um senhor do castelo.</value>
+    <value>o senhor do castelo.</value>
     <comment>legacy_id=1646</comment>
   </data>
   <data name="May the blessings" xml:space="preserve">
@@ -6142,7 +6166,7 @@
     <comment>legacy_id=1648</comment>
   </data>
   <data name="be upon you." xml:space="preserve">
-    <value>esteja com você.</value>
+    <value>estejam com você.</value>
     <comment>legacy_id=1649</comment>
   </data>
   <data name="Blue lucky pouch" xml:space="preserve">
@@ -6158,19 +6182,19 @@
     <comment>legacy_id=1652</comment>
   </data>
   <data name="Increase stamina" xml:space="preserve">
-    <value>Aumentar a resistência</value>
+    <value>Aumentar a stamina</value>
     <comment>legacy_id=1653</comment>
   </data>
   <data name="You can't delete the character that belongs to the guild" xml:space="preserve">
-    <value>Você não pode excluir o personagem que pertence à guilda</value>
+    <value>Você não pode excluir um personagem que pertence a uma guilda</value>
     <comment>legacy_id=1654</comment>
   </data>
   <data name="Insert 30 Jewel of guardian and a bundle of Jewel of bless, Jewel of soul" xml:space="preserve">
-    <value>Insira 30 joias do guardião e um pacote de joias da bênção, joias da alma</value>
+    <value>Insira 30 Jóia do Guardião e um pacote de Jewel of Bless e Jewel of Soul</value>
     <comment>legacy_id=1655</comment>
   </data>
   <data name="and click on the combine button" xml:space="preserve">
-    <value>e clique no botão combinar</value>
+    <value>e clique no botão de combinação</value>
     <comment>legacy_id=1656</comment>
   </data>
   <data name="to get an item." xml:space="preserve">
@@ -6178,31 +6202,31 @@
     <comment>legacy_id=1657</comment>
   </data>
   <data name="Werewolf Guardsman" xml:space="preserve">
-    <value>Guarda Lobisomem</value>
+    <value>Werewolf Guardsman</value>
     <comment>legacy_id=1658</comment>
   </data>
   <data name="DoYouEvenKnowAboutMe" xml:space="preserve">
-    <value>'Você ao menos sabe sobre mim? Fui abençoado e amaldiçoado por Lugard. Você pode ser ajudado se estiver devidamente qualificado.</value>
+    <value>&apos;Você sequer sabe quem sou? Fui abençoado e amaldiçoado por Lugard. Você poderá receber ajuda se for devidamente qualificado.&apos;</value>
     <comment>legacy_id=1659</comment>
   </data>
   <data name="IfYouHavePassedThroughThe" xml:space="preserve">
-    <value>Se você passou no teste do Apóstolo Devin, o Guarda Lobisomem enviará você e os membros do seu grupo Balgass' Barrack.</value>
+    <value>Se você passou no teste do Apóstolo Devin, Werewolf Guardsman enviará você e os membros do seu grupo para Balgass&apos; Barrack.</value>
     <comment>legacy_id=1660</comment>
   </data>
   <data name="InOrderToReceiveHelpFrom" xml:space="preserve">
-    <value>Para receber ajuda do Guarda Lobisomem; você deve pagar a ele 3.000.000 Zen.</value>
+    <value>Para receber ajuda do Werewolf Guardsman, você deve pagar 3.000.000 Zen.</value>
     <comment>legacy_id=1661</comment>
   </data>
-  <data name="Gatekeeper" xml:space="preserve">
-    <value>Porteiro</value>
+  <data name="Guardião do Portão" xml:space="preserve">
+    <value>Guardião do Portão</value>
     <comment>legacy_id=1662</comment>
   </data>
   <data name="'Hmm, who are you? I'm confused. Are you even approved of Balgass?" xml:space="preserve">
-    <value>'Hum, quem é você? Estou confuso. Você ao menos aprovou Balgass?</value>
+    <value>&apos;Hum, quem é você? Estou confuso. Você foi aprovado por Balgass?&apos;</value>
     <comment>legacy_id=1663</comment>
   </data>
   <data name="LugadrS12ApostlesAreHelping" xml:space="preserve">
-    <value>Os 12 apóstolos de Lugadr estão ajudando cegando o porteiro na estrada para o local de descanso de Balgass.</value>
+    <value>Os 12 apóstolos de Lugard estão ajudando ao cegar o Guardião do Portão na estrada para Refúgio de Balgass.</value>
     <comment>legacy_id=1664</comment>
   </data>
   <data name="Ingredients for the 3rd wing assembly." xml:space="preserve">
@@ -6210,79 +6234,79 @@
     <comment>legacy_id=1665</comment>
   </data>
   <data name="Condor's feather" xml:space="preserve">
-    <value>Pena de Condor</value>
+    <value>Condor&apos;s Feather</value>
     <comment>legacy_id=1666</comment>
   </data>
   <data name="3rd wing" xml:space="preserve">
-    <value>3ª ala</value>
+    <value>3ª asa</value>
     <comment>legacy_id=1667</comment>
   </data>
   <data name="Blade Master" xml:space="preserve">
-    <value>Mestre da Lâmina</value>
+    <value>Blade Master</value>
     <comment>legacy_id=1668</comment>
   </data>
   <data name="Grand Master" xml:space="preserve">
-    <value>Grão-Mestre</value>
+    <value>Grand Master</value>
     <comment>legacy_id=1669</comment>
   </data>
   <data name="High Elf" xml:space="preserve">
-    <value>Alto Elfo</value>
+    <value>High Elf</value>
     <comment>legacy_id=1670</comment>
   </data>
   <data name="Dual Master" xml:space="preserve">
-    <value>Mestre Duplo</value>
+    <value>Dual Master</value>
     <comment>legacy_id=1671</comment>
   </data>
   <data name="Lord Emperor" xml:space="preserve">
-    <value>Senhor Imperador</value>
+    <value>Lord Emperor</value>
     <comment>legacy_id=1672</comment>
   </data>
   <data name="Return's the enemy's attack power in %d%%" xml:space="preserve">
-    <value>Retorno é o poder de ataque do inimigo em %d%%</value>
+    <value>Reflete %d%% do poder de ataque do inimigo</value>
     <comment>legacy_id=1673</comment>
   </data>
   <data name="Complete recovery of life in %d%% rate" xml:space="preserve">
-    <value>Recuperação completa da vida na taxa %d%%</value>
+    <value>Recuperação total de HP em %d%%</value>
     <comment>legacy_id=1674</comment>
   </data>
   <data name="Complete recover of Mana in %d%% rate" xml:space="preserve">
-    <value>Recuperação completa de Mana na taxa %d%%</value>
+    <value>Recuperação total de MP em %d%%</value>
     <comment>legacy_id=1675</comment>
   </data>
   <data name="YouMustBeLocatedCloselyTogether" xml:space="preserve">
-    <value>Vocês devem estar próximos um do outro para entrar no Quartel de Balgass imediatamente.</value>
+    <value>Você deve estar junto dos demais para entrar no Balgass&apos; Barrack de uma vez.</value>
     <comment>legacy_id=1676</comment>
   </data>
   <data name="ApostleDevinSThirdMissionRequest" xml:space="preserve">
-    <value>O terceiro pedido missionário do apóstolo Devin permite a entrada no local de descanso.</value>
+    <value>A terceira missão do Apóstolo Devin permite entrar no Refúgio de Balgass.</value>
     <comment>legacy_id=1677</comment>
   </data>
   <data name="Balgass' Barrack" xml:space="preserve">
-    <value>Quartel de Balgass</value>
+    <value>Balgass&apos; Barrack</value>
     <comment>legacy_id=1678</comment>
   </data>
   <data name="Balgass' Resting Place" xml:space="preserve">
-    <value>Local de descanso de Balgass</value>
+    <value>Refúgio de Balgass</value>
     <comment>legacy_id=1679</comment>
   </data>
   <data name="Fenrir's Horn, Scroll of Blood, Condor's Feather" xml:space="preserve">
-    <value>Chifre de Fenrir, Pergaminho de Sangue, Pena de Condor</value>
+    <value>Chifre do Fenrir, Pergaminho de Sangue, Pena do Condor</value>
     <comment>legacy_id=1680</comment>
   </data>
   <data name="Regular chat" xml:space="preserve">
-    <value>Bate-papo normal</value>
+    <value>Chat normal</value>
     <comment>legacy_id=1681</comment>
   </data>
   <data name="Party chat" xml:space="preserve">
-    <value>Bate-papo de festa</value>
+    <value>Chat do grupo</value>
     <comment>legacy_id=1682</comment>
   </data>
   <data name="Guilt chat" xml:space="preserve">
-    <value>Bate-papo de culpa</value>
+    <value>Chat da guilda</value>
     <comment>legacy_id=1683</comment>
   </data>
   <data name="Whisper block: On/Off" xml:space="preserve">
-    <value>Bloco de sussurro: Ligado/Desligado</value>
+    <value>Bloqueio de sussurros: ativado/desativado</value>
     <comment>legacy_id=1684</comment>
   </data>
   <data name="System message pop-up" xml:space="preserve">
@@ -6290,63 +6314,63 @@
     <comment>legacy_id=1685</comment>
   </data>
   <data name="Chat window background On/Off (F5)" xml:space="preserve">
-    <value>Plano de fundo da janela de bate-papo ativado/desativado (F5)</value>
+    <value>Plano de fundo da janela de chat: ativado/desativado (F5)</value>
     <comment>legacy_id=1686</comment>
   </data>
   <data name="Summoner" xml:space="preserve">
-    <value>Invocador</value>
+    <value>Summoner</value>
     <comment>legacy_id=1687</comment>
   </data>
   <data name="Bloody Summoner" xml:space="preserve">
-    <value>Invocador Sangrento</value>
+    <value>Bloody Summoner</value>
     <comment>legacy_id=1688</comment>
   </data>
   <data name="Dimension Master" xml:space="preserve">
-    <value>Mestre Dimensão</value>
+    <value>Dimension Master</value>
     <comment>legacy_id=1689</comment>
   </data>
   <data name="StrongMentalityAndExcellentInsightCreates" xml:space="preserve">
-    <value>Mentalidade forte e excelente visão criam o feitiço de maldição mais poderoso. Além disso, este item atrai invocadores de outro mundo e usa a feitiçaria prejudicial contra eles.</value>
+    <value>Uma mentalidade forte e uma excelente percepção criam o feitiço de maldição mais poderoso. Este item também atrai Summoners de outro mundo e lança sobre eles uma magia prejudicial.</value>
     <comment>legacy_id=1690</comment>
   </data>
   <data name="Curse Spell increment %d%%" xml:space="preserve">
-    <value>Incremento de feitiço de maldição %d%%</value>
+    <value>Aumento do Curse Spell: %d%%</value>
     <comment>legacy_id=1691</comment>
   </data>
   <data name="Curse Spell: %d ~ %d" xml:space="preserve">
-    <value>Feitiço de Maldição: %d ~ %d</value>
+    <value>Curse Spell: %d ~ %d</value>
     <comment>legacy_id=1692</comment>
   </data>
   <data name=" Curse Spell: %d ~ %d(+%d)" xml:space="preserve">
-    <value>Feitiço de Maldição: %d ~ %d(+%d)</value>
+    <value> Curse Spell: %d ~ %d(+%d)</value>
     <comment>legacy_id=1693</comment>
   </data>
   <data name="CurseSpellDD1694" xml:space="preserve">
-    <value>Feitiço de Maldição: %d ~ %d</value>
+    <value> Curse Spell: %d ~ %d</value>
     <comment>legacy_id=1694</comment>
   </data>
   <data name="Explosion Skill (Mana: %d)" xml:space="preserve">
-    <value>Habilidade de Explosão (Mana: %d)</value>
+    <value>Explosão de Habilidade (Mana: %d)</value>
     <comment>legacy_id=1695</comment>
   </data>
   <data name="Requiem (Mana: %d)" xml:space="preserve">
-    <value>Réquiem (Mana: %d)</value>
+    <value>Requiem (Mana: %d)</value>
     <comment>legacy_id=1696</comment>
   </data>
   <data name="Additional Curse Spell +%d" xml:space="preserve">
-    <value>Feitiço de Maldição Adicional +%d</value>
+    <value>Curse Spell adicional +%d</value>
     <comment>legacy_id=1697</comment>
   </data>
   <data name="You can connect only from PC Bang" xml:space="preserve">
-    <value>Você pode conectar apenas do PC Bang</value>
+    <value>Você só pode se conectar a partir de uma PC Bang</value>
     <comment>legacy_id=1698</comment>
   </data>
   <data name="Season 2 Test(PC Bang)" xml:space="preserve">
-    <value>Teste da 2ª temporada (PC Bang)</value>
+    <value>Teste da Season 2 (PC Bang)</value>
     <comment>legacy_id=1699</comment>
   </data>
   <data name="Create a character" xml:space="preserve">
-    <value>Crie um personagem</value>
+    <value>Criar um personagem</value>
     <comment>legacy_id=1700</comment>
   </data>
   <data name="Strength" xml:space="preserve">
@@ -6378,11 +6402,11 @@
     <comment>legacy_id=1707</comment>
   </data>
   <data name="ComplexCharacterThatHasACharacteristics" xml:space="preserve">
-    <value>Personagem complexo que possui características do Cavaleiro das Trevas e do Mago das Trevas. Domine o combate de curta distância e possa comandar feitiços livremente.</value>
+    <value>Personagem complexo que possui características do Dark Knight e do Dark Wizard. Mestre no combate de curta distância e capaz de comandar feitiços livremente.</value>
     <comment>legacy_id=1708</comment>
   </data>
   <data name="CharismaticCharacterThatCanCommandThe" xml:space="preserve">
-    <value>Personagem carismático que pode comandar as tropas e lidar com o espírito das trevas e o azarão.</value>
+    <value>Personagem carismático que pode comandar as tropas e controlar o Espírito das Trevas e o Cavalo das Trevas.</value>
     <comment>legacy_id=1709</comment>
   </data>
   <data name="Gameplay should be kept in moderation." xml:space="preserve">
@@ -6390,11 +6414,11 @@
     <comment>legacy_id=1710</comment>
   </data>
   <data name="Character level above %d cannot be deleted." xml:space="preserve">
-    <value>O nível de caractere acima de %d não pode ser excluído.</value>
+    <value>Personagens acima do nível %d não podem ser excluídos.</value>
     <comment>legacy_id=1711</comment>
   </data>
   <data name="Would you like to delete %s character?" xml:space="preserve">
-    <value>Gostaria de excluir o caractere %s?</value>
+    <value>Gostaria de excluir o personagem %s?</value>
     <comment>legacy_id=1712</comment>
   </data>
   <data name="Character was deleted successfully." xml:space="preserve">
@@ -6406,7 +6430,7 @@
     <comment>legacy_id=1715</comment>
   </data>
   <data name="Incorrect character name was entered or same character name exists." xml:space="preserve">
-    <value>Foi inserido um nome de caractere incorreto ou existe o mesmo nome de caractere.</value>
+    <value>Foi inserido um nome de personagem incorreto ou já existe um personagem com o mesmo nome.</value>
     <comment>legacy_id=1716</comment>
   </data>
   <data name="ReArlIsAnAncientLanguage" xml:space="preserve">
@@ -6422,11 +6446,11 @@
     <comment>legacy_id=1719</comment>
   </data>
   <data name="ItWasOriginatedFromTheSaint" xml:space="preserve">
-    <value>Foi originado do Santo de Muren, Lax Milon que significa 'a pessoa que é amada'.</value>
+    <value>Foi originado do Santo de Muren, Lax Milon, que significa 'a pessoa que é amada'.</value>
     <comment>legacy_id=1720</comment>
   </data>
   <data name="ItWasOriginatedFromTheGreatest" xml:space="preserve">
-    <value>Foi originado do Maior gladiador mágico Gion que era a favor de Muren, mas Gion trai Muren mais tarde.</value>
+    <value>Foi originado do Grande Gladiador Mágico Gion que era a favor de Muren, mas Gion trai Muren mais tarde.</value>
     <comment>legacy_id=1721</comment>
   </data>
   <data name="RuneIsOneOfTheHeroes" xml:space="preserve">
@@ -6450,11 +6474,11 @@
     <comment>legacy_id=1726</comment>
   </data>
   <data name="ItWasOriginatedFromUseraThe" xml:space="preserve">
-    <value>Foi originado de Usera, o clã Hierofante de Garuda. Usera ajudou Runedil a permitir que Kilian ascendesse ao trono.</value>
+    <value>Foi originado de Usera, o Hierofante do clã Garuda. Usera ajudou Runedil a permitir que Kilian ascendesse ao trono.</value>
     <comment>legacy_id=1727</comment>
   </data>
   <data name="ItWasOriginatedFromTarkanThe" xml:space="preserve">
-    <value>Originou-se de Tarkan, o deserto da morte. Alcatrão significa “areia do deserto” na língua antiga.</value>
+    <value>Originou-se de Tarkan, o deserto da morte. Tar significa “areia do deserto” na língua antiga.</value>
     <comment>legacy_id=1728</comment>
   </data>
   <data name="AtlansIsAnUnderwaterCityCreated" xml:space="preserve">
@@ -6462,19 +6486,19 @@
     <comment>legacy_id=1729</comment>
   </data>
   <data name="ItSAnAcronymOfAncient" xml:space="preserve">
-    <value>'É um acrônimo da língua antiga 'Taruta De Rasa' que significa 'o homem mais inteligente sob o céu' e é usado para chamar o Maior Mago Arikara.</value>
+    <value>É um acrônimo da língua antiga 'Taruta De Rasa' que significa 'o homem mais inteligente sob o céu' e é usado para chamar o Grande Mago Arikara.</value>
     <comment>legacy_id=1730</comment>
   </data>
   <data name="NakalEpitaphWasDiscoveredByThe" xml:space="preserve">
-    <value>O epitáfio de Nakal foi descoberto pelos historiadores e mostra os épicos de 3 heróis em ação durante as 2ª Guerras Demogorgon.</value>
+    <value>O epitáfio de Nakal foi descoberto pelos historiadores e mostra os épicos de 3 heróis em ação durante as 2ª Guerra dos Demogorgon.</value>
     <comment>legacy_id=1731</comment>
   </data>
   <data name="ItWasOriginatedFromTheGreatest1732" xml:space="preserve">
-    <value>Foi originado do Maior Mago Eturamu e ele deu sua vida para proteger a pedra selada.</value>
+    <value>Foi originado do Grande Mago Eturamu e ele deu sua vida para proteger a pedra selada.</value>
     <comment>legacy_id=1732</comment>
   </data>
   <data name="KaraIsTheFirstQueenOf" xml:space="preserve">
-    <value>Kara é a primeira rainha de Noria, que significa o 'Maior Elfo' na língua antiga.</value>
+    <value>Kara é a primeira rainha de Noria, que significa o 'Grande Elfo' na língua antiga.</value>
     <comment>legacy_id=1733</comment>
   </data>
   <data name="StarOfDestinyThisStarShares" xml:space="preserve">
@@ -6518,27 +6542,27 @@
     <comment>legacy_id=1743</comment>
   </data>
   <data name="Menu (U)" xml:space="preserve">
-    <value>Cardápio (U)</value>
+    <value>Menu (U)</value>
     <comment>legacy_id=1744</comment>
   </data>
   <data name="Master level: %d" xml:space="preserve">
-    <value>Nível mestre: %d</value>
+    <value>Nível Master: %d</value>
     <comment>legacy_id=1746</comment>
   </data>
   <data name="Level point: %d" xml:space="preserve">
-    <value>Ponto de nível: %d</value>
+    <value>Pontos de nível: %d</value>
     <comment>legacy_id=1747</comment>
   </data>
   <data name="EXP:%I64d / %I64d" xml:space="preserve">
-    <value>EXP:%I64d /%I64d</value>
+    <value>EXP: %I64d / %I64d</value>
     <comment>legacy_id=1748</comment>
   </data>
   <data name="Master skill tree (A)" xml:space="preserve">
-    <value>Árvore de habilidades mestre (A)</value>
+    <value>Árvore de habilidades Master (A)</value>
     <comment>legacy_id=1749</comment>
   </data>
   <data name="Master EXP achievement %d" xml:space="preserve">
-    <value>Conquista Master EXP %d</value>
+    <value>Progresso de EXP Master %d</value>
     <comment>legacy_id=1750</comment>
   </data>
   <data name="Peace: %d" xml:space="preserve">
@@ -6550,7 +6574,7 @@
     <comment>legacy_id=1752</comment>
   </data>
   <data name="Overcome: %d" xml:space="preserve">
-    <value>Superar: %d</value>
+    <value>Superação: %d</value>
     <comment>legacy_id=1753</comment>
   </data>
   <data name="Mystery: %d" xml:space="preserve">
@@ -6614,7 +6638,7 @@
     <comment>legacy_id=1768</comment>
   </data>
   <data name="Conquer: %d" xml:space="preserve">
-    <value>Conquistar: %d</value>
+    <value>Conquista: %d</value>
     <comment>legacy_id=1769</comment>
   </data>
   <data name="Glory: %d" xml:space="preserve">
@@ -6646,11 +6670,11 @@
     <comment>legacy_id=1777</comment>
   </data>
   <data name="Square no. %d (Master Level)" xml:space="preserve">
-    <value>Quadrado não. %d (nível mestre)</value>
+    <value>Área nº %d (nível Master)</value>
     <comment>legacy_id=1778</comment>
   </data>
   <data name="Castle no. %d (Master Level)" xml:space="preserve">
-    <value>Castelo não. %d (nível mestre)</value>
+    <value>Castelo nº %d (nível Master)</value>
     <comment>legacy_id=1779</comment>
   </data>
   <data name="Maximum Mana/%d recovery" xml:space="preserve">
@@ -6658,7 +6682,7 @@
     <comment>legacy_id=1780</comment>
   </data>
   <data name="Maximum Life/%d recovery" xml:space="preserve">
-    <value>Vida máxima/recuperação %d</value>
+    <value>Recuperação de Vida máxima/%d</value>
     <comment>legacy_id=1781</comment>
   </data>
   <data name="Maximum SD/%d recovery amount" xml:space="preserve">
@@ -6666,7 +6690,7 @@
     <comment>legacy_id=1782</comment>
   </data>
   <data name="Each level effects increment in 5%%" xml:space="preserve">
-    <value>Cada nível afeta o incremento em 5%%</value>
+    <value>O incremento do efeito é de 5%% por nível</value>
     <comment>legacy_id=1783</comment>
   </data>
   <data name="Damage increment for each strengthener level" xml:space="preserve">
@@ -6678,7 +6702,7 @@
     <comment>legacy_id=1785</comment>
   </data>
   <data name="Effects increment of 2%% each strengthener level" xml:space="preserve">
-    <value>Incremento de efeitos de 2%% ecada nível de fortalecimento</value>
+    <value>Incremento de efeitos de 2%% a cada nível de fortalecimento</value>
     <comment>legacy_id=1786</comment>
   </data>
   <data name="effect increase by reinforcement process" xml:space="preserve">
@@ -6702,7 +6726,7 @@
     <comment>legacy_id=1801</comment>
   </data>
   <data name="Jewel of Bless and Jewel of Soul" xml:space="preserve">
-    <value>Jóia da Bênção e Jóia da Alma</value>
+    <value>Bless e Soul</value>
     <comment>legacy_id=1802</comment>
   </data>
   <data name="Can combine or dismantle the" xml:space="preserve">
@@ -6714,23 +6738,23 @@
     <comment>legacy_id=1804</comment>
   </data>
   <data name="and press the button for no. of jewels" xml:space="preserve">
-    <value>e pressione o botão para não. de jóias</value>
+    <value>e pressione o botão para definir a quantidade de joias</value>
     <comment>legacy_id=1805</comment>
   </data>
   <data name="Jewel of Bless" xml:space="preserve">
-    <value>Jóia da Abençoação</value>
+    <value>Bless</value>
     <comment>legacy_id=1806</comment>
   </data>
   <data name="Jewel of Soul" xml:space="preserve">
-    <value>Jóia da Alma</value>
+    <value>Soul</value>
     <comment>legacy_id=1807</comment>
   </data>
   <data name="Combine %d (%d zen is required)" xml:space="preserve">
-    <value>Combine %d (%d zen é necessário)</value>
+    <value>Combinar %d (necessário: %d Zen)</value>
     <comment>legacy_id=1808</comment>
   </data>
   <data name="Are you sure to combine %s x %d?" xml:space="preserve">
-    <value>Tem certeza de combinar %s x %d?</value>
+    <value>Tem certeza de que deseja combinar %s x %d?</value>
     <comment>legacy_id=1809</comment>
   </data>
   <data name="Combination cost: %d zen" xml:space="preserve">
@@ -6738,15 +6762,15 @@
     <comment>legacy_id=1810</comment>
   </data>
   <data name="Zen is insufficient." xml:space="preserve">
-    <value>Zen é insuficiente.</value>
+    <value>Zen insuficiente.</value>
     <comment>legacy_id=1811</comment>
   </data>
   <data name="Corresponding item is inappropriate." xml:space="preserve">
-    <value>O item correspondente é inapropriado.</value>
+    <value>O item correspondente é inválido.</value>
     <comment>legacy_id=1812</comment>
   </data>
   <data name="Are you sure to disband %s %d?" xml:space="preserve">
-    <value>Tem certeza de que deseja dissolver %s %d?</value>
+    <value>Tem certeza de que deseja desmontar %s %d?</value>
     <comment>legacy_id=1813</comment>
   </data>
   <data name="Dissolving cost: %d zen" xml:space="preserve">
@@ -6754,7 +6778,7 @@
     <comment>legacy_id=1814</comment>
   </data>
   <data name="Inventory space is insufficient." xml:space="preserve">
-    <value>O espaço de estoque é insuficiente.</value>
+    <value>Espaço insuficiente no inventário.</value>
     <comment>legacy_id=1815</comment>
   </data>
   <data name="To1816" xml:space="preserve">
@@ -6778,7 +6802,7 @@
     <comment>legacy_id=1820</comment>
   </data>
   <data name="Current no. of possible dismantling: %d" xml:space="preserve">
-    <value>Atual não. de possível desmontagem: %d</value>
+    <value>Quantidade atual de desmontagens possíveis: %d</value>
     <comment>legacy_id=1821</comment>
   </data>
   <data name="After selecting press the 'Dismantle' button." xml:space="preserve">
@@ -6818,15 +6842,15 @@
     <comment>legacy_id=1830</comment>
   </data>
   <data name="Red Crystal" xml:space="preserve">
-    <value>Cristal Vermelho</value>
+    <value>Cristal vermelho</value>
     <comment>legacy_id=1831</comment>
   </data>
   <data name="Blue Crystal" xml:space="preserve">
-    <value>Cristal Azul</value>
+    <value>Cristal azul</value>
     <comment>legacy_id=1832</comment>
   </data>
   <data name="Black Crystal" xml:space="preserve">
-    <value>Cristal Negro</value>
+    <value>Cristal preto</value>
     <comment>legacy_id=1833</comment>
   </data>
   <data name="Treasure box" xml:space="preserve">
@@ -6834,15 +6858,15 @@
     <comment>legacy_id=1834</comment>
   </data>
   <data name="[Blue Crystal/Red Crystal/Black Crystal]" xml:space="preserve">
-    <value>[Cristal Azul/Cristal Vermelho/Cristal Preto]</value>
+    <value>[Cristal azul/Cristal vermelho/Cristal Preto]</value>
     <comment>legacy_id=1835</comment>
   </data>
   <data name="If it is used on event combine or thrown to the ground," xml:space="preserve">
-    <value>Se for usado em combinação de eventos ou jogado ao chão,</value>
+    <value>Se for usado em combinação do evento ou jogado ao chão,</value>
     <comment>legacy_id=1836</comment>
   </data>
   <data name="it will disappear with fire cracker effect" xml:space="preserve">
-    <value>ele desaparecerá com efeito de foguete</value>
+    <value>ele desaparecerá com efeito de fogos de artifício</value>
     <comment>legacy_id=1837</comment>
   </data>
   <data name="Surprise present" xml:space="preserve">
@@ -6870,27 +6894,27 @@
     <comment>legacy_id=1850</comment>
   </data>
   <data name="Crywolf Fortress" xml:space="preserve">
-    <value>Fortaleza do Lobo Chorão</value>
+    <value>Crywolf Fortress</value>
     <comment>legacy_id=1851</comment>
   </data>
   <data name="Lost Kalima" xml:space="preserve">
-    <value>Kalima perdido</value>
+    <value>Lost Kalima</value>
     <comment>legacy_id=1852</comment>
   </data>
   <data name="Elveland" xml:space="preserve">
-    <value>Terra dos Elfos</value>
+    <value>Elveland</value>
     <comment>legacy_id=1853</comment>
   </data>
   <data name="Swamp of Peace" xml:space="preserve">
-    <value>Pântano da Paz</value>
+    <value>Swamp of Peace</value>
     <comment>legacy_id=1854</comment>
   </data>
   <data name="La Cleon" xml:space="preserve">
-    <value>La Cléon</value>
+    <value>La Cleon</value>
     <comment>legacy_id=1855</comment>
   </data>
   <data name="Hatchery" xml:space="preserve">
-    <value>Incubatório</value>
+    <value>Hatchery</value>
     <comment>legacy_id=1856</comment>
   </data>
   <data name="Increase final damage %d%%" xml:space="preserve">
@@ -6898,7 +6922,7 @@
     <comment>legacy_id=1860</comment>
   </data>
   <data name="Absorb final damage %d%%" xml:space="preserve">
-    <value>Absorva o dano final %d%%</value>
+    <value>Absorve %d%% do dano final</value>
     <comment>legacy_id=1861</comment>
   </data>
   <data name="Requires class change to be worn." xml:space="preserve">
@@ -6906,11 +6930,11 @@
     <comment>legacy_id=1862</comment>
   </data>
   <data name="+Destroy" xml:space="preserve">
-    <value>+Destruir</value>
+    <value>+Destruição</value>
     <comment>legacy_id=1863</comment>
   </data>
   <data name="+Protect" xml:space="preserve">
-    <value>+Proteger</value>
+    <value>+Proteção</value>
     <comment>legacy_id=1864</comment>
   </data>
   <data name="Would you like to repair Fenrir's horn?" xml:space="preserve">
@@ -6922,7 +6946,7 @@
     <comment>legacy_id=1866</comment>
   </data>
   <data name="Added %d of Life" xml:space="preserve">
-    <value>Adicionado %d da Vida</value>
+    <value>Vida adicionada: %d</value>
     <comment>legacy_id=1867</comment>
   </data>
   <data name="Added %d of Mana" xml:space="preserve">
@@ -6930,15 +6954,15 @@
     <comment>legacy_id=1868</comment>
   </data>
   <data name="Added %d Attack" xml:space="preserve">
-    <value>Adicionado ataque %d</value>
+    <value>Ataque adicionado: %d</value>
     <comment>legacy_id=1869</comment>
   </data>
   <data name="Added %d Wizardry" xml:space="preserve">
-    <value>Adicionado Magia %d</value>
+    <value>Magia adicionada: %d</value>
     <comment>legacy_id=1870</comment>
   </data>
   <data name="Golden Fenrir" xml:space="preserve">
-    <value>Fenrir Dourado</value>
+    <value>Fenrir dourado</value>
     <comment>legacy_id=1871</comment>
   </data>
   <data name="Exclusive edition only given to MU Heroes" xml:space="preserve">
@@ -7026,7 +7050,7 @@
     <comment>legacy_id=1892</comment>
   </data>
   <data name="X %d Coins" xml:space="preserve">
-    <value>X Moedas %d</value>
+    <value>%d moedas</value>
     <comment>legacy_id=1893</comment>
   </data>
   <data name="Exchange 10 Coins" xml:space="preserve">
@@ -7082,7 +7106,7 @@
     <comment>legacy_id=1909</comment>
   </data>
   <data name="Possible to decrease stat 1~9 point" xml:space="preserve">
-    <value>Possível diminuir estatísticas de 1 a 9 pontos</value>
+    <value>É possível reduzir de 1 a 9 pontos de estatística</value>
     <comment>legacy_id=1910</comment>
   </data>
   <data name="Impossible since the usable fruit points are at maximum." xml:space="preserve">
@@ -7158,7 +7182,7 @@
     <comment>legacy_id=1930</comment>
   </data>
   <data name="Req LV" xml:space="preserve">
-    <value>Requerimento LV</value>
+    <value>Nível exigido</value>
     <comment>legacy_id=1931</comment>
   </data>
   <data name="Register your Lucky Coins or" xml:space="preserve">
@@ -7194,11 +7218,11 @@
     <comment>legacy_id=1939</comment>
   </data>
   <data name="Exchange1940" xml:space="preserve">
-    <value>Intercâmbio</value>
+    <value>Troca</value>
     <comment>legacy_id=1940</comment>
   </data>
   <data name="Dark Elf (%d/12)" xml:space="preserve">
-    <value>Elfo Negro (%d/12)</value>
+    <value>Dark Elf (%d/12)</value>
     <comment>legacy_id=1948</comment>
   </data>
   <data name="Balgass" xml:space="preserve">
@@ -7254,7 +7278,7 @@
     <comment>legacy_id=1961</comment>
   </data>
   <data name="Fortress of Crywolf will not be safe unless Balgass is defeated!" xml:space="preserve">
-    <value>A Fortaleza do Crywolf não estará segura a menos que Balgass seja derrotado!</value>
+    <value>A Crywolf Fortress não estará segura a menos que Balgass seja derrotado!</value>
     <comment>legacy_id=1962</comment>
   </data>
   <data name="Balgass can only show up for 5 minutes around the Fortress of Crywolf!" xml:space="preserve">
@@ -7274,7 +7298,7 @@
     <comment>legacy_id=1966</comment>
   </data>
   <data name="5%% decrease in castle and arena invitation combine rate" xml:space="preserve">
-    <value>5%% daumento na taxa combinada de convites para castelos e arenas</value>
+    <value>Redução de 5%% na taxa combinada de convites para castelos e arenas</value>
     <comment>legacy_id=1967</comment>
   </data>
   <data name="Above reparation is valid till the next Crywolf battle." xml:space="preserve">
@@ -7294,7 +7318,7 @@
     <comment>legacy_id=1972</comment>
   </data>
   <data name="Class" xml:space="preserve">
-    <value>Aula</value>
+    <value>Classe</value>
     <comment>legacy_id=1973</comment>
   </data>
   <data name="Feel the unusual forces around the Fortress of Crywolf." xml:space="preserve">
@@ -7314,7 +7338,7 @@
     <comment>legacy_id=1977</comment>
   </data>
   <data name="%s (Accumulated hour : %dseconds)" xml:space="preserve">
-    <value>%s (Hora acumulada: %dsegundos)</value>
+    <value>%s (Hora acumulada: %d segundos)</value>
     <comment>legacy_id=1980</comment>
   </data>
   <data name="Crown switch" xml:space="preserve">
@@ -7330,11 +7354,11 @@
     <comment>legacy_id=2000</comment>
   </data>
   <data name="5%% increase in castle and arena invitation combine rate." xml:space="preserve">
-    <value>5%% inaumento na taxa combinada de convites para castelos e arenas.</value>
+    <value>Aumento de 5%% na taxa combinada de convites para castelos e arenas.</value>
     <comment>legacy_id=2001</comment>
   </data>
   <data name="Contract is ongoing therefore dual compact is not possible." xml:space="preserve">
-    <value>O contrato está em andamento, portanto o pacto duplo não é possível.</value>
+    <value>O contrato está em andamento, portanto o contrato duplo não é possível.</value>
     <comment>legacy_id=2002</comment>
   </data>
   <data name="Further contract can't be done since the altar has been destroyed." xml:space="preserve">
@@ -7346,11 +7370,11 @@
     <comment>legacy_id=2004</comment>
   </data>
   <data name="Only level above 350 is allowed to make a contract." xml:space="preserve">
-    <value>Somente nível acima de 350 é permitido fazer contrato.</value>
+    <value>Somente personagens acima do nível 350 podem fazer um contrato.</value>
     <comment>legacy_id=2005</comment>
   </data>
   <data name="Contract can be made for %d times." xml:space="preserve">
-    <value>O contrato pode ser feito para horários %d.</value>
+    <value>O contrato pode ser feito %d vezes.</value>
     <comment>legacy_id=2006</comment>
   </data>
   <data name="Would you like to proceed with the contract?" xml:space="preserve">
@@ -7378,7 +7402,7 @@
     <comment>legacy_id=2013</comment>
   </data>
   <data name="Navy candy box" xml:space="preserve">
-    <value>Caixa de doces da Marinha</value>
+    <value>Caixa de doces azul-marinho</value>
     <comment>legacy_id=2014</comment>
   </data>
   <data name="Would you like to receive the item?" xml:space="preserve">
@@ -7410,11 +7434,11 @@
     <comment>legacy_id=2026,2040</comment>
   </data>
   <data name="You've been playing for %d hours." xml:space="preserve">
-    <value>Você está jogando há horas %d.</value>
+    <value>Você está jogando há %d horas.</value>
     <comment>legacy_id=2035</comment>
   </data>
   <data name="You've been playing for %d hours. Please take a rest." xml:space="preserve">
-    <value>Você está jogando há horas %d. Por favor, descanse.</value>
+    <value>Você está jogando há %d horas. Por favor, descanse.</value>
     <comment>legacy_id=2036</comment>
   </data>
   <data name=" S D : %d / %d" xml:space="preserve">
@@ -7430,7 +7454,7 @@
     <comment>legacy_id=2039</comment>
   </data>
   <data name="Cheer" xml:space="preserve">
-    <value>Alegrar</value>
+    <value>Comemorar</value>
     <comment>legacy_id=2041</comment>
   </data>
   <data name="Dance" xml:space="preserve">
@@ -7450,7 +7474,7 @@
     <comment>legacy_id=2046</comment>
   </data>
   <data name="Only in Castle Siege" xml:space="preserve">
-    <value>Somente no Castelo Siege</value>
+    <value>Somente no Castle Siege</value>
     <comment>legacy_id=2047</comment>
   </data>
   <data name="Can be used during Castle Siege with required Kill Count" xml:space="preserve">
@@ -7462,7 +7486,7 @@
     <comment>legacy_id=2049</comment>
   </data>
   <data name="Can be used after %dminutes" xml:space="preserve">
-    <value>Pode ser usado após %dminutos</value>
+    <value>Pode ser usado após %d minutos</value>
     <comment>legacy_id=2050</comment>
   </data>
   <data name="'Battle Soccer for Mutizen' will now begin. Join the event and be rewarded!" xml:space="preserve">
@@ -7470,7 +7494,7 @@
     <comment>legacy_id=2051</comment>
   </data>
   <data name="HaveYouHeardOfBattleSoccer" xml:space="preserve">
-    <value>Você já ouviu falar de 'Battle Soccer for Mutizen'? 30.000 Jewel of Bless serão recompensados!</value>
+    <value>Você já ouviu falar de 'Battle Soccer for Mutizen'? 30.000 Bless serão distribuídos como recompensa!</value>
     <comment>legacy_id=2052</comment>
   </data>
   <data name="Join 'Battle Soccer for Mutizen' and bring glory to your guild!" xml:space="preserve">
@@ -7478,7 +7502,7 @@
     <comment>legacy_id=2053</comment>
   </data>
   <data name="Minimum Wizardry increment 20%%" xml:space="preserve">
-    <value>Incremento mínimo de magia 20%%</value>
+    <value>Incremento mínimo de Magia: 20%%</value>
     <comment>legacy_id=2054</comment>
   </data>
   <data name="It cannot be applied on another." xml:space="preserve">
@@ -7506,11 +7530,11 @@
     <comment>legacy_id=2066</comment>
   </data>
   <data name="Using Jewel of Harmony" xml:space="preserve">
-    <value>Usando a Jóia da Harmonia</value>
+    <value>Usando a Jewel of Harmony</value>
     <comment>legacy_id=2067</comment>
   </data>
   <data name="Refining Jewel of Harmony" xml:space="preserve">
-    <value>Refinando a Jóia da Harmonia</value>
+    <value>Refinando a Jewel of Harmony</value>
     <comment>legacy_id=2068</comment>
   </data>
   <data name="(%s), means improving the stone to be a valuable material." xml:space="preserve">
@@ -7530,7 +7554,7 @@
     <comment>legacy_id=2072</comment>
   </data>
   <data name="But the %s Jewel of Harmony can give the new power to your weapon." xml:space="preserve">
-    <value>Mas a Jóia da Harmonia %s pode dar um novo poder à sua arma.</value>
+    <value>Mas a Jewel of Harmony %s pode dar um novo poder à sua arma.</value>
     <comment>legacy_id=2073</comment>
   </data>
   <data name="What would you like to know?" xml:space="preserve">
@@ -7562,7 +7586,7 @@
     <comment>legacy_id=2080</comment>
   </data>
   <data name="Jewel stone" xml:space="preserve">
-    <value>Pedra joia</value>
+    <value>Pedra preciosa</value>
     <comment>legacy_id=2081</comment>
   </data>
   <data name="Weapons or shields" xml:space="preserve">
@@ -7578,7 +7602,7 @@
     <comment>legacy_id=2084</comment>
   </data>
   <data name="Only the Jewel of Harmony can be refined." xml:space="preserve">
-    <value>Somente a Jóia da Harmonia pode ser refinada.</value>
+    <value>Somente a Jewel of Harmony pode ser refinada.</value>
     <comment>legacy_id=2085</comment>
   </data>
   <data name="For pendants, rings and mount items" xml:space="preserve">
@@ -7606,15 +7630,15 @@
     <comment>legacy_id=2092</comment>
   </data>
   <data name="rate" xml:space="preserve">
-    <value>avaliar</value>
+    <value>taxa</value>
     <comment>legacy_id=2093</comment>
   </data>
   <data name="Required zen : %d zen" xml:space="preserve">
     <value>Zen necessário: %d zen</value>
     <comment>legacy_id=2094</comment>
   </data>
-  <data name="of Jewel of Harmony, orignal" xml:space="preserve">
-    <value>de Jóia da Harmonia, original</value>
+  <data name="of Jewel of Harmony, original" xml:space="preserve">
+    <value>de Jewel of Harmony, original</value>
     <comment>legacy_id=2095</comment>
   </data>
   <data name="gemstone will give more power." xml:space="preserve">
@@ -7662,7 +7686,7 @@
     <comment>legacy_id=2106,2113</comment>
   </data>
   <data name="Get the successful item." xml:space="preserve">
-    <value>Obtenha o item de sucesso.</value>
+    <value>Pegue o item obtido com sucesso.</value>
     <comment>legacy_id=2107</comment>
   </data>
   <data name="Reinforced item can't be traded." xml:space="preserve">
@@ -7702,7 +7726,7 @@
     <comment>legacy_id=2150</comment>
   </data>
   <data name="Path to the Refinery Tower will be closed in %d hours." xml:space="preserve">
-    <value>O caminho para a Torre da Refinaria será fechado nas horas %d.</value>
+    <value>O caminho para a Torre da Refinaria será fechado em %d horas.</value>
     <comment>legacy_id=2151</comment>
   </data>
   <data name="Battle with Maya is ongoing." xml:space="preserve">
@@ -7714,19 +7738,19 @@
     <comment>legacy_id=2153</comment>
   </data>
   <data name="Currently %d players are in battle with Maya's lefe hand." xml:space="preserve">
-    <value>Atualmente os jogadores do %d estão em batalha com a mão esquerda de Maya.</value>
+    <value>Atualmente, %d jogadores estão em batalha com a mão esquerda de Maya.</value>
     <comment>legacy_id=2154</comment>
   </data>
   <data name="Currently %d players are in battle with Maya's right hand." xml:space="preserve">
-    <value>Atualmente os jogadores do %d estão em batalha com a mão direita de Maya.</value>
+    <value>Atualmente, %d jogadores estão em batalha com a mão direita de Maya.</value>
     <comment>legacy_id=2155</comment>
   </data>
   <data name="Currently %d players are in battle with Maya's both hands." xml:space="preserve">
-    <value>Atualmente os jogadores do %d estão lutando com as duas mãos de Maya.</value>
+    <value>Atualmente, %d jogadores estão lutando com as duas mãos de Maya.</value>
     <comment>legacy_id=2156</comment>
   </data>
   <data name="Currently %d players are in battle with Nightmare." xml:space="preserve">
-    <value>Atualmente os jogadores do %d estão em batalha contra o Nightmare.</value>
+    <value>Atualmente, %d jogadores estão em batalha contra o Nightmare.</value>
     <comment>legacy_id=2157</comment>
   </data>
   <data name="Boss Battle will start soon." xml:space="preserve">
@@ -7734,15 +7758,15 @@
     <comment>legacy_id=2158</comment>
   </data>
   <data name="ForceOfTheNightmareHasInvaded" xml:space="preserve">
-    <value>A Força do Pesadelo invadiu a Torre. A Torre está instável, portanto a entrada na Torre será restrita por %d minutos.</value>
+    <value>A força do Nightmare invadiu a Torre. A Torre está instável, portanto a entrada na Torre será restrita por %d minutos.</value>
     <comment>legacy_id=2159</comment>
   </data>
   <data name="DefeatTheNightmareThatControllingThe" xml:space="preserve">
-    <value>Derrote o Pesadelo que controla os Maias para entrar na Torre da Refinaria.</value>
+    <value>Derrote o Nightmare que controla Maya para entrar na Torre da Refinaria.</value>
     <comment>legacy_id=2160</comment>
   </data>
   <data name="EntranceIsRestrictedToEnsureThe" xml:space="preserve">
-    <value>A entrada é restrita para garantir a segurança do Maya. 'Pingente de Pedra da Lua' é necessário.</value>
+    <value>A entrada é restrita para garantir a segurança de Maya. 'Pingente de Pedra da Lua' é necessário.</value>
     <comment>legacy_id=2161</comment>
   </data>
   <data name="You will be able to approach Maya shortly." xml:space="preserve">
@@ -7758,15 +7782,15 @@
     <comment>legacy_id=2164</comment>
   </data>
   <data name="NightmareHasLostTheControlOf" xml:space="preserve">
-    <value>Nightmare perdeu o controle da mão esquerda de Maya. Atualmente existem sobreviventes %d.</value>
+    <value>Nightmare perdeu o controle da mão esquerda de Maya. Atualmente há %d sobreviventes.</value>
     <comment>legacy_id=2165</comment>
   </data>
   <data name="NightmareHasLostTheControlOf2166" xml:space="preserve">
-    <value>Nightmare perdeu o controle da mão direita de Maya. Atualmente existem sobreviventes %d.</value>
+    <value>Nightmare perdeu o controle da mão direita de Maya. Atualmente há %d sobreviventes.</value>
     <comment>legacy_id=2166</comment>
   </data>
   <data name="More power from %d players are needed." xml:space="preserve">
-    <value>É necessária mais potência dos reprodutores %d.</value>
+    <value>É necessário o poder de mais %d jogadores.</value>
     <comment>legacy_id=2167</comment>
   </data>
   <data name="Nightmare has lost the control of Maya's left hand." xml:space="preserve">
@@ -7782,7 +7806,7 @@
     <comment>legacy_id=2170</comment>
   </data>
   <data name="15 players have already entered. You can no longer enter." xml:space="preserve">
-    <value>15 jogadores já se inscreveram. Você não pode mais entrar.</value>
+    <value>15 jogadores já entraram. Você não pode mais entrar.</value>
     <comment>legacy_id=2171</comment>
   </data>
   <data name="'Moonstone Pendant' authentication has failed." xml:space="preserve">
@@ -7790,7 +7814,7 @@
     <comment>legacy_id=2172</comment>
   </data>
   <data name="Time limit for entrance is over." xml:space="preserve">
-    <value>O prazo para entrada acabou.</value>
+    <value>O tempo para entrar acabou.</value>
     <comment>legacy_id=2173</comment>
   </data>
   <data name="You can't warp to the Refinery Tower." xml:space="preserve">
@@ -7798,7 +7822,7 @@
     <comment>legacy_id=2174</comment>
   </data>
   <data name="You can't warp wearing the Ring of Transformation." xml:space="preserve">
-    <value>Você não pode se deformar usando o Anel da Transformação.</value>
+    <value>Você não pode se teleportar usando o Anel da Transformação.</value>
     <comment>legacy_id=2175</comment>
   </data>
   <data name="YouCanOnlyWarpRidingA" xml:space="preserve">
@@ -7814,7 +7838,7 @@
     <comment>legacy_id=2178</comment>
   </data>
   <data name="Refinery Tower" xml:space="preserve">
-    <value>Torre de Refinaria</value>
+    <value>Refinery Tower</value>
     <comment>legacy_id=2179</comment>
   </data>
   <data name="Character: %d" xml:space="preserve">
@@ -7834,7 +7858,7 @@
     <comment>legacy_id=2183</comment>
   </data>
   <data name="Attack sucess rate increase +%d" xml:space="preserve">
-    <value>Aumento da taxa de sucesso de ataque +%d</value>
+    <value>Aumento da taxa de acerto do ataque +%d</value>
     <comment>legacy_id=2184</comment>
   </data>
   <data name="Additional Damage +%d" xml:space="preserve">
@@ -7850,11 +7874,11 @@
     <comment>legacy_id=2187</comment>
   </data>
   <data name="Max. HP increase +%d" xml:space="preserve">
-    <value>Máx. Aumento de HP +%d</value>
+    <value>Aumento do HP máx. +%d</value>
     <comment>legacy_id=2188</comment>
   </data>
   <data name="Max. SD increase +%d" xml:space="preserve">
-    <value>Máx. Aumento de SD +%d</value>
+    <value>Aumento do SD máx. +%d</value>
     <comment>legacy_id=2189</comment>
   </data>
   <data name="SD auto recovery" xml:space="preserve">
@@ -7886,11 +7910,11 @@
     <comment>legacy_id=2197</comment>
   </data>
   <data name="GemstoneOfJewelOfHarmonyHas" xml:space="preserve">
-    <value>A Pedra Preciosa da Jóia da Harmonia tem um poder selado. Energia mágica e habilidade especial podem remover o selo e é chamada de refinaria.</value>
+    <value>A Pedra Preciosa da Jewel of Harmony tem um poder selado. Energia mágica e habilidade especial podem remover o selo e é chamada de refinaria.</value>
     <comment>legacy_id=2198</comment>
   </data>
   <data name="NewPowerCanBeGrantedTo" xml:space="preserve">
-    <value>Novo poder pode ser concedido ao item usando o poder da Jóia da Harmonia refinada.</value>
+    <value>Novo poder pode ser concedido ao item usando o poder da Jewel of Harmony refinada.</value>
     <comment>legacy_id=2199</comment>
   </data>
   <data name="CodeNameSTX813ElpisI" xml:space="preserve">
@@ -7902,11 +7926,11 @@
     <comment>legacy_id=2201</comment>
   </data>
   <data name="Jewel of Harmony" xml:space="preserve">
-    <value>Jóia da Harmonia</value>
+    <value>Jewel of Harmony</value>
     <comment>legacy_id=2202,3315</comment>
   </data>
   <data name="Refine Gemstone" xml:space="preserve">
-    <value>Refinar Pedra Preciosa</value>
+    <value>Refinar a pedra preciosa</value>
     <comment>legacy_id=2203</comment>
   </data>
   <data name="Reinforcement option error" xml:space="preserve">
@@ -7922,7 +7946,7 @@
     <comment>legacy_id=2206</comment>
   </data>
   <data name="I.D. of Kantur Chief Scientist. You can enter the Refinery Tower." xml:space="preserve">
-    <value>EU IA. do Cientista Chefe Kantur. Você pode entrar na Torre da Refinaria.</value>
+    <value>ID do Cientista Chefe de Kantur. Você pode entrar na Torre da Refinaria.</value>
     <comment>legacy_id=2207</comment>
   </data>
   <data name="Jewel with impurities" xml:space="preserve">
@@ -7950,7 +7974,7 @@
     <comment>legacy_id=2214</comment>
   </data>
   <data name="Max. level for reinforcement is applied. It can't no longer be reinforced." xml:space="preserve">
-    <value>Máx. nível de reforço é aplicado. Não pode mais ser reforçado.</value>
+    <value>O nível máximo de reforço foi atingido. O item não pode mais ser reforçado.</value>
     <comment>legacy_id=2215</comment>
   </data>
   <data name="Item level is lower than the required reinforcement option." xml:space="preserve">
@@ -7966,7 +7990,7 @@
     <comment>legacy_id=2218</comment>
   </data>
   <data name="Set item can't be reinforced." xml:space="preserve">
-    <value>O item definido não pode ser reforçado.</value>
+    <value>O item de conjunto não pode ser reforçado.</value>
     <comment>legacy_id=2219</comment>
   </data>
   <data name="Refine the item to create" xml:space="preserve">
@@ -7986,7 +8010,7 @@
     <comment>legacy_id=2223</comment>
   </data>
   <data name="RefineryHasStartedRefineryIsA" xml:space="preserve">
-    <value>A refinaria começou. A Refinaria faz parte do processo para alterar o item para Pedra de Refino a ser reforçada. O item refinado desaparecerá, certifique-se de verificar o item.</value>
+    <value>A refinaria começou. Ela faz parte do processo de transformar o item em uma Pedra de Refino para reforço. O item refinado desaparecerá, certifique-se de verificar o item.</value>
     <comment>legacy_id=2224</comment>
   </data>
   <data name="VitalityD2225" xml:space="preserve">
@@ -8270,7 +8294,7 @@
     <comment>legacy_id=2295</comment>
   </data>
   <data name="%d%% Combination success rate increase" xml:space="preserve">
-    <value>%d%% Aumento da taxa de sucesso da combinação</value>
+    <value>Aumento de %d%% na taxa de sucesso da combinação</value>
     <comment>legacy_id=2296</comment>
   </data>
   <data name="Warp Command Window available." xml:space="preserve">
@@ -8306,11 +8330,11 @@
     <comment>legacy_id=2305</comment>
   </data>
   <data name="More than 2 X 4 space in inventory is needed." xml:space="preserve">
-    <value>É necessário mais de 2 X 4 espaço no inventário.</value>
+    <value>É necessário um espaço de pelo menos 2 x 4 no inventário.</value>
     <comment>legacy_id=2306</comment>
   </data>
   <data name="MU Item Shop Item can't be sold to merchant NPC." xml:space="preserve">
-    <value>MU Item Shop O item não pode ser vendido ao NPC comerciante.</value>
+    <value>Itens da MU Item Shop não podem ser vendidos a NPCs comerciantes.</value>
     <comment>legacy_id=2307</comment>
   </data>
   <data name="Less than 1 minutes" xml:space="preserve">
@@ -8362,15 +8386,15 @@
     <comment>legacy_id=2325</comment>
   </data>
   <data name="Point2326" xml:space="preserve">
-    <value>Apontar</value>
+    <value>Ponto</value>
     <comment>legacy_id=2326</comment>
   </data>
   <data name="PC cafe point store allows you to only purchase the objects." xml:space="preserve">
-    <value>A loja PC Cafe Point permite que você compre apenas os objetos.</value>
+    <value>A loja de pontos de lan house permite comprar apenas os itens.</value>
     <comment>legacy_id=2327</comment>
   </data>
   <data name="Seals applicable immediately after the purchase." xml:space="preserve">
-    <value>Selos aplicáveis ​​imediatamente após a compra.</value>
+    <value>Os selos são aplicados imediatamente após a compra.</value>
     <comment>legacy_id=2328</comment>
   </data>
   <data name="Items cannot be sold here." xml:space="preserve">
@@ -8382,11 +8406,11 @@
     <comment>legacy_id=2330</comment>
   </data>
   <data name="Purchase Price: %d Points" xml:space="preserve">
-    <value>Preço de compra: Pontos %d</value>
+    <value>Preço de compra: %d pontos</value>
     <comment>legacy_id=2331</comment>
   </data>
   <data name="RelocationToValleyOfLorenMakes" xml:space="preserve">
-    <value>A mudança para o Vale de Loren faz com que todos os personagens percam seus efeitos e fechem.</value>
+    <value>Mudar-se para o Valley of Loren faz todos os personagens perderem seus efeitos e serem fechados.</value>
     <comment>legacy_id=2332</comment>
   </data>
   <data name="Check purchase conditions." xml:space="preserve">
@@ -8658,7 +8682,7 @@
     <comment>legacy_id=2409</comment>
   </data>
   <data name="Mouse wheel button ? change skill types, Shift + mouse right-click ? use" xml:space="preserve">
-    <value>Botão de roda do mouse? alterar tipos de habilidades, Shift + clique com o botão direito do mouse? usar</value>
+    <value>Botão de roda do mouse: alterar tipos de habilidades; Shift + clique com o botão direito: usar</value>
     <comment>legacy_id=2410</comment>
   </data>
   <data name="ThereAre4TypesOfSkills" xml:space="preserve">
@@ -8702,103 +8726,103 @@
     <comment>legacy_id=2421</comment>
   </data>
   <data name="0:30 Blood Castle 12:30 Blood Castle" xml:space="preserve">
-    <value>0:30 Castelo de Sangue 12:30 Castelo de Sangue</value>
+    <value>0:30 Blood Castle 12:30 Blood Castle</value>
     <comment>legacy_id=2422</comment>
   </data>
   <data name="1:00 Illusion Temple 13:00 Illusion Temple" xml:space="preserve">
-    <value>13h00 Templo da Ilusão 13h00 Templo da Ilusão</value>
+    <value>1:00 Illusion Temple 13:00 Illusion Temple</value>
     <comment>legacy_id=2423</comment>
   </data>
   <data name="1:30 - 13:30 Chaos Castle(PC)" xml:space="preserve">
-    <value>13h30 - 13h30 Castelo do Caos (PC)</value>
+    <value>1:30 - 13:30 Chaos Castle(PC)</value>
     <comment>legacy_id=2424</comment>
   </data>
   <data name="2:00 - 14:00 Chaos Castle" xml:space="preserve">
-    <value>14h00 - 14h00 Castelo do Caos</value>
+    <value>2:00 - 14:00 Chaos Castle</value>
     <comment>legacy_id=2425</comment>
   </data>
   <data name="2:30 Blood Castle 14:30 Blood Castle" xml:space="preserve">
-    <value>14h30 Castelo de Sangue 14h30 Castelo de Sangue</value>
+    <value>2:30 Blood Castle 14:30 Blood Castle</value>
     <comment>legacy_id=2426</comment>
   </data>
   <data name="3:00 Devil's Square 15:00 Devil's Square" xml:space="preserve">
-    <value>15h00 Praça do Diabo 15h00 Praça do Diabo</value>
+    <value>3:00 Devil's Square 15:00 Devil's Square</value>
     <comment>legacy_id=2427</comment>
   </data>
   <data name="3:30 - 15:30 Chaos Castle(PC)" xml:space="preserve">
-    <value>3h30 - 15h30 Castelo do Caos (PC)</value>
+    <value>3:30 - 15:30 Chaos Castle(PC)</value>
     <comment>legacy_id=2428</comment>
   </data>
   <data name="4:00 - 16:00 Chaos Castle" xml:space="preserve">
-    <value>4h00 - 16h00 Castelo do Caos</value>
+    <value>4:00 - 16:00 Chaos Castle</value>
     <comment>legacy_id=2429</comment>
   </data>
   <data name="4:30 Blood Castle 16:30 Blood Castle" xml:space="preserve">
-    <value>4h30 Castelo de Sangue 16h30 Castelo de Sangue</value>
+    <value>4:30 Blood Castle 16:30 Blood Castle</value>
     <comment>legacy_id=2430</comment>
   </data>
   <data name="5:00 Illusion Temple 17:00 Illusion Temple" xml:space="preserve">
-    <value>5:00 Templo da Ilusão 17:00 Templo da Ilusão</value>
+    <value>5:00 Illusion Temple 17:00 Illusion Temple</value>
     <comment>legacy_id=2431</comment>
   </data>
   <data name="5:30 - 17:30 Chaos Castle(PC)" xml:space="preserve">
-    <value>5h30 - 17h30 Castelo do Caos (PC)</value>
+    <value>5:30 - 17:30 Chaos Castle(PC)</value>
     <comment>legacy_id=2432</comment>
   </data>
   <data name="6:00 - 18:00 Chaos Castle" xml:space="preserve">
-    <value>6h00 - 18h00 Castelo do Caos</value>
+    <value>6:00 - 18:00 Chaos Castle</value>
     <comment>legacy_id=2433</comment>
   </data>
   <data name="6:30 Blood Castle 18:30 Blood Castle" xml:space="preserve">
-    <value>6h30 Castelo de Sangue 18h30 Castelo de Sangue</value>
+    <value>6:30 Blood Castle 18:30 Blood Castle</value>
     <comment>legacy_id=2434</comment>
   </data>
   <data name="7:00 Devil's Square 19:00 Devil's Square" xml:space="preserve">
-    <value>7h00 Praça do Diabo 19h00 Praça do Diabo</value>
+    <value>7:00 Devil's Square 19:00 Devil's Square</value>
     <comment>legacy_id=2435</comment>
   </data>
   <data name="7:30 - 19:30 Chaos Castle(PC)" xml:space="preserve">
-    <value>7h30 - 19h30 Castelo do Caos (PC)</value>
+    <value>7:30 - 19:30 Chaos Castle(PC)</value>
     <comment>legacy_id=2436</comment>
   </data>
   <data name="8:00 - 20:00 Chaos Castle" xml:space="preserve">
-    <value>8h00 - 20h00 Castelo do Caos</value>
+    <value>8:00 - 20:00 Chaos Castle</value>
     <comment>legacy_id=2437</comment>
   </data>
   <data name="8:30 Blood Castle 20:30 Blood Castle" xml:space="preserve">
-    <value>8h30 Castelo de Sangue 20h30 Castelo de Sangue</value>
+    <value>8:30 Blood Castle 20:30 Blood Castle</value>
     <comment>legacy_id=2438</comment>
   </data>
   <data name="9:00 Illusion Temple 21:00 Illusion Temple" xml:space="preserve">
-    <value>9h00 Templo da Ilusão 21h00 Templo da Ilusão</value>
+    <value>9:00 Illusion Temple 21:00 Illusion Temple</value>
     <comment>legacy_id=2439</comment>
   </data>
   <data name="9:30 - 21:30 Chaos Castle(PC)" xml:space="preserve">
-    <value>9h30 - 21h30 Castelo do Caos (PC)</value>
+    <value>9:30 - 21:30 Chaos Castle(PC)</value>
     <comment>legacy_id=2440</comment>
   </data>
   <data name="10:00 - 22:00 Chaos Castle" xml:space="preserve">
-    <value>10h00 - 22h00 Castelo do Caos</value>
+    <value>10:00 - 22:00 Chaos Castle</value>
     <comment>legacy_id=2441</comment>
   </data>
   <data name="10:30 Blood Castle 22:30 Blood Castle" xml:space="preserve">
-    <value>10h30 Castelo de Sangue 22h30 Castelo de Sangue</value>
+    <value>10:30 Blood Castle 22:30 Blood Castle</value>
     <comment>legacy_id=2442</comment>
   </data>
   <data name="11:00 Devil's Square 23:00 Devil's Square" xml:space="preserve">
-    <value>11h00 Praça do Diabo 23h00 Praça do Diabo</value>
+    <value>11:00 Devil's Square 23:00 Devil's Square</value>
     <comment>legacy_id=2443</comment>
   </data>
   <data name="11:30 - 23:30 Chaos Castle(PC)" xml:space="preserve">
-    <value>11h30 - 23h30 Castelo do Caos (PC)</value>
+    <value>11:30 - 23:30 Chaos Castle(PC)</value>
     <comment>legacy_id=2444</comment>
   </data>
   <data name="12:00 Chaos Castle 24:00 -" xml:space="preserve">
-    <value>12h00 Castelo do Caos 24h00 -</value>
+    <value>12:00 Chaos Castle 24:00 -</value>
     <comment>legacy_id=2445</comment>
   </data>
   <data name=" &lt;&lt; Chaos Castle &gt;&gt; &lt;&lt; Devil's Square &gt;&gt;" xml:space="preserve">
-    <value>&lt;&lt; Castelo do Caos &gt;&gt; &lt;&lt; Praça do Diabo &gt;&gt;</value>
+    <value>&lt;&lt; Chaos Castle &gt;&gt; &lt;&lt; Devil Square &gt;&gt;</value>
     <comment>legacy_id=2446</comment>
   </data>
   <data name="Regular Level 2nd Regular Level 2nd" xml:space="preserve">
@@ -8830,7 +8854,7 @@
     <comment>legacy_id=2453</comment>
   </data>
   <data name=" 7 Master Master 7 Master Master" xml:space="preserve">
-    <value>7 Mestre Mestre 7 Mestre Mestre</value>
+    <value>7 Nível Master Nível Master 7 Nível Master Nível Master</value>
     <comment>legacy_id=2454</comment>
   </data>
   <data name=" &lt;&lt; Blood Castle &gt;&gt; &lt;&lt; Illusion Temple &gt;&gt;" xml:space="preserve">
@@ -8858,7 +8882,7 @@
     <comment>legacy_id=2461</comment>
   </data>
   <data name=" 6 281-330 261-310 6 Master" xml:space="preserve">
-    <value>6 281-330 261-310 6 Mestre</value>
+    <value>6 281-330 261-310 6 Nível Master</value>
     <comment>legacy_id=2462</comment>
   </data>
   <data name=" 7 331-400 311-400" xml:space="preserve">
@@ -8866,15 +8890,15 @@
     <comment>legacy_id=2463</comment>
   </data>
   <data name=" 8 Master Master" xml:space="preserve">
-    <value>8 Mestre Mestre</value>
+    <value>8 Nível Master Nível Master</value>
     <comment>legacy_id=2464</comment>
   </data>
   <data name="Restores HP by 100%% immediately." xml:space="preserve">
-    <value>Restaura HP em 100% % i imediatamente.</value>
+    <value>Restaura 100%% do HP imediatamente.</value>
     <comment>legacy_id=2500</comment>
   </data>
   <data name="Restores Mana by 100%% immediately." xml:space="preserve">
-    <value>Restaura Mana em 100%% iimediatamente.</value>
+    <value>Restaura 100%% da Mana imediatamente.</value>
     <comment>legacy_id=2501</comment>
   </data>
   <data name="You may continue to use the strengthener power." xml:space="preserve">
@@ -8910,7 +8934,7 @@
     <comment>legacy_id=2509</comment>
   </data>
   <data name="Resets the status." xml:space="preserve">
-    <value>Redefine o status.</value>
+    <value>Redefine os atributos.</value>
     <comment>legacy_id=2510</comment>
   </data>
   <data name="Reset point: %d" xml:space="preserve">
@@ -8938,7 +8962,7 @@
     <comment>legacy_id=2516</comment>
   </data>
   <data name="Status for the set period" xml:space="preserve">
-    <value>Status para o período definido</value>
+    <value>Atributos pelo período definido</value>
     <comment>legacy_id=2517</comment>
   </data>
   <data name="There's an increase effect to it." xml:space="preserve">
@@ -8954,15 +8978,15 @@
     <comment>legacy_id=2520</comment>
   </data>
   <data name="There isn't enough status to reset." xml:space="preserve">
-    <value>Não há status suficiente para redefinir.</value>
+    <value>Não há atributos suficientes para redefinir.</value>
     <comment>legacy_id=2521</comment>
   </data>
   <data name="There isn't a usable controllability status." xml:space="preserve">
-    <value>Não há um status de controlabilidade utilizável.</value>
+    <value>Não há atributos de Controle utilizáveis.</value>
     <comment>legacy_id=2522</comment>
   </data>
   <data name="%s Status has been reset at %d." xml:space="preserve">
-    <value>O status de %s foi redefinido em %d.</value>
+    <value>Os atributos de %s foram redefinidos em %d.</value>
     <comment>legacy_id=2523</comment>
   </data>
   <data name="This is more than the value of your resettable points." xml:space="preserve">
@@ -9018,11 +9042,11 @@
     <comment>legacy_id=2539</comment>
   </data>
   <data name="Only the same type of Cherry Blossoms branches can be uploaded." xml:space="preserve">
-    <value>Apenas o mesmo tipo de ramos de Cherry Blossoms pode ser carregado.</value>
+    <value>Apenas o mesmo tipo de ramo de flores de cerejeira pode ser carregado.</value>
     <comment>legacy_id=2540</comment>
   </data>
   <data name="Exchange the Cherry Blossoms branches." xml:space="preserve">
-    <value>Troque os ramos de Cherry Blossoms.</value>
+    <value>Troque os ramos de flores de cerejeira.</value>
     <comment>legacy_id=2541</comment>
   </data>
   <data name="Golden Cherry Blossoms branches" xml:space="preserve">
@@ -9042,7 +9066,7 @@
     <comment>legacy_id=2550</comment>
   </data>
   <data name="Restores HP by 65%% immediately." xml:space="preserve">
-    <value>Restaura HP em 65% % i imediatamente.</value>
+    <value>Restaura 65%% do HP imediatamente.</value>
     <comment>legacy_id=2559</comment>
   </data>
   <data name="Cherry Blossoms branches assembly" xml:space="preserve">
@@ -9050,11 +9074,11 @@
     <comment>legacy_id=2560</comment>
   </data>
   <data name="Close the store in usage." xml:space="preserve">
-    <value>Feche a loja em uso.</value>
+    <value>Feche a loja aberta.</value>
     <comment>legacy_id=2561</comment>
   </data>
   <data name="Store cannot open during the assembly." xml:space="preserve">
-    <value>Loja não pode abrir durante a montagem.</value>
+    <value>A loja não pode ser aberta durante a montagem.</value>
     <comment>legacy_id=2562</comment>
   </data>
   <data name="Spirit of Cherry Blossoms" xml:space="preserve">
@@ -9062,7 +9086,7 @@
     <comment>legacy_id=2563</comment>
   </data>
   <data name="Reward for Every 255 Pieces" xml:space="preserve">
-    <value>Recompensa por cada 255 peças</value>
+    <value>Recompensa a cada 255 peças</value>
     <comment>legacy_id=2564</comment>
   </data>
   <data name="255 Golden Cherry Blossom Branches" xml:space="preserve">
@@ -9070,7 +9094,7 @@
     <comment>legacy_id=2565</comment>
   </data>
   <data name="Master Level EXP cannot be achieved during the item usage." xml:space="preserve">
-    <value>Master Level EXP não pode ser alcançado durante o uso do item.</value>
+    <value>Não é possível obter EXP de Nível Master durante o uso do item.</value>
     <comment>legacy_id=2566</comment>
   </data>
   <data name="Not applicable to" xml:space="preserve">
@@ -9078,7 +9102,7 @@
     <comment>legacy_id=2567</comment>
   </data>
   <data name="Master Level Characters." xml:space="preserve">
-    <value>Personagens de nível mestre.</value>
+    <value>Personagens de Nível Master.</value>
     <comment>legacy_id=2568</comment>
   </data>
   <data name="Automatic Life Recover increment %d%%" xml:space="preserve">
@@ -9090,7 +9114,7 @@
     <comment>legacy_id=2570</comment>
   </data>
   <data name="Automatic Mana recovery increment in %d%% rate" xml:space="preserve">
-    <value>Incremento automático de recuperação de Mana na taxa %d%%</value>
+    <value>Aumento automático da recuperação de Mana em %d%%</value>
     <comment>legacy_id=2571</comment>
   </data>
   <data name="Item achievement and the automatic Mana recovery increases onward." xml:space="preserve">
@@ -9102,7 +9126,7 @@
     <comment>legacy_id=2573</comment>
   </data>
   <data name="blocks the item dissipation." xml:space="preserve">
-    <value>bloqueia a dissipação do item.</value>
+    <value>impede que o item seja destruído.</value>
     <comment>legacy_id=2574</comment>
   </data>
   <data name="Increases Attack Power and Wizardry by 40%%" xml:space="preserve">
@@ -9134,7 +9158,7 @@
     <comment>legacy_id=2581</comment>
   </data>
   <data name="Carrier" xml:space="preserve">
-    <value>Operadora</value>
+    <value>Portador</value>
     <comment>legacy_id=2582</comment>
   </data>
   <data name="The monsters have intruded into the MU world to attack Santa." xml:space="preserve">
@@ -9146,7 +9170,7 @@
     <comment>legacy_id=2584</comment>
   </data>
   <data name="Welcome to Santa's Village. Please come claim your gift." xml:space="preserve">
-    <value>Bem-vindo à Aldeia do Papai Noel. Por favor, venha reivindicar seu presente.</value>
+    <value>Bem-vindo à Vila do Papai Noel. Venha receber seu presente.</value>
     <comment>legacy_id=2585</comment>
   </data>
   <data name="Would you like to return to Devias?" xml:space="preserve">
@@ -9166,7 +9190,7 @@
     <comment>legacy_id=2589</comment>
   </data>
   <data name="Would you like to move to the Santa's Village?" xml:space="preserve">
-    <value>Gostaria de se mudar para a Aldeia do Papai Noel?</value>
+    <value>Deseja ir para a Vila do Papai Noel?</value>
     <comment>legacy_id=2590</comment>
   </data>
   <data name="The attack and defense power have increased." xml:space="preserve">
@@ -9174,11 +9198,11 @@
     <comment>legacy_id=2591</comment>
   </data>
   <data name="Maximum Life has been increased of %d." xml:space="preserve">
-    <value>A vida máxima de %d foi aumentada.</value>
+    <value>A Vida máxima aumentou em %d.</value>
     <comment>legacy_id=2592</comment>
   </data>
   <data name="Maximum Mana has increased of %d." xml:space="preserve">
-    <value>A Mana máxima aumentou de %d.</value>
+    <value>A Mana máxima aumentou em %d.</value>
     <comment>legacy_id=2593</comment>
   </data>
   <data name="Attack power has increased of %d." xml:space="preserve">
@@ -9186,11 +9210,11 @@
     <comment>legacy_id=2594</comment>
   </data>
   <data name="Defense has increased of %d." xml:space="preserve">
-    <value>A defesa aumentou de %d.</value>
+    <value>A defesa aumentou em %d.</value>
     <comment>legacy_id=2595</comment>
   </data>
   <data name="Health has been recovered of 100%%." xml:space="preserve">
-    <value>A saúde foi recuperada de 100%%.</value>
+    <value>100%% da Vida foi recuperada.</value>
     <comment>legacy_id=2596</comment>
   </data>
   <data name="Mana has been recovered of 100%%." xml:space="preserve">
@@ -9214,7 +9238,7 @@
     <comment>legacy_id=2601</comment>
   </data>
   <data name="Remember the location of one's death." xml:space="preserve">
-    <value>Lembre-se do local da morte de alguém.</value>
+    <value>Lembre-se do local onde alguém morreu.</value>
     <comment>legacy_id=2602</comment>
   </data>
   <data name="Move by a right-mouse-click." xml:space="preserve">
@@ -9262,11 +9286,11 @@
     <comment>legacy_id=2614</comment>
   </data>
   <data name="/Party battle request" xml:space="preserve">
-    <value>/Solicitação de batalha em grupo</value>
+    <value>/party solicitação de batalha em grupo</value>
     <comment>legacy_id=2620</comment>
   </data>
   <data name="/Party battle cancellation" xml:space="preserve">
-    <value>/ Cancelamento da batalha em grupo</value>
+    <value>/party cancelamento da batalha em grupo</value>
     <comment>legacy_id=2621</comment>
   </data>
   <data name="%s has accepted your request for party battle." xml:space="preserve">
@@ -9274,11 +9298,11 @@
     <comment>legacy_id=2622</comment>
   </data>
   <data name="%s has rejected your request for party battle." xml:space="preserve">
-    <value>%s rejeitou seu pedido de batalha partidária.</value>
+    <value>%s rejeitou seu pedido de batalha em grupo.</value>
     <comment>legacy_id=2623</comment>
   </data>
   <data name="Party battle has been cancelled." xml:space="preserve">
-    <value>A batalha partidária foi cancelada.</value>
+    <value>A batalha em grupo foi cancelada.</value>
     <comment>legacy_id=2624</comment>
   </data>
   <data name="You cannot request another battle during the party battle." xml:space="preserve">
@@ -9286,11 +9310,11 @@
     <comment>legacy_id=2625</comment>
   </data>
   <data name="You have a request for the party battle." xml:space="preserve">
-    <value>Você tem um pedido para a batalha partidária.</value>
+    <value>Você tem um pedido para uma batalha em grupo.</value>
     <comment>legacy_id=2626</comment>
   </data>
   <data name="Would you like to accept the party battle?" xml:space="preserve">
-    <value>Você gostaria de aceitar a batalha partidária?</value>
+    <value>Você gostaria de aceitar a batalha em grupo?</value>
     <comment>legacy_id=2627</comment>
   </data>
   <data name="Unique" xml:space="preserve">
@@ -9330,11 +9354,11 @@
     <comment>legacy_id=2660</comment>
   </data>
   <data name="Assembly" xml:space="preserve">
-    <value>Conjunto</value>
+    <value>Montagem</value>
     <comment>legacy_id=2661</comment>
   </data>
   <data name="Application" xml:space="preserve">
-    <value>Aplicativo</value>
+    <value>Aplicação</value>
     <comment>legacy_id=2662</comment>
   </data>
   <data name="Destruction" xml:space="preserve">
@@ -9349,8 +9373,8 @@
     <value>Conjunto de Esfera de Semente</value>
     <comment>legacy_id=2665</comment>
   </data>
-  <data name="Seed Master" xml:space="preserve">
-    <value>Mestre de Sementes</value>
+  <data name="Mestre das Sementes" xml:space="preserve">
+    <value>Mestre das Sementes</value>
     <comment>legacy_id=2666</comment>
   </data>
   <data name="Extract the seed or the seed sphere" xml:space="preserve">
@@ -9606,7 +9630,7 @@
     <comment>legacy_id=2735</comment>
   </data>
   <data name="Talisman of Cape of Emperor" xml:space="preserve">
-    <value>Talismã do Cabo do Imperador</value>
+    <value>Talismã da Capa do Imperador</value>
     <comment>legacy_id=2736</comment>
   </data>
   <data name="Talisman of Wings of Dragon" xml:space="preserve">
@@ -9650,11 +9674,11 @@
     <comment>legacy_id=2746</comment>
   </data>
   <data name="EXP rate 50%% increase" xml:space="preserve">
-    <value>Taxa de EXP 50%% inaumento</value>
+    <value>Taxa de EXP aumentada em 50%%</value>
     <comment>legacy_id=2747</comment>
   </data>
   <data name="Increase Defensive Skill +50" xml:space="preserve">
-    <value>Aumente a habilidade defensiva +50</value>
+    <value>Aumenta a habilidade defensiva em +50</value>
     <comment>legacy_id=2748</comment>
   </data>
   <data name="Lugard" xml:space="preserve">
@@ -9770,7 +9794,7 @@
     <comment>legacy_id=2788</comment>
   </data>
   <data name="No. %d Secromicon Fragment" xml:space="preserve">
-    <value>Nº %d Fragmento Secromicon</value>
+    <value>Fragmento de Secromicon nº %d</value>
     <comment>legacy_id=2789</comment>
   </data>
   <data name="It's part of a Complete Secromicon." xml:space="preserve">
@@ -9814,11 +9838,11 @@
     <comment>legacy_id=2800</comment>
   </data>
   <data name="Fortress of Empire Guardians Round %d" xml:space="preserve">
-    <value>Rodada dos Guardiões da Fortaleza do Império %d</value>
+    <value>Rodada %d da Fortaleza dos Guardiões do Império</value>
     <comment>legacy_id=2801</comment>
   </data>
   <data name="has been cleared." xml:space="preserve">
-    <value>foi apagado.</value>
+    <value>foi concluída.</value>
     <comment>legacy_id=2802</comment>
   </data>
   <data name="You have failed to conquer the" xml:space="preserve">
@@ -9826,7 +9850,7 @@
     <comment>legacy_id=2803</comment>
   </data>
   <data name="Fortress of Empire Guardians." xml:space="preserve">
-    <value>Fortaleza dos Guardiões do Império.</value>
+    <value>a Fortaleza dos Guardiões do Império.</value>
     <comment>legacy_id=2804</comment>
   </data>
   <data name="Round %d (Zone %d)" xml:space="preserve">
@@ -9982,7 +10006,7 @@
     <comment>legacy_id=2864</comment>
   </data>
   <data name="You cannot enter if you are a 1st Stage Outlaw." xml:space="preserve">
-    <value>Você não pode entrar se for um Fora da Lei de 1º Estágio.</value>
+    <value>Você não pode entrar se for um Fora da Lei de 1º estágio.</value>
     <comment>legacy_id=2865</comment>
   </data>
   <data name="Dueling is not possible in this area." xml:space="preserve">
@@ -10033,8 +10057,8 @@
     <value>Você pode fazer uma combinação de Goblin com uma Chave Dourada para criar uma Caixa Dourada.</value>
     <comment>legacy_id=2877</comment>
   </data>
-  <data name="You can do a Goblin combination with a Silver Key to create a Silver Box." xml:space="preserve">
-    <value>Você pode fazer uma combinação de Goblin com uma Silver Key para criar uma Silver Box.</value>
+  <data name="You can do a Goblin combination with a Chave de Prata to create a Caixa de Prata." xml:space="preserve">
+    <value>Você pode fazer uma combinação de Goblin com uma Chave de Prata para criar uma Caixa de Prata.</value>
     <comment>legacy_id=2878</comment>
   </data>
   <data name="You can drop it with a fixed probability of it turning into a rare item." xml:space="preserve">
@@ -10045,7 +10069,7 @@
     <value>Caixa Dourada</value>
     <comment>legacy_id=2881</comment>
   </data>
-  <data name="Silver Box" xml:space="preserve">
+  <data name="Caixa de Prata" xml:space="preserve">
     <value>Caixa Prateada</value>
     <comment>legacy_id=2882</comment>
   </data>
@@ -10066,7 +10090,7 @@
     <comment>legacy_id=2887</comment>
   </data>
   <data name="Gift Inventory" xml:space="preserve">
-    <value>Inventário de presentes</value>
+    <value>Presentes</value>
     <comment>legacy_id=2889</comment>
   </data>
   <data name="Shop" xml:space="preserve">
@@ -10090,7 +10114,7 @@
     <comment>legacy_id=2897</comment>
   </data>
   <data name="Bought items used or taken out of storage cannot be returned." xml:space="preserve">
-    <value>Itens comprados usados ​​ou retirados do armazenamento não podem ser devolvidos.</value>
+    <value>Itens comprados, usados ou retirados do armazenamento não podem ser devolvidos.</value>
     <comment>legacy_id=2898,2909</comment>
   </data>
   <data name="Purchase Completed" xml:space="preserve">
@@ -10158,7 +10182,7 @@
     <comment>legacy_id=2916</comment>
   </data>
   <data name="Item: %s" xml:space="preserve">
-    <value>Artigo: %s</value>
+    <value>Item: %s</value>
     <comment>legacy_id=2917,3037</comment>
   </data>
   <data name="Recipient's Character Name:" xml:space="preserve">
@@ -10382,7 +10406,7 @@
     <comment>legacy_id=2979</comment>
   </data>
   <data name="ResetsTheEntireMasterSkillTree" xml:space="preserve">
-    <value>Redefine toda a árvore de habilidades mestre uma vez.\nSó pode ser usado no site MU Online.</value>
+    <value>Redefine toda a árvore de habilidades Master uma vez.\nSó pode ser usado no site do MU Online.</value>
     <comment>legacy_id=2980</comment>
   </data>
   <data name="LetsYouAdjustTheCharacterS" xml:space="preserve">
@@ -10422,7 +10446,7 @@
     <comment>legacy_id=2989</comment>
   </data>
   <data name="You cannot form a party with a member of the opposing gens." xml:space="preserve">
-    <value>Você não pode formar um partido com um membro da gens oposta.</value>
+    <value>Você não pode formar um Grupo com um membro da Gens oposta.</value>
     <comment>legacy_id=2990</comment>
   </data>
   <data name="The alliance master has not joined the gens." xml:space="preserve">
@@ -10434,7 +10458,7 @@
     <comment>legacy_id=2992</comment>
   </data>
   <data name="You are with a different gens than the alliance master." xml:space="preserve">
-    <value>Você está com uma gens diferente da do mestre da aliança.</value>
+    <value>Você pertence a uma Gens diferente da do mestre da aliança.</value>
     <comment>legacy_id=2993</comment>
   </data>
   <data name="Contribution: %lu" xml:space="preserve">
@@ -10454,7 +10478,7 @@
     <comment>legacy_id=2997</comment>
   </data>
   <data name="Parties are not activated within a Battle Zone." xml:space="preserve">
-    <value>Grupos não são ativados em uma Zona de Batalha.</value>
+    <value>Grupos não são permitidos em uma Zona de Batalha.</value>
     <comment>legacy_id=2998</comment>
   </data>
   <data name="Fee: 5,000 Zens" xml:space="preserve">
@@ -10518,7 +10542,7 @@
     <comment>legacy_id=3013</comment>
   </data>
   <data name="You cannot enter Chaos Castle" xml:space="preserve">
-    <value>Você não pode entrar no Castelo do Caos</value>
+    <value>Você não pode entrar no Chaos Castle</value>
     <comment>legacy_id=3014</comment>
   </data>
   <data name="from the market in Lorencia." xml:space="preserve">
@@ -10554,7 +10578,7 @@
     <comment>legacy_id=3026</comment>
   </data>
   <data name="TheWizardWhoBroughtDownElve" xml:space="preserve">
-    <value>O mago que derrubou Elve. O mago irá seduzir Antonias para ressuscitar Kundun e causar a segunda Guerra Demogorgon.</value>
+    <value>O mago que derrotou Elve. Ele seduzirá Antonias para ressuscitar Kundun e causar a segunda Guerra Demogorgon.</value>
     <comment>legacy_id=3027</comment>
   </data>
   <data name="Error" xml:space="preserve">
@@ -10610,7 +10634,7 @@
     <comment>legacy_id=3041</comment>
   </data>
   <data name="%d Pieces" xml:space="preserve">
-    <value>Peças %d</value>
+    <value>%d peças</value>
     <comment>legacy_id=3042,3650</comment>
   </data>
   <data name="%s W Coin" xml:space="preserve">
@@ -10642,7 +10666,7 @@
     <comment>legacy_id=3049</comment>
   </data>
   <data name="W Coin: %s Coins" xml:space="preserve">
-    <value>Moeda W: Moedas %s</value>
+    <value>Moeda W: %s moedas</value>
     <comment>legacy_id=3050</comment>
   </data>
   <data name="You can only open MU Item Shop in a town or safe zone." xml:space="preserve">
@@ -10682,11 +10706,11 @@
     <comment>legacy_id=3059</comment>
   </data>
   <data name="EXP10IncreasePCCafeChaos" xml:space="preserve">
-    <value>EXP 10% % Increase/ PC Cafe Chaos Castle Access/ Acesso aberto a Kalima/ Aumento de pontos Goblin</value>
+    <value>Aumento de EXP em 10%% / Acesso ao Chaos Castle do PC Café / Acesso aberto a Kalima / Aumento de pontos Goblin</value>
     <comment>legacy_id=3060</comment>
   </data>
   <data name="EXP10IncreasePCCafeChaos3061" xml:space="preserve">
-    <value>EXP 10% % Increase/ Acesso ao PC Cafe Chaos Castle / Acesso aberto a Kalima/ Aumento de pontos Goblin/ Uso da janela de comando Warp/ Sistema de resistência não aplicado</value>
+    <value>Aumento de EXP em 10%% / Acesso ao Chaos Castle do PC Café / Acesso aberto a Kalima / Aumento de pontos Goblin / Uso da janela de comando Warp / Sistema de resistência não aplicado</value>
     <comment>legacy_id=3061</comment>
   </data>
   <data name=" PC Cafe" xml:space="preserve">
@@ -10730,15 +10754,15 @@
     <comment>legacy_id=3072</comment>
   </data>
   <data name="Chaos Castle Lv.%lu Guardsman x %lu/%lu" xml:space="preserve">
-    <value>Castelo do Caos Lv.%lu Guarda x %lu/%lu</value>
+    <value>Chaos Castle Lv.%lu Guardas x %lu/%lu</value>
     <comment>legacy_id=3074</comment>
   </data>
   <data name="Chaos Castle Lv.%lu Player x %lu/%lu" xml:space="preserve">
-    <value>Jogador do Castelo do Caos Lv.%lu x %lu/%lu</value>
+    <value>Jogador do Chaos Castle Lv.%lu x %lu/%lu</value>
     <comment>legacy_id=3075</comment>
   </data>
   <data name="Chaos Castle Lv.%lu Cleared" xml:space="preserve">
-    <value>Castelo do Caos Lv.%lu Concluído</value>
+    <value>Chaos Castle Lv.%lu Concluído</value>
     <comment>legacy_id=3076</comment>
   </data>
   <data name="Blood Castle Lv.%lu Gate Destruction x %lu/%lu" xml:space="preserve">
@@ -10754,7 +10778,7 @@
     <comment>legacy_id=3079</comment>
   </data>
   <data name="Devil Square Lv.%lu Cleared" xml:space="preserve">
-    <value>Praça do Diabo Lv.%lu Concluída</value>
+    <value>Devil Square Lv.%lu Concluído</value>
     <comment>legacy_id=3080</comment>
   </data>
   <data name="Illusion Temple Lv.%lu Cleared" xml:space="preserve">
@@ -10818,11 +10842,11 @@
     <comment>legacy_id=3097</comment>
   </data>
   <data name="Gens Ranking" xml:space="preserve">
-    <value>Classificação da Geração</value>
+    <value>Classificação dos Gens</value>
     <comment>legacy_id=3098</comment>
   </data>
   <data name="Gens Description" xml:space="preserve">
-    <value>Descrição da geração</value>
+    <value>Descrição dos Gens</value>
     <comment>legacy_id=3100</comment>
   </data>
   <data name="GensRankingRewardsAreGivenOut" xml:space="preserve">
@@ -10894,7 +10918,7 @@
     <comment>legacy_id=3118</comment>
   </data>
   <data name="Your gold channel ticket is valid for next %d minutes." xml:space="preserve">
-    <value>Seu ingresso do canal Gold é válido para os próximos minutos %d.</value>
+    <value>Seu ingresso do canal Gold é válido por mais %d minutos.</value>
     <comment>legacy_id=3119</comment>
   </data>
   <data name="A same type item is already in use. Cancel that item and then try again." xml:space="preserve">
@@ -11002,7 +11026,7 @@
     <comment>legacy_id=3145</comment>
   </data>
   <data name="You need more %%s to purchase this item." xml:space="preserve">
-    <value>Você precisa de mais% %s para comprar este item.</value>
+    <value>Você precisa de mais %%s para comprar este item.</value>
     <comment>legacy_id=3146</comment>
   </data>
   <data name="Cannot apply in Battle Zone." xml:space="preserve">
@@ -11022,7 +11046,7 @@
     <comment>legacy_id=3150</comment>
   </data>
   <data name="Fist Master" xml:space="preserve">
-    <value>Mestre do Punho</value>
+    <value>Fist Master</value>
     <comment>legacy_id=3151</comment>
   </data>
   <data name="LegitimateBearersOfTheKarutanRoyal" xml:space="preserve">
@@ -11118,7 +11142,7 @@
     <comment>legacy_id=3266</comment>
   </data>
   <data name="Restores SD by 65%% immediately." xml:space="preserve">
-    <value>Restaura SD em 65% % i imediatamente.</value>
+    <value>Restaura 65%% do SD imediatamente.</value>
     <comment>legacy_id=3267</comment>
   </data>
   <data name="Click the item to see the quest information again." xml:space="preserve">
@@ -11178,11 +11202,11 @@
     <comment>legacy_id=3281</comment>
   </data>
   <data name="You need to clear at least 1 quest to" xml:space="preserve">
-    <value>Você precisa concluir pelo menos 1 missão para</value>
+    <value>Você precisa concluir pelo menos 1 missão para aceitar esta.</value>
     <comment>legacy_id=3282</comment>
   </data>
   <data name="accept this one." xml:space="preserve">
-    <value>aceite este.</value>
+    <value>aceitar esta.</value>
     <comment>legacy_id=3283</comment>
   </data>
   <data name="The same type seal is already in use." xml:space="preserve">
@@ -11298,19 +11322,19 @@
     <comment>legacy_id=3311</comment>
   </data>
   <data name="Jewel of Life" xml:space="preserve">
-    <value>Jóia da Vida</value>
+    <value>Life</value>
     <comment>legacy_id=3312</comment>
   </data>
   <data name="Jewel of Creation" xml:space="preserve">
-    <value>Jóia da Criação</value>
+    <value>Creation</value>
     <comment>legacy_id=3313</comment>
   </data>
-  <data name="Jewel of Guardian" xml:space="preserve">
+  <data name="Jóia do Guardião" xml:space="preserve">
     <value>Jóia do Guardião</value>
     <comment>legacy_id=3314</comment>
   </data>
   <data name="Jewel of Chaos" xml:space="preserve">
-    <value>Jóia do Caos</value>
+    <value>Chaos</value>
     <comment>legacy_id=3316</comment>
   </data>
   <data name="Lower Refining Stone" xml:space="preserve">
@@ -11666,7 +11690,7 @@
     <comment>legacy_id=3413</comment>
   </data>
   <data name="Chaos Castle (PC)" xml:space="preserve">
-    <value>Castelo do Caos (PC)</value>
+    <value>Chaos Castle (PC)</value>
     <comment>legacy_id=3414</comment>
   </data>
   <data name="Help" xml:space="preserve">
@@ -11734,7 +11758,7 @@
     <comment>legacy_id=3435</comment>
   </data>
   <data name="Choose Hostility Guild" xml:space="preserve">
-    <value>Escolha a Guilda da Hostilidade</value>
+    <value>Escolha a guilda hostil</value>
     <comment>legacy_id=3436</comment>
   </data>
   <data name="Score3438" xml:space="preserve">
@@ -11862,11 +11886,11 @@
     <comment>legacy_id=3501</comment>
   </data>
   <data name="Setting" xml:space="preserve">
-    <value>Contexto</value>
+    <value>Configuração</value>
     <comment>legacy_id=3502</comment>
   </data>
   <data name="Save Setting" xml:space="preserve">
-    <value>Salvar configuração</value>
+    <value>Salvar</value>
     <comment>legacy_id=3503</comment>
   </data>
   <data name="Initialization" xml:space="preserve">
@@ -11934,7 +11958,7 @@
     <comment>legacy_id=3522</comment>
   </data>
   <data name="Excellent Item" xml:space="preserve">
-    <value>Excelente artigo</value>
+    <value>Item excelente</value>
     <comment>legacy_id=3524</comment>
   </data>
   <data name="Add Extra Item" xml:space="preserve">
@@ -11977,7 +12001,7 @@
     <value>Atacar Juntos</value>
     <comment>legacy_id=3535</comment>
   </data>
-  <data name="Official MU Helper" xml:space="preserve">
+  <data name="MU Helper oficial" xml:space="preserve">
     <value>Ajudante oficial do MU</value>
     <comment>legacy_id=3536</comment>
   </data>
@@ -12014,7 +12038,7 @@
     <comment>legacy_id=3545</comment>
   </data>
   <data name="HP Status" xml:space="preserve">
-    <value>Status da HP</value>
+    <value>Status do HP</value>
     <comment>legacy_id=3547</comment>
   </data>
   <data name="Heal Support" xml:space="preserve">
@@ -12026,11 +12050,11 @@
     <comment>legacy_id=3549</comment>
   </data>
   <data name="HP Status of Party Members" xml:space="preserve">
-    <value>Status HP dos membros do grupo</value>
+    <value>Status do HP dos membros do Grupo</value>
     <comment>legacy_id=3550</comment>
   </data>
   <data name="Time Space of Casting Buff" xml:space="preserve">
-    <value>Espaço de tempo do elenco Buff</value>
+    <value>Intervalo de lançamento de buff</value>
     <comment>legacy_id=3551</comment>
   </data>
   <data name="Activation Skill" xml:space="preserve">
@@ -12065,15 +12089,15 @@
     <value>Mais de 5 mobs</value>
     <comment>legacy_id=3560</comment>
   </data>
-  <data name="Official MU Helper Setting" xml:space="preserve">
+  <data name="MU Helper oficial Setting" xml:space="preserve">
     <value>Configuração oficial do auxiliar MU</value>
     <comment>legacy_id=3561</comment>
   </data>
-  <data name="Start Official MU Helper" xml:space="preserve">
+  <data name="Start MU Helper oficial" xml:space="preserve">
     <value>Iniciar ajudante oficial do MU</value>
     <comment>legacy_id=3562</comment>
   </data>
-  <data name="Stop Official MU Helper" xml:space="preserve">
+  <data name="Stop MU Helper oficial" xml:space="preserve">
     <value>Pare o ajudante oficial do MU</value>
     <comment>legacy_id=3563</comment>
   </data>
@@ -12113,44 +12137,44 @@
     <value>Não há item selecionado</value>
     <comment>legacy_id=3572</comment>
   </data>
-  <data name="Any characters under level %d can't run Official MU Helper." xml:space="preserve">
-    <value>Qualquer personagem abaixo do nível %d não pode executar o Official MU Helper.</value>
+  <data name="Any characters under level %d can't run MU Helper oficial." xml:space="preserve">
+    <value>Qualquer personagem abaixo do nível %d não pode executar o MU Helper oficial.</value>
     <comment>legacy_id=3573</comment>
   </data>
-  <data name="Official MU Helper only runs in filed" xml:space="preserve">
+  <data name="MU Helper oficial only runs in filed" xml:space="preserve">
     <value>O MU Helper oficial só é executado em campo</value>
     <comment>legacy_id=3574</comment>
   </data>
-  <data name="In order to run Official MU Helper, please close Inventory window" xml:space="preserve">
-    <value>Para executar o Official MU Helper, feche a janela de inventário</value>
+  <data name="In order to run MU Helper oficial, please close Inventory window" xml:space="preserve">
+    <value>Para executar o MU Helper oficial, feche a janela de inventário</value>
     <comment>legacy_id=3575</comment>
   </data>
-  <data name="In order to run Official MU Helper, please close MU Guide window" xml:space="preserve">
-    <value>Para executar o Official MU Helper, feche a janela do MU Guide</value>
+  <data name="In order to run MU Helper oficial, please close MU Guide window" xml:space="preserve">
+    <value>Para executar o MU Helper oficial, feche a janela do MU Guide</value>
     <comment>legacy_id=3576</comment>
   </data>
   <data name="InOrderToRunOfficialMU" xml:space="preserve">
-    <value>Para executar o Official MU Helper corretamente, registre habilidades (exceto Fairy)</value>
+    <value>Para executar o MU Helper oficial corretamente, registre habilidades (exceto Fairy)</value>
     <comment>legacy_id=3577</comment>
   </data>
-  <data name="Official MU Helper is running." xml:space="preserve">
+  <data name="MU Helper oficial is running." xml:space="preserve">
     <value>O MU Helper oficial está em execução.</value>
     <comment>legacy_id=3578</comment>
   </data>
-  <data name="Official MU Helper is closed" xml:space="preserve">
+  <data name="MU Helper oficial is closed" xml:space="preserve">
     <value>O MU Helper oficial está fechado</value>
     <comment>legacy_id=3579</comment>
   </data>
-  <data name="Official MU Helper Setting has been saved." xml:space="preserve">
+  <data name="MU Helper oficial Setting has been saved." xml:space="preserve">
     <value>A configuração oficial do MU Helper foi salva.</value>
     <comment>legacy_id=3580</comment>
   </data>
-  <data name="Official MU Helper can't be implemented in this region." xml:space="preserve">
+  <data name="MU Helper oficial can't be implemented in this region." xml:space="preserve">
     <value>O MU Helper oficial não pode ser implementado nesta região.</value>
     <comment>legacy_id=3581</comment>
   </data>
   <data name="CertainAmountOfZenIsSpent" xml:space="preserve">
-    <value>Certa quantidade de zen é gasta a cada 5 minutos na implementação do Official MU Helper</value>
+    <value>Certa quantidade de zen é gasta a cada 5 minutos na implementação do MU Helper oficial</value>
     <comment>legacy_id=3582</comment>
   </data>
   <data name="Spent Time %d Minute(s)/" xml:space="preserve">
@@ -12165,19 +12189,19 @@
     <value>Tempo gasto %d hora(s) %d Minuto(s)/ Zen gasto %d Estágio / Custo %d zen(s)</value>
     <comment>legacy_id=3585</comment>
   </data>
-  <data name="%d zen(s) have been spent in implementing Official MU Helper" xml:space="preserve">
-    <value>%d zen(s) foram gastos na implementação do Official MU Helper</value>
+  <data name="%d zen(s) have been spent in implementing MU Helper oficial" xml:space="preserve">
+    <value>%d zen(s) foram gastos na implementação do MU Helper oficial</value>
     <comment>legacy_id=3586</comment>
   </data>
-  <data name="Zen is not sufficient to run Official MU Helper" xml:space="preserve">
-    <value>Zen não é suficiente para executar o Official MU Helper</value>
+  <data name="Zen is not sufficient to run MU Helper oficial" xml:space="preserve">
+    <value>Zen não é suficiente para executar o MU Helper oficial</value>
     <comment>legacy_id=3587</comment>
   </data>
-  <data name="In order to run Official MU Helper, please install Add-on first" xml:space="preserve">
-    <value>Para executar o Official MU Helper, instale o complemento primeiro</value>
+  <data name="In order to run MU Helper oficial, please install Add-on first" xml:space="preserve">
+    <value>Para executar o MU Helper oficial, instale o complemento primeiro</value>
     <comment>legacy_id=3588</comment>
   </data>
-  <data name="Official MU Helper is closed due to the excess of %d hour(s)" xml:space="preserve">
+  <data name="MU Helper oficial is closed due to the excess of %d hour(s)" xml:space="preserve">
     <value>O MU Helper oficial está fechado devido ao excesso de hora(s) %d</value>
     <comment>legacy_id=3589</comment>
   </data>
@@ -12198,7 +12222,7 @@
     <comment>legacy_id=3593</comment>
   </data>
   <data name="Use Elite Mana Potion" xml:space="preserve">
-    <value>Use Poção de Mana Elite</value>
+    <value>Usar Poção de Mana Elite</value>
     <comment>legacy_id=3594</comment>
   </data>
   <data name="Unable to use if you have not spent points on your master skill tree." xml:space="preserve">
@@ -12350,7 +12374,7 @@
     <comment>legacy_id=3632</comment>
   </data>
   <data name="Arca War" xml:space="preserve">
-    <value>Guerra Arcana</value>
+    <value>Arca War</value>
     <comment>legacy_id=3633</comment>
   </data>
   <data name="Arca War results" xml:space="preserve">
@@ -12674,7 +12698,7 @@
     <comment>legacy_id=3733</comment>
   </data>
   <data name="YouCannotUseTheElementalChaos" xml:space="preserve">
-    <value>Você não pode usar o Talismã Elemental Chaos Assembly e o Elemental Talisman of Luck juntos.</value>
+    <value>Você não pode usar o Talismã Elemental Chaos Assembly e o Talismã Elemental da Sorte juntos.</value>
     <comment>legacy_id=3734</comment>
   </data>
   <data name="Congratulations. Combination successful." xml:space="preserve">
@@ -12742,11 +12766,11 @@
     <comment>legacy_id=3760</comment>
   </data>
   <data name="ICanFeelThePowerOf" xml:space="preserve">
-    <value>Posso sentir o poder da barreira. Se você quiser entrar na área da Barreira Idas, clique no botão Enter à esquerda. Para reparar a durabilidade de uma palheta, é necessário usar uma joia.</value>
+    <value>Posso sentir o poder da barreira. Se você quiser entrar na área da Barreira Idas, clique no botão Enter à esquerda. Para reparar a durabilidade de uma picareta, é necessário usar uma joia.</value>
     <comment>legacy_id=3761</comment>
   </data>
   <data name="IfYouWantToRepairClick" xml:space="preserve">
-    <value>Se você deseja reparar, clique no botão cancelar à direita. Em seguida, aprimore-o com várias joias. As joias que podem ser reparadas são Jóia da Bênção, Jóia da Alma, Jóia da Criação e Jóia do Caos (incluindo cachos).</value>
+    <value>Se você deseja reparar, clique no botão cancelar à direita. Em seguida, aprimore-o com várias joias. As joias que podem ser reparadas são Bless, Soul, Creation e Chaos (incluindo pacotes).</value>
     <comment>legacy_id=3762</comment>
   </data>
   <data name="Only Level 170 and above may enter." xml:space="preserve">
@@ -12762,63 +12786,63 @@
     <comment>legacy_id=3765</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½Ä µî·Ï ÇöÈ²" xml:space="preserve">
-    <value>¼ºÁÖÀÇ Ç¥½Ä µî·Ï ÇöÈ²</value>
+    <value>Situação dos símbolos do Senhor registrados</value>
     <comment>legacy_id=3766</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½Ä µî·Ï ¼øÀ§" xml:space="preserve">
-    <value>¼ºÁÖÀÇ ¥½Ä µî·Ï ¼øÀ§</value>
+    <value>Classificação dos símbolos do Senhor registrados</value>
     <comment>legacy_id=3767</comment>
   </data>
   <data name="µî·Ï °³¼ö" xml:space="preserve">
-    <value>µî·Ï °³¼ö</value>
+    <value>Quantidade registrada</value>
     <comment>legacy_id=3768</comment>
   </data>
   <data name="¿ì¸® ±æµå ÇöÈ²" xml:space="preserve">
-    <value>¿ì¸® ±æµå ÇöÈ²</value>
+    <value>Situação da nossa guilda</value>
     <comment>legacy_id=3769</comment>
   </data>
   <data name="µÚ·Î°¡±â" xml:space="preserve">
-    <value>µÚ·Î°¡±â</value>
+    <value>Voltar</value>
     <comment>legacy_id=3770</comment>
   </data>
   <data name="µî·Ï °¡´É" xml:space="preserve">
-    <value>µî·Ï °¡´É</value>
+    <value>Registro disponível</value>
     <comment>legacy_id=3771</comment>
   </data>
   <data name="µî·Ï ºÒ°¡" xml:space="preserve">
-    <value>µî·Ï ºÒ°¡</value>
+    <value>Registro indisponível</value>
     <comment>legacy_id=3772</comment>
   </data>
   <data name="µî·ÏÇÒ ¼ºÁÖÀÇ Ç¥½Ä °³¼ö : %d°³" xml:space="preserve">
-    <value>µî·ÏÇÒ ¼ºÁÖÀÇ Ç¥½Ä °³¼ö : %d°³</value>
+    <value>Quantidade de símbolos do Senhor para registrar: %d</value>
     <comment>legacy_id=3773</comment>
   </data>
   <data name="µî·ÏÇÒ ¼ºÁÖÀÇ Ç¥½ÄÀ» Á¶ÇÕÃ¢¿¡ ¿Ã·ÁÁÖ¼¼¿ä." xml:space="preserve">
-    <value>µî·ÏÇÒ ¼ºÁÖÀÇ Ç¥½ÄÀ» Á¶ÇÕÃ¢¿¡ ¿Ã·ÁÁÖ¼¼¿ä.</value>
+    <value>Coloque os símbolos do Senhor para registrar na janela de combinação.</value>
     <comment>legacy_id=3774</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½ÄÀº ÇÑ¹ø¿¡ ÃÖ´ë 225°³±îÁö µî·ÏÇÒ ¼ö ÀÖ½À´Ï´Ù." xml:space="preserve">
-    <value>¼ºÁÖÀÇ Ç¥½ÄÀº ÇÑ¹ø¿¡ ÃÖ´ë 225°³±îÁö µî·ÏÇÒ ¼ö ÀÖ½À´Ï´Ù.</value>
+    <value>É possível registrar até 225 símbolos do Senhor de uma vez.</value>
     <comment>legacy_id=3775</comment>
   </data>
   <data name="µî·ÏµÈ ¼ºÁÖÀÇ Ç¥½Ä °³¼ö: %d°³" xml:space="preserve">
-    <value>µî·ÏµÈ ¼ºÁÖÀÇ Ç¥½Ä °³¼ö: %d°³</value>
+    <value>Quantidade de símbolos do Senhor registrados: %d</value>
     <comment>legacy_id=3776</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½Ä µî·Ï" xml:space="preserve">
-    <value>¼ºÁÖÀÇ ¥½Ä µî·Ï</value>
+    <value>Registrar símbolo do Senhor</value>
     <comment>legacy_id=3777</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½ÄÀ» µî·ÏÇÏ½Ã°Ú½À´Ï±î?" xml:space="preserve">
-    <value>¼ºÁÖÀÇ Ç¥½ÄÀ» µî·ÏÇÏ½Ã°Ú½À´Ï±î?</value>
+    <value>Registrar o símbolo do Senhor?</value>
     <comment>legacy_id=3778</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½Ä µî·ÏÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù." xml:space="preserve">
-    <value>¼ºÁÖÀÇ Ç¥½Ä µî·ÏÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.</value>
+    <value>Registro do símbolo do Senhor concluído.</value>
     <comment>legacy_id=3779</comment>
   </data>
   <data name="¼ºÁÖÀÇ Ç¥½Ä µî·ÏÀÌ ½ÇÆÐÇÏ¿´½À´Ï´Ù." xml:space="preserve">
-    <value>¼ºÁÖÀÇ Ç¥½Ä µî·ÏÀÌ ½ÇÆÐÇÏ¿´½À´Ï´Ù.</value>
+    <value>Falha ao registrar o símbolo do Senhor.</value>
     <comment>legacy_id=3780</comment>
   </data>
   <data name="ｼﾓｼｺ" xml:space="preserve">
@@ -12838,15 +12862,15 @@
     <comment>legacy_id=3784</comment>
   </data>
   <data name="Àû´ë±æµå¸¦ ÇØÁ¦ÇÒ ±æµå¸íÀ» ¼±ÅÃÇØ ÁÖ¼¼¿ä" xml:space="preserve">
-    <value>Àû´ë±æµå¸¦ ÇØÁ¦ÇÒ ±æµå¸íÀ» ¼±ÅÃÇØ ÁÖ¼¼¿ä</value>
+    <value>Selecione o nome da guilda inimiga a ser removida.</value>
     <comment>legacy_id=3785</comment>
   </data>
   <data name="±æµå¸¦ Àû´ë±æµå¿¡¼­ ÇØÁ¦ÇÏ½Ã°Ú½À´Ï±î?" xml:space="preserve">
-    <value>±æµå¸¦ Àû´ë±æµå¿¡¼ ÇØÁ¦ÇÏ½Ã°Ú½À´Ï±î?</value>
+    <value>Remover a guilda inimiga da guilda?</value>
     <comment>legacy_id=3786</comment>
   </data>
   <data name="¼­¹ö" xml:space="preserve">
-    <value>¼¹ö</value>
+    <value>Servidor</value>
     <comment>legacy_id=3787</comment>
   </data>
   <data name="ESC" xml:space="preserve">
@@ -12854,19 +12878,19 @@
     <comment>legacy_id=3788</comment>
   </data>
   <data name="20¾ïÁ¨ ÀÌ»ó Ãâ±Ý ºÒ°¡" xml:space="preserve">
-    <value>20¾ïÁ¨ ÀÌ»ó Ãâ±Ý ºÒ°¡</value>
+    <value>Não é possível sacar mais de 2 bilhões de Zen</value>
     <comment>legacy_id=3789</comment>
   </data>
   <data name="ÀüÃ¼¼ö¸®ºñ¿ë" xml:space="preserve">
-    <value>ÀüÃ¼¼ö¸®ºñ¿ë</value>
+    <value>Custo total de reparo</value>
     <comment>legacy_id=3790</comment>
   </data>
   <data name="ÇØ´ç ±æµå°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù" xml:space="preserve">
-    <value>ÇØ´ç ±æµå°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù</value>
+    <value>Essa guilda não existe.</value>
     <comment>legacy_id=3791</comment>
   </data>
   <data name="°Å·¡ ½ÂÀÎ ´ë±âÁß" xml:space="preserve">
-    <value>°Å·¡ ½ÂÀÎ ´ë±âÁß</value>
+    <value>Aguardando aprovação da troca.</value>
     <comment>legacy_id=3792</comment>
   </data>
   <data name="You can purchase it after a while." xml:space="preserve">
@@ -12878,7 +12902,7 @@
     <comment>legacy_id=3809</comment>
   </data>
   <data name="Level: %u | Resets: %u" xml:space="preserve">
-    <value>Nível: %u | Redefinições: %u</value>
+    <value>Nível: %u | Resets: %u</value>
     <comment>legacy_id=3810</comment>
   </data>
   <data name="Font" xml:space="preserve">
@@ -12887,4 +12911,232 @@
   <data name="DefaultFont" xml:space="preserve">
     <value>Padrão</value>
   </data>
+  <data name="CashShopTransferSuccess" xml:space="preserve">
+    <value>Moedas transferidas com sucesso.</value>
+  </data>
+  <data name="CashShopTransferInsufficientBalance" xml:space="preserve">
+    <value>Saldo insuficiente.</value>
+  </data>
+  <data name="CashShopTransferCharacterNotFound" xml:space="preserve">
+    <value>Personagem não encontrado.</value>
+  </data>
+  <data name="CashShopTransferError" xml:space="preserve">
+    <value>Ocorreu um erro ao transferir as moedas.</value>
+  </data>
+  <data name="CashShopOpeningPurchasePage" xml:space="preserve">
+    <value>Abrindo a loja de moedas no navegador...</value>
+  </data>
+  <data name="CashShopTransferTitle" xml:space="preserve">
+    <value>Enviar moedas W</value>
+  </data>
+  <data name="CashShopTransferTargetLabel" xml:space="preserve">
+    <value>Personagem destino</value>
+  </data>
+  <data name="CashShopTransferAmountLabel" xml:space="preserve">
+    <value>Quantidade</value>
+  </data>
+  <data name="CashShopTransferInvalidInput" xml:space="preserve">
+    <value>Informe o personagem e uma quantidade válida.</value>
+  </data>
+  <data name="MuHelperRange" xml:space="preserve">
+    <value>Alcance</value>
+  </data>
+  <data name="MuHelperOtherSettings" xml:space="preserve">
+    <value>Outras</value>
+  </data>
+  <data name="MuHelperConfigure" xml:space="preserve">
+    <value>Config.</value>
+  </data>
+  <data name="MuHelperDistance" xml:space="preserve">
+    <value>Dist.</value>
+  </data>
+  <data name="MuHelperCondition" xml:space="preserve">
+    <value>Contra-atq.</value>
+  </data>
+  <data name="MuHelperBasicSkill" xml:space="preserve">
+    <value>Básica</value>
+  </data>
+  <data name="MuHelperActivationSkill1" xml:space="preserve">
+    <value>Ativação 1</value>
+  </data>
+  <data name="MuHelperActivationSkill2" xml:space="preserve">
+    <value>Ativação 2</value>
+  </data>
+  <data name="MuHelperCombo" xml:space="preserve">
+    <value>Combo</value>
+  </data>
+  <data name="MuHelperLongDistanceCounterAttack" xml:space="preserve">
+    <value>Contra-atq. distância</value>
+  </data>
+  <data name="MuHelperBasicAttackFallback" xml:space="preserve">
+    <value>Ataque básico</value>
+  </data>
+  <data name="MuHelperPickAll" xml:space="preserve">
+    <value>Pegar itens próximos</value>
+  </data>
+  <data name="MuHelperPickSelected" xml:space="preserve">
+    <value>Pegar selecionados</value>
+  </data>
+  <data name="MuHelperAddExtraItem" xml:space="preserve">
+    <value>Adicionar extra</value>
+  </data>
+  <data name="MuHelperAutoAcceptFriend" xml:space="preserve">
+    <value>Aceitar amigo</value>
+  </data>
+  <data name="MuHelperPvpCounterattack" xml:space="preserve">
+    <value>Contra-atq. PVP</value>
+  </data>
+  <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
+    <value>Aceitar guilda</value>
+  </data>
+  <data name="MuHelperPotion" xml:space="preserve">
+    <value>Poção</value>
+  </data>
+  <data name="BasicAttackFallback" xml:space="preserve">
+    <value>Ataque básico</value>
+  </data>
+  <data name="CashShopConfirmPurchase" xml:space="preserve">
+    <value>Comprar</value>
+  </data>
+  <data name="Connection lost" xml:space="preserve">
+    <value>Conexão perdida</value>
+  </data>
+  <data name="Checking server availability" xml:space="preserve">
+    <value>Verificando disponibilidade do servidor</value>
+  </data>
+  <data name="Logging in" xml:space="preserve">
+    <value>Entrando</value>
+  </data>
+  <data name="Loading character list" xml:space="preserve">
+    <value>Carregando lista de personagens</value>
+  </data>
+  <data name="Entering the game" xml:space="preserve">
+    <value>Entrando no jogo</value>
+  </data>
+  <data name="Retrying in seconds" xml:space="preserve">
+    <value>Tentando novamente em %d segundos...</value>
+  </data>
+  <data name="YouAlreadyReachedMaximumLevel" xml:space="preserve">
+    <value>Você já atingiu o nível máximo.</value>
+  </data>
+  <data name="YouAlreadyReachedMaximumMasterLevel" xml:space="preserve">
+    <value>Você já atingiu o Nível Master máximo.</value>
+  </data>
+  <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
+    <value>Você precisa derrotar monstros mais fortes para ganhar EXP Master.</value>
+  </data>
+  <data name="InvalidItemIndexBuyConfirm" xml:space="preserve">
+    <value>Item inválido.</value>
+  </data>
+  <data name="InvalidItemIndexBuySelect" xml:space="preserve">
+    <value>Item inválido.</value>
+  </data>
+  <data name="PackageItemInformationUnavailable" xml:space="preserve">
+    <value>Informações do item indisponíveis.</value>
+  </data>
+  <data name="GiftAction" xml:space="preserve">
+    <value>Presentear</value>
+  </data>
+  <data name="CashShopVaultAlreadyExpandedTitle" xml:space="preserve">
+    <value>Baú já expandido</value>
+  </data>
+  <data name="CashShopVaultAlreadyExpanded" xml:space="preserve">
+    <value>Seu baú já está expandido.</value>
+  </data>
+  <data name="CashShopInventoryMaxExtensionsTitle" xml:space="preserve">
+    <value>Inventário no limite</value>
+  </data>
+  <data name="CashShopInventoryMaxExtensions" xml:space="preserve">
+    <value>Seu inventário já está no limite máximo de expansões.</value>
+  </data>
+  <data name="InGameShopGiftTitle" xml:space="preserve"><value>Presentear</value></data>
+  <data name="InGameShopGiftRecipient" xml:space="preserve"><value>Destinatário</value></data>
+  <data name="InGameShopGiftMessage" xml:space="preserve"><value>Mensagem</value></data>
+  <data name="InGameShopGiftConfirm" xml:space="preserve"><value>Confirmar</value></data>
+  <data name="InGameShopGiftCancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="InGameShopGiftWCoin" xml:space="preserve"><value>Moedas W</value></data>
+  <data name="MarketplaceTitle" xml:space="preserve"><value>Marketplace</value></data>
+  <data name="MarketplaceBuyTab" xml:space="preserve"><value>Comprar</value></data>
+  <data name="MarketplaceMySalesTab" xml:space="preserve"><value>Minhas Vendas</value></data>
+  <data name="MarketplaceHistoryTab" xml:space="preserve"><value>Histórico</value></data>
+  <data name="MarketplaceListItem" xml:space="preserve"><value>Anunciar+</value></data>
+  <data name="MarketplaceCategories" xml:space="preserve"><value>Categorias</value></data>
+  <data name="MarketplaceAll" xml:space="preserve"><value>Todos</value></data>
+  <data name="MarketplaceWeapons" xml:space="preserve"><value>Armas</value></data>
+  <data name="MarketplaceArmors" xml:space="preserve"><value>Armaduras</value></data>
+  <data name="MarketplaceAccessories" xml:space="preserve"><value>Acessórios</value></data>
+  <data name="MarketplaceSpecial" xml:space="preserve"><value>Especiais</value></data>
+  <data name="MarketplaceConsumables" xml:space="preserve"><value>Consumíveis</value></data>
+  <data name="MarketplaceCoins" xml:space="preserve"><value>Moedas</value></data>
+  <data name="MarketplacePackages" xml:space="preserve"><value>Pacotes</value></data>
+  <data name="MarketplaceOthers" xml:space="preserve"><value>Outros</value></data>
+  <data name="MarketplaceWings" xml:space="preserve"><value>Asas</value></data>
+  <data name="MarketplaceJewels" xml:space="preserve"><value>Joias</value></data>
+  <data name="MarketplacePets" xml:space="preserve"><value>Pets</value></data>
+  <data name="MarketplaceInvTab" xml:space="preserve"><value>Inv.</value></data>
+  <data name="MarketplaceCartTab" xml:space="preserve"><value>Carrinho</value></data>
+  <data name="MarketplaceItemsTab" xml:space="preserve"><value>Itens</value></data>
+  <data name="MarketplaceBannerSubtitle" xml:space="preserve"><value>Marketing Place</value></data>
+  <data name="MarketplaceDays" xml:space="preserve"><value>%d dias</value></data>
+  <data name="MarketplaceSeller" xml:space="preserve"><value>Vendedor</value></data>
+  <data name="MarketplaceSelectInv" xml:space="preserve"><value>(selecione no inventário)</value></data>
+  <data name="MarketplacePrice" xml:space="preserve"><value>Preço</value></data>
+  <data name="MarketplaceQty" xml:space="preserve"><value>Qtd.</value></data>
+  <data name="MarketplaceDuration" xml:space="preserve"><value>Duração</value></data>
+  <data name="MarketplaceViewOffer" xml:space="preserve"><value>Ver oferta</value></data>
+  <data name="MarketplaceNewest" xml:space="preserve"><value>Recentes</value></data>
+  <data name="MarketplaceLowestPrice" xml:space="preserve"><value>Menor $</value></data>
+  <data name="MarketplaceHighestPrice" xml:space="preserve"><value>Maior $</value></data>
+  <data name="MarketplaceAnnounce" xml:space="preserve"><value>Anunciar</value></data>
+  <data name="MarketplaceListingFee" xml:space="preserve"><value>Taxa: 3% da venda</value></data>
+  <data name="MarketplaceFeeNotice" xml:space="preserve"><value>Taxa: 3%</value></data>
+  <data name="MarketplaceDemoNotice" xml:space="preserve"><value>Catálogo de teste. Anuncie um item do inventário para vender de verdade.</value></data>
+  <data name="MarketplaceRechargeHint" xml:space="preserve"><value>Página de recarga aberta. Use só o login da conta, sem senha. Depois clique em Atualizar.</value></data>
+  <data name="MarketplaceCancelSale" xml:space="preserve"><value>Cancelar anúncio</value></data>
+  <data name="MarketplaceListed" xml:space="preserve"><value>Anúncio atualizado.</value></data>
+  <data name="MarketplaceNotEnoughZen" xml:space="preserve"><value>Saldo insuficiente para esta ação.</value></data>
+  <data name="MarketplaceNotFound" xml:space="preserve"><value>Anúncio não encontrado ou já encerrado.</value></data>
+  <data name="MarketplaceOwnItem" xml:space="preserve"><value>Você não pode comprar o próprio anúncio.</value></data>
+  <data name="MarketplaceLimit" xml:space="preserve"><value>Limite de anúncios ativos atingido.</value></data>
+  <data name="MarketplaceFeatured" xml:space="preserve"><value>Destaque</value></data>
+  <data name="MarketplaceFeatureHours" xml:space="preserve"><value>%d h em destaque</value></data>
+  <data name="MarketplaceEmptyInv" xml:space="preserve"><value>Selecione um item na aba Inventário para anunciar.</value></data>
+  <data name="MarketplaceHighlightButton" xml:space="preserve"><value>Destacar</value></data>
+  <data name="MarketplaceFeatureCost" xml:space="preserve"><value>Custo: %d W / %d h</value></data>
+  <data name="MarketplaceFeatureConfirm" xml:space="preserve"><value>Destacar este item custa %d W por %d horas. Deseja continuar?</value></data>
+  <data name="MarketplaceNotEnoughW" xml:space="preserve"><value>Moeda W insuficiente.</value></data>
+  <data name="AutoBattlerTitle" xml:space="preserve"><value>Batalha Automática</value></data>
+  <data name="AutoBattlerMaps" xml:space="preserve"><value>Mapas</value></data>
+  <data name="AutoBattlerMobs" xml:space="preserve"><value>Criaturas</value></data>
+  <data name="AutoBattlerLoot" xml:space="preserve"><value>Loot possível</value></data>
+  <data name="AutoBattlerStart" xml:space="preserve"><value>Iniciar</value></data>
+  <data name="AutoBattlerActivate" xml:space="preserve"><value>Ativar</value></data>
+  <data name="AutoBattlerStop" xml:space="preserve"><value>Parar</value></data>
+  <data name="AutoBattlerQuota" xml:space="preserve"><value>Restante: %ls / %ls%ls</value></data>
+  <data name="AutoBattlerVip" xml:space="preserve"><value> (VIP)</value></data>
+  <data name="AutoBattlerNoTime" xml:space="preserve"><value>Sem tempo de Auto Battler restante hoje.</value></data>
+  <data name="AutoBattlerInventoryFull" xml:space="preserve"><value>Inventário cheio. Auto Battler parado.</value></data>
+  <data name="AutoBattlerSafeZone" xml:space="preserve"><value>Você está na zona segura. Saia da cidade para iniciar a Batalha Automática.</value></data>
+  <data name="AutoBattlerHint" xml:space="preserve"><value>Caca todos os monstros à frente. Para em inventário cheio ou cota. 1h/dia, 12h VIP.</value></data>
+  <data name="AutoBattlerCurrentMap" xml:space="preserve"><value>Você está em: %ls</value></data>
+  <data name="AutoBattlerStatusOn" xml:space="preserve"><value>Ativo</value></data>
+  <data name="AutoBattlerStatusOff" xml:space="preserve"><value>Parado</value></data>
+  <data name="AutoBattlerLootTab" xml:space="preserve"><value>Drops</value></data>
+  <data name="AutoBattlerMobsTab" xml:space="preserve"><value>Mobs</value></data>
+  <data name="AutoBattlerInfoTab" xml:space="preserve"><value>Info</value></data>
+  <data name="AutoBattlerQuotaLabel" xml:space="preserve"><value>Restante</value></data>
+  <data name="AutoBattlerQuotaTotal" xml:space="preserve"><value>Cota diária</value></data>
+  <data name="AutoBattlerVipLabel" xml:space="preserve"><value>VIP</value></data>
+  <data name="AutoBattlerVipYes" xml:space="preserve"><value>Sim</value></data>
+  <data name="AutoBattlerVipNo" xml:space="preserve"><value>Não</value></data>
+  <data name="YouCannotEnterThisArea" xml:space="preserve"><value>Você não pode entrar nesta área.</value></data>
+  <data name="HuntAnalyzerTitle" xml:space="preserve"><value>Analisador de caçada</value></data>
+  <data name="HuntAnalyzerSession" xml:space="preserve"><value>SESSÃO ATUAL</value></data>
+  <data name="HuntAnalyzerNextLevel" xml:space="preserve"><value>PRÓXIMO LEVEL</value></data>
+  <data name="HuntAnalyzerExpTotal" xml:space="preserve"><value>EXP TOTAL</value></data>
+  <data name="HuntAnalyzerExpPerHour" xml:space="preserve"><value>EXP/H</value></data>
+  <data name="HuntAnalyzerProfitTotal" xml:space="preserve"><value>LUCRO TOTAL</value></data>
+  <data name="HuntAnalyzerProfitPerHour" xml:space="preserve"><value>LUCRO/H</value></data>
+  <data name="HuntAnalyzerHint" xml:space="preserve"><value>Acompanhe EXP, lucro e o desempenho da caçada.</value></data>
+  <data name="HuntAnalyzerVip" xml:space="preserve"><value>Assinar VIP</value></data>
 </root>

@@ -122,11 +122,12 @@ WZResult CShopList::LoadPackage(const wchar_t* szFilePath) // OK
 
         while (true)
         {
+            memset(buff, 0, sizeof(buff));
+
             if (!ifs.getline(buff, sizeof(buff)))
                 break;
 
             CShopPackage pack;
-
             if (pack.SetPackage(this->GetDecodedString(buff, enc)))
             {
                 this->GetPackageListPtr()->Append(pack);
@@ -262,27 +263,14 @@ std::wstring CShopList::GetDecodedString(const char* buffer, FILE_ENCODE encode)
         return result;
     }
 
-    // FE_ANSI -> CP_ACP, FE_UTF8 -> CP_UTF8. Convert the narrow bytes to UTF-16
-    // properly. The old decompiled code reinterpret-cast the narrow ASCII bytes
-    // as wchar_t* ("todo: check if that's correct"), which turned a row like
-    // "10@Item@200@..." into a single garbage token with no wide '@'
-    // delimiters. CStringToken then yielded 1 field instead of 7, so every row
-    // decoded to Root=0 -> zero category zones -> no tabs and an empty grid.
-    const UINT codePage = (encode == FE_UTF8) ? CP_UTF8 : CP_ACP;
-
-    int cchWideChar = MultiByteToWideChar(codePage, 0, buffer, -1, 0, 0);
-    if (cchWideChar <= 0)
-    {
-        return result; // empty string on conversion failure
-    }
-
-    auto lpWideCharStr = new WCHAR[cchWideChar];
-    MultiByteToWideChar(codePage, 0, buffer, -1, lpWideCharStr, cchWideChar);
-
-    result = lpWideCharStr;
-
-    delete[] lpWideCharStr;
-
+    // Catalog rows are UTF-8 or Windows-1252. ConvertFromUtf8 tries UTF-8
+    // first and falls back to 1252, so both encodings produce the '@' tokens
+    // CStringToken needs.
+    (void)encode;
+    const int srcLen = static_cast<int>(strlen(buffer));
+    result.assign(static_cast<size_t>(srcLen) + 1, L'\0');
+    const int written = CMultiLanguage::ConvertFromUtf8(result.data(), buffer, srcLen, static_cast<int>(result.size()));
+    result.resize(written > 0 ? static_cast<size_t>(written) : 0);
     return result;
 }
 #endif

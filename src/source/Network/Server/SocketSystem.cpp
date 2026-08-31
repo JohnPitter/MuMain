@@ -607,7 +607,7 @@ void CSocketItemMgr::OpenSocketItemScript(const wchar_t* szFileName)
             target->m_bySocketCheckInfo[4] = current.m_bySocketCheckInfo[4];
             target->m_bySocketCheckInfo[5] = current.m_bySocketCheckInfo[5];
 
-            CMultiLanguage::ConvertFromUtf8(target->m_szOptionName, current.m_szOptionName);
+            CMultiLanguage::ConvertFromUtf8(target->m_szOptionName, current.m_szOptionName, MAX_SOCKET_OPTION_NAME_LENGTH, MAX_SOCKET_OPTION_NAME_LENGTH);
         }
     }
 

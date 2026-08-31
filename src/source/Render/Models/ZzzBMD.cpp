@@ -2215,7 +2215,7 @@ void BMD::RenderMeshEffect(int i, int iType, int iSubType, vec3_t Angle, VOID* o
 
 void BMD::RenderBody(int Flag, float Alpha, int BlendMesh, float BlendMeshLight, float BlendMeshTexCoordU, float BlendMeshTexCoordV, int HiddenMesh, int Texture)
 {
-    if (NumMeshs == 0) return;
+    if (!m_bCompletedAlloc || NumMeshs <= 0 || NumMeshs > MAX_MESH || Meshs == nullptr) return;
 
     int iBlendMesh = BlendMesh;
     BeginRender(Alpha);
@@ -3114,6 +3114,16 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
             return true;
         Release();
     }
+    else if (Meshs || Bones || Actions || Textures || IndexTexture)
+    {
+        // A previous parse failed partway and left stale allocations behind.
+        // Free them before reusing this object so a retry cannot mix old and
+        // new parse state (heap corruption -- see DXP autobattle crashes).
+        Release();
+        NumMeshs = 0;
+        NumBones = 0;
+        NumActions = 0;
+    }
 
     wchar_t ModelPath[260] = {};
     _snwprintf(ModelPath, std::size(ModelPath), L"%ls%ls", DirName, ModelFileName);
@@ -3154,18 +3164,36 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
     
 
     std::unique_ptr<unsigned char[]> decryptedData;
+    long decSize = static_cast<long>(dataSize);
     if (Version == 0xC)
     {
         //// wprintf(L"[Open2] Version: %d\n", Version);
         // The on-disk size field is 32-bit; `long` is 8 bytes on LP64 (Linux
         // x64), which would read past the field and produce a garbage size.
         std::int32_t encSize = *(std::int32_t*)(fileData.get() + ptr); ptr += sizeof(std::int32_t);
+        // Bounds check: a truncated/corrupt file can carry a size field larger
+        // than the data actually present; decrypting it would read past the
+        // file buffer (heap overread) and parse garbage counts.
+        if (encSize <= 0 || static_cast<std::int64_t>(encSize) > static_cast<std::int64_t>(dataSize) - ptr)
+        {
+            wprintf(L"[Open2] ERROR: encrypted size %d exceeds file size %d (%.64s)\n",
+                encSize, dataSize, ModelPath);
+            m_bCompletedAlloc = false;
+            return false;
+        }
         unsigned char* encData = fileData.get() + ptr;
         //// wprintf(L"[Open2] Encrypted Size: %ld\n", encSize);
 
-        long decSize = MapFileDecrypt(nullptr, encData, encSize);
+        long decSizeInner = MapFileDecrypt(nullptr, encData, encSize);
         //// wprintf(L"[Open2] Decrypted Size: %ld\n", decSize);
 
+        if (decSizeInner <= 0 || decSizeInner > (1L << 28)) // 256 MiB sanity ceiling
+        {
+            wprintf(L"[Open2] ERROR: decrypted size %ld invalid (%.64s)\n", decSizeInner, ModelPath);
+            m_bCompletedAlloc = false;
+            return false;
+        }
+        decSize = decSizeInner;
         decryptedData.reset(new(std::nothrow) unsigned char[decSize]);
         if (!decryptedData)
         {
@@ -3196,6 +3224,7 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
 
 
     unsigned char* data = decryptedData ? decryptedData.get() : fileData.get();
+    size_t dataLen = decryptedData ? static_cast<size_t>(decSize) : static_cast<size_t>(dataSize);
 
     memcpy(Name, data + ptr, 32); ptr += 32;
 
@@ -3208,6 +3237,33 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
     NumMeshs = *(short*)(data + ptr); ptr += sizeof(short);
     NumBones = *(short*)(data + ptr); ptr += sizeof(short);
     NumActions = *(short*)(data + ptr); ptr += sizeof(short);
+
+    // player.bmd legitimately carries 284 actions (characters are far more
+    // animated than monsters); 512 keeps a corruption guard without rejecting
+    // real player models.
+    constexpr int kMaxActions = 512;
+    if (NumMeshs < 0 || NumMeshs > MAX_MESH ||
+        NumBones < 0 || NumBones > MAX_BONES ||
+        NumActions < 0 || NumActions > kMaxActions)
+    {
+        wprintf(L"[Open2] ERROR: corrupt counts (mesh %d bones %d actions %d) in %.64s\n",
+            NumMeshs, NumBones, NumActions, ModelPath);
+        // Zero the counts BEFORE Release(): Release iterates by them and the
+        // freshly parsed values are the corrupt ones. The old allocations (if
+        // any) belonged to the previous parse's counts, which were sane or
+        // already freed; dropping the current pointers avoids walking arrays
+        // sized by garbage.
+        Meshs = nullptr;
+        Bones = nullptr;
+        Actions = nullptr;
+        Textures = nullptr;
+        IndexTexture = nullptr;
+        NumMeshs = 0;
+        NumBones = 0;
+        NumActions = 0;
+        m_bCompletedAlloc = false;
+        return false;
+    }
 
     assert(NumBones <= MAX_BONES && "Bones 200");
     //// wprintf(L"[Open2] Model: %.32hs | Meshes: %d | Bones: %d | Actions: %d\n", Name, NumMeshs, NumBones, NumActions);
@@ -3238,6 +3294,31 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
         m.NumTriangles = *(short*)(data + ptr); ptr += sizeof(short);
         m.Texture = *(short*)(data + ptr); ptr += sizeof(short);
         m.NoneBlendMesh = false;
+
+        // Remaining mesh payload only — the 5 shorts above are already consumed.
+        // Counting them again over-estimated by 10 bytes and rejected small item
+        // BMDs (potions, zen, jewels) whose bone/action tail is shorter than that.
+        const size_t meshNeed =
+            static_cast<size_t>(m.NumVertices) * sizeof(Vertex_t)
+            + static_cast<size_t>(m.NumNormals) * sizeof(Normal_t)
+            + static_cast<size_t>(m.NumTexCoords) * sizeof(TexCoord_t)
+            + static_cast<size_t>(m.NumTriangles) * sizeof(Triangle_t2)
+            + 32; // Textures[i].FileName
+        if (m.NumVertices < 0 || m.NumVertices > MAX_VERTICES ||
+            m.NumNormals < 0 || m.NumNormals > MAX_VERTICES ||
+            m.NumTexCoords < 0 || m.NumTexCoords > MAX_VERTICES ||
+            m.NumTriangles < 0 || m.NumTriangles > MAX_VERTICES ||
+            ptr + meshNeed > dataLen)
+        {
+            wprintf(L"[Open2] ERROR: corrupt mesh %d counts (v %d n %d t %d tri %d) in %.64s\n",
+                i, m.NumVertices, m.NumNormals, m.NumTexCoords, m.NumTriangles, ModelPath);
+            Release();
+            NumMeshs = 0;
+            NumBones = 0;
+            NumActions = 0;
+            m_bCompletedAlloc = false;
+            return false;
+        }
 
         //// wprintf(L"[Open2] Mesh[%d] V:%d N:%d T:%d Tri:%d Tex:%d\n", i, m.NumVertices, m.NumNormals, m.NumTexCoords, m.NumTriangles, m.Texture);
 
@@ -3274,13 +3355,43 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
     {
         Action_t& a = Actions[i];
         a.Loop = false;
+        if (ptr + sizeof(short) + sizeof(bool) > dataLen)
+        {
+            wprintf(L"[Open2] ERROR: truncated action %d in %.64s\n", i, ModelPath);
+            Release();
+            NumMeshs = 0;
+            NumBones = 0;
+            NumActions = 0;
+            m_bCompletedAlloc = false;
+            return false;
+        }
         a.NumAnimationKeys = *(short*)(data + ptr); ptr += sizeof(short);
         a.LockPositions = *(bool*)(data + ptr);  ptr += sizeof(bool);
 
-        //// wprintf(L"[Open2] Action[%d] Keys: %d Lock: %d\n", i, a.NumAnimationKeys, a.LockPositions);
+        if (a.NumAnimationKeys < 0 || a.NumAnimationKeys > MAX_VERTICES)
+        {
+            wprintf(L"[Open2] ERROR: corrupt key count %d in action %d of %.64s\n",
+                a.NumAnimationKeys, i, ModelPath);
+            Release();
+            NumMeshs = 0;
+            NumBones = 0;
+            NumActions = 0;
+            m_bCompletedAlloc = false;
+            return false;
+        }
 
         if (a.LockPositions && a.NumAnimationKeys > 0)
         {
+            if (ptr + sizeof(vec3_t) * a.NumAnimationKeys > dataLen)
+            {
+                wprintf(L"[Open2] ERROR: truncated key data in action %d of %.64s\n", i, ModelPath);
+                Release();
+                NumMeshs = 0;
+                NumBones = 0;
+                NumActions = 0;
+                m_bCompletedAlloc = false;
+                return false;
+            }
             a.Positions = new vec3_t[a.NumAnimationKeys];
             memcpy(a.Positions, data + ptr, sizeof(vec3_t) * a.NumAnimationKeys);
             ptr += sizeof(vec3_t) * a.NumAnimationKeys;
@@ -3294,10 +3405,30 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
     for (int i = 0; i < NumBones; ++i)
     {
         Bone_t& b = Bones[i];
+        if (ptr + sizeof(char) > dataLen)
+        {
+            wprintf(L"[Open2] ERROR: truncated bone %d in %.64s\n", i, ModelPath);
+            Release();
+            NumMeshs = 0;
+            NumBones = 0;
+            NumActions = 0;
+            m_bCompletedAlloc = false;
+            return false;
+        }
         b.Dummy = *(char*)(data + ptr); ptr += sizeof(char);
 
         if (!b.Dummy)
         {
+            if (ptr + 32 + sizeof(short) > dataLen)
+            {
+                wprintf(L"[Open2] ERROR: truncated bone %d header in %.64s\n", i, ModelPath);
+                Release();
+                NumMeshs = 0;
+                NumBones = 0;
+                NumActions = 0;
+                m_bCompletedAlloc = false;
+                return false;
+            }
             memcpy(b.Name, data + ptr, 32); ptr += 32;
             b.Parent = *(short*)(data + ptr); ptr += sizeof(short);
 
@@ -3312,6 +3443,16 @@ bool BMD::Open2(const wchar_t* DirName, const wchar_t* ModelFileName, bool bReAl
 
                 if (numKeys > 0)
                 {
+                    if (ptr + sizeof(vec3_t) * numKeys * 2 > dataLen)
+                    {
+                        wprintf(L"[Open2] ERROR: truncated bone %d matrix data in %.64s\n", i, ModelPath);
+                        Release();
+                        NumMeshs = 0;
+                        NumBones = 0;
+                        NumActions = 0;
+                        m_bCompletedAlloc = false;
+                        return false;
+                    }
                     bm.Position = new vec3_t[numKeys];
                     bm.Rotation = new vec3_t[numKeys];
                     bm.Quaternion = new vec4_t[numKeys];
@@ -3445,7 +3586,7 @@ void BMD::Init(bool Dummy)
 
 void BMD::CreateBoundingBox()
 {
-    for (int i = 0; i < NumBones; i++)
+    for (int i = 0; i < NumBones && i < MAX_BONES; i++)
     {
         for (int j = 0; j < 3; j++)
         {
@@ -3461,6 +3602,11 @@ void BMD::CreateBoundingBox()
         for (int j = 0; j < m->NumVertices; j++)
         {
             Vertex_t* v = &m->Vertices[j];
+            // Defense in depth: v->Node comes straight from the model file.
+            // A corrupt/foreign value here indexes the global Bounding*
+            // arrays (MAX_BONES entries) far out of bounds.
+            if (v->Node < 0 || v->Node >= MAX_BONES)
+                continue;
             for (int k = 0; k < 3; k++)
             {
                 if (v->Position[k] < BoundingMin[v->Node][k]) BoundingMin[v->Node][k] = v->Position[k];

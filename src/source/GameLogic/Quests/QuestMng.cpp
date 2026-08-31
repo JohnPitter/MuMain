@@ -131,7 +131,7 @@ void CQuestMng::LoadQuestWordsScript()
 
         ::fread(rawWords, sQuestWordsHeader.m_nWordsLen, 1, fp);
         ::BuxConvert((BYTE*)rawWords, sQuestWordsHeader.m_nWordsLen);
-        CMultiLanguage::ConvertFromUtf8(szWords, rawWords, 1024);
+        CMultiLanguage::ConvertFromUtf8(szWords, rawWords, sQuestWordsHeader.m_nWordsLen, 1024);
 
         std::wstring strWords = szWords;
         m_mapQuestWords.insert(std::make_pair(sQuestWordsHeader.m_nIndex, strWords));

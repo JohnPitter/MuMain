@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -6971,14 +6971,14 @@ void RenderGroundItemLabelTexture(OBJECT* o, const GroundItemLabelCacheEntry& ca
     }
 
     // Match RenderText center behavior: subtract integer half-width to avoid half-pixel blur on odd widths.
-    float renderX = static_cast<float>(o->ScreenX) * g_fScreenRate_x - static_cast<float>(cacheEntry.TextWidth / 2);
-    float renderY = static_cast<float>(o->ScreenY - 15) * g_fScreenRate_y;
+    float renderX = ConvertPosX(static_cast<float>(o->ScreenX)) - static_cast<float>(cacheEntry.TextWidth / 2);
+    float renderY = ConvertPosY(static_cast<float>(o->ScreenY - 15));
 
     if (cacheEntry.BgColor != 0)
     {
         EnableAlphaTest();
         glColor4ub(GetRed(cacheEntry.BgColor), GetGreen(cacheEntry.BgColor), GetBlue(cacheEntry.BgColor), GetAlpha(cacheEntry.BgColor));
-        RenderColor(renderX / g_fScreenRate_x, renderY / g_fScreenRate_y,
+        RenderColor((renderX - g_fScreenOff_x) / g_fScreenRate_x, (renderY - g_fScreenOff_y) / g_fScreenRate_y,
             static_cast<float>(cacheEntry.TextWidth) / g_fScreenRate_x, static_cast<float>(cacheEntry.TextHeight) / g_fScreenRate_y);
         EndRenderColor();
     }
@@ -8031,8 +8031,20 @@ std::wstring GetItemDisplayName(ITEM* pItem)
 
 OBJECT ObjectSelect;
 
+static bool IsRenderableInventoryModel(int Type)
+{
+    if (Type < 0 || Type >= MAX_MODELS || Models == nullptr)
+        return false;
+
+    BMD* model = &Models[Type];
+    return model->m_bCompletedAlloc && model->NumMeshs > 0 && model->Meshs != nullptr;
+}
+
 void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancientDiscriminator, vec3_t Target, int Select, bool PickUp)
 {
+    if (!IsRenderableInventoryModel(Type))
+        return;
+
     int Level = ItemLevel;
     vec3_t Direction, Position;
 
@@ -9798,7 +9810,7 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
                             }
                             else if (Type >= MODEL_POTION && Type < MODEL_POTION + MAX_ITEM_INDEX)
                             {
-                                Scale = 0.0035f;
+                                Scale = 0.0056f;
                             }
                             else if (Type >= MODEL_SPEAR && Type < MODEL_SPEAR + MAX_ITEM_INDEX)
                             {
@@ -10082,6 +10094,9 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
 
 void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int Level, int excellentFlags, int ancientDiscriminator, bool PickUp)
 {
+    if (Type < 0 || Type >= MAX_ITEM)
+        return;
+
     bool Success = false;
     if ((g_pPickedItem == NULL || PickUp)
         && SEASON3B::CheckMouseIn(sx, sy, Width, Height))
@@ -11400,7 +11415,7 @@ void RenderGuildList(int StartX, int StartY)
     else
         mu_swprintf(Text, L"%ls (Score:%d)", GuildMark[Hero->GuildMarkIndex].GuildName, GuildTotalScore);
 
-    g_pRenderText->RenderText(StartX + 95 - 60, StartY + 12, Text, 120 * WindowWidth / REFERENCE_WIDTH, true, 3);
+    g_pRenderText->RenderText(StartX + 95 - 60, StartY + 12, Text, 120, true, 3);
 
     g_pRenderText->SetBgColor(0);
     g_pRenderText->SetTextColor(230, 230, 230, 255);

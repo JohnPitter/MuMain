@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 // NewUIMoveCommandWindow.cpp: implementation of the CNewUIMoveCommandWindow class.
 //////////////////////////////////////////////////////////////////////
 
@@ -9,11 +9,14 @@
 #include "GameLogic/Items/ChangeRingManager.h"
 #include "Core/Utilities/KeyGenerator.h"
 #include "Network/Server/ServerListManager.h"
+#include "Network/Server/WSclient.h"
 #include "Engine/Object/ZzzOpenData.h"
 #include "World/MapInfra/MapManager.h"
 #include "Character/CharacterManager.h"
 #include "Audio/DSPlaySound.h"
 #include "I18N/All.h"
+
+#include <cwctype>
 
 using namespace SEASON3B;
 
@@ -42,6 +45,66 @@ namespace
             }
         }
         return false;
+    }
+
+    void FormatWarpMapName(
+        const wchar_t* src,
+        wchar_t* dst,
+        size_t dstChars,
+        const std::list<CMoveCommandData::MOVEINFODATA*>& all)
+    {
+        if (src == nullptr || dst == nullptr || dstChars == 0)
+            return;
+
+        wchar_t spaced[64] = {};
+        size_t out = 0;
+        constexpr size_t cap = 63;
+        for (size_t i = 0; src[i] != 0 && out + 1 < cap; ++i)
+        {
+            const wchar_t c = src[i];
+            if (out > 0)
+            {
+                const wchar_t prev = spaced[out - 1];
+                const bool digitBreak = iswdigit(c) != 0 && iswdigit(prev) == 0 && prev != L' ';
+                const bool camelBreak = iswupper(c) != 0 && iswlower(prev) != 0;
+                if ((digitBreak || camelBreak) && out + 2 < cap)
+                    spaced[out++] = L' ';
+            }
+            spaced[out++] = c;
+        }
+        spaced[out] = 0;
+
+        bool hasDigit = false;
+        for (size_t i = 0; spaced[i] != 0; ++i)
+        {
+            if (iswdigit(spaced[i]) != 0)
+            {
+                hasDigit = true;
+                break;
+            }
+        }
+
+        if (!hasDigit)
+        {
+            wchar_t sibling[36] = {};
+            mu_swprintf(sibling, L"%ls2", src);
+            for (auto* info : all)
+            {
+                if (info != nullptr && wcscmp(info->_ReqInfo.szMainMapName, sibling) == 0)
+                {
+                    if (out + 3 < cap)
+                    {
+                        spaced[out++] = L' ';
+                        spaced[out++] = L'1';
+                        spaced[out] = 0;
+                    }
+                    break;
+                }
+            }
+        }
+
+        wcsncpy(dst, spaced, dstChars - 1);
+        dst[dstChars - 1] = 0;
     }
 };
 
@@ -113,42 +176,45 @@ void SEASON3B::CNewUIMoveCommandWindow::SetPos(int x, int y)
     m_Pos.x = x;
     m_Pos.y = y;
 
-    m_StrifePos.x = m_Pos.x + 20;
     switch (WindowWidth)
     {
     case REFERENCE_WIDTH:
-        m_MapNameUISize.x = 220; m_MapNamePos.x = m_Pos.x + 62; m_ReqLevelPos.x = m_Pos.x + 119; m_ReqZenPos.x = m_Pos.x + 159;
+        m_MapNameUISize.x = 220;
         break;
     case 800:
-        m_MapNameUISize.x = 200; m_MapNamePos.x = m_Pos.x + 69; m_ReqLevelPos.x = m_Pos.x + 129; m_ReqZenPos.x = m_Pos.x + 174;
+        m_MapNameUISize.x = 200;
         break;
     case 1024:
-        m_MapNameUISize.x = 180; m_MapNamePos.x = m_Pos.x + 64; m_ReqLevelPos.x = m_Pos.x + 119; m_ReqZenPos.x = m_Pos.x + 159;
+        m_MapNameUISize.x = 180;
         break;
     case 1280:
-        m_MapNameUISize.x = 160; m_MapNamePos.x = m_Pos.x + 59; m_ReqLevelPos.x = m_Pos.x + 104; m_ReqZenPos.x = m_Pos.x + 139;
+        m_MapNameUISize.x = 160;
         break;
     case 1366:
-        m_MapNameUISize.x = 150; m_MapNamePos.x = m_Pos.x + 56; m_ReqLevelPos.x = m_Pos.x + 101; m_ReqZenPos.x = m_Pos.x + 134;
+        m_MapNameUISize.x = 150;
         break;
     case 1440:
-        m_MapNameUISize.x = 140; m_MapNamePos.x = m_Pos.x + 53; m_ReqLevelPos.x = m_Pos.x + 97; m_ReqZenPos.x = m_Pos.x + 129;
+        m_MapNameUISize.x = 140;
         break;
     case 1600:
-        m_MapNameUISize.x = 120; m_MapNamePos.x = m_Pos.x + 46; m_ReqLevelPos.x = m_Pos.x + 86; m_ReqZenPos.x = m_Pos.x + 114;
+        m_MapNameUISize.x = 120;
         break;
     case 1680:
-        m_MapNameUISize.x = 115; m_MapNamePos.x = m_Pos.x + 44; m_ReqLevelPos.x = m_Pos.x + 83; m_ReqZenPos.x = m_Pos.x + 110;
+        m_MapNameUISize.x = 115;
         break;
     case 1920:
-        m_MapNameUISize.x = 110; m_MapNamePos.x = m_Pos.x + 38; m_ReqLevelPos.x = m_Pos.x + 70; m_ReqZenPos.x = m_Pos.x + 93;
+        m_MapNameUISize.x = 110;
         break;
     default:
-        // handle unsupported resolutions here
+        m_MapNameUISize.x = 180;
         break;
     }
 
     m_MapNameUISize.x += 10;
+
+    m_MapNamePos.x = m_Pos.x + m_MapNameUISize.x * 22 / 100;
+    m_ReqLevelPos.x = m_Pos.x + m_MapNameUISize.x * 55 / 100;
+    m_ReqZenPos.x = m_Pos.x + m_MapNameUISize.x * 80 / 100;
 
     m_listMoveInfoData = CMoveCommandData::GetInstance()->GetMoveCommandDatalist();
     m_iRealFontHeight = FontHeight * REFERENCE_WIDTH / WindowWidth + 2;
@@ -778,7 +844,6 @@ void SEASON3B::CNewUIMoveCommandWindow::RenderFrame()
     g_pRenderText->RenderText(m_StartUISubjectName.x, m_StartUISubjectName.y, I18N::Game::WarpCommandWindow, 0, 0, RT3_WRITE_CENTER);
     g_pRenderText->SetFont(g_hFont);
     g_pRenderText->SetTextColor(127, 178, 255, 255);
-    g_pRenderText->RenderText(m_StrifePos.x, m_StartUISubjectName.y + 20, I18N::Game::BattleZone, 0, 0, RT3_WRITE_CENTER);
     g_pRenderText->RenderText(m_MapNamePos.x, m_StartUISubjectName.y + 20, I18N::Game::Map, 0, 0, RT3_WRITE_CENTER);
     g_pRenderText->RenderText(m_ReqLevelPos.x, m_StartUISubjectName.y + 20, I18N::Game::MinLevel, 0, 0, RT3_WRITE_CENTER);
     g_pRenderText->RenderText(m_ReqZenPos.x, m_StartUISubjectName.y + 20, I18N::Game::Cost, 0, 0, RT3_WRITE_CENTER);
@@ -830,9 +895,9 @@ bool SEASON3B::CNewUIMoveCommandWindow::Render()
         {
             g_pRenderText->SetTextColor(255, 255, 255, 255);
 
-            if ((*li)->_bStrife)
-                g_pRenderText->RenderText(m_StrifePos.x, iY, I18N::Game::Battle2987, 0, 0, RT3_WRITE_CENTER);
-            g_pRenderText->RenderText(m_MapNamePos.x, iY, (*li)->_ReqInfo.szMainMapName, 0, 0, RT3_WRITE_CENTER);
+            wchar_t szMapLabel[64] = {};
+            FormatWarpMapName((*li)->_ReqInfo.szMainMapName, szMapLabel, 64, m_listMoveInfoData);
+            g_pRenderText->RenderText(m_MapNamePos.x, iY, szMapLabel, 0, 0, RT3_WRITE_CENTER);
             _itow(iReqLevel, szText, 10);
             g_pRenderText->RenderText(m_ReqLevelPos.x, iY, szText, 0, 0, RT3_WRITE_CENTER);
             _itow((*li)->_ReqInfo.iReqZen, szText, 10);
@@ -850,10 +915,9 @@ bool SEASON3B::CNewUIMoveCommandWindow::Render()
         {
             g_pRenderText->SetTextColor(164, 39, 17, 255);
 
-            if ((*li)->_bStrife)
-                g_pRenderText->RenderText(m_StrifePos.x, iY, I18N::Game::Battle2987, 0, 0, RT3_WRITE_CENTER);
-
-            g_pRenderText->RenderText(m_MapNamePos.x, iY, (*li)->_ReqInfo.szMainMapName, 0, 0, RT3_WRITE_CENTER);
+            wchar_t szMapLabel[64] = {};
+            FormatWarpMapName((*li)->_ReqInfo.szMainMapName, szMapLabel, 64, m_listMoveInfoData);
+            g_pRenderText->RenderText(m_MapNamePos.x, iY, szMapLabel, 0, 0, RT3_WRITE_CENTER);
 
             _itow(iReqLevel, szText, 10);
             if (iReqLevel > iLevel)
@@ -890,6 +954,11 @@ bool SEASON3B::CNewUIMoveCommandWindow::Render()
 void SEASON3B::CNewUIMoveCommandWindow::OpenningProcess()
 {
     SetPos(m_Pos.x, m_Pos.y);
+    m_listMoveInfoData = CMoveCommandData::GetInstance()->GetMoveCommandDatalist();
+    m_listMoveInfoData.remove_if([](const auto* moveInfo)
+    {
+        return moveInfo == nullptr || !IsChannelWarpAllowed(static_cast<WORD>(moveInfo->_ReqInfo.index));
+    });
     SetStrifeMap();
     SettingCanMoveMap();
 

@@ -27,7 +27,7 @@ static SMDToken GetToken()
         {
             while ((ch = (char)fgetc(SMDFile)) != '\n');
         }
-    } while (isspace(ch));
+    } while (isspace(static_cast<unsigned char>(ch)));
 
     char* p, TempString[100];
     switch (ch)
@@ -47,7 +47,7 @@ static SMDToken GetToken()
     case '.':	case '-':
         ungetc(ch, SMDFile);
         p = TempString;
-        while (((ch = (char)getc(SMDFile)) != EOF) && (ch == '.' || isdigit(ch) || ch == '-'))
+        while (((ch = (char)getc(SMDFile)) != EOF) && (ch == '.' || isdigit(static_cast<unsigned char>(ch)) || ch == '-'))
             *p++ = ch;
         *p = 0;
         
@@ -63,11 +63,11 @@ static SMDToken GetToken()
         *p = 0;
         return CurrentToken = NAME;
     default:
-        if (isalpha(ch))
+        if (isalpha(static_cast<unsigned char>(ch)))
         {
             p = TokenString;
             *p++ = ch;
-            while (((ch = (char)getc(SMDFile)) != EOF) && (ch == '.' || ch == '_' || isalnum(ch)))
+            while (((ch = (char)getc(SMDFile)) != EOF) && (ch == '.' || ch == '_' || isalnum(static_cast<unsigned char>(ch))))
                 *p++ = ch;
             ungetc(ch, SMDFile);
             *p = 0;

@@ -44,6 +44,10 @@ GLfloat FogColor[4] = { 30 / 256.f,20 / 256.f,10 / 256.f, };
 
 bool _isVSyncAvailable = false;
 
+void PumpLoadingEvents()
+{
+    SDL_PumpEvents();
+}
 
 unsigned int WindowWidth = 1024;
 unsigned int WindowHeight = 768;
@@ -224,6 +228,9 @@ void EnableFog()  { if (!g_CoreProfile) glEnable(GL_FOG); }
 void DisableFog() { if (!g_CoreProfile) glDisable(GL_FOG); }
 void EnableBlend()  { glEnable(GL_BLEND); }
 void DisableBlend() { glDisable(GL_BLEND); }
+void EnableScissorTest() { glEnable(GL_SCISSOR_TEST); }
+void DisableScissorTest() { glDisable(GL_SCISSOR_TEST); }
+void SetScissor(int x, int y, int width, int height) { glScissor(x, y, width, height); }
 void SetBlendFuncAlpha() { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 void SetDepthFuncLEqual() { glDepthFunc(GL_LEQUAL); }
 
@@ -418,6 +425,11 @@ void EnableAlphaBlend()
     {
         if (!g_CoreProfile) glDisable(GL_FOG);
     }
+}
+
+bool IsAdditiveBlendActive()
+{
+    return AlphaBlendType == 3;
 }
 
 void EnableAlphaBlendMinus()
@@ -628,12 +640,39 @@ void gluPerspective2(float Fov, float Aspect, float ZNear, float ZFar)
 
 float ConvertX(float x)
 {
-    return x * (float)WindowWidth / (float)REFERENCE_WIDTH;
+    return x * g_fScreenRate_x;
 }
 
 float ConvertY(float y)
 {
-    return y * (float)WindowHeight / (float)REFERENCE_HEIGHT;
+    return y * g_fScreenRate_y;
+}
+
+float ConvertPosX(float x)
+{
+    return g_fScreenOff_x + ConvertX(x);
+}
+
+float ConvertPosY(float y)
+{
+    return g_fScreenOff_y + ConvertY(y);
+}
+
+void ApplyScreenLayout(unsigned int width, unsigned int height)
+{
+    if (width == 0 || height == 0)
+        return;
+
+    WindowWidth = width;
+    WindowHeight = height;
+
+    // HUD is authored in 640×480 and must fill the window. Independent X/Y
+    // rates are what every NewUI position, hit-test, and 3D-item viewport
+    // assume. A uniform letterbox desyncs those systems.
+    g_fScreenRate_x = static_cast<float>(width) / static_cast<float>(REFERENCE_WIDTH);
+    g_fScreenRate_y = static_cast<float>(height) / static_cast<float>(REFERENCE_HEIGHT);
+    g_fScreenOff_x = 0.f;
+    g_fScreenOff_y = 0.f;
 }
 
 // --- DXP-07b stage 1: CPU camera matrix builders ---
@@ -715,10 +754,12 @@ void BeginOpengl(int x, int y, int Width, int Height)
 {
     IR::Flush(); // GLP-19 -- viewport + perspective change below; see BeginBitmap()
 
-    x = x * WindowWidth / REFERENCE_WIDTH;
-    y = y * WindowHeight / REFERENCE_HEIGHT;
-    Width = Width * WindowWidth / REFERENCE_WIDTH;
-    Height = Height * WindowHeight / REFERENCE_HEIGHT;
+    x = static_cast<int>(ConvertPosX(static_cast<float>(x)));
+    y = static_cast<int>(ConvertPosY(static_cast<float>(y)));
+    Width = static_cast<int>(ConvertX(static_cast<float>(Width)));
+    Height = static_cast<int>(ConvertY(static_cast<float>(Height)));
+    if (Width < 1) Width = 1;
+    if (Height < 1) Height = 1;
 
     glViewport2(x, y, Width, Height);
 
@@ -1324,8 +1365,8 @@ void RenderColor(float x, float y, float Width, float Height, float Alpha, int F
 {
     DisableTexture();
 
-    x = ConvertX(x);
-    y = ConvertY(y);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     Width = ConvertX(Width);
     Height = ConvertY(Height);
 
@@ -1376,8 +1417,8 @@ void RenderColorBitmap(int Texture, float x, float y, float Width, float Height,
     BindTexture(Texture);
     PassthroughShader::Instance().SetUseTexture(true);
 
-    x = ConvertX(x);
-    y = ConvertY(y);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     Width = ConvertX(Width);
     Height = ConvertY(Height);
 
@@ -1413,8 +1454,8 @@ void RenderBitmap(int Texture, float x, float y, float Width, float Height, floa
 {
     if (StartScale)
     {
-        x = ConvertX(x);
-        y = ConvertY(y);
+        x = ConvertPosX(x);
+        y = ConvertPosY(y);
     }
     if (Scale)
     {
@@ -1461,8 +1502,8 @@ void RenderBitmap(int Texture, float x, float y, float Width, float Height, floa
 
 void RenderBitmapRotate(int Texture, float x, float y, float Width, float Height, float Rotate, float u, float v, float uWidth, float vHeight)
 {
-    x = ConvertX(x);
-    y = ConvertY(y);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     Width = ConvertX(Width);
     Height = ConvertY(Height);
 
@@ -1504,8 +1545,8 @@ void RenderBitmapRotate(int Texture, float x, float y, float Width, float Height
 
 void RenderBitRotate(int Texture, float x, float y, float Width, float Height, float Rotate)
 {
-    x = ConvertX(x);
-    y = ConvertY(y);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     Width = ConvertX(Width);
     Height = ConvertY(Height);
 
@@ -1559,10 +1600,10 @@ void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHei
     vec3_t p, p2[4], p3, p4[4], Angle;
     float c[4][2], Matrix[3][4];
 
-    ix = ConvertX(ix);
-    iy = ConvertY(iy);
-    x = ConvertX(x);
-    y = ConvertY(y);
+    ix = ConvertPosX(ix);
+    iy = ConvertPosY(iy);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     Width = ConvertX(Width);
     Height = ConvertY(Height);
 
@@ -1614,8 +1655,8 @@ void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHei
         float dx, dy;
         dx = p4[0][0] + (WindowWidth / 2.f);
         dy = p4[0][1] + (WindowHeight / 2.f);
-        dx = dx * (float)((float)REFERENCE_WIDTH / WindowWidth);
-        dy = dy * (float)((float)REFERENCE_HEIGHT / WindowHeight);
+        dx = (dx - g_fScreenOff_x) / g_fScreenRate_x;
+        dy = (dy - g_fScreenOff_y) / g_fScreenRate_y;
         if (Num >= 100)
         {
             g_pNewUIMiniMap->SetBtnPos(Num - 100, dx - (iWidth / 2), (REFERENCE_HEIGHT - dy) - (iHeight / 2), iWidth, iHeight);
@@ -1632,8 +1673,8 @@ void RenderBitmapLocalRotate(int Texture, float x, float y, float Width, float H
     BindTexture(Texture);
 
     vec3_t p[4];
-    x = ConvertX(x);
-    y = ConvertY(y);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     y = WindowHeight - y;
     Width = ConvertX(Width);
     Height = ConvertY(Height);
@@ -1713,8 +1754,8 @@ void RenderBitmapAlpha(int Texture, float sx, float sy, float Width, float Heigh
 
 void RenderBitmapUV(int Texture, float x, float y, float Width, float Height, float u, float v, float uWidth, float vHeight)
 {
-    x = ConvertX(x);
-    y = ConvertY(y);
+    x = ConvertPosX(x);
+    y = ConvertPosY(y);
     Width = ConvertX(Width);
     Height = ConvertY(Height);
     BindTexture(Texture);

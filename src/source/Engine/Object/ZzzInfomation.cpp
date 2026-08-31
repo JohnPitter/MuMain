@@ -2375,7 +2375,7 @@ void OpenMonsterScript(wchar_t* FileName)
         token = GetToken();
         token = GetToken();
 
-        CMultiLanguage::ConvertFromUtf8(m->Name, TokenString, MAX_MONSTER_NAME);
+        CMultiLanguage::ConvertFromUtf8(m->Name, TokenString, -1, MAX_MONSTER_NAME);
         
         //Token = (*GetToken)();m->Level = (int)TokenNumber;
         //for(int i=0;i<23;i++) Token = (*GetToken)();

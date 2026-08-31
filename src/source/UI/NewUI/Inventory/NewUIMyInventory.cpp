@@ -592,19 +592,6 @@ bool CNewUIMyInventory::UpdateKeyEvent()
         return false;
     }
 
-    if (IsPress('L') == true)
-    {
-        if (m_bRepairEnableLevel == true && g_pNewUISystem->IsVisible(INTERFACE_NPCSHOP) == false
-            && g_pNewUISystem->IsVisible(INTERFACE_MIXINVENTORY) == false
-            && g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_LUCKYITEMWND) == false
-            )
-        {
-            ToggleRepairMode();
-
-            return false;
-        }
-    }
-
     if (CanOpenMyShopInterface() == true && IsPress('S'))
     {
         if (m_bMyShopOpen)

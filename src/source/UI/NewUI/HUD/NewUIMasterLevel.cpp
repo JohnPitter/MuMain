@@ -187,13 +187,13 @@ void SEASON3B::CNewUIMasterLevel::OpenMasterSkillTooltip(const wchar_t* path)
         const auto target = &m_stMasterSkillTooltip[i];
         target->SkillNumber = static_cast<ActionSkillType>(current.SkillNumber);
         target->ClassCode = static_cast<MASTER_SKILL_TREE_CLASS>(current.ClassCode);
-        CMultiLanguage::ConvertFromUtf8(target->Info1, current.Info1);
-        CMultiLanguage::ConvertFromUtf8(target->Info2, current.Info2);
-        CMultiLanguage::ConvertFromUtf8(target->Info3, current.Info3);
-        CMultiLanguage::ConvertFromUtf8(target->Info4, current.Info4);
-        CMultiLanguage::ConvertFromUtf8(target->Info5, current.Info5);
-        CMultiLanguage::ConvertFromUtf8(target->Info6, current.Info6);
-        CMultiLanguage::ConvertFromUtf8(target->Info7, current.Info7);
+        CMultiLanguage::ConvertFromUtf8(target->Info1, current.Info1, 64, 64);
+        CMultiLanguage::ConvertFromUtf8(target->Info2, current.Info2, 256, 256);
+        CMultiLanguage::ConvertFromUtf8(target->Info3, current.Info3, 32, 32);
+        CMultiLanguage::ConvertFromUtf8(target->Info4, current.Info4, 64, 64);
+        CMultiLanguage::ConvertFromUtf8(target->Info5, current.Info5, 64, 64);
+        CMultiLanguage::ConvertFromUtf8(target->Info6, current.Info6, 64, 64);
+        CMultiLanguage::ConvertFromUtf8(target->Info7, current.Info7, 64, 64);
 
         pSeek += record_size;
 
@@ -466,7 +466,7 @@ bool SEASON3B::CNewUIMasterLevel::UpdateMouseEvent()
 
 bool SEASON3B::CNewUIMasterLevel::UpdateKeyEvent()
 {
-    if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MASTER_LEVEL) == false || SEASON3B::IsPress(VK_ESCAPE) == false && SEASON3B::IsPress('A') == false)
+    if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MASTER_LEVEL) == false || SEASON3B::IsPress(VK_ESCAPE) == false)
     {
         return true;
     }

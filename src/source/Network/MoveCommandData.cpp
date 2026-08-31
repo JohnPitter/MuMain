@@ -56,8 +56,8 @@ bool CMoveCommandData::Create(const std::wstring& filename)
         pMoveInfoData->_ReqInfo.iReqLevel = moveReqInfo.iReqLevel;
         pMoveInfoData->_ReqInfo.iReqZen = moveReqInfo.iReqZen;
         pMoveInfoData->_ReqInfo.m_iReqMaxLevel = moveReqInfo.m_iReqMaxLevel;
-        CMultiLanguage::ConvertFromUtf8(pMoveInfoData->_ReqInfo.szMainMapName, moveReqInfo.szMainMapName, sizeof moveReqInfo.szMainMapName);
-        CMultiLanguage::ConvertFromUtf8(pMoveInfoData->_ReqInfo.szSubMapName, moveReqInfo.szSubMapName, sizeof moveReqInfo.szSubMapName);
+        CMultiLanguage::ConvertFromUtf8(pMoveInfoData->_ReqInfo.szMainMapName, moveReqInfo.szMainMapName, sizeof moveReqInfo.szMainMapName, 32);
+        CMultiLanguage::ConvertFromUtf8(pMoveInfoData->_ReqInfo.szSubMapName, moveReqInfo.szSubMapName, sizeof moveReqInfo.szSubMapName, 32);
 
         m_listMoveInfoData.push_back(pMoveInfoData);
     }

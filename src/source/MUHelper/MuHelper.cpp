@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <cmath>
+#include <cstdarg>
 
 #include "Engine/AI/ZzzAI.h"
 #include "Engine/Object/ZzzCharacter.h"
@@ -12,10 +13,12 @@
 #include "Engine/Object/PlayerActionState.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "Core/Utilities/Log/muConsoleDebug.h"
+#include "Core/Utilities/Log/ErrorReport.h"
 #include "Character/CharacterManager.h"
 #include "GameLogic/Skills/SkillManager.h"
 #include "GameLogic/Social/PartyManager.h"
 #include "World/MapInfra/MapManager.h"
+#include "Render/Terrain/ZzzLodTerrain.h"
 #include "Network/Server/WSclient.h"
 
 #include "MuHelper.h"
@@ -41,19 +44,43 @@ namespace MUHelper
 
     CMuHelper g_MuHelper;
 
+    namespace
+    {
+        constexpr int kRoamArrivalDistance = 12;
+        constexpr DWORD kRoamObserveMs = 1500;
+        constexpr DWORD kRoamVisitedCooldownMs = 15000;
+        constexpr DWORD kRoamUnreachableCooldownMs = 60000;
+        constexpr DWORD kRoamIdleLogIntervalMs = 5000;
+        // Attack attempts may continue for ~2.5 s without target/hit feedback
+        // before the target is classified attack-stalled and a recovery step
+        // is issued (one SendMove, consumed entirely by MoveHero).
+        constexpr DWORD kAttackStallMs = 2500;
+        constexpr int kMaxRecoveryAttempts = 3;
+        // Once a swing was issued inside range the attack check keeps this
+        // tolerance, so a mob nudge at the range boundary does not flip the
+        // hero between walking and stopping every helper tick (250 ms).
+        constexpr float kRangeHysteresis = 0.4f;
+    }
+
     void CALLBACK CMuHelper::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
     {
         g_MuHelper.WorkLoop(hwnd, uMsg, idEvent, dwTime);
     }
 
+    void CMuHelper::SaveToServer(const ConfigData& config)
+    {
+        if (SocketClient == nullptr || SocketClient->ToGameServer() == nullptr)
+            return;
+
+        PRECEIVE_MUHELPER_DATA netData;
+        ConfigDataSerDe::Serialize(config, netData);
+        SocketClient->ToGameServer()->SendMuHelperSaveDataRequest(reinterpret_cast<BYTE*>(&netData), sizeof(netData));
+    }
+
     void CMuHelper::Save(const ConfigData& config)
     {
         m_config = config;
-
-        PRECEIVE_MUHELPER_DATA netData;
-        ConfigDataSerDe::Serialize(m_config, netData);
-
-        SocketClient->ToGameServer()->SendMuHelperSaveDataRequest(reinterpret_cast<BYTE*>(&netData), sizeof(netData));
+        SaveToServer(m_config);
     }
 
     void CMuHelper::Load(const ConfigData& config)
@@ -110,9 +137,27 @@ namespace MUHelper
         m_iCurrentSkill = (ActionSkillType)m_config.aiSkill[0];
         m_iCurrentItem = MAX_ITEMS;
         m_posOriginal = { Hero->PositionX, Hero->PositionY };
+        m_posLastStuck = m_posOriginal;
+        m_iStuckTicks = 0;
+        m_iObtainFails = 0;
+        m_mapBlacklist.clear();
+        m_iChaseTarget = -1;
+        m_posChaseLast = { 0, 0 };
+        m_dwChaseLastProgress = 0;
+        m_bChaseRepathed = false;
+        m_bPrevMovement = false;
+        m_dwAttackLastProgress = 0;
+        m_posAttackHeroLast = { 0, 0 };
+        m_posAttackTargetLast = { 0, 0 };
+        m_iAttackTargetActionLast = -1;
+        m_iRecoveryAttempts = 0;
+        m_bRecoveryActive = false;
+        m_posChasePlanTarget = { 0, 0 };
+        m_bAttackEngaged = false;
+        m_dwRoamReachedTick = 0;
+        m_dwRoamIdleLogTick = 0;
 
-        m_iHuntingDistance = ComputeDistanceByRange(m_config.iHuntingRange);
-        m_iObtainingDistance = ComputeDistanceByRange(m_config.iObtainingRange);
+        RecalculateDistances();
 
         m_iSecondsElapsed = 0;
         m_iSecondsAway = 0;
@@ -123,13 +168,145 @@ namespace MUHelper
         m_iLoopCounter = 0;
 
         m_bActive = true;
+        AbLog("session active roam=%d", m_bRoamEnabled ? 1 : 0);
         g_ConsoleDebug->Write(MCD_NORMAL, L"[MU Helper] Started");
     }
 
     void CMuHelper::Stop()
     {
+        AbLog("session stopped");
         m_bActive = false;
+        m_bIgnoreSafeZoneStop = false;
+        m_bIgnoreHuntRange = false;
+        m_bRoamEnabled = false;
+        m_vecRoamWps.clear();
+        m_iRoamWpIndex = -1;
+        m_iRoamLastWpIndex = -1;
+        m_mapWpCooldown.clear();
+        m_dwRoamReachedTick = 0;
+        m_dwRoamIdleLogTick = 0;
+        m_iStuckTicks = 0;
+        m_iObtainFails = 0;
+        // Full chase/target/recovery teardown: nothing survives a stop.
+        DeleteAllTargets();
+        m_iCurrentTarget = -1;
+        m_iChaseTarget = -1;
+        m_posChaseLast = { 0, 0 };
+        m_dwChaseLastProgress = 0;
+        m_bChaseRepathed = false;
+        m_dwAttackLastProgress = 0;
+        m_posAttackHeroLast = { 0, 0 };
+        m_posAttackTargetLast = { 0, 0 };
+        m_iAttackTargetActionLast = -1;
+        m_iRecoveryAttempts = 0;
+        m_bRecoveryActive = false;
+        m_posChasePlanTarget = { 0, 0 };
+        m_bAttackEngaged = false;
+        m_iComboState = 0;
+        m_iCurrentItem = MAX_ITEMS;
+        // Cancel any walk in progress so the hero stops on the spot.
+        if (Hero != nullptr)
+        {
+            Hero->Movement = false;
+            Hero->Path.PathNum = 0;
+        }
         g_ConsoleDebug->Write(MCD_NORMAL, L"[MU Helper] Stopped");
+    }
+
+    void CMuHelper::RecalculateDistances()
+    {
+        m_iHuntingDistance = ComputeDistanceByRange(m_config.iHuntingRange);
+        m_iObtainingDistance = ComputeDistanceByRange(m_config.iObtainingRange);
+    }
+
+    void CMuHelper::SetIgnoreSafeZoneStop(bool ignore)
+    {
+        m_bIgnoreSafeZoneStop = ignore;
+    }
+
+    void CMuHelper::SetIgnoreHuntRange(bool ignore)
+    {
+        m_bIgnoreHuntRange = ignore;
+    }
+
+    void CMuHelper::SetAutoStopHandler(std::function<void(const char*)> handler)
+    {
+        m_AutoStopHandler = std::move(handler);
+    }
+
+    // Full auto-deactivation on death / safe-zone entry. Runs once (the
+    // m_bActive guard below makes every later tick a no-op): cancels chase,
+    // path, recovery, targets and roam via Stop(), asks the Auto Battler to
+    // stop the server session and restore the helper config (never sends a
+    // second stop request for an already-stopped session), and hides the
+    // Hunt Analyzer. Respawn in town does NOT restart the session.
+    void CMuHelper::AutoStop(const char* szReason)
+    {
+        if (!m_bActive)
+            return;
+
+        AbLog("auto-stop reason=%s", szReason != nullptr ? szReason : "unknown");
+        g_ConsoleDebug->Write(MCD_NORMAL, L"[MU Helper] Auto-stop (%S).", szReason);
+
+        // Local teardown first: chase/path/recovery/target/roam cleared and
+        // m_bActive dropped, so later ticks cannot repeat the flow.
+        Stop();
+
+        if (m_AutoStopHandler)
+        {
+            m_AutoStopHandler(szReason);
+            return;
+        }
+
+        // Fallback (native Mu Helper without the Auto Battler overlay).
+        TriggerStop();
+    }
+
+    void CMuHelper::SetRoamWaypoints(const POINT* pts, int count)
+    {
+        m_vecRoamWps.clear();
+        m_iRoamWpIndex = -1;
+        m_iRoamLastWpIndex = -1;
+        m_mapWpCooldown.clear();
+        m_dwRoamReachedTick = 0;
+        m_dwRoamIdleLogTick = 0;
+        if (pts != nullptr && count > 0)
+        {
+            for (int i = 0; i < count; ++i)
+            {
+                if (pts[i].x > 0 && pts[i].y > 0)
+                    m_vecRoamWps.push_back(pts[i]);
+            }
+        }
+        m_bRoamEnabled = !m_vecRoamWps.empty();
+        m_iStuckTicks = 0;
+        if (Hero != nullptr)
+            m_posLastStuck = { Hero->PositionX, Hero->PositionY };
+    }
+
+    bool CMuHelper::FaceAttackTarget()
+    {
+        if (!m_bActive || m_iCurrentTarget == -1 || Hero == nullptr || CharactersClient == nullptr)
+            return false;
+
+        const int iCharIndex = FindCharacterIndex(m_iCurrentTarget);
+        if (iCharIndex == MAX_CHARACTERS_CLIENT)
+            return false;
+
+        CHARACTER* pTarget = &CharactersClient[iCharIndex];
+        if (!pTarget->Object.Live || pTarget->Dead > 0 || !IsMonster(pTarget))
+            return false;
+
+        // While the hero walks a path, MovePath() (ZzzAI.cpp) owns the body angle.
+        // Writing the attack facing here used to fight the path steering every frame
+        // and made the chase stutter. Still return true so MoveHero keeps the
+        // mouse-look suppressed for the whole locked-target walk.
+        if (Hero->Movement)
+            return true;
+
+        VectorCopy(pTarget->Object.Position, Hero->TargetPosition);
+        Hero->Object.Angle[2] = CreateAngle2D(Hero->Object.Position, Hero->TargetPosition);
+        return true;
     }
 
     void CMuHelper::WorkLoop(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
@@ -139,10 +316,30 @@ namespace MUHelper
             return;
         }
 
-        if (Hero->SafeZone)
+        if (Hero == nullptr)
         {
-            g_ConsoleDebug->Write(MCD_NORMAL, L"[MU Helper] Entered safezone. Stopping.");
-            TriggerStop();
+            return;
+        }
+
+        // Central auto-stop: death (incl. revival state) or real safe-zone /
+        // city entry fully deactivates the Auto Battle — the full stop flow
+        // runs once; nothing reactivates it without a new explicit start.
+        // Ordinary teleports / map changes are not safe zones and keep hunting.
+        const WORD heroWall =
+            TerrainWall[TERRAIN_INDEX_REPEAT(Hero->PositionX, Hero->PositionY)];
+        const bool bDead = Hero->Dead > 0 || !Hero->Object.Live;
+        const bool bSafeZone =
+            (Hero->SafeZone && !m_bIgnoreSafeZoneStop)
+            || (heroWall & TW_SAFEZONE) == TW_SAFEZONE;
+
+        if (bDead)
+        {
+            AutoStop("dead");
+            return;
+        }
+        if (bSafeZone)
+        {
+            AutoStop("safe-zone");
             return;
         }
 
@@ -174,6 +371,41 @@ namespace MUHelper
                 return;
             }
 
+            // Path lifecycle diagnostics are transition-level only, never per tick.
+            if (m_bPrevMovement && !Hero->Movement)
+            {
+                if (m_iCurrentTarget != -1)
+                {
+                    AbLog("path completed");
+                }
+                else if (m_bRoamEnabled && m_iRoamWpIndex >= 0
+                    && m_iRoamWpIndex < static_cast<int>(m_vecRoamWps.size()))
+                {
+                    const POINT destination = m_vecRoamWps[m_iRoamWpIndex];
+                    AbLog("roam segment completed wp=%d dest=%d,%d",
+                        m_iRoamWpIndex, destination.x, destination.y);
+                }
+            }
+            m_bPrevMovement = Hero->Movement;
+
+            TrackHuntMotion();
+            // The roam watchdog owns only targetless travel. It must never
+            // clear a committed Auto Battle target that is still being chased.
+            if (m_bRoamEnabled && m_iCurrentTarget == -1 && m_iStuckTicks >= 8)
+            {
+                AbLog("roam stuck, repathing pos=%d,%d", Hero->PositionX, Hero->PositionY);
+                if (m_iCurrentItem != MAX_ITEMS)
+                    DeleteItem(m_iCurrentItem);
+                if (Hero != nullptr)
+                {
+                    Hero->Movement = false;
+                    Hero->Path.PathNum = 0;
+                }
+                m_iStuckTicks = 0;
+                RoamForHunt();
+                return;
+            }
+
             if (!Buff())
             {
                 return;
@@ -194,7 +426,11 @@ namespace MUHelper
                 return;
             }
 
-            Attack();
+            CollectNearbyMonsters();
+            if (Attack() == 0 && m_iCurrentTarget == -1)
+            {
+                RoamForHunt();
+            }
 
             RepairEquipments();
         }
@@ -220,6 +456,7 @@ namespace MUHelper
         int iDistance = ComputeDistanceFromTarget(pTarget);
 
         if ((iDistance <= m_iHuntingDistance)
+            || m_bIgnoreHuntRange
             || (bIsAttacking && m_config.bLongRangeCounterAttack))
         {
             _targetsLock.lock();
@@ -294,7 +531,7 @@ namespace MUHelper
     int CMuHelper::GetNearestTarget()
     {
         int iClosestMonsterId = -1;
-        int iMinDistance = m_iHuntingDistance;
+        int iMinDistance = m_bIgnoreHuntRange ? 255 : m_iHuntingDistance;
         std::set<int> setTargets;
         {
             _targetsLock.lock();
@@ -305,9 +542,14 @@ namespace MUHelper
         for (const int& iMonsterId : setTargets)
         {
             int iIndex = FindCharacterIndex(iMonsterId);
+            if (iIndex == MAX_CHARACTERS_CLIENT)
+            {
+                continue;
+            }
+
             CHARACTER* pTarget = &CharactersClient[iIndex];
 
-            if (!IsMonster(pTarget))
+            if (!IsMonster(pTarget) || IsBlacklisted(iMonsterId))
             {
                 continue;
             }
@@ -338,9 +580,14 @@ namespace MUHelper
         for (const int& iMonsterId : setTargets)
         {
             int iIndex = FindCharacterIndex(iMonsterId);
+            if (iIndex == MAX_CHARACTERS_CLIENT)
+            {
+                continue;
+            }
+
             CHARACTER* pTarget = &CharactersClient[iIndex];
 
-            if (!IsMonster(pTarget))
+            if (!IsMonster(pTarget) || IsBlacklisted(iMonsterId))
             {
                 continue;
             }
@@ -735,23 +982,45 @@ namespace MUHelper
 
     int CMuHelper::Attack()
     {
+        // Target lock: while a target is locked it is validated first and kept
+        // until it dies, is removed, leaves the leash, or the chase times out.
+        if (m_iCurrentTarget != -1 && !ValidateChaseTarget(m_iCurrentTarget))
+        {
+            m_iCurrentTarget = -1;
+        }
+
         if (m_iCurrentTarget == -1)
         {
             if (!m_setTargets.empty())
             {
                 CleanupTargets();
+                PurgeBlacklist();
 
                 if (m_config.bLongRangeCounterAttack)
                 {
                     m_iCurrentTarget = GetFarthestAttackingTarget();
                 }
-                
+
                 if (m_iCurrentTarget == -1)
                 {
                     m_iCurrentTarget = GetNearestTarget();
                 }
             }
-            else
+
+            if (m_iCurrentTarget == -1)
+            {
+                m_iComboState = 0;
+                return 0;
+            }
+        }
+
+        // Attack-stall watchdog: run once per helper tick while a target is
+        // locked. A stall (no target/hit/hero progress for ~2.5 s) issues a
+        // recovery step or, after the attempt limit, releases the target.
+        if (m_iCurrentTarget != -1)
+        {
+            TrackTargetProgress(m_iCurrentTarget);
+            if (m_iCurrentTarget == -1)
             {
                 m_iComboState = 0;
                 return 0;
@@ -767,18 +1036,18 @@ namespace MUHelper
         if (m_iCurrentSkill > AT_SKILL_UNDEFINED)
         {
             const float fSkillDistance = gSkillManager.GetSkillDistance(m_iCurrentSkill, Hero);
-            if (GameLogic::Combat::CanExecuteSkill(Hero, m_iCurrentSkill, fSkillDistance))
+            if (m_bIgnoreHuntRange
+                || GameLogic::Combat::CanExecuteSkill(Hero, m_iCurrentSkill, fSkillDistance))
             {
-                return SimulateAttack(m_iCurrentSkill);
+                const int skillResult = SimulateAttack(m_iCurrentSkill);
+                if (skillResult)
+                    return skillResult;
             }
         }
 
         if (m_config.bFallbackBasicAttack)
         {
-            if (!Hero->Movement)
-            {
-                return SimulateBasicAttack(m_iCurrentTarget);
-            }
+            return SimulateBasicAttack(m_iCurrentTarget);
         }
 
         return 1;
@@ -961,45 +1230,44 @@ namespace MUHelper
 
                 g_MovementSkill.m_iTarget = iCharIndex;
 
+                // Match the manual attack path: lock the hero's facing to the
+                // selected target before sending a skill or attack request.
+                VectorCopy(pTarget->Object.Position, Hero->TargetPosition);
+                Hero->Object.Angle[2] = CreateAngle2D(Hero->Object.Position, Hero->TargetPosition);
+
                 TargetX = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
                 TargetY = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
 
-                PATH_t tempPath;
-                bool bHasPath = PathFinding2(Hero->PositionX, Hero->PositionY, TargetX, TargetY, &tempPath, m_iHuntingDistance + fSkillDistance);
-                
-                // Target not reachable, ignore it
-                if (!bHasPath)
+                const bool bTargetNear = CheckTile(Hero, &Hero->Object,
+                    fSkillDistance + (m_bAttackEngaged ? kRangeHysteresis : 0.0f));
+                if (bTargetNear)
                 {
-                    DeleteTarget(iTarget);
-                    return 0;
-                }
-
-                const bool bTargetNear = CheckTile(Hero, &Hero->Object, fSkillDistance);
-                if (bTargetNear && !CheckWall(Hero->PositionX, Hero->PositionY, TargetX, TargetY))
-                {
-                    DeleteTarget(iTarget);
-                    return 0;
-                }
-
-                // Target is not yet in range, move closer.
-                if (!bTargetNear)
-                {
-                    Hero->Path.Lock.lock();
-
-                    // Limit movement to 2 steps at a time
-                    int pathNum = std::min<int>(tempPath.PathNum, 2);
-                    for (int i = 0; i < pathNum; i++)
+                    // In skill range: attack. A wall between hero and target
+                    // means the skill cannot land — instead of stalling (or
+                    // blacklisting outright), step aside and re-approach.
+                    if (!CheckWall(Hero->PositionX, Hero->PositionY, TargetX, TargetY))
                     {
-                        Hero->Path.PathX[i] = tempPath.PathX[i];
-                        Hero->Path.PathY[i] = tempPath.PathY[i];
+                        HandleAttackStall(iTarget, "wall-between");
+                        return 0;
                     }
-                    Hero->Path.PathNum = pathNum;
-                    Hero->Path.CurrentPath = 0;
-                    Hero->Path.CurrentPathFloat = 0;
+                    m_bAttackEngaged = true;
+                }
+                else
+                {
+                    m_bAttackEngaged = false;
 
-                    Hero->Path.Lock.unlock();
+                    // Chase watchdog: tracks progress and gives up after a
+                    // stall (one replan, then abandon + blacklist).
+                    UpdateChase(iTarget);
+                    if (m_iCurrentTarget != iTarget)
+                        return 0;
 
-                    SendMove(Hero, &Hero->Object);
+                    if (PlanChasePath(iTarget, pTarget, fSkillDistance, "chase-skill") == -1
+                        && !m_bRoamEnabled)
+                    {
+                        BlacklistTarget(iTarget, "no-path");
+                        ReleaseChaseTarget(iTarget, "no-path");
+                    }
                     return 0;
                 }
             }
@@ -1063,40 +1331,41 @@ namespace MUHelper
         }
 
         SelectedCharacter = iCharIndex;
+        VectorCopy(pTarget->Object.Position, Hero->TargetPosition);
+        Hero->Object.Angle[2] = CreateAngle2D(Hero->Object.Position, Hero->TargetPosition);
         TargetX = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
         TargetY = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
 
-        PATH_t tempPath;
-        const bool bHasPath = PathFinding2(Hero->PositionX, Hero->PositionY, TargetX, TargetY, &tempPath, m_iHuntingDistance + fRange);
-        if (!bHasPath)
+        const bool bTargetNear = CheckTile(Hero, &Hero->Object,
+            fRange + (m_bAttackEngaged ? kRangeHysteresis : 0.0f));
+        if (bTargetNear)
         {
-            DeleteTarget(iTarget);
-            return 0;
-        }
-
-        const bool bTargetNear = CheckTile(Hero, &Hero->Object, fRange);
-        if (bTargetNear && !CheckWall(Hero->PositionX, Hero->PositionY, TargetX, TargetY))
-        {
-            DeleteTarget(iTarget);
-            return 0;
-        }
-
-        // Target is not yet in range, move closer.
-        if (!bTargetNear)
-        {
-            Hero->Path.Lock.lock();
-            const int pathNum = std::min<int>(tempPath.PathNum, 2);
-            for (int i = 0; i < pathNum; i++)
+            // In melee/ranged-basic range: attack. A wall between hero and
+            // target means the attack cannot land — step aside and re-approach
+            // instead of retrying the blocked swing forever.
+            if (!CheckWall(Hero->PositionX, Hero->PositionY, TargetX, TargetY))
             {
-                Hero->Path.PathX[i] = tempPath.PathX[i];
-                Hero->Path.PathY[i] = tempPath.PathY[i];
+                HandleAttackStall(iTarget, "wall-between");
+                return 0;
             }
-            Hero->Path.PathNum = pathNum;
-            Hero->Path.CurrentPath = 0;
-            Hero->Path.CurrentPathFloat = 0;
-            Hero->Path.Lock.unlock();
+            m_bAttackEngaged = true;
+        }
+        else
+        {
+            m_bAttackEngaged = false;
 
-            SendMove(Hero, &Hero->Object);
+            // Chase watchdog: tracks progress and gives up after a stall
+            // (one replan, then abandon + blacklist).
+            UpdateChase(iTarget);
+            if (m_iCurrentTarget != iTarget)
+                return 0;
+
+            if (PlanChasePath(iTarget, pTarget, fRange, "chase-basic") == -1
+                && !m_bRoamEnabled)
+            {
+                BlacklistTarget(iTarget, "no-path");
+                ReleaseChaseTarget(iTarget, "no-path");
+            }
             return 0;
         }
 
@@ -1110,6 +1379,22 @@ namespace MUHelper
         Attacking = 1;
         Action(Hero, &Hero->Object, true);
         return 1;
+    }
+
+    void CMuHelper::CollectNearbyMonsters()
+    {
+        if (!m_bIgnoreHuntRange || CharactersClient == nullptr || Hero == nullptr)
+            return;
+
+        for (int i = 0; i < MAX_CHARACTERS_CLIENT; ++i)
+        {
+            CHARACTER* c = &CharactersClient[i];
+            if (!c->Object.Live || c->Dead > 0 || c == Hero)
+                continue;
+            if (!IsMonster(c))
+                continue;
+            AddTarget(c->Key, false);
+        }
     }
 
     int CMuHelper::Regroup()
@@ -1129,18 +1414,699 @@ namespace MUHelper
         return 1;
     }
 
+    bool CMuHelper::IsWalkingPath() const
+    {
+        if (Hero == nullptr)
+            return false;
+        return Hero->Movement && Hero->Path.PathNum > 1 && Hero->Path.CurrentPath < Hero->Path.PathNum - 1;
+    }
+
+    void CMuHelper::TrackHuntMotion()
+    {
+        if (!m_bRoamEnabled || Hero == nullptr)
+            return;
+
+        if (Hero->PositionX != m_posLastStuck.x || Hero->PositionY != m_posLastStuck.y)
+        {
+            m_posLastStuck = { Hero->PositionX, Hero->PositionY };
+            m_iStuckTicks = 0;
+            return;
+        }
+
+        if (Hero->Movement && !IsHeroSwingInProgress())
+            ++m_iStuckTicks;
+    }
+
+    // Sparse diagnostics for the Auto Battle state machine, written to
+    // MuError.log with an "AUTOBATTLE:" prefix. Transition-level only — never
+    // called per frame.
+    void CMuHelper::AbLog(const char* szFormat, ...)
+    {
+        char szAnsi[256];
+        va_list args;
+        va_start(args, szFormat);
+        _vsnprintf_s(szAnsi, sizeof(szAnsi), _TRUNCATE, szFormat != nullptr ? szFormat : "", args);
+        va_end(args);
+
+        wchar_t szText[256];
+        const int nLen = MultiByteToWideChar(CP_ACP, 0, szAnsi, -1, szText, std::size(szText) - 1);
+        if (nLen <= 0)
+            return;
+        szText[nLen] = L'\0';
+        g_ErrorReport.Write(L"AUTOBATTLE: %s\r\n", szText);
+    }
+
+    void CMuHelper::PurgeBlacklist()
+    {
+        const DWORD now = GetTickCount();
+        for (auto it = m_mapBlacklist.begin(); it != m_mapBlacklist.end();)
+        {
+            if (static_cast<int>(it->second - now) <= 0)
+                it = m_mapBlacklist.erase(it);
+            else
+                ++it;
+        }
+    }
+
+    bool CMuHelper::IsBlacklisted(int iTargetId)
+    {
+        PurgeBlacklist();
+        return m_mapBlacklist.find(iTargetId) != m_mapBlacklist.end();
+    }
+
+    void CMuHelper::BlacklistTarget(int iTargetId, const char* szReason)
+    {
+        // Short cooldown so a temporarily unreachable target is not retried
+        // every tick, but becomes eligible again after the cooldown elapses.
+        constexpr DWORD kBlacklistCooldownMs = 5000;
+        m_mapBlacklist[iTargetId] = GetTickCount() + kBlacklistCooldownMs;
+        AbLog("target blacklisted id=%d reason=%s", iTargetId, szReason != nullptr ? szReason : "unknown");
+    }
+
+    // Releases the target lock; only death/removal, invalidity, leash exit,
+    // confirmed unreachable path or stuck-timeout may call this.
+    void CMuHelper::ReleaseChaseTarget(int iTargetId, const char* szReason)
+    {
+        AbLog("target released id=%d reason=%s", iTargetId, szReason != nullptr ? szReason : "unknown");
+        DeleteTarget(iTargetId);
+        if (m_iChaseTarget != -1)
+        {
+            m_iChaseTarget = -1;
+            m_posChaseLast = { 0, 0 };
+            m_dwChaseLastProgress = 0;
+            m_bChaseRepathed = false;
+        }
+        m_dwAttackLastProgress = 0;
+        m_posAttackHeroLast = { 0, 0 };
+        m_posAttackTargetLast = { 0, 0 };
+        m_iAttackTargetActionLast = -1;
+        m_iRecoveryAttempts = 0;
+        m_bRecoveryActive = false;
+        m_posChasePlanTarget = { 0, 0 };
+        m_bAttackEngaged = false;
+    }
+
+    // Validates the locked target before any action: live monster, same view,
+    // not blacklisted and inside the leash. Returns false when the lock must
+    // be dropped.
+    bool CMuHelper::ValidateChaseTarget(int iTargetId)
+    {
+        if (iTargetId == -1)
+            return false;
+
+        const int iCharIndex = FindCharacterIndex(iTargetId);
+        if (iCharIndex == MAX_CHARACTERS_CLIENT)
+        {
+            ReleaseChaseTarget(iTargetId, "removed");
+            return false;
+        }
+
+        CHARACTER* pTarget = &CharactersClient[iCharIndex];
+        if (!pTarget->Object.Live || pTarget->Dead > 0 || !IsMonster(pTarget))
+        {
+            ReleaseChaseTarget(iTargetId, "dead-or-invalid");
+            return false;
+        }
+
+        // Normal Mu Helper retains its blacklist/leash behavior. Auto Battle
+        // commits to the chosen live target and may only select another after
+        // this one dies or disappears from the client object list.
+        if (!m_bRoamEnabled && IsBlacklisted(iTargetId))
+        {
+            ReleaseChaseTarget(iTargetId, "blacklisted");
+            return false;
+        }
+
+        if (!m_bRoamEnabled)
+        {
+            const int iLeash = m_iHuntingDistance + 10;
+            if (ComputeDistanceFromTarget(pTarget) > iLeash)
+            {
+                BlacklistTarget(iTargetId, "out-of-leash");
+                ReleaseChaseTarget(iTargetId, "out-of-leash");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Chase progress watchdog. While the hero is walking an existing path,
+    // the path is left untouched (MoveHero keeps sending the normal walk
+    // packets, exactly like a long manual click). Only when the hero stopped
+    // moving is a fresh path computed. No movement progress for a while
+    // triggers one replan; a second stall abandons and blacklists the target.
+    void CMuHelper::UpdateChase(int iTargetId)
+    {
+        constexpr DWORD kStuckTimeoutMs = 3000;
+
+        if (Hero == nullptr)
+            return;
+
+        if (iTargetId != m_iChaseTarget)
+        {
+            m_iChaseTarget = iTargetId;
+            m_posChaseLast = { Hero->PositionX, Hero->PositionY };
+            m_dwChaseLastProgress = GetTickCount();
+            m_bChaseRepathed = false;
+            m_dwAttackLastProgress = m_dwChaseLastProgress;
+            m_posAttackHeroLast = { Hero->PositionX, Hero->PositionY };
+            m_iAttackTargetActionLast = -1;
+            m_iRecoveryAttempts = 0;
+            m_bRecoveryActive = false;
+            m_bAttackEngaged = false;
+            AbLog("target acquired id=%d pos=%d,%d", iTargetId, Hero->PositionX, Hero->PositionY);
+        }
+
+        const DWORD now = GetTickCount();
+        const POINT pos = { Hero->PositionX, Hero->PositionY };
+        if (pos.x != m_posChaseLast.x || pos.y != m_posChaseLast.y)
+        {
+            m_posChaseLast = pos;
+            m_dwChaseLastProgress = now;
+            m_bChaseRepathed = false;
+            return;
+        }
+
+        if (now - m_dwChaseLastProgress < kStuckTimeoutMs)
+            return;
+
+        if (!m_bChaseRepathed)
+        {
+            // First stall: cancel the current path so the movement branch
+            // replans from the committed cell. This clears the walk state,
+            // it never writes the hero position directly.
+            m_bChaseRepathed = true;
+            m_dwChaseLastProgress = now;
+            Hero->Movement = false;
+            Hero->Path.PathNum = 0;
+            AbLog("stuck, repathing target id=%d pos=%d,%d", iTargetId, pos.x, pos.y);
+            return;
+        }
+
+        if (m_bRoamEnabled)
+        {
+            // Auto Battle keeps the live target. Retry from the committed cell
+            // instead of selecting a nearer replacement after a temporary stall.
+            m_bChaseRepathed = false;
+            m_dwChaseLastProgress = now;
+            Hero->Movement = false;
+            Hero->Path.PathNum = 0;
+            AbLog("stuck, retrying locked target id=%d pos=%d,%d", iTargetId, pos.x, pos.y);
+            return;
+        }
+
+        AbLog("stuck, giving up target id=%d pos=%d,%d", iTargetId, pos.x, pos.y);
+        BlacklistTarget(iTargetId, "stuck");
+        ReleaseChaseTarget(iTargetId, "stuck-timeout");
+    }
+
+    // Per-tick progress tracker for the locked target. Progress is any of:
+    // hero moved, target moved, target hit/act animation changed, or target
+    // died. ~2.5 s of attack attempts without progress classifies as
+    // attack-stalled and triggers a recovery step (never an instant release
+    // of a live target).
+    void CMuHelper::TrackTargetProgress(int iTargetId)
+    {
+        if (iTargetId == -1 || Hero == nullptr || CharactersClient == nullptr)
+            return;
+
+        const int iCharIndex = FindCharacterIndex(iTargetId);
+        if (iCharIndex == MAX_CHARACTERS_CLIENT)
+            return;
+
+        CHARACTER* pTarget = &CharactersClient[iCharIndex];
+        const DWORD now = GetTickCount();
+        const POINT posHero = { Hero->PositionX, Hero->PositionY };
+        const POINT posTarget = { pTarget->PositionX, pTarget->PositionY };
+        const int iAction = pTarget->Object.CurrentAction;
+
+        const bool heroMoved =
+            posHero.x != m_posAttackHeroLast.x || posHero.y != m_posAttackHeroLast.y;
+        const bool targetMoved =
+            posTarget.x != m_posAttackTargetLast.x || posTarget.y != m_posAttackTargetLast.y;
+        const bool actChanged = iAction != m_iAttackTargetActionLast;
+
+        if (heroMoved || targetMoved || actChanged || pTarget->Dead > 0)
+        {
+            if (m_bRecoveryActive && heroMoved)
+            {
+                // The recovery SendMove was consumed by MoveHero: back on a
+                // valid cell, the normal chase replans from here.
+                m_bRecoveryActive = false;
+                AbLog("recovery complete target=%d pos=%d,%d", iTargetId, posHero.x, posHero.y);
+            }
+            m_dwAttackLastProgress = now;
+        }
+
+        m_posAttackHeroLast = posHero;
+        m_posAttackTargetLast = posTarget;
+        m_iAttackTargetActionLast = iAction;
+
+        if (now - m_dwAttackLastProgress < kAttackStallMs)
+            return;
+
+        HandleAttackStall(iTargetId, "no-progress");
+    }
+
+    // Attack-stalled recovery: one SendMove to a validated cell 2-4 tiles off
+    // the target (never a Position write). After kMaxRecoveryAttempts the
+    // target is blacklisted and released — even in roam sessions — so the
+    // bot can never loop forever on an unhittable target.
+    void CMuHelper::HandleAttackStall(int iTargetId, const char* szWhy)
+    {
+        AbLog("attack stalled target=%d reason=%s", iTargetId, szWhy ? szWhy : "unknown");
+
+        POINT dest;
+        if (m_iRecoveryAttempts >= kMaxRecoveryAttempts
+            || !FindRecoveryCell(iTargetId, dest))
+        {
+            BlacklistTarget(iTargetId, "attack-stalled");
+            ReleaseChaseTarget(iTargetId, "recovery failed/release");
+            return;
+        }
+
+        ++m_iRecoveryAttempts;
+        Hero->Movement = false;
+        Hero->Path.PathNum = 0;
+        Hero->MovementType = MOVEMENT_MOVE;
+        TargetX = dest.x;
+        TargetY = dest.y;
+
+        if (!PathFinding2(Hero->PositionX, Hero->PositionY, dest.x, dest.y, &Hero->Path, 0.0f))
+        {
+            BlacklistTarget(iTargetId, "attack-stalled");
+            ReleaseChaseTarget(iTargetId, "recovery failed/release");
+            return;
+        }
+
+        SendMove(Hero, &Hero->Object);
+        m_bRecoveryActive = true;
+        m_dwAttackLastProgress = GetTickCount();
+        AbLog("recovery step target=%d dest=%d,%d attempt=%d",
+            iTargetId, dest.x, dest.y, m_iRecoveryAttempts);
+    }
+
+    // Walkable recovery cell 2-4 tiles away from the target (chebyshev ring),
+    // outside occupied/walled/safe-zone cells, with a wall-free straight line
+    // from the hero so the short hop cannot cross a wall, and inside the hunt
+    // leash so a recovery never drags the hero out of the spot.
+    bool CMuHelper::FindRecoveryCell(int iTargetId, POINT& out)
+    {
+        if (Hero == nullptr || CharactersClient == nullptr)
+            return false;
+
+        const int iCharIndex = FindCharacterIndex(iTargetId);
+        if (iCharIndex == MAX_CHARACTERS_CLIENT)
+            return false;
+
+        CHARACTER* pTarget = &CharactersClient[iCharIndex];
+        const int tx = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
+        const int ty = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
+        const POINT heroPos = { Hero->PositionX, Hero->PositionY };
+        const int iLeash = m_iHuntingDistance + 10;
+
+        bool found = false;
+        int bestTravel = 0;
+        for (int ring = 2; ring <= 4; ++ring)
+        {
+            for (int dy = -ring; dy <= ring; ++dy)
+            {
+                for (int dx = -ring; dx <= ring; ++dx)
+                {
+                    if (abs(dx) != ring && abs(dy) != ring)
+                        continue; // ring cells only
+
+                    const int x = tx + dx;
+                    const int y = ty + dy;
+                    if (x < 1 || y < 1 || x > 254 || y > 254)
+                        continue;
+
+                    const WORD wall = TerrainWall[TERRAIN_INDEX_REPEAT(x, y)];
+                    if ((wall & TW_NOMOVE) == TW_NOMOVE
+                        || (wall & TW_SAFEZONE) == TW_SAFEZONE)
+                        continue;
+
+                    if (!CheckWall(heroPos.x, heroPos.y, x, y))
+                        continue;
+
+                    const int travel = ComputeDistanceBetween(heroPos, { x, y });
+                    if (travel > iLeash)
+                        continue;
+
+                    // Outer rings first (more separation), then short hops.
+                    const int score = travel + (ring - 2) * 8;
+                    if (!found || score < bestTravel)
+                    {
+                        found = true;
+                        bestTravel = score;
+                        out = { x, y };
+                    }
+                }
+            }
+        }
+        return found;
+    }
+
+    // Walkable cell within real attack range of the target cell with a clear
+    // line to it — the approach path ends where the first swing is valid
+    // instead of anywhere inside a wide pathfinding disk.
+    bool CMuHelper::FindApproachCell(int tx, int ty, float fRange, POINT& out)
+    {
+        if (Hero == nullptr)
+            return false;
+
+        const int searchR = (int)ceil(fRange);
+        if (searchR < 1)
+            return false;
+
+        const POINT heroPos = { Hero->PositionX, Hero->PositionY };
+        bool found = false;
+        int bestTravel = 0;
+        for (int dy = -searchR; dy <= searchR; ++dy)
+        {
+            for (int dx = -searchR; dx <= searchR; ++dx)
+            {
+                if (dx == 0 && dy == 0)
+                    continue; // the target cell itself is never walkable
+
+                const float fdx = (float)dx;
+                const float fdy = (float)dy;
+                if (sqrtf(fdx * fdx + fdy * fdy) > fRange - 0.35f)
+                    continue; // must end inside real attack range
+
+                const int x = tx + dx;
+                const int y = ty + dy;
+                if (x < 1 || y < 1 || x > 254 || y > 254)
+                    continue;
+
+                const WORD wall = TerrainWall[TERRAIN_INDEX_REPEAT(x, y)];
+                if ((wall & TW_NOMOVE) == TW_NOMOVE
+                    || (wall & TW_SAFEZONE) == TW_SAFEZONE)
+                    continue;
+
+                if (!CheckWall(x, y, tx, ty))
+                    continue; // LOS from the approach cell to the target
+
+                const int travel = ComputeDistanceBetween(heroPos, { x, y });
+                if (!found || travel < bestTravel)
+                {
+                    found = true;
+                    bestTravel = travel;
+                    out = { x, y };
+                }
+            }
+        }
+        return found;
+    }
+
+    // Chase movement for the locked target. While the hero walks a committed
+    // path it is consumed untouched (native run momentum, like a long manual
+    // click) — a replan only happens when the target drifts more than a tile
+    // from the position the path was planned for. New paths aim at a
+    // validated approach cell inside attack range with LOS; the path is long
+    // enough that the hero runs smoothly instead of walk-stop micro segments.
+    int CMuHelper::PlanChasePath(int iTargetId, CHARACTER* pTarget, float fRange, const char* szReason)
+    {
+        if (Hero == nullptr || pTarget == nullptr)
+            return -1;
+
+        const int tx = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
+        const int ty = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
+
+        if (Hero->Movement)
+        {
+            const int driftX = tx - m_posChasePlanTarget.x;
+            const int driftY = ty - m_posChasePlanTarget.y;
+            if (abs(driftX) <= 1 && abs(driftY) <= 1)
+                return 0; // progressing toward a still-valid path: keep running
+
+            Hero->Movement = false;
+            Hero->Path.PathNum = 0;
+        }
+
+        POINT approach = { tx, ty };
+        if (FindApproachCell(tx, ty, fRange, approach))
+        {
+            PATH_t tempPath;
+            if (PathFinding2(Hero->PositionX, Hero->PositionY, approach.x, approach.y, &tempPath, 0.0f))
+            {
+                Hero->Path.Lock.lock();
+                const int pathNum = std::min<int>(tempPath.PathNum, MAX_PATH_FIND - 1);
+                for (int i = 0; i < pathNum; i++)
+                {
+                    Hero->Path.PathX[i] = tempPath.PathX[i];
+                    Hero->Path.PathY[i] = tempPath.PathY[i];
+                }
+                Hero->Path.PathNum = pathNum;
+                Hero->Path.CurrentPath = 0;
+                Hero->Path.CurrentPathFloat = 0;
+                Hero->Path.Lock.unlock();
+
+                SendMove(Hero, &Hero->Object);
+                m_posChasePlanTarget = { tx, ty };
+                AbLog("path issued steps=%d reason=%s dest=%d,%d",
+                    pathNum, szReason ? szReason : "chase", approach.x, approach.y);
+                return 0;
+            }
+        }
+
+        // Fallback: native disk pathing around the target cell (old behavior)
+        // when no exact approach cell/path is available.
+        PATH_t tempPath;
+        const float pathLimit = m_bIgnoreHuntRange ? 64.f : (m_iHuntingDistance + fRange);
+        if (!PathFinding2(Hero->PositionX, Hero->PositionY, tx, ty, &tempPath, pathLimit))
+            return -1;
+
+        Hero->Path.Lock.lock();
+        const int pathNum = std::min<int>(tempPath.PathNum, MAX_PATH_FIND - 1);
+        for (int i = 0; i < pathNum; i++)
+        {
+            Hero->Path.PathX[i] = tempPath.PathX[i];
+            Hero->Path.PathY[i] = tempPath.PathY[i];
+        }
+        Hero->Path.PathNum = pathNum;
+        Hero->Path.CurrentPath = 0;
+        Hero->Path.CurrentPathFloat = 0;
+        Hero->Path.Lock.unlock();
+
+        SendMove(Hero, &Hero->Object);
+        m_posChasePlanTarget = { tx, ty };
+        AbLog("path issued steps=%d reason=%s dest=%d,%d",
+            pathNum, szReason ? szReason : "chase", tx, ty);
+        return 0;
+    }
+
+    int CMuHelper::SelectNextRoamWaypoint(POINT here, DWORD now)
+    {
+        const int waypointCount = static_cast<int>(m_vecRoamWps.size());
+        if (waypointCount == 0)
+            return -1;
+
+        const auto isCooling = [&](const int index)
+        {
+            const auto cooldown = m_mapWpCooldown.find(index);
+            return cooldown != m_mapWpCooldown.end() && now < cooldown->second;
+        };
+
+        // After a completed/unreachable spot, preserve server-list order and
+        // advance cyclically. Only the first selection uses nearest distance.
+        if (m_iRoamLastWpIndex >= 0 && m_iRoamLastWpIndex < waypointCount)
+        {
+            for (int offset = 1; offset <= waypointCount; ++offset)
+            {
+                const int index = (m_iRoamLastWpIndex + offset) % waypointCount;
+                if (!isCooling(index))
+                    return index;
+            }
+            return -1;
+        }
+
+        int nearest = -1;
+        int nearestDistance = 0;
+        for (int index = 0; index < waypointCount; ++index)
+        {
+            if (isCooling(index))
+                continue;
+
+            const int distance = ComputeDistanceBetween(here, m_vecRoamWps[index]);
+            if (nearest == -1 || distance < nearestDistance)
+            {
+                nearest = index;
+                nearestDistance = distance;
+            }
+        }
+        return nearest;
+    }
+
+    bool CMuHelper::IsRoamPathAllowed() const
+    {
+        if (Hero == nullptr || Hero->Path.PathNum <= 1)
+            return false;
+
+        for (int index = 0; index < Hero->Path.PathNum; ++index)
+        {
+            const int x = Hero->Path.PathX[index];
+            const int y = Hero->Path.PathY[index];
+            const WORD wall = TerrainWall[TERRAIN_INDEX_REPEAT(x, y)];
+            if ((wall & TW_NOMOVE) == TW_NOMOVE
+                || (wall & TW_SAFEZONE) == TW_SAFEZONE)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool CMuHelper::TryStartRoamSegment(POINT destination)
+    {
+        if (Hero == nullptr || destination.x < 1 || destination.y < 1
+            || destination.x > 254 || destination.y > 254)
+        {
+            return false;
+        }
+
+        const WORD destinationWall =
+            TerrainWall[TERRAIN_INDEX_REPEAT(destination.x, destination.y)];
+        if ((destinationWall & TW_NOMOVE) == TW_NOMOVE
+            || (destinationWall & TW_SAFEZONE) == TW_SAFEZONE)
+        {
+            return false;
+        }
+
+        Hero->MovementType = MOVEMENT_MOVE;
+        TargetX = destination.x;
+        TargetY = destination.y;
+        if (!PathFinding2(Hero->PositionX, Hero->PositionY,
+            TargetX, TargetY, &Hero->Path))
+        {
+            return false;
+        }
+
+        if (!IsRoamPathAllowed())
+        {
+            Hero->Path.Lock.lock();
+            Hero->Path.PathNum = 0;
+            Hero->Path.Lock.unlock();
+            return false;
+        }
+
+        SendMove(Hero, &Hero->Object);
+        return true;
+    }
+
+    // With no visible target, tour real server spawn spots continuously. A
+    // reached spot gets 1.5 s to expose/respawn a monster, then a short visited
+    // cooldown and cyclic advance; unreachable spots receive a longer cooldown.
+    void CMuHelper::RoamForHunt()
+    {
+        if (!m_bRoamEnabled || Hero == nullptr || m_vecRoamWps.empty())
+            return;
+        if (Hero->Movement)
+            return; // MoveHero owns the current segment; never resend per tick.
+
+        const POINT here = { Hero->PositionX, Hero->PositionY };
+        const DWORD now = GetTickCount();
+        int completedWaypoint = -1;
+
+        if (m_iRoamWpIndex >= 0
+            && m_iRoamWpIndex < static_cast<int>(m_vecRoamWps.size()))
+        {
+            const POINT waypoint = m_vecRoamWps[m_iRoamWpIndex];
+            const int distance = ComputeDistanceBetween(here, waypoint);
+            if (distance <= kRoamArrivalDistance)
+            {
+                if (m_dwRoamReachedTick == 0)
+                {
+                    m_dwRoamReachedTick = now;
+                    AbLog("spot reached wp=%d pos=%d,%d", m_iRoamWpIndex,
+                        waypoint.x, waypoint.y);
+                    return;
+                }
+                if (now - m_dwRoamReachedTick < kRoamObserveMs)
+                    return; // Active-session idle: observe before advancing.
+
+                completedWaypoint = m_iRoamWpIndex;
+                m_mapWpCooldown[completedWaypoint] = now + kRoamVisitedCooldownMs;
+                m_iRoamLastWpIndex = completedWaypoint;
+                m_iRoamWpIndex = -1;
+                m_dwRoamReachedTick = 0;
+            }
+            else
+            {
+                m_dwRoamReachedTick = 0;
+            }
+        }
+
+        if (m_iRoamWpIndex == -1)
+        {
+            const int nextWaypoint = SelectNextRoamWaypoint(here, now);
+            if (nextWaypoint == -1)
+            {
+                if (m_dwRoamIdleLogTick == 0
+                    || now - m_dwRoamIdleLogTick >= kRoamIdleLogIntervalMs)
+                {
+                    AbLog("roam idle active=1 reason=spots-cooling");
+                    m_dwRoamIdleLogTick = now;
+                }
+                return;
+            }
+
+            m_dwRoamIdleLogTick = 0;
+            m_iRoamWpIndex = nextWaypoint;
+            const POINT waypoint = m_vecRoamWps[nextWaypoint];
+            const int distance = ComputeDistanceBetween(here, waypoint);
+            if (completedWaypoint != -1)
+            {
+                AbLog("spot advance from=%d to=%d pos=%d,%d",
+                    completedWaypoint, nextWaypoint, waypoint.x, waypoint.y);
+            }
+            else
+            {
+                AbLog("spot select wp=%d pos=%d,%d dist=%d",
+                    nextWaypoint, waypoint.x, waypoint.y, distance);
+            }
+        }
+
+        const POINT destination = m_vecRoamWps[m_iRoamWpIndex];
+        const int distance = ComputeDistanceBetween(here, destination);
+        if (distance <= kRoamArrivalDistance)
+        {
+            m_dwRoamReachedTick = now;
+            AbLog("spot reached wp=%d pos=%d,%d", m_iRoamWpIndex,
+                destination.x, destination.y);
+            return;
+        }
+
+        if (TryStartRoamSegment(destination))
+        {
+            AbLog("roam path steps=%d dest=%d,%d", Hero->Path.PathNum,
+                destination.x, destination.y);
+            return;
+        }
+
+        const int unreachableWaypoint = m_iRoamWpIndex;
+        m_mapWpCooldown[unreachableWaypoint] = now + kRoamUnreachableCooldownMs;
+        m_iRoamLastWpIndex = unreachableWaypoint;
+        m_iRoamWpIndex = -1;
+        m_dwRoamReachedTick = 0;
+        AbLog("roam unreachable wp=%d dest=%d,%d cooldown=%u",
+            unreachableWaypoint, destination.x, destination.y,
+            kRoamUnreachableCooldownMs);
+    }
+
     int CMuHelper::SimulateMove(POINT posMove)
     {
         Hero->MovementType = MOVEMENT_MOVE;
         TargetX = (int)posMove.x;
         TargetY = (int)posMove.y;
 
-        if (!CheckTile(Hero, &Hero->Object, 1.5f))
+        if (CheckTile(Hero, &Hero->Object, 1.5f))
+            return 1;
+
+        if (PathFinding2((Hero->PositionX), (Hero->PositionY), TargetX, TargetY, &Hero->Path))
         {
-            if (PathFinding2((Hero->PositionX), (Hero->PositionY), TargetX, TargetY, &Hero->Path))
-            {
-                SendMove(Hero, &Hero->Object);
-            }
+            SendMove(Hero, &Hero->Object);
             return 0;
         }
 
@@ -1241,12 +2207,28 @@ namespace MUHelper
         {
             if (!CheckTile(Hero, &Hero->Object, 2.0f))
             {
+                // Never overwrite a live walk with a pickup detour: PathFinding2
+                // writes straight into Hero->Path and the mid-walk SendMove resets
+                // CurrentPath (rubberband + walk restart). Retry once the current
+                // segment ends, like the native long-click path consumer.
+                if (Hero->Movement)
+                    return 1;
+
                 if (PathFinding2((Hero->PositionX), (Hero->PositionY), TargetX, TargetY, &Hero->Path))
                 {
                     SendMove(Hero, &Hero->Object);
+                    AbLog("path issued steps=%d reason=obtain", Hero->Path.PathNum);
+                    m_iObtainFails = 0;
+                    return 0;
                 }
 
-                return 0;
+                ++m_iObtainFails;
+                if (m_iObtainFails >= 3)
+                {
+                    DeleteItem(m_iCurrentItem);
+                    m_iObtainFails = 0;
+                }
+                return 1;
             }
             else
             {
@@ -1255,6 +2237,7 @@ namespace MUHelper
                     SendGetItem = m_iCurrentItem;
                     SocketClient->ToGameServer()->SendPickupItemRequest(m_iCurrentItem);
                     DeleteItem(m_iCurrentItem);
+                    m_iObtainFails = 0;
                 }
             }
         }

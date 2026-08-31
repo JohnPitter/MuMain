@@ -14,13 +14,13 @@ class CMsgBoxIGSSendGiftConfirm : public CNewUIMessageBoxBase
 public:
     enum IMAGE_IGS_SEND_GIFT_CONFIRM
     {
-        IMAGE_IGS_BUTTON = BITMAP_IGS_MSGBOX_BUTTON,
-        IMAGE_IGS_BACK = CNewUIOptionWindow::IMAGE_OPTION_FRAME_BACK,
-        IMAGE_IGS_UP = CNewUIOptionWindow::IMAGE_OPTION_FRAME_UP,
-        IMAGE_IGS_DOWN = CNewUIOptionWindow::IMAGE_OPTION_FRAME_DOWN,
-        IMAGE_IGS_LEFTLINE = CNewUIOptionWindow::IMAGE_OPTION_FRAME_LEFT,
-        IMAGE_IGS_RIGHTLINE = CNewUIOptionWindow::IMAGE_OPTION_FRAME_RIGHT,
-        IMAGE_IGS_TEXTBOX = BITMAP_IGS_MGSBOX_BUY_CONFIRM_TEXT_BOX,
+        IMAGE_IGS_BUTTON = BITMAP_IGS_SEND_GIFT_CONFIRM_BUTTON,
+        IMAGE_IGS_BACK = BITMAP_IGS_SEND_GIFT_CONFIRM_BACK,
+        IMAGE_IGS_UP = BITMAP_IGS_SEND_GIFT_CONFIRM_UP,
+        IMAGE_IGS_DOWN = BITMAP_IGS_SEND_GIFT_CONFIRM_DOWN,
+        IMAGE_IGS_LEFTLINE = BITMAP_IGS_SEND_GIFT_CONFIRM_LEFTLINE,
+        IMAGE_IGS_RIGHTLINE = BITMAP_IGS_SEND_GIFT_CONFIRM_RIGHTLINE,
+        IMAGE_IGS_TEXTBOX = BITMAP_IGS_SEND_GIFT_CONFIRM_TEXTBOX,
     };
 
     enum IMAGESIZE_IGS_SEND_GIFT_CONFIRM
@@ -81,7 +81,7 @@ private:
     void RenderTexts();
     void RenderButtons();
 
-    void LoadImages();
+    bool LoadImages();
     void UnloadImages();
 
 private:
@@ -98,7 +98,7 @@ private:
     int		m_iCashType;
 
     wchar_t m_szID[MAX_USERNAME_SIZE + 1];
-    wchar_t m_szMessage[MAX_GIFT_MESSAGE_SIZE];
+    wchar_t m_szMessage[MAX_GIFT_MESSAGE_SIZE + 1];
 
     wchar_t m_szItemName[MAX_TEXT_LENGTH];
     wchar_t m_szItemPrice[MAX_TEXT_LENGTH];
@@ -107,6 +107,7 @@ private:
     wchar_t m_szNotice[NUM_LINE_CMB][MAX_TEXT_LENGTH];
 
     int		m_iNumNoticeLine;
+    bool m_bImagesLoaded;
 };
 
 class CMsgBoxIGSSendGiftConfirmLayout : public TMsgBoxLayout<CMsgBoxIGSSendGiftConfirm>

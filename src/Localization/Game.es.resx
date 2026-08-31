@@ -12887,4 +12887,34 @@
   <data name="DefaultFont" xml:space="preserve">
     <value>Predeterminado</value>
   </data>
+  <data name="GiftAction" xml:space="preserve">
+    <value>Regalar</value>
+  </data>
+  <data name="CashShopVaultAlreadyExpandedTitle" xml:space="preserve">
+    <value>Baúl ya expandido</value>
+  </data>
+  <data name="CashShopVaultAlreadyExpanded" xml:space="preserve">
+    <value>Tu baúl ya está expandido.</value>
+  </data>
+  <data name="CashShopInventoryMaxExtensionsTitle" xml:space="preserve">
+    <value>Límite del inventario</value>
+  </data>
+  <data name="CashShopInventoryMaxExtensions" xml:space="preserve">
+    <value>Tu inventario ya está en el máximo de expansiones.</value>
+  </data>
+  <data name="InGameShopGiftTitle" xml:space="preserve"><value>Regalar</value></data>
+  <data name="InGameShopGiftRecipient" xml:space="preserve"><value>Destinatario</value></data>
+  <data name="InGameShopGiftMessage" xml:space="preserve"><value>Mensaje</value></data>
+  <data name="InGameShopGiftConfirm" xml:space="preserve"><value>Confirmar</value></data>
+  <data name="InGameShopGiftCancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="InGameShopGiftWCoin" xml:space="preserve"><value>Monedas W</value></data>
+  <data name="HuntAnalyzerTitle" xml:space="preserve"><value>Analizador de cacería</value></data>
+  <data name="HuntAnalyzerSession" xml:space="preserve"><value>SESIÓN ACTUAL</value></data>
+  <data name="HuntAnalyzerNextLevel" xml:space="preserve"><value>PRÓXIMO NIVEL</value></data>
+  <data name="HuntAnalyzerExpTotal" xml:space="preserve"><value>EXP TOTAL</value></data>
+  <data name="HuntAnalyzerExpPerHour" xml:space="preserve"><value>EXP/H</value></data>
+  <data name="HuntAnalyzerProfitTotal" xml:space="preserve"><value>GANANCIA TOTAL</value></data>
+  <data name="HuntAnalyzerProfitPerHour" xml:space="preserve"><value>GANANCIA/H</value></data>
+  <data name="HuntAnalyzerHint" xml:space="preserve"><value>Sigue la EXP, la ganancia y el rendimiento de la cacería.</value></data>
+  <data name="HuntAnalyzerVip" xml:space="preserve"><value>Suscribir VIP</value></data>
 </root>

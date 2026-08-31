@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "UI/NewUI/Dialogs/NewUICustomMessageBox.h"
 #include "Audio/DSPlaySound.h"
 #include "UI/Legacy/UIControls.h"
@@ -17,6 +17,10 @@
 #include "Engine/Object/ZzzOpenData.h"
 #include "GameLogic/Items/InventoryUtils.h"
 #include "UI/NewUI/NewUISystem.h"
+
+#include "Network/Server/WSclient.h"
+#include "Core/Utilities/Log/ErrorReport.h"
+#include "Core/Utilities/Log/muConsoleDebug.h"
 
 extern int DeleteIndex;
 extern int AppointStatus;
@@ -2403,8 +2407,7 @@ CALLBACK_RESULT SEASON3B::CSystemMenuMsgBox::GameOverBtnDown(class CNewUIMessage
     else
     {
         MUHelper::g_MuHelper.TriggerStop();
-        LogOut = true;
-        SocketClient->ToGameServer()->SendLogOut(LogOutType::CloseGame);
+        RequestUserLogOut(LogOutType::CloseGame);
         g_ConsoleDebug->Write(MCD_SEND, L"0xF1 [SendRequestLogOut] 0");
     }
 
@@ -2434,8 +2437,7 @@ CALLBACK_RESULT SEASON3B::CSystemMenuMsgBox::ChooseServerBtnDown(class CNewUIMes
     {
         MUHelper::g_MuHelper.TriggerStop();
         g_pNewUIMng->ResetActiveUIObj();
-        LogOut = true;
-        SocketClient->ToGameServer()->SendLogOut(LogOutType::BackToServerSelection);
+        RequestUserLogOut(LogOutType::BackToServerSelection);
         g_ConsoleDebug->Write(MCD_SEND, L"0xF1 [SendRequestLogOut] 2");
     }
 
@@ -2466,7 +2468,7 @@ CALLBACK_RESULT SEASON3B::CSystemMenuMsgBox::ChooseCharacterBtnDown(class CNewUI
     {
         MUHelper::g_MuHelper.TriggerStop();
         g_pNewUIMng->ResetActiveUIObj();
-        LogOut = true;SocketClient->ToGameServer()->SendLogOut(LogOutType::BackToCharacterSelection);
+        RequestUserLogOut(LogOutType::BackToCharacterSelection);
         g_ConsoleDebug->Write(MCD_SEND, L"0xF1 [SendRequestLogOut] 1");
     }
 

@@ -121,7 +121,7 @@ const bool JewelHarmonyInfo::OpenJewelHarmonyInfoFile(const std::wstring& filena
 
             // Read Name and convert to wchar_t
             char* name = reinterpret_cast<char*>(entry + sizeof(int));
-            CMultiLanguage::GetSingletonPtr()->ConvertFromUtf8(m_OptionData[type][option].Name, name, NAME_SIZE);
+            CMultiLanguage::GetSingletonPtr()->ConvertFromUtf8(m_OptionData[type][option].Name, name, NAME_SIZE, 60);
 
             // Read Minlevel
             m_OptionData[type][option].Minlevel = *reinterpret_cast<int*>(entry + sizeof(int) + NAME_SIZE);

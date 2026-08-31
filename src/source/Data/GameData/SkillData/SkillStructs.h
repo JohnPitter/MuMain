@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Platform/WinCompat.h"
+#include "Data/Translation/MultiLanguage.h"
 
 // Forward declarations for constants
 #ifndef MAX_CLASS
@@ -63,7 +64,7 @@ typedef struct
 template<typename TSource>
 inline void CopySkillAttributeFromSource(SKILL_ATTRIBUTE& dest, const TSource& source)
 {
-    CMultiLanguage::ConvertFromUtf8(dest.Name, source.Name, MAX_SKILL_NAME);
+    CMultiLanguage::ConvertFromUtf8(dest.Name, source.Name, static_cast<int>(sizeof(source.Name)), MAX_SKILL_NAME);
     COPY_SKILL_ATTRIBUTE_FIELDS(dest, source);
 }
 

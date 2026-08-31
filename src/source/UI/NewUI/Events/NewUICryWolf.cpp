@@ -9,6 +9,7 @@
 #include "Audio/DSPlaySound.h"
 #include "Guild/UIGuildInfo.h"
 #include "UI/Legacy/UIControls.h"
+#include "Render/Textures/ZzzOpenglUtil.h"
 #include "UI/Legacy/UIPopup.h"
 #include "Engine/Object/ZzzInterface.h"
 #include "Engine/Object/ZzzInventory.h"
@@ -485,12 +486,12 @@ bool SEASON3B::CNewUICryWolf::Update()
 
 float SEASON3B::CNewUICryWolf::ConvertX(float x)
 {
-    return x * (float)WindowWidth / (float)REFERENCE_WIDTH;
+    return ConvertPosX(x);
 }
 
 float SEASON3B::CNewUICryWolf::ConvertY(float y)
 {
-    return y * (float)WindowHeight / (float)REFERENCE_HEIGHT;
+    return ConvertPosY(y);
 }
 
 bool SEASON3B::CNewUICryWolf::Render(int Posx, int Posy, int nPosx, int nPosy, float u, float v, float su, float sv, int Index, bool Scale, bool StartScale, float Alpha)

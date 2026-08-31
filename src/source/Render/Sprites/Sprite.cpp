@@ -125,6 +125,28 @@ void CSprite::Create(SImgInfo* pImgInfo, int nDatumX, int nDatumY, bool bTile,
     }
 }
 
+void CSprite::SetScale(float fScaleX, float fScaleY)
+{
+    if (fScaleX <= 0.f)
+        fScaleX = 1.f;
+    if (fScaleY <= 0.f)
+        fScaleY = 1.f;
+
+    m_fScaleX = fScaleX;
+    m_fScaleY = fScaleY;
+    m_fScrHeight = static_cast<float>(WindowHeight) / fScaleY;
+}
+
+void CSprite::FlipHorizontal()
+{
+    const float leftU = m_aTexCoord[LT].fTU;
+    const float rightU = m_aTexCoord[RT].fTU;
+    m_aTexCoord[LT].fTU = rightU;
+    m_aTexCoord[RT].fTU = leftU;
+    m_aTexCoord[LB].fTU = rightU;
+    m_aTexCoord[RB].fTU = leftU;
+}
+
 void CSprite::SetPosition(int nXCoord, int nYCoord, CHANGE_PRAM eChangedPram)
 {
     if (eChangedPram & X)

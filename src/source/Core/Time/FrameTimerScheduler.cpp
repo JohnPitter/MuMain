@@ -8,8 +8,15 @@ namespace Core::Time
 {
     FrameTimerScheduler& FrameTimerScheduler::Instance()
     {
-        static FrameTimerScheduler instance;
-        return instance;
+        // Intentionally leaked. The scheduler is destroyed implicitly at
+        // process exit, and its function-local static can be torn down BEFORE
+        // other singletons that still hold timers (e.g. s_NewUISystem's
+        // CSlideHelpMgr kills SLIDEHELP_TIMER from its destructor). That
+        // static-destruction-order race crashed Main.exe at exit (AV read in
+        // std::_Hash::erase). Leaking guarantees the map outlives every
+        // registered owner; the OS reclaims the memory at exit.
+        static FrameTimerScheduler* const instance = new FrameTimerScheduler();
+        return *instance;
     }
 
     std::uint64_t FrameTimerScheduler::NowMs()

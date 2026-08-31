@@ -15,6 +15,22 @@
 
 CGlobalBitmap Bitmaps;
 
+namespace
+{
+    LoadBitmapProgressCallback g_loadBitmapProgressCallback = nullptr;
+}
+
+void SetLoadBitmapProgressCallback(LoadBitmapProgressCallback callback)
+{
+    g_loadBitmapProgressCallback = callback;
+}
+
+static void NotifyLoadBitmapProgress()
+{
+    if (g_loadBitmapProgressCallback != nullptr)
+        g_loadBitmapProgressCallback();
+}
+
 bool WriteJpeg(wchar_t* filename, int Width, int Height, unsigned char* Buffer, int quality, bool bottomUp)
 {
     const auto fileCloser = [](FILE* fp) { if (fp != nullptr) { fclose(fp); } };
@@ -246,9 +262,13 @@ bool LoadBitmap(const wchar_t* szFileName, GLuint uiTextureIndex, GLuint uiFilte
 #endif // FOR_WORK
             return false;
         }
+        NotifyLoadBitmapProgress();
         return true;
     }
-    return Bitmaps.LoadImage(uiTextureIndex, szFullPath, uiFilter, uiWrapMode);
+
+    const bool loaded = Bitmaps.LoadImage(uiTextureIndex, szFullPath, uiFilter, uiWrapMode);
+    NotifyLoadBitmapProgress();
+    return loaded;
 }
 void DeleteBitmap(GLuint uiTextureIndex, bool bForce)
 {

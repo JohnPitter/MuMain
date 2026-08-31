@@ -75,10 +75,12 @@ void CLoadData::OpenTexture(int Model, const wchar_t* SubFolder, int Wrap, int T
         }
         else if (tolower(__ext[1]) == 't') // TGA
         {
+            g_ErrorReport.Write(L"[TEX] open %ls (model %d mesh %d)\r\n", szFullPath, Model, i);
             pModel->IndexTexture[i] = Bitmaps.LoadImage(szFullPath, GL_NEAREST, Wrap);
         }
         else if (tolower(__ext[1]) == 'j') // JPG
         {
+            g_ErrorReport.Write(L"[TEX] open %ls (model %d mesh %d)\r\n", szFullPath, Model, i);
             pModel->IndexTexture[i] = Bitmaps.LoadImage(szFullPath, Type, Wrap);
         }
 

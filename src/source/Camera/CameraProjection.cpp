@@ -54,9 +54,9 @@ void CameraProjection::SetViewport(int x, int y, int width, int height)
 void CameraProjection::ScreenToWorldRay(const CameraState& state, int sx, int sy,
                                          vec3_t outTarget, bool bFixView)
 {
-    // Convert reference coordinates to actual pixels
-    sx = sx * WindowWidth / REFERENCE_WIDTH;
-    sy = sy * WindowHeight / REFERENCE_HEIGHT;
+    // Convert 640×480 reference coordinates to window pixels.
+    sx = static_cast<int>(g_fScreenOff_x + sx * g_fScreenRate_x);
+    sy = static_cast<int>(g_fScreenOff_y + sy * g_fScreenRate_y);
 
     vec3_t p1, p2;
 
@@ -85,8 +85,8 @@ void CameraProjection::WorldToScreen(const CameraState& state, const vec3_t worl
     *outY = (int)(transformPos[1] / state.PerspectiveY / transformPos[2]) + state.ScreenCenterY;
 
     // Convert to 640×480 reference coordinates
-    *outX = *outX * REFERENCE_WIDTH / (int)WindowWidth;
-    *outY = *outY * REFERENCE_HEIGHT / (int)WindowHeight;
+    *outX = static_cast<int>((*outX - g_fScreenOff_x) / g_fScreenRate_x);
+    *outY = static_cast<int>((*outY - g_fScreenOff_y) / g_fScreenRate_y);
 }
 
 void CameraProjection::TransformPosition(const CameraState& state, const vec3_t position,

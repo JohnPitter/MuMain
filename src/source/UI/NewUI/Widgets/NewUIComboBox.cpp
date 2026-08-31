@@ -41,8 +41,8 @@ namespace
     {
         DisableTexture2D();
 
-        float gx = ConvertX((float)x);
-        float gy = ConvertY((float)y);
+        float gx = ConvertPosX((float)x);
+        float gy = ConvertPosY((float)y);
         float gw = ConvertX((float)w);
         float gh = ConvertY((float)h);
         gy = (float)WindowHeight - gy;

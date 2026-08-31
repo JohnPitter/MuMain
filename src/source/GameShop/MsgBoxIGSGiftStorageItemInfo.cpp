@@ -276,7 +276,7 @@ void CMsgBoxIGSGiftStorageItemInfo::RenderTexts()
     g_pRenderText->SetTextColor(255, 0, 0, 255);
     if (m_wItemCode == 65535)
     {
-        mu_swprintf(szText, L"Package item information is not available.");
+        mu_swprintf(szText, I18N::Game::PackageItemInformationUnavailable);
     }
     else
     {

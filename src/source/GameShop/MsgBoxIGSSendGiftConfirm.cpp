@@ -26,6 +26,7 @@ CMsgBoxIGSSendGiftConfirm::CMsgBoxIGSSendGiftConfirm()
     }
 
     m_iNumNoticeLine = 0;
+    m_bImagesLoaded = false;
 }
 
 CMsgBoxIGSSendGiftConfirm::~CMsgBoxIGSSendGiftConfirm()
@@ -35,7 +36,8 @@ CMsgBoxIGSSendGiftConfirm::~CMsgBoxIGSSendGiftConfirm()
 
 bool CMsgBoxIGSSendGiftConfirm::Create(float fPriority)
 {
-    LoadImages();
+    if (!LoadImages())
+        return false;
     SetAddCallbackFunc();
 
     CNewUIMessageBoxBase::Create((IMAGE_IGS_WINDOW_WIDTH / 2) - (IMAGE_IGS_FRAME_WIDTH / 2),
@@ -57,12 +59,12 @@ void CMsgBoxIGSSendGiftConfirm::Initialize(int iPackageSeq, int iDisplaySeq, int
     m_wItemCode = wItemCode;
     m_iCashType = iCashType;
 
-    wcscpy(m_szID, pszID);
-    wcscpy(m_szMessage, pszMessage);
+    wcsncpy_s(m_szID, _countof(m_szID), pszID, _TRUNCATE);
+    wcsncpy_s(m_szMessage, _countof(m_szMessage), pszMessage, _TRUNCATE);
 
-    wcscpy(m_szItemName, pszName);
-    wcscpy(m_szItemPrice, pszPrice);
-    wcscpy(m_szItemPeriod, pszPeriod);
+    wcsncpy_s(m_szItemName, _countof(m_szItemName), pszName, _TRUNCATE);
+    wcsncpy_s(m_szItemPrice, _countof(m_szItemPrice), pszPrice, _TRUNCATE);
+    wcsncpy_s(m_szItemPeriod, _countof(m_szItemPeriod), pszPeriod, _TRUNCATE);
 
     m_iNumNoticeLine = ::DivideStringByPixel(&m_szNotice[0][0], NUM_LINE_CMB, MAX_TEXT_LENGTH, I18N::Game::BoughtItemsUsedOrTakenOutOfStorageCannotBeReturned, IGS_TEXT_NOTICE_WIDTH);
 }
@@ -204,20 +206,6 @@ void CMsgBoxIGSSendGiftConfirm::RenderTexts()
         g_pRenderText->RenderText(GetPos().x, GetPos().y + IGS_TEXT_NOTICE_POS_Y + (i * 10), m_szNotice[i], IMAGE_IGS_FRAME_WIDTH, 0, RT3_SORT_CENTER);
     }
 
-#ifdef FOR_WORK
-    wchar_t szText[256] = { 0, };
-    g_pRenderText->SetTextColor(255, 0, 0, 255);
-    mu_swprintf(szText, L"Package Seq : %d", m_iPackageSeq);
-    g_pRenderText->RenderText(GetPos().x + IMAGE_IGS_FRAME_WIDTH, GetPos().y + 10, szText, 200, 0, RT3_SORT_LEFT);
-    mu_swprintf(szText, L"Display Seq : %d", m_iDisplaySeq);
-    g_pRenderText->RenderText(GetPos().x + IMAGE_IGS_FRAME_WIDTH, GetPos().y + 20, szText, 200, 0, RT3_SORT_LEFT);
-    mu_swprintf(szText, L"Price Seq : %d", m_iPriceSeq);
-    g_pRenderText->RenderText(GetPos().x + IMAGE_IGS_FRAME_WIDTH, GetPos().y + 30, szText, 200, 0, RT3_SORT_LEFT);
-    mu_swprintf(szText, L"ItemCode : %d", m_wItemCode);
-    g_pRenderText->RenderText(GetPos().x + IMAGE_IGS_FRAME_WIDTH, GetPos().y + 40, szText, 200, 0, RT3_SORT_LEFT);
-    mu_swprintf(szText, L"CashType : %d", m_iCashType);
-    g_pRenderText->RenderText(GetPos().x + IMAGE_IGS_FRAME_WIDTH, GetPos().y + 50, szText, 200, 0, RT3_SORT_LEFT);
-#endif // FOR_WORK
 }
 
 void CMsgBoxIGSSendGiftConfirm::RenderButtons()
@@ -226,19 +214,29 @@ void CMsgBoxIGSSendGiftConfirm::RenderButtons()
     m_BtnCancel.Render();
 }
 
-void CMsgBoxIGSSendGiftConfirm::LoadImages()
+bool CMsgBoxIGSSendGiftConfirm::LoadImages()
 {
-    LoadBitmap(L"Interface\\InGameShop\\Ingame_Bt03.tga", IMAGE_IGS_BUTTON, GL_LINEAR);
-    LoadBitmap(L"Interface\\newui_msgbox_back.jpg", IMAGE_IGS_BACK, GL_LINEAR);
-    LoadBitmap(L"Interface\\newui_item_back03.tga", IMAGE_IGS_DOWN, GL_LINEAR);
-    LoadBitmap(L"Interface\\newui_option_top.tga", IMAGE_IGS_UP, GL_LINEAR);
-    LoadBitmap(L"Interface\\newui_option_back06(L).tga", IMAGE_IGS_LEFTLINE, GL_LINEAR);
-    LoadBitmap(L"Interface\\newui_option_back06(R).tga", IMAGE_IGS_RIGHTLINE, GL_LINEAR);
-    LoadBitmap(L"Interface\\InGameShop\\ingame_box.tga", IMAGE_IGS_TEXTBOX, GL_LINEAR);
+    if (m_bImagesLoaded)
+        return true;
+    m_bImagesLoaded = true;
+    if (!LoadBitmap(L"Interface\\InGameShop\\Ingame_Bt03.tga", IMAGE_IGS_BUTTON, GL_LINEAR)
+        || !LoadBitmap(L"Interface\\newui_msgbox_back.jpg", IMAGE_IGS_BACK, GL_LINEAR)
+        || !LoadBitmap(L"Interface\\newui_item_back03.tga", IMAGE_IGS_DOWN, GL_LINEAR)
+        || !LoadBitmap(L"Interface\\newui_option_top.tga", IMAGE_IGS_UP, GL_LINEAR)
+        || !LoadBitmap(L"Interface\\newui_option_back06(L).tga", IMAGE_IGS_LEFTLINE, GL_LINEAR)
+        || !LoadBitmap(L"Interface\\newui_option_back06(R).tga", IMAGE_IGS_RIGHTLINE, GL_LINEAR)
+        || !LoadBitmap(L"Interface\\InGameShop\\ingame_box.tga", IMAGE_IGS_TEXTBOX, GL_LINEAR))
+    {
+        UnloadImages();
+        return false;
+    }
+    return true;
 }
 
 void CMsgBoxIGSSendGiftConfirm::UnloadImages()
 {
+    if (!m_bImagesLoaded)
+        return;
     DeleteBitmap(IMAGE_IGS_BUTTON);
     DeleteBitmap(IMAGE_IGS_BACK);
     DeleteBitmap(IMAGE_IGS_DOWN);
@@ -246,6 +244,7 @@ void CMsgBoxIGSSendGiftConfirm::UnloadImages()
     DeleteBitmap(IMAGE_IGS_LEFTLINE);
     DeleteBitmap(IMAGE_IGS_RIGHTLINE);
     DeleteBitmap(IMAGE_IGS_TEXTBOX);
+    m_bImagesLoaded = false;
 }
 
 bool CMsgBoxIGSSendGiftConfirmLayout::SetLayout()

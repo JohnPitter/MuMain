@@ -19,6 +19,12 @@
 CShopPackage::CShopPackage() // OK
 {
     this->LeftCount = -1;
+    this->PackageProductName[0] = L'\0';
+    this->Description[0] = L'\0';
+    this->Caution[0] = L'\0';
+    this->ProductCashName[0] = L'\0';
+    this->PricUnitName[0] = L'\0';
+    this->InGamePackageID[0] = L'\0';
     this->ProductSeqList.clear();
     this->PriceSeqList.clear();
 }

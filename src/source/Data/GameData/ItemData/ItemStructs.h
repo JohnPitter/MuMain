@@ -2,6 +2,7 @@
 
 #include "Core/Platform/WinCompat.h"
 #include "Data/Translation/MultiLanguage.h"
+#include <cstring>
 
 // Forward declarations for constants
 #ifndef MAX_CLASS
@@ -63,7 +64,7 @@ typedef struct
 template<typename TSource>
 inline void CopyItemAttributeFromSource(ITEM_ATTRIBUTE& dest, const TSource& source)
 {
-    CMultiLanguage::ConvertFromUtf8(dest.Name, source.Name, MAX_ITEM_NAME);
+    CMultiLanguage::ConvertFromUtf8(dest.Name, source.Name, static_cast<int>(sizeof(source.Name)), MAX_ITEM_NAME);
     COPY_ITEM_ATTRIBUTE_FIELDS(dest, source);
 }
 

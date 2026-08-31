@@ -462,8 +462,8 @@ bool SEASON3B::CNewUIButton::Render(bool RendOption)
         g_pRenderText->SetFont(m_hTextFont);
         GetTextExtentPoint32(g_pRenderText->GetFontDC(), m_Name.c_str(), m_Name.size(), &Fontsize);
 
-        Fontsize.cx = Fontsize.cx / ((float)WindowWidth / REFERENCE_WIDTH);
-        Fontsize.cy = Fontsize.cy / ((float)WindowHeight / REFERENCE_HEIGHT);
+        Fontsize.cx = Fontsize.cx / g_fScreenRate_x;
+        Fontsize.cy = Fontsize.cy / g_fScreenRate_y;
 
         int x = m_Pos.x + ((m_Size.x / 2) - (Fontsize.cx / 2));
         int y = m_Pos.y + ((m_Size.y / 2) - (Fontsize.cy / 2));
@@ -490,8 +490,8 @@ bool SEASON3B::CNewUIButton::Render(bool RendOption)
             g_pRenderText->SetFont(m_hToolTipFont);
             GetTextExtentPoint32(g_pRenderText->GetFontDC(), m_TooltipText.c_str(), m_TooltipText.size(), &Fontsize);
 
-            Fontsize.cx = Fontsize.cx / ((float)WindowWidth / REFERENCE_WIDTH);
-            Fontsize.cy = Fontsize.cy / ((float)WindowHeight / REFERENCE_HEIGHT);
+            Fontsize.cx = Fontsize.cx / g_fScreenRate_x;
+            Fontsize.cy = Fontsize.cy / g_fScreenRate_y;
 
             int x = m_Pos.x + ((m_Size.x / 2) - (Fontsize.cx / 2));
             int y = m_Pos.y + m_Size.y + 2;
@@ -819,23 +819,21 @@ bool CNewUIRadioButton::Render()
 
         GetTextExtentPoint32(g_pRenderText->GetFontDC(), m_Name.c_str(), m_Name.size(), &Fontsize);
 
-        Fontsize.cx = Fontsize.cx / ((float)WindowWidth / REFERENCE_WIDTH);
-        Fontsize.cy = Fontsize.cy / ((float)WindowHeight / REFERENCE_HEIGHT);
+        Fontsize.cy = Fontsize.cy / g_fScreenRate_y;
 
-        int x = m_Pos.x + ((m_Size.x / 2) - (Fontsize.cx / 2));
-        int y = m_Pos.y + ((m_Size.y / 2) - (Fontsize.cy / 2));
+        const int y = m_Pos.y + ((m_Size.y / 2) - (Fontsize.cy / 2));
 
 #ifdef KJH_ADD_INGAMESHOP_UI_SYSTEM
         if ((m_bClickEffect == true) && GetBTState() == BUTTON_STATE_DOWN)
         {
-            RenderText(m_Name.c_str(), x + 1, y + 1, m_Size.x, 0, m_hTextFont, m_NameColor, m_NameBackColor, RT3_SORT_LEFT);
+            RenderText(m_Name.c_str(), m_Pos.x + 1, y + 1, m_Size.x, 0, m_hTextFont, m_NameColor, m_NameBackColor, RT3_SORT_CENTER);
         }
         else
         {
-            RenderText(m_Name.c_str(), x, y, m_Size.x, 0, m_hTextFont, m_NameColor, m_NameBackColor, RT3_SORT_LEFT);
+            RenderText(m_Name.c_str(), m_Pos.x, y, m_Size.x, 0, m_hTextFont, m_NameColor, m_NameBackColor, RT3_SORT_CENTER);
         }
 #else // KJH_ADD_INGAMESHOP_UI_SYSTEM
-        RenderText(m_Name.c_str(), x, y, m_Size.x, 0, g_hFont, m_NameColor, m_NameBackColor, RT3_SORT_LEFT);
+        RenderText(m_Name.c_str(), m_Pos.x, y, m_Size.x, 0, g_hFont, m_NameColor, m_NameBackColor, RT3_SORT_CENTER);
 #endif // KJH_ADD_INGAMESHOP_UI_SYSTEM
     }
 

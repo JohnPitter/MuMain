@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // AI관련 함수
 // 타켓방향으로 방향 틀기, 길찾기, fps구하기 등등
 //
@@ -191,47 +191,59 @@ void Alpha(OBJECT* o)
 
 void MoveBoid(OBJECT* o, int i, OBJECT* Boids, int MAX)
 {
-    int NumBirds = 0;
-    float TargetX = 0.f;
-    float TargetY = 0.f;
+    constexpr float NEIGHBOR_RADIUS = 400.f;
+    constexpr float SEPARATION_RADIUS = 110.f;
+    constexpr float JITTER_DEGREES_PER_FRAME = 0.12f;
+
+    float SeparationX = 0.f;
+    float SeparationY = 0.f;
+    int NumNeighbors = 0;
     for (int j = 0; j < MAX; j++)
     {
         OBJECT* t = &Boids[j];
-        if (t->Live && j != i)
+        if (!t->Live || j == i)
         {
-            vec3_t Range;
-            VectorSubtract(o->Position, t->Position, Range);
-            const auto distance = VectorLength(Range);
-            if (distance < 400.f)
-            {
-                float xdist = t->Direction[0] - t->Position[0];
-                float ydist = t->Direction[1] - t->Position[1];
-                if (distance < 80.f)
-                {
-                    xdist -= t->Direction[0] - o->Position[0];
-                    ydist -= t->Direction[1] - o->Position[1];
-                }
-                else
-                {
-                    xdist += t->Direction[0] - o->Position[0];
-                    ydist += t->Direction[1] - o->Position[1];
-                }
-
-                xdist *= FPS_ANIMATION_FACTOR;
-                ydist *= FPS_ANIMATION_FACTOR;
-                float pdist = std::sqrt(xdist * xdist + ydist * ydist);
-                TargetX += xdist / pdist;
-                TargetY += ydist / pdist;
-                NumBirds++;
-            }
+            continue;
         }
-    }
-    if (NumBirds > 0)
-    {
-        TargetX = o->Position[0] + TargetX / NumBirds;
-        TargetY = o->Position[1] + TargetY / NumBirds;
 
-        o->Angle[2] = (float)TurnAngle((int)o->Angle[2], CalcAngle(o->Position[0], o->Position[1], TargetX, TargetY), (int)o->Gravity);
+        vec3_t Range;
+        VectorSubtract(o->Position, t->Position, Range);
+        const float distance = VectorLength(Range);
+        if (distance >= NEIGHBOR_RADIUS)
+        {
+            continue;
+        }
+
+        // Keep nearby boids apart, but do not copy a neighbor's heading.
+        if (distance > 0.f && distance < SEPARATION_RADIUS)
+        {
+            const float separationWeight = (SEPARATION_RADIUS - distance) / SEPARATION_RADIUS;
+            SeparationX += (Range[0] / distance) * separationWeight;
+            SeparationY += (Range[1] / distance) * separationWeight;
+        }
+        NumNeighbors++;
+    }
+
+    if (NumNeighbors > 0 && (SeparationX != 0.f || SeparationY != 0.f))
+    {
+        const float TargetX = o->Position[0] + SeparationX;
+        const float TargetY = o->Position[1] + SeparationY;
+        o->Angle[2] = static_cast<float>(TurnAngle(
+            static_cast<int>(o->Angle[2]),
+            CalcAngle(o->Position[0], o->Position[1], TargetX, TargetY),
+            static_cast<int>(o->Gravity)));
+    }
+
+    // Small per-boid drift prevents the remaining birds from becoming synchronized.
+    const float jitter = (static_cast<float>(rand() % 201) - 100.f) * JITTER_DEGREES_PER_FRAME;
+    o->Angle[2] += jitter * FPS_ANIMATION_FACTOR;
+    if (o->Angle[2] < 0.f)
+    {
+        o->Angle[2] += 360.f;
+    }
+    else if (o->Angle[2] >= 360.f)
+    {
+        o->Angle[2] -= 360.f;
     }
 }
 
