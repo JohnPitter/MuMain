@@ -5608,8 +5608,10 @@ namespace Render::Effects::Behaviors
                 VectorCopy(o->Owner->Position, p);
                 VectorAdd(p, o->StartPosition, p);
 
-                float Distance;
-                for (int i = 1; i < o->Gravity; ++i)
+                float Distance = 0.f;
+                // Cap iterations so Fire Burst never fans extra trail copies mid-flight.
+                const int trailPasses = (o->Gravity > 2.f) ? 2 : 1;
+                for (int i = 1; i <= trailPasses; ++i)
                 {
                     if (rand_fps_check(2))
                     {
@@ -5630,7 +5632,10 @@ namespace Render::Effects::Behaviors
                     VectorRotate(o->Direction, Matrix, Position);
                     VectorAddScaled(o->Position, Position, o->Position, FPS_ANIMATION_FACTOR);
 
-                    CreateEffectFpsChecked(MODEL_PIER_PART, o->Position, o->Angle, o->Light, 1, o);
+                    if (rand_fps_check(2))
+                    {
+                        CreateEffectFpsChecked(MODEL_PIER_PART, o->Position, o->Angle, o->Light, 1, o);
+                    }
                 }
                 if (Distance < 40 && (int)o->LifeTime == 5)
                 {
@@ -5638,8 +5643,16 @@ namespace Render::Effects::Behaviors
                     Position[2] = RequestTerrainHeight(o->Position[0], o->Position[1]);
                 }
                 o->Gravity += (0.1f) * FPS_ANIMATION_FACTOR;
+                if (o->Gravity > 2.f)
+                {
+                    o->Gravity = 2.f;
+                }
 
-                PlayBuffer(SOUND_ATTACK_FIRE_BUST_EXP);
+                // Original played the explosion SFX every frame (very loud at 60 FPS).
+                if (o->Gravity < 1.5f)
+                {
+                    PlayBuffer(SOUND_ATTACK_FIRE_BUST_EXP);
+                }
             }
         }
         else if (o->SubType == 2)
@@ -5681,6 +5694,14 @@ namespace Render::Effects::Behaviors
     // MODEL_DARKLORD_SKILL
     bool Move_MODEL_DARKLORD_SKILL(OBJECT* o, int index, float Luminosity)
     {
+        if (o->SubType == 4)
+        {
+            o->Scale += (o->Velocity) * FPS_ANIMATION_FACTOR;
+            if (o->LifeTime < 4)
+            {
+                o->BlendMeshLight *= pow(1.0f / (2.0f), FPS_ANIMATION_FACTOR);
+            }
+        }
         return true;
     }
 

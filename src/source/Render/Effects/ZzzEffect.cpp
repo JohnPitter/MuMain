@@ -3381,12 +3381,13 @@ void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int Sub
             case MODEL_PIER_PART:
                 if (o->SubType == 0)
                 {
-                    o->LifeTime = 20;
-                    o->Gravity = 2.f;
+                    // Fire Burst projectile: shorter flight, smaller trail budget.
+                    o->LifeTime = 14;
+                    o->Gravity = 1.4f;
                     o->Velocity = 10.f;
                     o->HiddenMesh = 1;
-                    o->Scale = 1.2f;
-                    Vector(1.f, 1.f, 1.f, o->Light);
+                    o->Scale = 0.72f;
+                    Vector(0.9f, 0.55f, 0.28f, o->Light);
                     Vector(0.f, -26.f, 0.f, o->Direction);
                     VectorCopy(Light, o->StartPosition);
                     VectorCopy(o->Angle, o->HeadAngle);
@@ -3396,11 +3397,11 @@ void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int Sub
                 {
                     o->LifeTime = o->Owner->LifeTime;
                     o->HiddenMesh = 0;
-                    o->Scale = 0.5f;
-                    o->Alpha = (float)((20 - o->LifeTime) / 5.f);
+                    o->Scale = 0.28f;
+                    o->Alpha = (float)((14 - o->LifeTime) / 5.f);
                     Vector(0.f, 0.f, 0.f, o->Direction);
 
-                    CreateParticle(BITMAP_FIRE + 1, o->Position, o->Angle, o->Light, 0, 1.f, o);
+                    CreateParticle(BITMAP_FIRE + 1, o->Position, o->Angle, o->Light, 0, 0.45f, o);
                 }
                 else if (o->SubType == 2)
                 {
@@ -3473,6 +3474,14 @@ void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int Sub
                 {
                     o->LifeTime = 12;
                     o->Velocity = 0.4f;
+                }
+                else if (o->SubType == 4)
+                {
+                    // Fire Burst caster swirl: small, short, no second blast.
+                    o->LifeTime = 6;
+                    o->Scale = 0.11f;
+                    o->Velocity = 0.035f;
+                    Vector(45.f, 45.f, 0.f, o->Angle);
                 }
             }
             break;
