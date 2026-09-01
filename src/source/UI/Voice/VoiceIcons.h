@@ -7,7 +7,7 @@ namespace UI::Voice
 
     void DrawSpeakerIcon(float centerX, float centerY, float scale, bool enabled);
 
-    // HUD: black silhouette only. Caller fills the gray button first.
+    // HUD: white silhouette on the gray NewUI button.
     void DrawMicrophoneGlyph(float centerX, float centerY, float scale, bool enabled);
 
     void DrawSpeakerGlyph(float centerX, float centerY, float scale, bool enabled);

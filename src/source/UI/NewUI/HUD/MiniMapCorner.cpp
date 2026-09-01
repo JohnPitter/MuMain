@@ -22,7 +22,7 @@
 namespace
 {
     // Square map wrapped by the same 14px table chrome as MU Helper.
-    // Voice buttons sit left of the frame (see VoiceOrigin).
+    // Voice buttons dock to the middle of the right screen edge.
     constexpr float kMapSize = 128.f;
     constexpr float kPad = 6.f;
     constexpr float kFrameW = kMapSize + (kPad * 2.f);
@@ -52,12 +52,9 @@ namespace
 
     void VoiceOrigin(float* outX, float* outY)
     {
-        // Left of minimap, top-aligned — clear of Auto Battler (top bar)
-        // and the item-durability column (right edge, y=140+).
-        float frameX = 0.f, frameY = 0.f;
-        FrameOrigin(&frameX, &frameY);
-        *outX = frameX - kVoiceGap - kVoiceBtnW;
-        *outY = frameY + kPad;
+        // Glued to the right screen edge, vertically centered.
+        *outX = REFERENCE_WIDTH - kVoiceBtnW;
+        *outY = REFERENCE_HEIGHT / 2.f;
     }
 
     void DrawHelperFrame(float x, float y)
@@ -98,13 +95,13 @@ namespace
             s_BtnVoiceMicrophone.ChangeButtonInfo(static_cast<int>(micX), static_cast<int>(footerY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
             s_BtnVoiceMicrophone.ChangeToolTipText(&kVoiceMicrophoneTooltip, 0);
-            s_BtnVoiceMicrophone.MoveTextTipPos(-20, 9);
+            s_BtnVoiceMicrophone.MoveTextTipPos(-90, 9);
 
             s_BtnVoiceListening.ChangeButtonImgState(true, nativeBtn, true);
             s_BtnVoiceListening.ChangeButtonInfo(static_cast<int>(listenX), static_cast<int>(listenY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
             s_BtnVoiceListening.ChangeToolTipText(&kVoiceListeningTooltip, 0);
-            s_BtnVoiceListening.MoveTextTipPos(-20, 9);
+            s_BtnVoiceListening.MoveTextTipPos(-90, 9);
             s_voiceReady = true;
         }
         else

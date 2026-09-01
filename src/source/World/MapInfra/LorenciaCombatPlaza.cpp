@@ -328,6 +328,20 @@ namespace
         return (dx * dx + dy * dy) <= (kPvpRadiusTiles * kPvpRadiusTiles);
     }
 
+    void RestoreFencedLawnNoMove()
+    {
+        for (int y = kPlazaMinY; y <= kPlazaMaxY; ++y)
+        {
+            for (int x = kPlazaMinX; x <= kPlazaMaxX; ++x)
+            {
+                if (IsWebzenSentinelTile(x, y) || !KeepGrassAt(x, y))
+                    continue;
+                AddTerrainAttribute(x, y, TW_NOMOVE);
+                AddTerrainAttribute(x, y, TW_SAFEZONE);
+            }
+        }
+    }
+
     void ClearCourtyardWalkability()
     {
         constexpr int kFountainStoneR2 = 22 * 22;
@@ -339,6 +353,8 @@ namespace
                     continue;
                 if (IsWebzenSentinelTile(x, y))
                     continue;
+                if (KeepGrassAt(x, y))
+                    continue;
                 const bool inYard = x >= kYardMinX && x <= kYardMaxX
                     && y >= kYardMinY && y <= kYardMaxY;
                 const int i = TERRAIN_INDEX(x, y);
@@ -347,6 +363,8 @@ namespace
                 const int dy = y - kCenterTileY;
                 const bool nearFountain = (dx * dx + dy * dy) <= kFountainStoneR2;
                 if (!inYard && !(stone && nearFountain && !KeepGrassAt(x, y)))
+                    continue;
+                if (!stone && TerrainMappingLayer1[i] == kGrassMapping)
                     continue;
                 SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
                 if (InPvpCircle(x, y))
@@ -396,6 +414,7 @@ namespace World::Lorencia
 
         MarkKeepGrassFromProps();
         PaveOrphanGrassTiles();
+        RestoreFencedLawnNoMove();
         ClearCourtyardWalkability();
         LoadCrywolfFloor();
         HideFountainCluster();

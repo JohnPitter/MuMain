@@ -105,34 +105,34 @@ namespace
 
     void DrawMicrophoneGlyphAt(float originX, float originY, float scale, bool enabled)
     {
-        const float ink = enabled ? 0.04f : 0.18f;
-        const Rgb black{ ink, ink, ink };
+        const float ink = enabled ? 1.f : 0.62f;
+        const Rgb white{ ink, ink, ink };
 
-        FillRect(originX - (4.f * scale), originY + (0.5f * scale), 8.f * scale, 14.f * scale, black);
-        FillRect(originX - (3.f * scale), originY, 6.f * scale, 1.2f * scale, black);
-        FillRect(originX - (3.f * scale), originY + (14.2f * scale), 6.f * scale, 1.2f * scale, black);
-        FillRect(originX - (5.5f * scale), originY + (6.f * scale), 1.6f * scale, 8.f * scale, black);
-        FillRect(originX + (3.9f * scale), originY + (6.f * scale), 1.6f * scale, 8.f * scale, black);
-        FillRect(originX - (5.5f * scale), originY + (13.4f * scale), 11.f * scale, 1.6f * scale, black);
-        FillRect(originX - (1.f * scale), originY + (15.f * scale), 2.f * scale, 4.f * scale, black);
-        FillRect(originX - (4.5f * scale), originY + (18.6f * scale), 9.f * scale, 2.f * scale, black);
+        FillRect(originX - (4.f * scale), originY + (0.5f * scale), 8.f * scale, 14.f * scale, white);
+        FillRect(originX - (3.f * scale), originY, 6.f * scale, 1.2f * scale, white);
+        FillRect(originX - (3.f * scale), originY + (14.2f * scale), 6.f * scale, 1.2f * scale, white);
+        FillRect(originX - (5.5f * scale), originY + (6.f * scale), 1.6f * scale, 8.f * scale, white);
+        FillRect(originX + (3.9f * scale), originY + (6.f * scale), 1.6f * scale, 8.f * scale, white);
+        FillRect(originX - (5.5f * scale), originY + (13.4f * scale), 11.f * scale, 1.6f * scale, white);
+        FillRect(originX - (1.f * scale), originY + (15.f * scale), 2.f * scale, 4.f * scale, white);
+        FillRect(originX - (4.5f * scale), originY + (18.6f * scale), 9.f * scale, 2.f * scale, white);
     }
 
     void DrawSpeakerGlyphAt(float originX, float originY, float scale, bool enabled)
     {
-        const float ink = enabled ? 0.04f : 0.18f;
-        const Rgb black{ ink, ink, ink };
+        const float ink = enabled ? 1.f : 0.62f;
+        const Rgb white{ ink, ink, ink };
 
-        FillRect(originX - (7.5f * scale), originY + (4.5f * scale), 3.2f * scale, 7.f * scale, black);
-        FillRect(originX - (4.5f * scale), originY + (3.f * scale), 2.2f * scale, 10.f * scale, black);
-        FillRect(originX - (2.4f * scale), originY + (1.4f * scale), 2.4f * scale, 13.2f * scale, black);
-        FillRect(originX, originY, 2.2f * scale, 16.f * scale, black);
-        FillRect(originX + (3.2f * scale), originY + (3.2f * scale), 1.6f * scale, 3.2f * scale, black);
-        FillRect(originX + (4.2f * scale), originY + (6.6f * scale), 1.6f * scale, 2.6f * scale, black);
-        FillRect(originX + (3.2f * scale), originY + (9.4f * scale), 1.6f * scale, 3.2f * scale, black);
-        FillRect(originX + (6.4f * scale), originY + (1.6f * scale), 1.6f * scale, 4.2f * scale, black);
-        FillRect(originX + (7.4f * scale), originY + (6.4f * scale), 1.6f * scale, 3.f * scale, black);
-        FillRect(originX + (6.4f * scale), originY + (10.2f * scale), 1.6f * scale, 4.2f * scale, black);
+        FillRect(originX - (7.5f * scale), originY + (4.5f * scale), 3.2f * scale, 7.f * scale, white);
+        FillRect(originX - (4.5f * scale), originY + (3.f * scale), 2.2f * scale, 10.f * scale, white);
+        FillRect(originX - (2.4f * scale), originY + (1.4f * scale), 2.4f * scale, 13.2f * scale, white);
+        FillRect(originX, originY, 2.2f * scale, 16.f * scale, white);
+        FillRect(originX + (3.2f * scale), originY + (3.2f * scale), 1.6f * scale, 3.2f * scale, white);
+        FillRect(originX + (4.2f * scale), originY + (6.6f * scale), 1.6f * scale, 2.6f * scale, white);
+        FillRect(originX + (3.2f * scale), originY + (9.4f * scale), 1.6f * scale, 3.2f * scale, white);
+        FillRect(originX + (6.4f * scale), originY + (1.6f * scale), 1.6f * scale, 4.2f * scale, white);
+        FillRect(originX + (7.4f * scale), originY + (6.4f * scale), 1.6f * scale, 3.f * scale, white);
+        FillRect(originX + (6.4f * scale), originY + (10.2f * scale), 1.6f * scale, 4.2f * scale, white);
     }
 
     constexpr float kMicrophoneCenterY = 11.5f;

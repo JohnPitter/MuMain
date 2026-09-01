@@ -302,7 +302,7 @@ bool CNewUIHeroPositionInfo::Render()
             kCashFrame);
     }
 
-    // Voice M/S sit immediately left of the corner minimap (MiniMapCorner).
+    // Voice M/S dock to the middle of the right screen edge (MiniMapCorner).
     //--
     mu_swprintf(szText, L"%ls (%d , %d)", gMapManager.GetMapName(gMapManager.WorldActive), m_CurHeroPosition.x, m_CurHeroPosition.y);
 
