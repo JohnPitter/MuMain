@@ -915,6 +915,7 @@ typedef struct {
     BYTE         PositionY;
 } PRECEIVE_MOVE_POSITION, * LPPRECEIVE_MOVE_POSITION;
 
+#pragma pack(push, 1)
 typedef struct {
     PBMSG_HEADER Header;
     WORD		 Flag;
@@ -923,6 +924,7 @@ typedef struct {
     BYTE         PositionY;
     BYTE         Angle;
 } PRECEIVE_TELEPORT_POSITION, * LPPRECEIVE_TELEPORT_POSITION;
+#pragma pack(pop)
 
 //receive damage
 typedef struct {

@@ -2382,9 +2382,34 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 {
     SEASON3B::CNewUIInventoryCtrl::BackupPickedItem();
 
-    auto Data = (LPPRECEIVE_TELEPORT_POSITION)ReceiveBuffer;
-    Hero->PositionX = Data->PositionX;
-    Hero->PositionY = Data->PositionY;
+    // OpenMU S6 MapChanged: C3 len 1C 0F IsMapChange MapH MapL X Y Rot
+    // MuMain packed (live Main.exe): C3 len 1C FlagLo FlagHi Map X Y Angle
+    // Reading S6 with the packed struct produced HUD (0, realX) on Lorencia.
+    BYTE flag;
+    BYTE map;
+    BYTE posX;
+    BYTE posY;
+    BYTE angle;
+    const BYTE packetSize = ReceiveBuffer[1];
+    if (packetSize >= 15 && ReceiveBuffer[3] == 0x0F)
+    {
+        flag = ReceiveBuffer[4];
+        map = ReceiveBuffer[6];
+        posX = ReceiveBuffer[7];
+        posY = ReceiveBuffer[8];
+        angle = ReceiveBuffer[9];
+    }
+    else
+    {
+        flag = ReceiveBuffer[3];
+        map = ReceiveBuffer[5];
+        posX = ReceiveBuffer[6];
+        posY = ReceiveBuffer[7];
+        angle = ReceiveBuffer[8];
+    }
+
+    Hero->PositionX = posX;
+    Hero->PositionY = posY;
 
     Hero->JumpTime = 0;
 
@@ -2406,7 +2431,7 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 
     if (gMapManager.WorldActive >= WD_45CURSEDTEMPLE_LV1 && gMapManager.WorldActive <= WD_45CURSEDTEMPLE_LV6)
     {
-        if (!(Data->Map >= WD_45CURSEDTEMPLE_LV1 && Data->Map <= WD_45CURSEDTEMPLE_LV6))
+        if (!(map >= WD_45CURSEDTEMPLE_LV1 && map <= WD_45CURSEDTEMPLE_LV6))
         {
             g_CursedTemple->ResetCursedTemple();
             g_pNewUISystem->Hide(SEASON3B::INTERFACE_CURSEDTEMPLE_GAMESYSTEM);
@@ -2415,8 +2440,8 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 
     int iEtcPart = Hero->EtcPart;
 
-    o->Angle[2] = ((float)(Data->Angle) - 1.f) * 45.f;
-    if (Data->Flag == 0)
+    o->Angle[2] = ((float)(angle) - 1.f) * 45.f;
+    if (flag == 0)
     {
         CreateTeleportEnd(o);
         // MapChangeFailed arrives as Flag=0. CheckGate already set LoadingWorld
@@ -2433,11 +2458,11 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         ClearItems();
         ClearCharacters(HeroKey);
         RemoveAllShopTitleExceptHero();
-        if (gMapManager.WorldActive != Data->Map)
+        if (gMapManager.WorldActive != map)
         {
             int OldWorld = gMapManager.WorldActive;
 
-            gMapManager.WorldActive = Data->Map;
+            gMapManager.WorldActive = map;
             gMapManager.LoadWorld(gMapManager.WorldActive);
 
             if (gMapManager.WorldActive == WD_34CRYWOLF_1ST)
@@ -2535,7 +2560,7 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
     Hero->Movement = false;
     SetPlayerStop(Hero);
 
-    if (Data->Flag)
+    if (flag)
         g_pUIMapName->ShowMapName();	// rozy
 
     CreateMyGensInfluenceGroundEffect();
@@ -2545,7 +2570,7 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         Hero->EtcPart = iEtcPart;
     }
 
-    g_ConsoleDebug->Write(MCD_RECEIVE, L"0x1C [ReceiveTeleport(%d)]", Data->Flag);
+    g_ConsoleDebug->Write(MCD_RECEIVE, L"0x1C [ReceiveTeleport(%d)] X:%d Y:%d Map:%d", flag, posX, posY, map);
 
     return (TRUE);
 }
