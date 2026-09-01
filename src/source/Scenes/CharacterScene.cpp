@@ -75,6 +75,17 @@ void StartGame()
             CharacterAttribute->Skin = CharactersClient[SelectedHero].Skin;
             ::wcscpy_s(CharacterAttribute->Name, MAX_USERNAME_SIZE + 1, CharactersClient[SelectedHero].ID);
 
+            // Select MUST go out before ReleaseCharacterSceneData(). Teardown
+            // clears the select-slot IDs; InitializeMainScene used to send
+            // CharactersClient[SelectedHero].ID afterwards → empty F3 03 →
+            // GS ignores it → NOW LOADING forever.
+            CurrentProtocolState = REQUEST_JOIN_MAP_SERVER;
+            if (SocketClient != nullptr && SocketClient->ToGameServer() != nullptr
+                && CharacterAttribute->Name[0] != L'\0')
+            {
+                SocketClient->ToGameServer()->SendSelectCharacter(CharacterAttribute->Name);
+            }
+
             ::ReleaseCharacterSceneData();
             InitLoading = false;
             SceneFlag = LOADING_SCENE;

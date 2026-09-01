@@ -132,18 +132,23 @@ static void InitializeMainScene()
     g_pMainFrame->ResetSkillHotKey();
     ResetSkillConfigPersistGate();
 
-    g_ConsoleDebug->Write(MCD_NORMAL, L"Join the game with the following character: %ls", CharactersClient[SelectedHero].ID);
-    g_ErrorReport.Write(L"> Character selected <%d> \"%ls\"\r\n", SelectedHero + 1, CharactersClient[SelectedHero].ID);
+    const wchar_t* selectName = CharacterAttribute->Name;
+    if (selectName[0] == L'\0' && SelectedHero >= 0 && SelectedHero < MAX_CHARACTERS_PER_ACCOUNT)
+        selectName = CharactersClient[SelectedHero].ID;
+
+    g_ConsoleDebug->Write(MCD_NORMAL, L"Join the game with the following character: %ls", selectName);
+    g_ErrorReport.Write(L"> Character selected <%d> \"%ls\"\r\n", SelectedHero + 1, selectName);
 
     InitMainScene = true;
 
     g_ConsoleDebug->Write(MCD_SEND, L"SendRequestJoinMapServer");
 
     CurrentProtocolState = REQUEST_JOIN_MAP_SERVER;
-    SocketClient->ToGameServer()->SendSelectCharacter(CharactersClient[SelectedHero].ID);
+    if (selectName[0] != L'\0')
+        SocketClient->ToGameServer()->SendSelectCharacter(selectName);
 
     // Remember which character is in play so auto-reconnect can re-select it.
-    ReconnectManager::Instance().CacheCharacter(CharactersClient[SelectedHero].ID);
+    ReconnectManager::Instance().CacheCharacter(selectName);
 
     CUIMng::Instance().CreateMainScene();
 
