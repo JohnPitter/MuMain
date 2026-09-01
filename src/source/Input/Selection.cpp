@@ -47,6 +47,7 @@
 #include "GameLogic/Combat/DuelMgr.h"
 #include "GameLogic/Items/ChangeRingManager.h"
 #include "UI/NewUI/HUD/NewUIGensRanking.h"
+#include "UI/NewUI/NewUICommon.h"
 
 // File-scope state still owned by ZzzInterface.cpp (no shared header yet).
 extern int SelectedCharacter, SelectedNpc, SelectedItem, SelectedOperate;
@@ -54,6 +55,40 @@ extern int Attacking;
 
 namespace Input::Selection
 {
+// Ground-item hover used the cheap Transform AABB (±30 world units, not
+// BodyScale, not the mesh). That cube is much taller than a helm and projects
+// well below the drop, so the gauntlet showed Brass Helm while sitting on
+// empty snow. Nameplate is drawn at the cursor when selected — do not pick it.
+// ScreenX/Y are the drop origin from RenderItems (640×480); MouseX/Y is the
+// mãozinha hotspot after SEASON rate conversion.
+static void GroundItemPickHalfExtent(const OBJECT* o, int& halfW, int& halfH)
+{
+    const int type = o->Type;
+    if (type >= MODEL_SWORD && type < MODEL_STAFF + MAX_ITEM_INDEX)
+    {
+        halfW = 16;
+        halfH = 20;
+    }
+    else if (type >= MODEL_SHIELD && type < MODEL_SHIELD + MAX_ITEM_INDEX)
+    {
+        halfW = 14;
+        halfH = 16;
+    }
+    else
+    {
+        halfW = 12;
+        halfH = 14;
+    }
+}
+
+static bool CursorHotspotOnGroundItem(const OBJECT* o)
+{
+    int halfW = 12;
+    int halfH = 14;
+    GroundItemPickHalfExtent(o, halfW, halfH);
+    return SEASON3B::CheckMouseIn(o->ScreenX - halfW, o->ScreenY - halfH, halfW * 2, halfH * 2);
+}
+
 int SelectItem()
 {
     for (int i = 0; i < MAX_ITEMS; i++)
@@ -67,22 +102,34 @@ int SelectItem()
     }
     float Luminosity = 1.5f;
 
+    int iSelected = -1;
+    int nearestDistSq = 0x7fffffff;
+
     for (int i = 0; i < MAX_ITEMS; i++)
     {
         OBJECT* o = &Items[i].Object;
-        if (o->Live && o->Visible)
+        if (!o->Live || !o->Visible)
+            continue;
+        if (!CursorHotspotOnGroundItem(o))
+            continue;
+
+        const int dx = MouseX - o->ScreenX;
+        const int dy = MouseY - o->ScreenY;
+        const int distSq = dx * dx + dy * dy;
+        if (distSq < nearestDistSq)
         {
-            if (CollisionDetectLineToOBB(MousePosition, MouseTarget, o->OBB))
-            {
-                {
-                    o->LightEnable = false;
-                    Vector(Luminosity, Luminosity, Luminosity, o->Light);
-                    return i;
-                }
-            }
+            nearestDistSq = distSq;
+            iSelected = i;
         }
     }
-    return -1;
+
+    if (iSelected != -1)
+    {
+        OBJECT* o = &Items[iSelected].Object;
+        o->LightEnable = false;
+        Vector(Luminosity, Luminosity, Luminosity, o->Light);
+    }
+    return iSelected;
 }
 
 int SelectCharacter(BYTE Kind)

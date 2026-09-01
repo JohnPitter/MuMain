@@ -6214,8 +6214,12 @@ void CreateItemDrop(ITEM_t* ip, ItemCreationParams params, vec3_t position, bool
         o->Type = MODEL_HIGHER_REFINE_STONE;
     }
     ItemObjectAttribute(o);
-    Vector(-30.f, -30.f, -30.f, o->BoundingBoxMin);
-    Vector(30.f, 30.f, 30.f, o->BoundingBoxMax);
+    if (o->Scale < 0.1f)
+        o->Scale = 0.8f;
+    o->Alpha = 1.f;
+    o->HiddenMesh = -1;
+    Vector(-16.f, -16.f, -12.f, o->BoundingBoxMin);
+    Vector(16.f, 16.f, 12.f, o->BoundingBoxMax);
     VectorCopy(position, o->Position);
     if (isFreshDrop)
     {
@@ -6270,8 +6274,12 @@ void CreateMoneyDrop(ITEM_t* ip, int amount, vec3_t position, bool isFreshDrop)
     o->SubType = 1;
     
     ItemObjectAttribute(o);
-    Vector(-30.f, -30.f, -30.f, o->BoundingBoxMin);
-    Vector(30.f, 30.f, 30.f, o->BoundingBoxMax);
+    if (o->Scale < 0.1f)
+        o->Scale = 0.8f;
+    o->Alpha = 1.f;
+    o->HiddenMesh = -1;
+    Vector(-16.f, -16.f, -12.f, o->BoundingBoxMin);
+    Vector(16.f, 16.f, 12.f, o->BoundingBoxMax);
     VectorCopy(position, o->Position);
     if (isFreshDrop)
     {
@@ -6480,6 +6488,15 @@ void RenderItems()
 
             if (o->Visible)
             {
+                // Inventory RenderItem3D mutates the shared BMD Scale/BodyHeight.
+                // A leftover 0.002 (or 0) here skips the mesh while pick/nameplate
+                // still run off ScreenX/Y and the cheap ±30 OBB.
+                if (o->Scale < 0.1f)
+                    o->Scale = 0.8f;
+                if (o->Alpha < 0.01f)
+                    o->Alpha = 1.f;
+                o->HiddenMesh = -1;
+
                 int Type = o->Type;
                 if (o->Type >= MODEL_HELM && o->Type < MODEL_BOOTS + MAX_ITEM_INDEX)
                     Type = MODEL_PLAYER;
@@ -6491,19 +6508,30 @@ void RenderItems()
                     else if (Level == 2)
                         Type = MODEL_EVENT + 1;
                 }
-                if (IsRenderableModelType(Type))
+                const int animType = Type;
+                if (o->Type >= MODEL_HELM && o->Type < MODEL_BOOTS + MAX_ITEM_INDEX)
+                    Type = o->Type;
+
+                // Animate player (armor) or the item itself. Draw uses o->Type so a
+                // missing player BMD cannot skip a loaded helm/sword mesh.
+                if (IsRenderableModelType(animType))
                 {
-                    BMD* b = &Models[Type];
+                    BMD* b = &Models[animType];
                     b->CurrentAction = 0;
                     b->Skin = gCharacterManager.GetBaseClass(Hero->Class); // ???
                     b->CurrentAction = o->CurrentAction;
+                    b->BodyScale = o->Scale;
                     VectorCopy(o->Position, b->BodyOrigin);
                     ItemHeight(o->Type, b);
                     b->Animation(BoneTransform, o->AnimationFrame, o->PriorAnimationFrame, o->PriorAction, o->Angle, o->HeadAngle, false, false);
+                    b->BodyHeight = 0.f;
+                }
 
-                    if (o->Type >= MODEL_HELM && o->Type < MODEL_BOOTS + MAX_ITEM_INDEX)
-                        Type = o->Type;
-                    b = &Models[Type];
+                if (IsRenderableModelType(Type) || IsRenderableModelType(o->Type))
+                {
+                    BMD* b = &Models[IsRenderableModelType(o->Type) ? o->Type : Type];
+                    b->BodyScale = o->Scale;
+                    VectorCopy(o->Position, b->BodyOrigin);
                     vec3_t Light;
                     RequestTerrainLight(o->Position[0], o->Position[1], Light);
                     VectorAdd(Light, o->Light, Light);

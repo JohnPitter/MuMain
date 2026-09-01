@@ -10083,6 +10083,9 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
         }
     }
 
+    if (Scale < 0.0005f)
+        Scale = 0.003f;
+
     b->Animation(BoneTransform, ObjectSelect.AnimationFrame, ObjectSelect.PriorAnimationFrame, ObjectSelect.PriorAction, ObjectSelect.Angle, ObjectSelect.HeadAngle, false, false);
 
     CHARACTER Armor;
