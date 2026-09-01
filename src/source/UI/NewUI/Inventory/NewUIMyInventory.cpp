@@ -460,20 +460,17 @@ bool CNewUIMyInventory::UpdateMouseEvent()
     if (g_pNewUISystem->HandleFrameCornerClose(m_Pos, INTERFACE_INVENTORY))
         return false;
 
-    // m_BtnExit ("Fechar (I, V)" at bottom-left) and Expand live in BtnProcess.
-    // InventoryProcess() returns true for EVERY mouse position inside the 190x429
-    // window, so it must not run first — that was why the 31/08 consume-click
-    // patch made Fechar dead: tooltip still rendered on hover, click never
-    // reached m_BtnExit. Hide(INTERFACE_INVENTORY) also closes the vault.
-    if (true == BtnProcess())
-        return false;
-
     if (m_pNewInventoryCtrl && !m_pNewInventoryCtrl->UpdateMouseEvent())
         return false;
 
     if (true == EquipmentWindowProcess())
         return false;
     if (true == InventoryProcess())
+        return false;
+
+    // Fechar (I, V), Expand, Repair, MyShop — after grid/equipment so item
+    // clicks are not eaten; InventoryProcess skips the bottom button bar.
+    if (true == BtnProcess())
         return false;
 
     CNewUIPickedItem* pPickedItem = CNewUIInventoryCtrl::GetPickedItem();
@@ -1560,6 +1557,13 @@ bool CNewUIMyInventory::EquipmentWindowProcess()
 
     return false;
 }
+bool CNewUIMyInventory::IsMouseOverButtonBar() const
+{
+    constexpr int buttonBarY = 391;
+    constexpr int buttonBarHeight = INVENTORY_HEIGHT - buttonBarY;
+    return CheckMouseIn(m_Pos.x, m_Pos.y + buttonBarY, INVENTORY_WIDTH, buttonBarHeight);
+}
+
 bool CNewUIMyInventory::InventoryProcess() const
 {
     if (CheckMouseIn(m_Pos.x, m_Pos.y, INVENTORY_WIDTH, INVENTORY_HEIGHT) == false)
@@ -1572,10 +1576,25 @@ bool CNewUIMyInventory::InventoryProcess() const
         return false;
     }
 
-    m_ActionController.HandleInventoryActions(m_pNewInventoryCtrl);
-    // Mouse is inside the inventory window. Consume the click even if the
-    // placement failed — otherwise UpdateMouseEvent falls through to SendDropItemRequest.
-    return true;
+    // Let BtnProcess handle Fechar / Expand / Repair / MyShop on the footer bar.
+    if (IsMouseOverButtonBar())
+    {
+        return false;
+    }
+
+    if (m_ActionController.HandleInventoryActions(m_pNewInventoryCtrl))
+    {
+        return true;
+    }
+
+    // Consume active clicks on the grid/equipment area so a failed placement
+    // does not fall through to SendDropItemRequest below.
+    if (!IsNone(VK_LBUTTON) || !IsNone(VK_RBUTTON))
+    {
+        return true;
+    }
+
+    return false;
 }
 
 bool CNewUIMyInventory::BtnProcess()
