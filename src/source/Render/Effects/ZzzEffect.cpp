@@ -103,6 +103,19 @@ void CreateForce(OBJECT* o, vec3_t Pos)
     }
 }
 
+void CreateSpawnAppearEffect(OBJECT* owner)
+{
+    (void)owner;
+    // Fully disabled: BITMAP_MAGIC+2 (even SubType 2) still left a yellow ring
+    // plus a sharp black floor polygon at login spawn (Lorencia 147,135).
+    // SubType 2 skipped RenderCircle but still called RenderTerrainAlphaBitmap
+    // with an uninitialized Scale when LifeTime <= 10 — leftover size from the
+    // previous effect in the render loop drew a huge dark quad on the tile.
+    // Marker kept so published Main.exe can be grepped to confirm this build.
+    volatile const char* kSpawnAppearVfxDisabled = "SPAWN_APPEAR_VFX_DISABLED";
+    (void)kSpawnAppearVfxDisabled;
+}
+
 void EffectDestructor(OBJECT* o)
 {
     switch (o->Type)
@@ -3381,13 +3394,13 @@ void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int Sub
             case MODEL_PIER_PART:
                 if (o->SubType == 0)
                 {
-                    // Fire Burst projectile: shorter flight, smaller trail budget.
-                    o->LifeTime = 14;
-                    o->Gravity = 1.4f;
+                    // Vanilla Fire Burst projectile (skill 61 DL).
+                    o->LifeTime = 20;
+                    o->Gravity = 2.f;
                     o->Velocity = 10.f;
                     o->HiddenMesh = 1;
-                    o->Scale = 0.72f;
-                    Vector(0.9f, 0.55f, 0.28f, o->Light);
+                    o->Scale = 1.2f;
+                    Vector(1.f, 1.f, 1.f, o->Light);
                     Vector(0.f, -26.f, 0.f, o->Direction);
                     VectorCopy(Light, o->StartPosition);
                     VectorCopy(o->Angle, o->HeadAngle);
@@ -3397,11 +3410,11 @@ void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int Sub
                 {
                     o->LifeTime = o->Owner->LifeTime;
                     o->HiddenMesh = 0;
-                    o->Scale = 0.28f;
-                    o->Alpha = (float)((14 - o->LifeTime) / 5.f);
+                    o->Scale = 0.5f;
+                    o->Alpha = (float)((20 - o->LifeTime) / 5.f);
                     Vector(0.f, 0.f, 0.f, o->Direction);
 
-                    CreateParticle(BITMAP_FIRE + 1, o->Position, o->Angle, o->Light, 0, 0.45f, o);
+                    CreateParticle(BITMAP_FIRE + 1, o->Position, o->Angle, o->Light, 0, 1.f, o);
                 }
                 else if (o->SubType == 2)
                 {
@@ -3474,14 +3487,6 @@ void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int Sub
                 {
                     o->LifeTime = 12;
                     o->Velocity = 0.4f;
-                }
-                else if (o->SubType == 4)
-                {
-                    // Fire Burst caster swirl: small, short, no second blast.
-                    o->LifeTime = 6;
-                    o->Scale = 0.11f;
-                    o->Velocity = 0.035f;
-                    Vector(45.f, 45.f, 0.f, o->Angle);
                 }
             }
             break;
@@ -6749,8 +6754,13 @@ void MoveEffect(OBJECT* o, int iIndex)
         break;
     case BITMAP_MAGIC + 1:
     case BITMAP_MAGIC + 2:
+        if (o->Owner && o->Owner->Live && o->SubType == 2)
+        {
+            VectorCopy(o->Owner->Position, o->Position);
+            o->Position[2] = RequestTerrainHeight(o->Position[0], o->Position[1]);
+        }
         if (o->SubType >= 1
-            && o->SubType != 4 && o->SubType != 6 && o->SubType != 7 && o->SubType != 8 && o->SubType != 9 && o->SubType != 10
+            && o->SubType != 2 && o->SubType != 4 && o->SubType != 6 && o->SubType != 7 && o->SubType != 8 && o->SubType != 9 && o->SubType != 10
             && o->SubType != 11 && o->SubType != 12
             && o->SubType != 13
             )
@@ -9939,31 +9949,7 @@ void RenderEffectShadows()
                 }
                 break;
                 case BITMAP_MAGIC + 2:
-                    EnableAlphaBlend();
-                    Rotation = (int)WorldTime % 3600 / (float)10.f;
-
-                    Luminosity = 1.f;
-                    if (o->SubType != 2)
-                    {
-                        RenderCircle(BITMAP_MAGIC + 2, o->Position, 90.f, 130.f, 200.f, Rotation, 0.f, 0.f);
-                        RenderCircle(BITMAP_MAGIC + 2, o->Position, 90.f, 130.f, 200.f, -Rotation, 0.f, 0.f);
-
-                        if (o->LifeTime < 5) Luminosity -= (float)(5 - o->LifeTime) * 0.2f;
-                        Scale = (20 - o->LifeTime) * 0.15f;
-                    }
-                    else if (o->SubType == 2)
-                    {
-                        if (o->LifeTime > 10)
-                        {
-                            Scale = (20 - o->LifeTime) * 0.55f;
-                        }
-                        else
-                        {
-                            Luminosity -= (float)(10 - o->LifeTime) * 0.1f;
-                        }
-                    }
-                    Vector(Luminosity * 1.f, Luminosity * 0.4f, Luminosity * 0.2f, Light);
-                    RenderTerrainAlphaBitmap(BITMAP_MAGIC + 1, o->Position[0], o->Position[1], Scale, Scale, Light, -o->Angle[2]);
+                    // Spawn appear VFX disabled (black floor polygon + yellow ring).
                     break;
 
                 case BITMAP_MAGIC_ZIN:

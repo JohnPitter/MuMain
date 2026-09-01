@@ -41,6 +41,9 @@ public:
     void CacheCharacter(const wchar_t* characterName);
     void ClearSession();
     bool HasSession() const { return m_hasSession; }
+    bool HasCredentials() const { return m_username[0] != L'\0' && m_password[0] != L'\0'; }
+    const wchar_t* GetUsername() const { return m_username; }
+    const wchar_t* GetPassword() const { return m_password; }
 
     // User clicked Exit / character select / server select. Stops auto-reconnect
     // from treating the following socket close as an unexpected drop.

@@ -954,11 +954,17 @@ bool SEASON3B::CNewUIMoveCommandWindow::Render()
 void SEASON3B::CNewUIMoveCommandWindow::OpenningProcess()
 {
     SetPos(m_Pos.x, m_Pos.y);
-    m_listMoveInfoData = CMoveCommandData::GetInstance()->GetMoveCommandDatalist();
-    m_listMoveInfoData.remove_if([](const auto* moveInfo)
+    // Copy from the BMD source every open. Filtering in-place on a shared
+    // list would permanently drop maps after the first channel.
+    m_listMoveInfoData.clear();
+    const auto& source = CMoveCommandData::GetInstance()->GetMoveCommandDatalist();
+    for (auto* moveInfo : source)
     {
-        return moveInfo == nullptr || !IsChannelWarpAllowed(static_cast<WORD>(moveInfo->_ReqInfo.index));
-    });
+        if (moveInfo != nullptr && IsChannelWarpAllowed(static_cast<WORD>(moveInfo->_ReqInfo.index)))
+        {
+            m_listMoveInfoData.push_back(moveInfo);
+        }
+    }
     SetStrifeMap();
     SettingCanMoveMap();
 
@@ -1030,19 +1036,26 @@ BOOL CNewUIMoveCommandWindow::IsTheMapInDifferentServer(const int iFromMapIndex,
 
 int CNewUIMoveCommandWindow::GetMapIndexFromMovereq(const wchar_t* pszMapName)
 {
-    if (pszMapName == NULL)
+    if (pszMapName == nullptr)
         return -1;
 
-    int iMapIndex = -1;
-    std::list<CMoveCommandData::MOVEINFODATA*>::iterator li;
-    for (li = m_listMoveInfoData.begin(); li != m_listMoveInfoData.end(); li++)
+    const auto& source = CMoveCommandData::GetInstance()->GetMoveCommandDatalist();
+    for (auto* moveInfo : source)
     {
-        if (wcsicmp((*li)->_ReqInfo.szMainMapName, pszMapName) == 0 || wcsicmp((*li)->_ReqInfo.szSubMapName, pszMapName) == 0)
+        if (moveInfo == nullptr)
+            continue;
+
+        if (wcsicmp(moveInfo->_ReqInfo.szMainMapName, pszMapName) != 0
+            && wcsicmp(moveInfo->_ReqInfo.szSubMapName, pszMapName) != 0)
         {
-            iMapIndex = (*li)->_ReqInfo.index;
-            break;
+            continue;
         }
+
+        if (!IsChannelWarpAllowed(static_cast<WORD>(moveInfo->_ReqInfo.index)))
+            return -1;
+
+        return moveInfo->_ReqInfo.index;
     }
 
-    return iMapIndex;
+    return -1;
 }

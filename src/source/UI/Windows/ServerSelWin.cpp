@@ -415,7 +415,10 @@ void CServerSelWin::UpdateWhileActive(double dDeltaTick)
             m_aServerGroupBtn[i].SetCheck(true);
             m_iSelectServerBtnIndex = i;
 
-            SocketClient->ToConnectServer()->SendServerListRequest();
+            if (SocketClient != nullptr && SocketClient->ToConnectServer() != nullptr)
+            {
+                SocketClient->ToConnectServer()->SendServerListRequest();
+            }
         }
     }
 
@@ -435,6 +438,11 @@ void CServerSelWin::UpdateWhileActive(double dDeltaTick)
             if (pServerInfo->m_iPercent < 100)
             {
                 CUIMng::Instance().HideWin(this);
+
+                if (SocketClient == nullptr || SocketClient->ToConnectServer() == nullptr)
+                {
+                    return;
+                }
 
                 SocketClient->ToConnectServer()->SendConnectionInfoRequest(static_cast<uint16_t>(pServerInfo->m_iConnectIndex));
                 g_pSystemLogBox->AddText(I18N::Game::ConnectingToTheServer, SEASON3B::TYPE_SYSTEM_MESSAGE);

@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "UI/Chat/ChatInput.h"
 #include "UI/NewUI/Widgets/NewUIChatInputBox.h"
 #include "I18N/All.h"
@@ -548,12 +548,19 @@ bool SEASON3B::CNewUIChatInputBox::UpdateKeyEvent()
                         wchar_t* pszMapName = szChatText + wcslen(I18N::Game::Warp) + 1;
                         int iMapIndex = g_pMoveCommandWindow->GetMapIndexFromMovereq(pszMapName);
 
-                        if (g_pMoveCommandWindow->IsTheMapInDifferentServer(gMapManager.WorldActive, iMapIndex))
+                        if (iMapIndex < 0)
                         {
-                            SaveOptions();
+                            g_pSystemLogBox->AddText(I18N::Game::YouCannotEnterThisArea, SEASON3B::TYPE_SYSTEM_MESSAGE);
                         }
+                        else
+                        {
+                            if (g_pMoveCommandWindow->IsTheMapInDifferentServer(gMapManager.WorldActive, iMapIndex))
+                            {
+                                SaveOptions();
+                            }
 
-                        SocketClient->ToGameServer()->SendWarpCommandRequest(g_pMoveCommandWindow->GetMoveCommandKey(), iMapIndex);
+                            SocketClient->ToGameServer()->SendWarpCommandRequest(g_pMoveCommandWindow->GetMoveCommandKey(), iMapIndex);
+                        }
                     }
                     else
                     {
@@ -628,6 +635,14 @@ bool SEASON3B::CNewUIChatInputBox::UpdateKeyEvent()
     {
         if (SEASON3B::IsPress(VK_ESCAPE) == true)
         {
+            // Chat key-order is 9.0 vs inventory 3.0. If we swallow ESC here,
+            // vault/inventory never close. Let those windows handle ESC first.
+            if (g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY)
+                || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_STORAGE))
+            {
+                return true;
+            }
+
             g_pNewUISystem->Hide(SEASON3B::INTERFACE_CHATINPUTBOX);
 
             PlayBuffer(SOUND_CLICK01);

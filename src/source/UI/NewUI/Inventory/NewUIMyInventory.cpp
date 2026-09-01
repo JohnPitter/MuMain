@@ -1,4 +1,4 @@
-﻿// NewUIMyInventory.cpp: implementation of the CNewUIMyInventory class.
+// NewUIMyInventory.cpp: implementation of the CNewUIMyInventory class.
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -456,15 +456,24 @@ void CNewUIMyInventory::SetRepairMode(bool bRepair)
 
 bool CNewUIMyInventory::UpdateMouseEvent()
 {
+    // Header close "X" (13x12 top-right) — not the same control as Fechar (I, V).
+    if (g_pNewUISystem->HandleFrameCornerClose(m_Pos, INTERFACE_INVENTORY))
+        return false;
+
+    // m_BtnExit ("Fechar (I, V)" at bottom-left) and Expand live in BtnProcess.
+    // InventoryProcess() returns true for EVERY mouse position inside the 190x429
+    // window, so it must not run first — that was why the 31/08 consume-click
+    // patch made Fechar dead: tooltip still rendered on hover, click never
+    // reached m_BtnExit. Hide(INTERFACE_INVENTORY) also closes the vault.
+    if (true == BtnProcess())
+        return false;
+
     if (m_pNewInventoryCtrl && !m_pNewInventoryCtrl->UpdateMouseEvent())
         return false;
 
     if (true == EquipmentWindowProcess())
         return false;
     if (true == InventoryProcess())
-        return false;
-
-    if (true == BtnProcess())
         return false;
 
     CNewUIPickedItem* pPickedItem = CNewUIInventoryCtrl::GetPickedItem();
@@ -1571,9 +1580,6 @@ bool CNewUIMyInventory::InventoryProcess() const
 
 bool CNewUIMyInventory::BtnProcess()
 {
-    // Top-right corner close "X" (shared frame): hides + swallows the click.
-    if (g_pNewUISystem->HandleFrameCornerClose(m_Pos, INTERFACE_INVENTORY))
-        return true;
     if (m_BtnExit.UpdateMouseEvent())
     {
         if (g_pNewUISystem->IsVisible(INTERFACE_MYSHOP_INVENTORY))

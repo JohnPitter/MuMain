@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -40,6 +40,7 @@
 #include "UI/Legacy/UIMapName.h"	// rozy
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "World/MapInfra/MapManager.h"
+#include "World/MapInfra/LorenciaCombatPlaza.h"
 #include "GameLogic/Events/Event.h"
 
 #include "UI/NewUI/NewUISystem.h"
@@ -2719,6 +2720,19 @@ void CheckGate()
         GATE_ATTRIBUTE* gs = &GateAttribute[i];
         if (gs->Flag == 1 && gs->Map == gMapManager.WorldActive)
         {
+            if (gMapManager.WorldActive == WD_0LORENCIA
+                && World::Lorencia::IsTownPlazaTile(Hero->PositionX, Hero->PositionY))
+            {
+                continue;
+            }
+            // Stadium hunting cages: walk through C1-46 doors. CheckGate would
+            // set LoadingWorld=9999999 and freeze if Gate.bmd has Flag=1 here.
+            if (gMapManager.WorldActive == WD_6STADIUM
+                && Hero->PositionX >= 12 && Hero->PositionX <= 68
+                && Hero->PositionY >= 8 && Hero->PositionY <= 94)
+            {
+                continue;
+            }
             if ((Hero->PositionX) >= gs->x1 && (Hero->PositionY) >= gs->y1 &&
                 (Hero->PositionX) <= gs->x2 && (Hero->PositionY) <= gs->y2)
             {
@@ -2793,6 +2807,7 @@ void CheckGate()
                                 else
                                 {
                                     SocketClient->ToGameServer()->SendEnterGateRequest(i, 0, 0);
+                                    g_dwLatestZoneMoving = GetTickCount();
                                     bResult = true;
                                 }
                             }
@@ -2911,6 +2926,16 @@ void MoveHero()
         if (LoadingWorld == 9999998 || LoadingWorld == 29)
 
             SetPlayerStop(c);
+    }
+    // CheckGate sets LoadingWorld=9999999 before the server replies. If MapChange
+    // never arrives (or the player still stands in a later-season portal), unlock
+    // input after 5s so the overlay cannot freeze the client forever.
+    if (LoadingWorld > 30 && g_bWhileMovingZone && (GetTickCount() - g_dwLatestZoneMoving > 5000))
+    {
+        LoadingWorld = 0;
+        g_bWhileMovingZone = FALSE;
+        g_dwLatestZoneMoving = GetTickCount();
+        g_pSystemLogBox->AddText(I18N::Game::YouCannotEnterThisArea, SEASON3B::TYPE_SYSTEM_MESSAGE);
     }
     if (LoadingWorld > 30)
     {

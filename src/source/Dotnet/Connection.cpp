@@ -123,14 +123,14 @@ Connection::Connection(const wchar_t* host, int32_t port, bool isEncrypted, void
 
 Connection::~Connection()
 {
-    if (!IsConnected())
+    if (IsConnected())
     {
-        return;
-    }
-
-    if (dotnet_disconnect)
-    {
-        dotnet_disconnect(_handle);
+        connections.erase(_handle);
+        if (dotnet_disconnect)
+        {
+            dotnet_disconnect(_handle);
+        }
+        _handle = 0;
     }
 
     SAFE_DELETE(_chatServer);
@@ -166,9 +166,13 @@ void Connection::Close()
         return;
     }
 
+    const int32_t handle = _handle;
+    connections.erase(handle);
+    _handle = 0;
+
     if (dotnet_disconnect)
     {
-        dotnet_disconnect(this->_handle);
+        dotnet_disconnect(handle);
     }
 }
 

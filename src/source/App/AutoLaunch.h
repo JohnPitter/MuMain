@@ -4,6 +4,11 @@
 // Launcher-driven startup: the LuxView launcher passes the pre-selected game
 // server and account credentials through environment variables so the client
 // can skip the server picker and login window and land on character select.
+//
+// AutoLogin credentials are reused when the player changes GameServer from the
+// in-game menu (the picker still appears because AutoServer is consumed).
+// They are cleared only on Exit Game. Cold start without launcher env still
+// shows the login form.
 //*****************************************************************************
 
 #pragma once

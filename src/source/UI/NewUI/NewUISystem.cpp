@@ -1880,14 +1880,20 @@ bool CNewUISystem::CheckKeyUse()
 
 bool CNewUISystem::HandleFrameCornerClose(const POINT& winPos, DWORD dwKey)
 {
-    // Box of the corner glyph in the shared 190-wide frame. Matches the MU Helper
-    // close "X" exactly (13x12 anchored at +169,+7) — the same hit-box the
-    // per-window copies used originally, so the click feel is identical across
-    // every window. One place to tune for every window that uses this frame.
+    // Box of the corner glyph in the shared 190x429 frame. Header matches the
+    // MU Helper close "X" (13x12 at +169,+7). The same glyph is painted on the
+    // footer (IMAGE_*_BACK_RIGHT / BOTTOM), so the vault/inventory bottom-right
+    // X must use the mirrored box or it is decoration-only.
     constexpr int X_OFFSET = 169, Y_OFFSET = 7, WIDTH = 13, HEIGHT = 12;
+    constexpr int FRAME_HEIGHT = 429;
+    constexpr int FOOTER_Y = FRAME_HEIGHT - Y_OFFSET - HEIGHT;
 
-    if (IsPress(VK_LBUTTON)
-        && CheckMouseIn(winPos.x + X_OFFSET, winPos.y + Y_OFFSET, WIDTH, HEIGHT))
+    if (!IsPress(VK_LBUTTON))
+        return false;
+
+    const bool inHeader = CheckMouseIn(winPos.x + X_OFFSET, winPos.y + Y_OFFSET, WIDTH, HEIGHT);
+    const bool inFooter = CheckMouseIn(winPos.x + X_OFFSET, winPos.y + FOOTER_Y, WIDTH, HEIGHT);
+    if (inHeader || inFooter)
     {
         Hide(dwKey);
         // Clear the raw button state: world movement reads MouseLButtonPush

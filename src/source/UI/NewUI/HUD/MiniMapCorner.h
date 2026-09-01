@@ -5,6 +5,7 @@ namespace UI::HUD::MiniMap
     // Always-available corner minimap (top-right), cropped and centered on
     // the local player. Independent of the full-screen TAB map.
     void Render();
+    // Voice M/S immediately left of the minimap (not on Auto Battler / durability).
     void RenderCommands();
     void ToggleVisible();
     bool IsVisible();

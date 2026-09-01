@@ -71,6 +71,8 @@ void RenderCircle2D(int Type, vec3_t ObjectPosition, float ScaleBottom, float Sc
 
 void CreateTeleportBegin(OBJECT* o);
 void CreateTeleportEnd(OBJECT* o);
+// Login/teleport appear VFX (no-op: BITMAP_MAGIC+2 left floor artifacts).
+void CreateSpawnAppearEffect(OBJECT* owner);
 void CreateMagicShiny(CHARACTER* c, int Hand = 0);
 
 bool AttackCharacterRange(int Index, vec3_t Position, float Range, BYTE Serial, short PKKey = -1, WORD SkillSerialNum = 0);

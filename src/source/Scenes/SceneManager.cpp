@@ -821,6 +821,15 @@ static void CheckServerConnection()
         if (ReconnectManager::Instance().ShouldCloseProcess() && SceneFlag == MAIN_SCENE)
         {
             PostMessage(g_hWnd, WM_DESTROY, 0, 0);
+            return;
+        }
+
+        // Logout packet never arrived (server dropped the socket first).
+        // Tear down to the login/picker scene instead of freezing in-world
+        // or treating the drop as CloseGame.
+        if (SceneFlag == MAIN_SCENE)
+        {
+            ResetClientToLoginScene();
         }
         return;
     }

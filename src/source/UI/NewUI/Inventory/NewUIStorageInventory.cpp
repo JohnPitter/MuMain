@@ -106,13 +106,15 @@ void CNewUIStorageInventory::SetPos(int x, int y)
 
 bool CNewUIStorageInventory::UpdateMouseEvent()
 {
+    // Corner close must run before the grid: item drag/placement clears the
+    // press bit that HandleFrameCornerClose needs (same order as InventoryExtension).
+    if (ProcessBtns())
+        return false;
+
     if (m_pNewInventoryCtrl && false == m_pNewInventoryCtrl->UpdateMouseEvent())
         return false;
 
     ProcessInventoryCtrl();
-
-    if (ProcessBtns())
-        return false;
 
     if (CheckMouseIn(m_Pos.x, m_Pos.y, STORAGE_WIDTH, STORAGE_HEIGHT))
     {

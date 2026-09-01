@@ -81,19 +81,14 @@ void CNewUIStorageInventoryExt::SetPos(int x, int y)
 
 bool CNewUIStorageInventoryExt::UpdateMouseEvent()
 {
+    // Corner close + bottom Fechar before grid (see NewUIStorageInventory).
+    if (ProcessBtns())
+        return false;
+
     if (m_pNewInventoryCtrl && false == m_pNewInventoryCtrl->UpdateMouseEvent())
         return false;
 
-    if (m_BtnExit.UpdateMouseEvent())
-    {
-        g_pNewUISystem->Hide(INTERFACE_STORAGE_EXT);
-        return false;
-    }
-
     ProcessInventoryCtrl();
-
-    if (ProcessBtns())
-        return false;
 
     if (CheckMouseIn(m_Pos.x, m_Pos.y, STORAGE_WIDTH, STORAGE_HEIGHT))
     {
@@ -346,11 +341,17 @@ bool CNewUIStorageInventoryExt::ProcessMyInvenItemAutoMove(CNewUIInventoryCtrl* 
     return false;
 }
 
-bool CNewUIStorageInventoryExt::ProcessBtns() const
+bool CNewUIStorageInventoryExt::ProcessBtns()
 {
-    // Top-right corner close "X" (shared frame): hides + swallows the click.
+    // Top-right / footer frame close "X".
     if (g_pNewUISystem->HandleFrameCornerClose(m_Pos, INTERFACE_STORAGE))
         return true;
+
+    if (m_BtnExit.UpdateMouseEvent())
+    {
+        g_pNewUISystem->Hide(INTERFACE_STORAGE_EXT);
+        return true;
+    }
 
     return false;
 }

@@ -356,17 +356,50 @@ static int64_t SaturatingAddToUpper(const int64_t current, const int64_t add, in
     return current + add;
 }
 
+// SocketClient must not be deleted from inside a packet callback
+// (ReceiveServerConnect / ReceiveLogOut run during DrainTo). The old
+// Connection is closed and retired, then freed after the drain returns.
+static Connection* s_retiredSocket = nullptr;
+
+static void RetireSocketClient()
+{
+    if (SocketClient == nullptr)
+    {
+        return;
+    }
+
+    SocketClient->Close();
+    g_bGameServerConnected = false;
+
+    if (s_retiredSocket != nullptr && s_retiredSocket != SocketClient)
+    {
+        s_retiredSocket->Close();
+        delete s_retiredSocket;
+    }
+
+    s_retiredSocket = SocketClient;
+    SocketClient = nullptr;
+}
+
+void FlushRetiredSocket()
+{
+    if (s_retiredSocket == nullptr)
+    {
+        return;
+    }
+
+    Connection* retired = s_retiredSocket;
+    s_retiredSocket = nullptr;
+    retired->Close();
+    delete retired;
+}
+
 BOOL CreateSocket(const wchar_t* IpAddr, unsigned short Port)
 {
     BOOL bResult = TRUE;
     g_ConsoleDebug->Write(MCD_NORMAL, L"[Connect to Server] ip address = %ls, port = %d", IpAddr, Port);
 
-    if (SocketClient != nullptr)
-    {
-        SocketClient->Close();
-        delete SocketClient;
-        SocketClient = nullptr;
-    }
+    RetireSocketClient();
 
     // todo: generally, it's a bad idea to assume a specific port number (range).
     const bool isEncrypted = Port > 0xADFF || Port < 0xAD00;
@@ -405,11 +438,7 @@ BOOL CreateSocket(const wchar_t* IpAddr, unsigned short Port)
 
 void DeleteSocket()
 {
-    if (SocketClient)
-    {
-        SocketClient->Close();
-        SocketClient = nullptr;
-    }
+    RetireSocketClient();
 }
 
 
@@ -487,6 +516,7 @@ BOOL Util_CheckOption(std::wstring lpszCommandLine, wchar_t cOption, std::wstrin
 
 void ReceiveServerList(const BYTE* ReceiveBuffer)
 {
+    ResetChannelWarpList();
     auto Data = (LPPHEADER_DEFAULT_SUBCODE_WORD)ReceiveBuffer;
     int Offset = sizeof(PHEADER_DEFAULT_SUBCODE_WORD);
 
@@ -568,8 +598,59 @@ void ReceiveServerConnectBusy(const BYTE* ReceiveBuffer)
     SocketClient->ToConnectServer()->SendServerListRequest();
 }
 
+// Reuses the account from this process (launcher env or a prior successful
+// login) so changing channel does not ask for username/password again.
+// Cold start without either source still shows the login form.
+static bool TrySendCachedSessionLogin()
+{
+    if (ReconnectManager::Instance().IsActive())
+    {
+        return false;
+    }
+
+    // ConnectServer hello is not a GameServer join. Sending login there
+    // (or on a closed/retired socket) aborts the process.
+    if (!g_bGameServerConnected || SocketClient == nullptr || SocketClient->ToGameServer() == nullptr)
+    {
+        return false;
+    }
+
+    const wchar_t* account = nullptr;
+    const wchar_t* password = nullptr;
+    if (LauncherBoot::HasAutoLogin())
+    {
+        account = LauncherBoot::GetAutoLoginAccount();
+        password = LauncherBoot::GetAutoLoginPassword();
+    }
+    else if (ReconnectManager::Instance().HasCredentials())
+    {
+        account = ReconnectManager::Instance().GetUsername();
+        password = ReconnectManager::Instance().GetPassword();
+    }
+
+    if (account == nullptr || password == nullptr || account[0] == L'\0' || password[0] == L'\0')
+    {
+        return false;
+    }
+
+    g_ErrorReport.Write(L"> Session auto-login request.\r\n");
+
+    CUIMng::Instance().HideWin(&CUIMng::Instance().m_LoginWin);
+
+    LogIn = 1;
+    wcscpy(LogInID, account);
+    CurrentProtocolState = REQUEST_LOG_IN;
+    SocketClient->ToGameServer()->SendLogin(account, password, Version, Serial);
+    ReconnectManager::Instance().CacheCredentials(account, password);
+
+    g_pSystemLogBox->AddText(I18N::Game::VerifyingYourAccount, SEASON3B::TYPE_SYSTEM_MESSAGE);
+    g_pSystemLogBox->AddText(I18N::Game::PleaseWait, SEASON3B::TYPE_SYSTEM_MESSAGE);
+    return true;
+}
+
 void ReceiveJoinServer(const BYTE* ReceiveBuffer)
 {
+    ResetChannelWarpList();
     auto Data2 = (LPPRECEIVE_JOIN_SERVER)ReceiveBuffer;
 
     if (LogIn != 0)
@@ -587,23 +668,8 @@ void ReceiveJoinServer(const BYTE* ReceiveBuffer)
             HeroKey = ((int)(Data2->NumberH) << 8) + Data2->NumberL;
             CurrentProtocolState = RECEIVE_JOIN_SERVER_SUCCESS;
 
-            // Launcher-driven startup: log in immediately with the launcher
-            // account so the client lands on the character selection screen.
-            if (LauncherBoot::HasAutoLogin() && !ReconnectManager::Instance().IsActive())
+            if (TrySendCachedSessionLogin())
             {
-                const wchar_t* account = LauncherBoot::GetAutoLoginAccount();
-                const wchar_t* password = LauncherBoot::GetAutoLoginPassword();
-
-                g_ErrorReport.Write(L"> Launcher auto-login request.\r\n");
-
-                LogIn = 1;
-                wcscpy(LogInID, account);
-                CurrentProtocolState = REQUEST_LOG_IN;
-                SocketClient->ToGameServer()->SendLogin(account, password, Version, Serial);
-                ReconnectManager::Instance().CacheCredentials(account, password);
-
-                g_pSystemLogBox->AddText(I18N::Game::VerifyingYourAccount, SEASON3B::TYPE_SYSTEM_MESSAGE);
-                g_pSystemLogBox->AddText(I18N::Game::PleaseWait, SEASON3B::TYPE_SYSTEM_MESSAGE);
                 break;
             }
 
@@ -891,7 +957,10 @@ void InitGame()
 
     CheckInventory = nullptr;
 
-    SocketClient->ToGameServer()->SendCloseNpcRequest();
+    if (SocketClient != nullptr && SocketClient->ToGameServer() != nullptr)
+    {
+        SocketClient->ToGameServer()->SendCloseNpcRequest();
+    }
 
     g_iFollowCharacter = -1;
 
@@ -949,18 +1018,28 @@ void InitGame()
 BOOL ReceiveLogOut(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 {
     auto Data = (LPPHEADER_DEFAULT_SUBCODE)ReceiveBuffer;
-    ReconnectManager::Instance().NotifyVoluntaryLogout(Data->Value == 0);
+    const BYTE logoutValue = Data->Value;
+    const bool userAskedToClose = ReconnectManager::Instance().ShouldCloseProcess();
+
+    g_ErrorReport.Write(L"[ReceiveLogOut] type=%u closeProcess=%d\r\n",
+        static_cast<unsigned>(logoutValue), userAskedToClose ? 1 : 0);
+
+    // Do not let a CloseGame packet (or a mis-parsed Value==0) kill the
+    // process when the player asked for character/server select.
+    ReconnectManager::Instance().NotifyVoluntaryLogout(logoutValue == 0 && userAskedToClose);
     LogOut = false;
-    switch (Data->Value)
+
+    if (logoutValue == 0 && userAskedToClose)
     {
-    case 0:
         g_GuildCache.Reset();
         memset(GuildMark[MARK_EDIT].Mark, 0, sizeof(GuildMark[MARK_EDIT].Mark));
         memset(GuildMark[MARK_EDIT].GuildName, 0, sizeof(GuildMark[MARK_EDIT].GuildName));
         SelectMarkColor = 0;
         PostMessage(g_hWnd, WM_DESTROY, 0, 0);
-        break;
-    case 1:
+    }
+    else if (logoutValue == 1)
+    {
+        ResetChannelWarpList();
         StopMusic();
         AllStopSound();
 
@@ -971,13 +1050,22 @@ BOOL ReceiveLogOut(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 
         SceneFlag = CHARACTER_SCENE;
         CurrentProtocolState = REQUEST_CHARACTERS_LIST;
-        SocketClient->ToGameServer()->SendRequestCharacterList(g_pMultiLanguage->GetLanguage());
+        if (SocketClient != nullptr && SocketClient->ToGameServer() != nullptr)
+        {
+            SocketClient->ToGameServer()->SendRequestCharacterList(g_pMultiLanguage->GetLanguage());
+        }
 
         g_sceneInit.ResetForDisconnect();
         CurrentProtocolState = REQUEST_JOIN_SERVER;
         InitGame();
-        break;
-    case 2:
+    }
+    else
+    {
+        if (logoutValue == 0)
+        {
+            g_ErrorReport.Write(L"[ReceiveLogOut] ignoring CloseGame; treating as server select.\r\n");
+        }
+
         if (SceneFlag == MAIN_SCENE)
         {
             CryWolfMVPInit();
@@ -999,6 +1087,10 @@ BOOL ReceiveLogOut(const BYTE* ReceiveBuffer, BOOL bEncrypted)
             g_bGameServerConnected = false;
         }
 
+        // Drop leftover GS packets so they are not processed against the
+        // world we just tore down (same as ResetClientToLoginScene).
+        Network::IncomingPacketQueue::Instance().Clear();
+
         ReleaseCharacterSceneData();
         SceneFlag = LOG_IN_SCENE;
 
@@ -1008,7 +1100,6 @@ BOOL ReceiveLogOut(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         LogIn = 0;
         g_csMapServer.Init();
         InitGame();
-        break;
     }
 
     g_pWindowMgr->Reset();
@@ -1073,10 +1164,19 @@ void RequestUserLogOut(LogOutType type)
     ReconnectManager::Instance().NotifyVoluntaryLogout(closeProcess);
     LogOut = true;
 
-    if (closeProcess || type == LogOutType::BackToServerSelection)
+    // Change-server must still show the picker (consume the launcher channel)
+    // but keep the account ticket so the next GameServer join can log in
+    // without the login form. Cold start is unaffected: credentials only exist
+    // after a launcher env or a prior login in this process.
+    if (type == LogOutType::BackToServerSelection)
+    {
+        LauncherBoot::ConsumeAutoServer();
+    }
+    else if (closeProcess)
     {
         LauncherBoot::DisableAutoLogin();
         LauncherBoot::ConsumeAutoServer();
+        ReconnectManager::Instance().ClearSession();
     }
 
     if (SocketClient != nullptr && SocketClient->IsConnected() && SocketClient->ToGameServer() != nullptr)
@@ -1202,7 +1302,6 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
         i.ExcellentFlags = 0;
     }
     
-    CreateEffect(BITMAP_MAGIC + 2, o->Position, o->Angle, o->Light, 0, o);
     CurrentProtocolState = RECEIVE_JOIN_MAP_SERVER;
 
     LockInputStatus = false;
@@ -1214,7 +1313,7 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
 
     CreatePetDarkSpirit_Now(Hero);
 
-    CreateEffect(BITMAP_MAGIC + 2, o->Position, o->Angle, o->Light, 0, o);
+    CreateSpawnAppearEffect(o);
     o->Alpha = 0.f;
 
     g_pNewUISystem->HideAll();
@@ -1390,7 +1489,7 @@ void ReceiveRevival(const BYTE* ReceiveBuffer)
     c->SafeZone = true;
     SetCharacterClass(c);
     SetPlayerStop(c);
-    CreateEffect(BITMAP_MAGIC + 2, o->Position, o->Angle, o->Light, 0, o);
+    CreateSpawnAppearEffect(o);
     ClearItems();
     ClearCharacters(HeroKey);
     RemoveAllShopTitleExceptHero();
@@ -2037,7 +2136,15 @@ void ReceiveNotice(const BYTE* ReceiveBuffer)
 {
     auto Data = (LPPRECEIVE_NOTICE)ReceiveBuffer;
     wchar_t Text[256]{};
-    CMultiLanguage::ConvertFromUtf8(Text, Data->Notice);
+    // OpenMU ServerMessage (C1 0D): [type @ byte 3][utf8 message @ byte 4].
+    // Legacy struct placed Notice at byte 12; read from byte 4 and strip optional 8-byte pad.
+    const char* message = reinterpret_cast<const char*>(ReceiveBuffer + 4);
+    if (strncmp(message, "00000000", 8) == 0)
+    {
+        message += 8;
+    }
+
+    CMultiLanguage::ConvertFromUtf8(Text, message);
 
     if (Data->Result == 0)
     {
@@ -2246,6 +2353,7 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         if (LoadingWorld > 30)
             LoadingWorld = 0;
         g_bWhileMovingZone = FALSE;
+        g_dwLatestZoneMoving = GetTickCount();
         g_pSystemLogBox->AddText(I18N::Game::YouCannotEnterThisArea, SEASON3B::TYPE_SYSTEM_MESSAGE);
     }
     else
@@ -2337,7 +2445,7 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         g_pNewUISystem->HideAll();
 
         CreatePetDarkSpirit_Now(Hero);
-        CreateEffect(BITMAP_MAGIC + 2, o->Position, o->Angle, o->Light, 0, o);
+        CreateSpawnAppearEffect(o);
 
         o->Alpha = 0.f;
         EnableEvent = 0; //USE_EVENT_ELDORADO
@@ -2699,7 +2807,7 @@ void ReceiveCreatePlayerViewportExtended(std::span<const BYTE> ReceiveBuffer)
     {
         c->Object.Position[0] = ((c->PositionX) + 0.5f) * TERRAIN_SCALE;
         c->Object.Position[1] = ((c->PositionY) + 0.5f) * TERRAIN_SCALE;
-        CreateEffect(BITMAP_MAGIC + 2, o->Position, o->Angle, o->Light, 0, o);
+        CreateSpawnAppearEffect(o);
         c->Object.Alpha = 0.f;
     }
     else if (PathFinding2(c->PositionX, c->PositionY, Data->TargetX, Data->TargetY, &c->Path))
@@ -4921,6 +5029,7 @@ BOOL ReceiveMagic(const BYTE* ReceiveBuffer, int Size, BOOL bEncrypted)
         {
             SetAction(so, PLAYER_ATTACK_STRIKE);
         }
+        sc->AttackTime = 1;
         PlayBuffer(SOUND_FIRE_SCREAM);
     }
     break;
@@ -5309,6 +5418,7 @@ BOOL ReceiveMagicContinue(const BYTE* ReceiveBuffer, int Size, BOOL bEncrypted)
                 {
                     SetAction(so, PLAYER_ATTACK_STRIKE);
                 }
+                sc->AttackTime = 1;
                 PlayBuffer(SOUND_FIRE_SCREAM);
             }
             break;
@@ -13374,6 +13484,10 @@ void ResetChannelWarpList()
 
 static void ReceiveChannelWarpList(const BYTE* ReceiveBuffer, int32_t Size)
 {
+    // Always drop the previous channel's indices first. A size mismatch must
+    // not keep the last GameServer's warp list after a CS reconnect.
+    ResetChannelWarpList();
+
     constexpr int HeaderAndCountSize = 6;
     constexpr int IndexSize = 2;
     if (Size < HeaderAndCountSize)

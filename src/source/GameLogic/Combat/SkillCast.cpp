@@ -319,6 +319,14 @@ void UseSkillWarrior(CHARACTER* c, OBJECT* o)
             break;
         case AT_SKILL_FIRE_SCREAM:
         case AT_SKILL_FIRE_SCREAM_STR:
+            if ((c->Helper.Type >= MODEL_HORN_OF_UNIRIA && c->Helper.Type <= MODEL_DARK_HORSE_ITEM) && !c->SafeZone)
+                SetAction(o, PLAYER_ATTACK_RIDE_STRIKE);
+            else if (c->Helper.Type == MODEL_HORN_OF_FENRIR && !c->SafeZone)
+                SetAction(o, PLAYER_FENRIR_ATTACK_DARKLORD_STRIKE);
+            else
+                SetAction(o, PLAYER_ATTACK_STRIKE);
+            c->Skill = Skill;
+            c->AttackTime = 1;
             break;
         case AT_SKILL_CHAOTIC_DISEIER:
             break;

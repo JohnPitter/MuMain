@@ -93,6 +93,12 @@ bool CNewUIInventoryExtension::UpdateMouseEvent()
     if (g_pNewUISystem->HandleFrameCornerClose(m_Pos, INTERFACE_INVENTORY_EXT))
         return false;
 
+    if (m_BtnExit.UpdateMouseEvent())
+    {
+        g_pNewUISystem->Hide(INTERFACE_INVENTORY_EXT);
+        return false;
+    }
+
     for (int i = 0; i < CharacterAttribute->InventoryExtensions; i++)
     {
         if (const auto m_extension = m_extensions[i])
@@ -107,12 +113,6 @@ bool CNewUIInventoryExtension::UpdateMouseEvent()
                 return false;
             }
         }
-    }
-
-    if (m_BtnExit.UpdateMouseEvent())
-    {
-        g_pNewUISystem->Hide(INTERFACE_INVENTORY_EXT);
-        return false;
     }
 
     if (CheckMouseIn(m_Pos.x, m_Pos.y, WIDTH, HEIGHT))

@@ -857,6 +857,9 @@ void AttackKnight(CHARACTER* c, ActionSkillType Skill, float Distance)
             case AT_SKILL_ADD_CRITICAL_STR2:
             case AT_SKILL_ADD_CRITICAL_STR3:
                 SendRequestMagic(Skill, HeroKey);
+                SetPlayerMagic(c);
+                c->Skill = Skill;
+                c->AttackTime = 1;
                 c->Movement = 0;
                 break;
             case AT_SKILL_BRAND_OF_SKILL:
@@ -897,6 +900,8 @@ void AttackKnight(CHARACTER* c, ActionSkillType Skill, float Distance)
                             SetAction(o, PLAYER_ATTACK_STRIKE);
                         }
                     }
+                    c->Skill = Skill;
+                    c->AttackTime = 1;
                     c->Movement = 0;
                 }
                 else

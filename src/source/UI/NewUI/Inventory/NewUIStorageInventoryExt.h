@@ -82,7 +82,7 @@ namespace SEASON3B
         void DeleteAllItems() const;
 
         void ProcessInventoryCtrl();
-        bool ProcessBtns() const;
+        bool ProcessBtns();
         void ProcessStorageItemAutoMove();
     };
 }

@@ -15,16 +15,17 @@
 #include "UI/NewUI/NewUICommon.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "UI/NewUI/Widgets/NewUIButton.h"
+#include "UI/Voice/VoiceIcons.h"
 #include "GameLogic/Social/PartyManager.h"
 
 namespace
 {
-    // Square map + voice strip, wrapped by the same 14px table chrome as MU Helper.
+    // Square map wrapped by the same 14px table chrome as MU Helper.
+    // Voice buttons sit left of the frame (see VoiceOrigin).
     constexpr float kMapSize = 128.f;
-    constexpr float kFooterH = 18.f;
     constexpr float kPad = 6.f;
     constexpr float kFrameW = kMapSize + (kPad * 2.f);
-    constexpr float kFrameH = kMapSize + kFooterH + (kPad * 2.f);
+    constexpr float kFrameH = kMapSize + (kPad * 2.f);
     constexpr float kMarginTop = 0.f;
     constexpr float kMarginRight = 0.f;
     constexpr float kZoomSpan = 0.16f;
@@ -33,8 +34,7 @@ namespace
     constexpr float kVoiceBtnW = 20.f;
     constexpr float kVoiceBtnH = 14.f;
     constexpr float kVoiceGap = 4.f;
-    constexpr unsigned char kVoiceEnabledColor = 126;
-    constexpr unsigned char kVoiceDisabledColor = 164;
+    constexpr float kVoiceIconScale = 0.52f;
     const wchar_t* const kVoiceMicrophoneTooltip = L"Voz: ligar ou desligar o microfone";
     const wchar_t* const kVoiceListeningTooltip = L"Voz: ligar ou desligar a escuta";
 
@@ -51,8 +51,12 @@ namespace
 
     void VoiceOrigin(float* outX, float* outY)
     {
-        *outX = REFERENCE_WIDTH - kPad - kVoiceBtnW;
-        *outY = REFERENCE_HEIGHT * 0.5f;
+        // Left of minimap, top-aligned — clear of Auto Battler (top bar)
+        // and the item-durability column (right edge, y=140+).
+        float frameX = 0.f, frameY = 0.f;
+        FrameOrigin(&frameX, &frameY);
+        *outX = frameX - kVoiceGap - kVoiceBtnW;
+        *outY = frameY + kPad;
     }
 
     void DrawHelperFrame(float x, float y)
@@ -110,15 +114,16 @@ namespace
         }
     }
 
-    void RenderVoiceButton(SEASON3B::CNewUIButton& button, const wchar_t* icon, bool enabled)
+    void RenderVoiceButton(SEASON3B::CNewUIButton& button, bool isMicrophone, bool enabled)
     {
         button.Render();
         const POINT pos = button.GetPos();
-        g_pRenderText->SetFont(g_hFontBold);
-        const unsigned char color = enabled ? kVoiceEnabledColor : kVoiceDisabledColor;
-        g_pRenderText->SetTextColor(color, enabled ? 255 : color, color, 255);
-        g_pRenderText->SetBgColor(0, 0, 0, 0);
-        g_pRenderText->RenderText(pos.x, pos.y + 1, icon, static_cast<int>(kVoiceBtnW), 11, RT3_SORT_CENTER);
+        const float centerX = static_cast<float>(pos.x) + (kVoiceBtnW * 0.5f);
+        const float centerY = static_cast<float>(pos.y) + (kVoiceBtnH * 0.5f);
+        if (isMicrophone)
+            UI::Voice::DrawMicrophoneIcon(centerX, centerY, kVoiceIconScale, enabled);
+        else
+            UI::Voice::DrawSpeakerIcon(centerX, centerY, kVoiceIconScale, enabled);
     }
 
     void HandleVoiceInput(float frameX, float frameY)
@@ -139,10 +144,8 @@ namespace
     void DrawVoiceActions(float frameX, float frameY)
     {
         EnsureVoiceButtons(frameX, frameY);
-        RenderVoiceButton(s_BtnVoiceMicrophone, L"M", VoiceChat::IsMicrophoneEnabled());
-        RenderVoiceButton(s_BtnVoiceListening, L"S", VoiceChat::IsListeningEnabled());
-        g_pRenderText->SetFont(g_hFont);
-        g_pRenderText->SetTextColor(255, 255, 255, 255);
+        RenderVoiceButton(s_BtnVoiceMicrophone, true, VoiceChat::IsMicrophoneEnabled());
+        RenderVoiceButton(s_BtnVoiceListening, false, VoiceChat::IsListeningEnabled());
     }
 }
 

@@ -23,6 +23,7 @@
 #include "Scenes/SceneCore.h"
 #include "Network/Reconnect/ReconnectManager.h"
 #include "Network/IncomingPacketQueue.h"
+#include "Network/Server/WSclient.h"
 #include "Core/Time/FrameTimerScheduler.h"
 #include <SDL3/SDL.h>
 #include "Render/Models/ZzzBMD.h"
@@ -1281,6 +1282,7 @@ MSG MainLoop()
         // Process server packets handed over from the network thread. Replaces
         // the old WM_RECEIVE_BUFFER message round-trip; runs on the main thread.
         Network::IncomingPacketQueue::Instance().DrainTo(ProcessPacketCallback);
+        FlushRetiredSocket();
 
         // Run a pending reconnect teardown between frames (self-guards on its
         // pending flag). Replaces the old WM_START_RECONNECT round-trip.
