@@ -1349,6 +1349,34 @@ void SetPlayerMagic(CHARACTER* c)
     }
 }
 
+void PlayIncreaseCriticalDamageVfx(CHARACTER* c)
+{
+    OBJECT* o = &c->Object;
+    if (o->Type != MODEL_PLAYER)
+    {
+        return;
+    }
+
+    BMD* b = &Models[o->Type];
+    vec3_t p, Position, Light;
+    Vector(0.f, 0.f, 0.f, p);
+    Vector(1.f, 0.6f, 0.3f, Light);
+
+    if (c->Weapon[0].Type != MODEL_ARROWS)
+    {
+        b->TransformPosition(o->BoneTransform[c->Weapon[0].LinkBone], p, Position, true);
+        CreateEffect(MODEL_DARKLORD_SKILL, Position, o->Angle, Light, 0);
+    }
+
+    if (c->Weapon[1].Type != MODEL_BOLT && (c->Weapon[1].Type < MODEL_SHIELD || c->Weapon[1].Type >= MODEL_SHIELD + MAX_ITEM_INDEX))
+    {
+        b->TransformPosition(o->BoneTransform[c->Weapon[1].LinkBone], p, Position, true);
+        CreateEffect(MODEL_DARKLORD_SKILL, Position, o->Angle, Light, 1);
+    }
+
+    PlayBuffer(SOUND_CRITICAL, o);
+}
+
 void SetPlayerTeleport(CHARACTER* c)
 {
     OBJECT* o = &c->Object;

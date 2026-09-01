@@ -66,6 +66,7 @@ void SetPlayerWalk(CHARACTER* c);
 void SetPlayerAttack(CHARACTER* c);
 void SetPlayerDie(CHARACTER* c);
 void SetPlayerMagic(CHARACTER* c);
+void PlayIncreaseCriticalDamageVfx(CHARACTER* c);
 void SetPlayerTeleport(CHARACTER* c);
 void SetPlayerHighBowAttack(CHARACTER* c);
 void SetCharacterClass(CHARACTER* c);

@@ -857,7 +857,20 @@ void AttackKnight(CHARACTER* c, ActionSkillType Skill, float Distance)
             case AT_SKILL_ADD_CRITICAL_STR2:
             case AT_SKILL_ADD_CRITICAL_STR3:
                 SendRequestMagic(Skill, HeroKey);
-                SetPlayerMagic(c);
+                SetAttackSpeed();
+                if (c->Helper.Type == MODEL_DARK_HORSE_ITEM && !c->SafeZone)
+                {
+                    SetAction(o, PLAYER_ATTACK_RIDE_ATTACK_MAGIC);
+                }
+                else if (c->Helper.Type == MODEL_HORN_OF_FENRIR && !c->SafeZone)
+                {
+                    SetAction(o, PLAYER_FENRIR_ATTACK_MAGIC);
+                }
+                else
+                {
+                    SetAction(o, PLAYER_SKILL_HAND1);
+                }
+                PlayIncreaseCriticalDamageVfx(c);
                 c->Skill = Skill;
                 c->AttackTime = 1;
                 c->Movement = 0;
