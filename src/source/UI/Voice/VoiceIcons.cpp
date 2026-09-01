@@ -14,13 +14,17 @@ namespace
         return { color.r * factor, color.g * factor, color.b * factor };
     }
 
+    void FillRect(float x, float y, float width, float height, Rgb color)
+    {
+        glColor4f(color.r, color.g, color.b, 1.f);
+        RenderColor(x, y, width, height);
+    }
+
     void DrawOutlinedQuad(float x, float y, float width, float height, Rgb color, float scale)
     {
         const float outline = 0.75f * scale;
-        glColor4f(0.f, 0.f, 0.f, 1.f);
-        RenderColor(x - outline, y - outline, width + (outline * 2.f), height + (outline * 2.f));
-        glColor4f(color.r, color.g, color.b, 1.f);
-        RenderColor(x, y, width, height);
+        FillRect(x - outline, y - outline, width + (outline * 2.f), height + (outline * 2.f), { 0.f, 0.f, 0.f });
+        FillRect(x, y, width, height, color);
     }
 
     void DrawMicrophoneAt(float originX, float originY, float scale, bool enabled)
@@ -52,10 +56,9 @@ namespace
         DrawOutlinedQuad(originX - (5.f * scale), originY + (21.f * scale), 10.f * scale, 2.f * scale, kMetalBase, scale);
 
         const Rgb grille = ScaleRgb({ 0.15f, 0.15f, 0.18f }, tone);
-        glColor4f(grille.r, grille.g, grille.b, 1.f);
-        RenderColor(originX - (7.f * scale), originY + (8.f * scale), 1.5f * scale, 8.f * scale);
-        RenderColor(originX + (5.5f * scale), originY + (8.f * scale), 1.5f * scale, 8.f * scale);
-        RenderColor(originX - (7.f * scale), originY + (16.f * scale), 13.f * scale, 1.5f * scale);
+        FillRect(originX - (7.f * scale), originY + (8.f * scale), 1.5f * scale, 8.f * scale, grille);
+        FillRect(originX + (5.5f * scale), originY + (8.f * scale), 1.5f * scale, 8.f * scale, grille);
+        FillRect(originX - (7.f * scale), originY + (16.f * scale), 13.f * scale, 1.5f * scale, grille);
     }
 
     void DrawSpeakerAt(float originX, float originY, float scale, bool enabled)
@@ -100,8 +103,42 @@ namespace
         }
     }
 
+    void DrawMicrophoneGlyphAt(float originX, float originY, float scale, bool enabled)
+    {
+        const float ink = enabled ? 0.04f : 0.18f;
+        const Rgb black{ ink, ink, ink };
+
+        FillRect(originX - (4.f * scale), originY + (0.5f * scale), 8.f * scale, 14.f * scale, black);
+        FillRect(originX - (3.f * scale), originY, 6.f * scale, 1.2f * scale, black);
+        FillRect(originX - (3.f * scale), originY + (14.2f * scale), 6.f * scale, 1.2f * scale, black);
+        FillRect(originX - (5.5f * scale), originY + (6.f * scale), 1.6f * scale, 8.f * scale, black);
+        FillRect(originX + (3.9f * scale), originY + (6.f * scale), 1.6f * scale, 8.f * scale, black);
+        FillRect(originX - (5.5f * scale), originY + (13.4f * scale), 11.f * scale, 1.6f * scale, black);
+        FillRect(originX - (1.f * scale), originY + (15.f * scale), 2.f * scale, 4.f * scale, black);
+        FillRect(originX - (4.5f * scale), originY + (18.6f * scale), 9.f * scale, 2.f * scale, black);
+    }
+
+    void DrawSpeakerGlyphAt(float originX, float originY, float scale, bool enabled)
+    {
+        const float ink = enabled ? 0.04f : 0.18f;
+        const Rgb black{ ink, ink, ink };
+
+        FillRect(originX - (7.5f * scale), originY + (4.5f * scale), 3.2f * scale, 7.f * scale, black);
+        FillRect(originX - (4.5f * scale), originY + (3.f * scale), 2.2f * scale, 10.f * scale, black);
+        FillRect(originX - (2.4f * scale), originY + (1.4f * scale), 2.4f * scale, 13.2f * scale, black);
+        FillRect(originX, originY, 2.2f * scale, 16.f * scale, black);
+        FillRect(originX + (3.2f * scale), originY + (3.2f * scale), 1.6f * scale, 3.2f * scale, black);
+        FillRect(originX + (4.2f * scale), originY + (6.6f * scale), 1.6f * scale, 2.6f * scale, black);
+        FillRect(originX + (3.2f * scale), originY + (9.4f * scale), 1.6f * scale, 3.2f * scale, black);
+        FillRect(originX + (6.4f * scale), originY + (1.6f * scale), 1.6f * scale, 4.2f * scale, black);
+        FillRect(originX + (7.4f * scale), originY + (6.4f * scale), 1.6f * scale, 3.f * scale, black);
+        FillRect(originX + (6.4f * scale), originY + (10.2f * scale), 1.6f * scale, 4.2f * scale, black);
+    }
+
     constexpr float kMicrophoneCenterY = 11.5f;
     constexpr float kSpeakerCenterY = 7.f;
+    constexpr float kGlyphMicCenterY = 10.f;
+    constexpr float kGlyphSpeakerCenterY = 8.f;
 }
 
 namespace UI::Voice
@@ -109,18 +146,28 @@ namespace UI::Voice
     void DrawMicrophoneIcon(float centerX, float centerY, float scale, bool enabled)
     {
         EnableAlphaTest();
-        const float originX = centerX;
-        const float originY = centerY - (kMicrophoneCenterY * scale);
-        DrawMicrophoneAt(originX, originY, scale, enabled);
+        DrawMicrophoneAt(centerX, centerY - (kMicrophoneCenterY * scale), scale, enabled);
         glColor4f(1.f, 1.f, 1.f, 1.f);
     }
 
     void DrawSpeakerIcon(float centerX, float centerY, float scale, bool enabled)
     {
         EnableAlphaTest();
-        const float originX = centerX - (4.f * scale);
-        const float originY = centerY - (kSpeakerCenterY * scale);
-        DrawSpeakerAt(originX, originY, scale, enabled);
+        DrawSpeakerAt(centerX - (4.f * scale), centerY - (kSpeakerCenterY * scale), scale, enabled);
+        glColor4f(1.f, 1.f, 1.f, 1.f);
+    }
+
+    void DrawMicrophoneGlyph(float centerX, float centerY, float scale, bool enabled)
+    {
+        EnableAlphaTest();
+        DrawMicrophoneGlyphAt(centerX, centerY - (kGlyphMicCenterY * scale), scale, enabled);
+        glColor4f(1.f, 1.f, 1.f, 1.f);
+    }
+
+    void DrawSpeakerGlyph(float centerX, float centerY, float scale, bool enabled)
+    {
+        EnableAlphaTest();
+        DrawSpeakerGlyphAt(centerX - (1.5f * scale), centerY - (kGlyphSpeakerCenterY * scale), scale, enabled);
         glColor4f(1.f, 1.f, 1.f, 1.f);
     }
 }

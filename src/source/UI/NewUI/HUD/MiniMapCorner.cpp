@@ -32,9 +32,9 @@ namespace
     constexpr float kTable = 14.f;
 
     constexpr float kVoiceBtnW = 20.f;
-    constexpr float kVoiceBtnH = 14.f;
+    constexpr float kVoiceBtnH = 20.f;
     constexpr float kVoiceGap = 4.f;
-    constexpr float kVoiceIconScale = 0.52f;
+    constexpr float kVoiceIconScale = 0.48f;
     const wchar_t* const kVoiceMicrophoneTooltip = L"Voz: ligar ou desligar o microfone";
     const wchar_t* const kVoiceListeningTooltip = L"Voz: ligar ou desligar a escuta";
 
@@ -92,13 +92,17 @@ namespace
 
         if (!s_voiceReady)
         {
-            s_BtnVoiceMicrophone.ChangeButtonImgState(1, BITMAP_HERO_POSITION_INFO_BEGIN + 3, 1, 0, 1);
+            // Hit-test + tooltip only. Never register a HUD bitmap — that left
+            // a white/auto-battle ghost under the procedural glyph.
+            s_BtnVoiceMicrophone.ChangeButtonImgState(false, -1, false);
+            s_BtnVoiceMicrophone.UnRegisterButtonState();
             s_BtnVoiceMicrophone.ChangeButtonInfo(static_cast<int>(micX), static_cast<int>(footerY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
             s_BtnVoiceMicrophone.ChangeToolTipText(&kVoiceMicrophoneTooltip, 0);
             s_BtnVoiceMicrophone.MoveTextTipPos(-20, 9);
 
-            s_BtnVoiceListening.ChangeButtonImgState(1, BITMAP_HERO_POSITION_INFO_BEGIN + 3, 1, 0, 1);
+            s_BtnVoiceListening.ChangeButtonImgState(false, -1, false);
+            s_BtnVoiceListening.UnRegisterButtonState();
             s_BtnVoiceListening.ChangeButtonInfo(static_cast<int>(listenX), static_cast<int>(listenY),
                 static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH));
             s_BtnVoiceListening.ChangeToolTipText(&kVoiceListeningTooltip, 0);
@@ -114,16 +118,34 @@ namespace
         }
     }
 
+    void DrawGrayVoiceFace(float x, float y, bool enabled, bool pressed)
+    {
+        const float tone = enabled ? 1.f : 0.72f;
+        const float face = pressed ? 0.18f : 0.26f;
+        EnableAlphaTest();
+        glColor4f(0.08f, 0.08f, 0.09f, 1.f);
+        RenderColor(x, y, kVoiceBtnW, kVoiceBtnH);
+        glColor4f(face * tone, face * tone, (face + 0.02f) * tone, 1.f);
+        RenderColor(x + 1.f, y + 1.f, kVoiceBtnW - 2.f, kVoiceBtnH - 2.f);
+        EndRenderColor();
+    }
+
     void RenderVoiceButton(SEASON3B::CNewUIButton& button, bool isMicrophone, bool enabled)
     {
-        button.Render();
         const POINT pos = button.GetPos();
-        const float centerX = static_cast<float>(pos.x) + (kVoiceBtnW * 0.5f);
-        const float centerY = static_cast<float>(pos.y) + (kVoiceBtnH * 0.5f);
+        const float x = static_cast<float>(pos.x);
+        const float y = static_cast<float>(pos.y);
+        const bool pressed = SEASON3B::CheckMouseIn(pos.x, pos.y,
+            static_cast<int>(kVoiceBtnW), static_cast<int>(kVoiceBtnH))
+            && SEASON3B::IsRepeat(VK_LBUTTON);
+        DrawGrayVoiceFace(x, y, enabled, pressed);
+        const float centerX = x + (kVoiceBtnW * 0.5f);
+        const float centerY = y + (kVoiceBtnH * 0.5f);
         if (isMicrophone)
-            UI::Voice::DrawMicrophoneIcon(centerX, centerY, kVoiceIconScale, enabled);
+            UI::Voice::DrawMicrophoneGlyph(centerX, centerY, kVoiceIconScale, enabled);
         else
-            UI::Voice::DrawSpeakerIcon(centerX, centerY, kVoiceIconScale, enabled);
+            UI::Voice::DrawSpeakerGlyph(centerX, centerY, kVoiceIconScale, enabled);
+        button.Render();
     }
 
     void HandleVoiceInput(float frameX, float frameY)

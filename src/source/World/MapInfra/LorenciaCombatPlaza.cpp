@@ -29,6 +29,13 @@ namespace
     constexpr int kKeepPropRadius = 2;
 
     constexpr int kSlotBase = 157;
+    constexpr int kSentinelTileX = 135;
+    constexpr int kSentinelTileY = 123;
+
+    bool IsWebzenSentinelTile(int x, int y)
+    {
+        return x == kSentinelTileX && y == kSentinelTileY;
+    }
 
     constexpr float kFountainX = 141.f * TERRAIN_SCALE;
     constexpr float kFountainY = 128.f * TERRAIN_SCALE;
@@ -84,6 +91,11 @@ namespace
             return true;
         if (type >= MODEL_LIGHT01 && type <= MODEL_LIGHT03)
             return true;
+        // Plaza corner poles (StoneWall04) use badge_01 — leftover Webzen flags.
+        if (type == MODEL_STONE_WALL04 || type == MODEL_STONE_WALL06)
+            return true;
+        if (type == MODEL_SIGN01 || type == MODEL_SIGN01 + 1 || type == MODEL_POSE_BOX)
+            return true;
         return false;
     }
 
@@ -126,6 +138,10 @@ namespace
     // planter rows around the fountain lose their leftover frames.
     bool ShouldKeepFence(int tx, int ty)
     {
+        // Empty planter frames on the east-gate stone stay gone even if
+        // nearby chest/wall grass would otherwise keep a cercadinho.
+        if (tx >= 145 && tx <= 152 && ty >= 123 && ty <= 133)
+            return false;
         return NearKeepGrass(tx, ty);
     }
 
@@ -222,7 +238,8 @@ namespace
                 if (g_keepGrass[i])
                     continue;
                 TerrainMappingLayer1[i] = kStoneMapping;
-                SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
+                if (!IsWebzenSentinelTile(x, y))
+                    SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
                 const int dx = x - kCenterTileX;
                 const int dy = y - kCenterTileY;
                 if ((dx * dx + dy * dy) <= (kPvpRadiusTiles * kPvpRadiusTiles))
@@ -318,6 +335,8 @@ namespace
             for (int x = kYardMinX; x <= kYardMaxX; ++x)
             {
                 if (x < 0 || y < 0 || x >= TERRAIN_SIZE || y >= TERRAIN_SIZE)
+                    continue;
+                if (IsWebzenSentinelTile(x, y))
                     continue;
                 SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
                 if (InPvpCircle(x, y))
