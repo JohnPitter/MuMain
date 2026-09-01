@@ -191,44 +191,19 @@ int OpenTerrainAttribute(wchar_t* FileName)
 
     delete[] decrypted_data;
 
-    // Check file header
-    bool Error = false;
+    // Header must still look like a Season map ATT. Webzen also stamped a few
+    // sentinel tiles (e.g. Lorencia 135,123 == 5) and rejected values >= 128 so
+    // edited EncTerrain would pop "Data error" and quit. LuxView patches those
+    // files (plaza walkability, stadium cages), so only the header is fatal.
     if (Version != 0 || Width != 255 || Height != 255)
     {
-        Error = true;
-    }
-
-    // Check active world
-    switch (gMapManager.WorldActive)
-    {
-    case WD_0LORENCIA:
-        if (TerrainWall[123 * TERRAIN_SIZE + 135] != 5) Error = true;
-        break;
-    case WD_1DUNGEON:
-        if (TerrainWall[120 * TERRAIN_SIZE + 227] != 4) Error = true;
-        break;
-    case WD_2DEVIAS:
-        if (TerrainWall[55 * TERRAIN_SIZE + 208] != 5) Error = true;
-        break;
-    case WD_3NORIA:
-        if (TerrainWall[119 * TERRAIN_SIZE + 186] != 5) Error = true;
-        break;
-    case WD_4LOSTTOWER:
-        if (TerrainWall[75 * TERRAIN_SIZE + 193] != 5) Error = true;
-        break;
+        ExitProgram();
+        return (-1);
     }
 
     for (int i = 0; i < TERRAIN_SIZE * TERRAIN_SIZE; i++)
     {
         TerrainWall[i] = TerrainWall[i] & 0xFF;
-        if (TerrainWall[i] >= 128)
-            Error = true;
-    }
-
-    if (Error)
-    {
-        ExitProgram();
-        return (-1);
     }
 
     fclose(fp);
