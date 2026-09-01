@@ -144,7 +144,7 @@ bool CNewUITitleWindow::UpdateMouseEvent()
         return false;
     }
 
-    const auto& ranks = CharacterTitle::Catalog();
+    const auto& ranks = CharacterTitle::Visible();
     const int hidden = static_cast<int>(ranks.size()) - VISIBLE_ROWS;
     if (MouseWheel != 0 && hidden > 0)
     {
@@ -228,10 +228,10 @@ bool CNewUITitleWindow::Render()
     g_pRenderText->SetFont(g_hFontBold);
     g_pRenderText->SetBgColor(0);
     g_pRenderText->SetTextColor(kTitleRed, kTitleGreen, kTitleBlue, 255);
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + TITLE_Y, L"Título", WINDOW_WIDTH, 0, RT3_SORT_CENTER);
+    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + TITLE_Y, L"T\u00edtulo", WINDOW_WIDTH, 0, RT3_SORT_CENTER);
 
     g_pRenderText->SetFont(g_hFont);
-    const auto& ranks = CharacterTitle::Catalog();
+    const auto& ranks = CharacterTitle::Visible();
     const int selected = CharacterTitle::SelectedId();
 
     for (int row = 0; row < VISIBLE_ROWS; ++row)
@@ -257,7 +257,7 @@ bool CNewUITitleWindow::Render()
         wchar_t autoLabel[64] = {};
         if (ranks[index].Id == 0)
         {
-            mu_swprintf(autoLabel, L"%ls (%ls)", L"Automático", CharacterTitle::FromHeroState(Hero ? Hero->PK : 3));
+            mu_swprintf(autoLabel, L"%ls (%ls)", L"Autom\u00e1tico", CharacterTitle::FromHeroState(Hero ? Hero->PK : 3));
             label = autoLabel;
         }
 

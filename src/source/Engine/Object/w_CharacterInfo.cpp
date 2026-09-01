@@ -47,6 +47,7 @@ void CHARACTER::Initialize()
     GuildTeam = 0;
     m_byGensInfluence = 0;
     PK = 0;
+    CosmeticTitleId = 0;
     AttackFlag = 0;
     AttackTime = 0;
     LastAttackEffectTime = -1;

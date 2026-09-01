@@ -5,10 +5,13 @@
 #include "Data/GameData/ItemData/ItemStructs.h"
 #include "Core/Globals/_struct.h"
 #include "Core/Globals/_define.h"
+#include "Core/Globals/_enum.h"
+#include "Character/CharacterTitle.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Data/Translation/MultiLanguage.h"
 #include "GameLogic/Events/CSChaosCastle.h"
 #include <sstream>
+#include <cstring>
 
 #ifdef _EDITOR
 #include "UI/Console/MuEditorConsoleUI.h"
@@ -17,6 +20,51 @@
 
 // External references
 extern ITEM_ATTRIBUTE* ItemAttribute;
+
+namespace
+{
+    const wchar_t* TitleScrollName(int titleId)
+    {
+        static const wchar_t* const names[] = {
+            L"T\u00edtulo: Her\u00f3i",
+            L"T\u00edtulo: Plebeu",
+            L"T\u00edtulo: Aviso fora da lei",
+            L"T\u00edtulo: Aviso de fora da lei",
+            L"T\u00edtulo: 2\u00aa Fase Fora da Lei",
+            L"T\u00edtulo: Gr\u00e3o-Duque",
+            L"T\u00edtulo: Duque",
+            L"T\u00edtulo: Marqu\u00eas",
+            L"T\u00edtulo: Conde",
+            L"T\u00edtulo: Visconde",
+            L"T\u00edtulo: Bar\u00e3o",
+            L"T\u00edtulo: Cavaleiro Comandante",
+            L"T\u00edtulo: Cavaleiro Superior",
+            L"T\u00edtulo: Cavaleiro",
+            L"T\u00edtulo: Prefeito da Guarda",
+            L"T\u00edtulo: Oficial",
+            L"T\u00edtulo: Tenente",
+            L"T\u00edtulo: Sargento",
+            L"T\u00edtulo: Soldado",
+        };
+        if (titleId < 1 || titleId > CharacterTitle::ScrollCount)
+        {
+            return L"T\u00edtulo";
+        }
+
+        return names[titleId - 1];
+    }
+
+    void ApplyTitleScrollAttributes()
+    {
+        const ITEM_ATTRIBUTE& source = ItemAttribute[ITEM_TOWN_PORTAL_SCROLL];
+        for (int i = 0; i < CharacterTitle::ScrollCount; ++i)
+        {
+            const int index = ITEM_POTION + CharacterTitle::ScrollFirstNumber + i;
+            ItemAttribute[index] = source;
+            wcsncpy_s(ItemAttribute[index].Name, TitleScrollName(i + 1), _TRUNCATE);
+        }
+    }
+}
 
 bool ItemDataLoader::Load(wchar_t* fileName)
 {
@@ -59,6 +107,11 @@ bool ItemDataLoader::Load(wchar_t* fileName)
     }
 
     fclose(fp);
+
+    if (success)
+    {
+        ApplyTitleScrollAttributes();
+    }
 
 #ifdef _EDITOR
     if (success)

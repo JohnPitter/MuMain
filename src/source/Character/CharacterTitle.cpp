@@ -2,23 +2,28 @@
 
 #include "Character/CharacterTitle.h"
 
-#include "Data/GameConfig/GameConfig.h"
+#include "Dotnet/Connection.h"
 #include "Engine/Object/ZzzCharacter.h"
 #include "Engine/Object/ZzzObject.h"
 #include "I18N/All.h"
 
 #include <cwchar>
+#include <set>
+
+extern Connection* SocketClient;
 
 namespace CharacterTitle
 {
 namespace
 {
-    constexpr int kAutoId = 0;
     constexpr int kHeroStateCount = 5;
     constexpr int kGensRankCount = 14;
 
     wchar_t g_gensNames[kGensRankCount][32]{};
     std::vector<Rank> g_catalog;
+    std::vector<Rank> g_visible;
+    std::set<int> g_owned;
+    int g_equipped = AutoId;
     bool g_catalogReady = false;
 
     void SplitGensNames()
@@ -61,7 +66,7 @@ namespace
         g_catalog.clear();
         g_catalog.reserve(1 + kHeroStateCount + kGensRankCount);
 
-        g_catalog.push_back({ kAutoId, I18N::Game::Commoner });
+        g_catalog.push_back({ AutoId, I18N::Game::Commoner });
         g_catalog.push_back({ 1, I18N::Game::Hero });
         g_catalog.push_back({ 2, I18N::Game::Commoner });
         g_catalog.push_back({ 3, I18N::Game::OutlawWarning });
@@ -89,6 +94,39 @@ namespace
 
         return I18N::Game::Commoner;
     }
+
+    void RebuildVisible()
+    {
+        EnsureCatalog();
+        g_visible.clear();
+        g_visible.reserve(1 + g_owned.size());
+        for (const auto& rank : g_catalog)
+        {
+            if (rank.Id == AutoId || g_owned.count(rank.Id) != 0)
+            {
+                g_visible.push_back(rank);
+            }
+        }
+    }
+
+    bool IsKnown(int id)
+    {
+        EnsureCatalog();
+        for (const auto& rank : g_catalog)
+        {
+            if (rank.Id == id)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool CanEquip(int id)
+    {
+        return id == AutoId || g_owned.count(id) != 0;
+    }
 }
 
 const std::vector<Rank>& Catalog()
@@ -97,40 +135,131 @@ const std::vector<Rank>& Catalog()
     return g_catalog;
 }
 
-int SelectedId()
+const std::vector<Rank>& Visible()
 {
-    if (Hero == nullptr || Hero->ID[0] == L'\0')
+    EnsureCatalog();
+    if (g_visible.empty())
     {
-        return kAutoId;
+        RebuildVisible();
     }
 
-    return GameConfig::GetInstance().GetCharacterTitleId(Hero->ID);
+    return g_visible;
+}
+
+int SelectedId()
+{
+    return g_equipped;
 }
 
 void Select(int id)
 {
-    if (Hero == nullptr || Hero->ID[0] == L'\0')
+    if (!IsKnown(id) || !CanEquip(id))
+    {
+        id = AutoId;
+    }
+
+    g_equipped = id;
+    if (Hero != nullptr)
+    {
+        Hero->CosmeticTitleId = static_cast<BYTE>(id);
+    }
+
+    if (SocketClient == nullptr)
     {
         return;
     }
 
-    EnsureCatalog();
-    bool known = false;
-    for (const auto& rank : g_catalog)
+    BYTE packet[5] = { 0xC1, 0x05, 0xF3, 0xEA, static_cast<BYTE>(id) };
+    SocketClient->Send(packet, 5);
+}
+
+void Reset()
+{
+    g_owned.clear();
+    g_equipped = AutoId;
+    g_visible.clear();
+}
+
+void ReceiveOwned(const BYTE* buffer, int32_t size)
+{
+    if (buffer == nullptr || size < 6)
     {
-        if (rank.Id == id)
+        return;
+    }
+
+    const int header = (buffer[0] % 2 == 1) ? 0 : 1;
+    if (size < 6 + header)
+    {
+        return;
+    }
+
+    g_equipped = buffer[4 + header];
+    if (!IsKnown(g_equipped))
+    {
+        g_equipped = AutoId;
+    }
+
+    const int count = buffer[5 + header];
+    g_owned.clear();
+    for (int i = 0; i < count; ++i)
+    {
+        const int offset = 6 + header + i;
+        if (offset >= size)
         {
-            known = true;
             break;
+        }
+
+        const int id = buffer[offset];
+        if (id >= 1 && id <= ScrollCount)
+        {
+            g_owned.insert(id);
         }
     }
 
-    if (!known)
+    if (!CanEquip(g_equipped))
     {
-        id = kAutoId;
+        g_equipped = AutoId;
     }
 
-    GameConfig::GetInstance().SetCharacterTitleId(Hero->ID, id);
+    RebuildVisible();
+    if (Hero != nullptr)
+    {
+        Hero->CosmeticTitleId = static_cast<BYTE>(g_equipped);
+    }
+}
+
+void ReceiveAppearance(const BYTE* buffer, int32_t size)
+{
+    if (buffer == nullptr || size < 7)
+    {
+        return;
+    }
+
+    const int header = (buffer[0] % 2 == 1) ? 0 : 1;
+    if (size < 7 + header)
+    {
+        return;
+    }
+
+    const int key = (static_cast<int>(buffer[4 + header]) << 8) + buffer[5 + header];
+    const int titleId = buffer[6 + header];
+    const int index = FindCharacterIndex(key);
+    if (index >= MAX_CHARACTERS_CLIENT)
+    {
+        return;
+    }
+
+    CHARACTER* owner = &CharactersClient[index];
+    owner->CosmeticTitleId = static_cast<BYTE>(IsKnown(titleId) ? titleId : AutoId);
+    if (owner == Hero)
+    {
+        g_equipped = owner->CosmeticTitleId;
+        if (!CanEquip(g_equipped))
+        {
+            g_equipped = AutoId;
+            owner->CosmeticTitleId = AutoId;
+        }
+    }
 }
 
 const wchar_t* FromHeroState(BYTE pk)
@@ -165,13 +294,9 @@ void Fill(CHARACTER* owner, wchar_t* dest, size_t destChars)
     }
 
     const wchar_t* title = FromHeroState(owner->PK);
-    if (owner == Hero)
+    if (owner->CosmeticTitleId != AutoId)
     {
-        const int id = SelectedId();
-        if (id != kAutoId)
-        {
-            title = NameForId(id);
-        }
+        title = NameForId(owner->CosmeticTitleId);
     }
 
     if (title == nullptr || title[0] == L'\0')

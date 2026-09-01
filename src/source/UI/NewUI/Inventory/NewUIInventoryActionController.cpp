@@ -21,6 +21,7 @@
 #include "World/MapInfra/PortalMgr.h"
 #include "GameLogic/Quests/CSQuest.h"
 #include "I18N/All.h"
+#include "Character/CharacterTitle.h"
 
 namespace SEASON3B
 {
@@ -674,6 +675,13 @@ bool CNewUIInventoryActionController::TryConsumeItem(CNewUIInventoryCtrl* target
     }
 
     if (pItem->Type == ITEM_TOWN_PORTAL_SCROLL)
+    {
+        SendRequestUse(iIndex, 0);
+        return true;
+    }
+
+    if (pItem->Type >= ITEM_POTION + CharacterTitle::ScrollFirstNumber
+        && pItem->Type < ITEM_POTION + CharacterTitle::ScrollFirstNumber + CharacterTitle::ScrollCount)
     {
         SendRequestUse(iIndex, 0);
         return true;

@@ -26,6 +26,7 @@
 #include "Network/IncomingPacketQueue.h"
 #include "App/AutoLaunch.h"
 #include "I18N/All.h"
+#include "Character/CharacterTitle.h"
 
 #include "Audio/DSPlaySound.h"
 #include "Audio/VoiceChat.h"
@@ -1291,6 +1292,8 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
     SetCharacterClass(c);
 
     Hero = c;
+    CharacterTitle::Reset();
+    c->CosmeticTitleId = 0;
 
     memset(c->ID, 0, sizeof c->ID);
     wcscpy(c->ID, CharacterAttribute->Name);
@@ -13675,6 +13678,12 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         {
         case 0xE9:
             ReceiveChannelWarpList(ReceiveBuffer, Size);
+            break;
+        case 0xEA:
+            CharacterTitle::ReceiveOwned(ReceiveBuffer, Size);
+            break;
+        case 0xEB:
+            CharacterTitle::ReceiveAppearance(ReceiveBuffer, Size);
             break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer);

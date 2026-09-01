@@ -145,6 +145,7 @@ public:
     BYTE		m_byGensInfluence;
 #endif	// ASG_ADD_GENS_SYSTEM
     BYTE        PK;
+    BYTE        CosmeticTitleId;
 #ifdef LJH_ADD_MORE_ZEN_FOR_ONE_HAVING_A_PARTY_WITH_MURDERER
     char		PKPartyLevel;
 #endif //LJH_ADD_MORE_ZEN_FOR_ONE_HAVING_A_PARTY_WITH_MURDERER

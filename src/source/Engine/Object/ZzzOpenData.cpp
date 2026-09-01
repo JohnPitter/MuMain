@@ -10,6 +10,7 @@
 #include "Engine/Object/ZzzOpenData.h"
 #include "Engine/AI/ZzzAI.h"
 #include "Engine/Object/ZzzInventory.h"
+#include "Character/CharacterTitle.h"
 #include "Audio/DSPlaySound.h"
 
 #include "Render/Models/SMD.h"
@@ -936,6 +937,10 @@ void OpenItems()
     gLoadData.AccessModel(MODEL_ANTIDOTE, L"Data\\Item\\", L"Antidote", 1);
     gLoadData.AccessModel(MODEL_ALE, L"Data\\Item\\", L"Beer", 1);
     gLoadData.AccessModel(MODEL_TOWN_PORTAL_SCROLL, L"Data\\Item\\", L"Scroll", 1);
+    for (int i = 0; i < CharacterTitle::ScrollCount; ++i)
+    {
+        gLoadData.AccessModel(MODEL_POTION + CharacterTitle::ScrollFirstNumber + i, L"Data\\Item\\", L"Scroll", 1);
+    }
     gLoadData.AccessModel(MODEL_BOX_OF_LUCK, L"Data\\Item\\", L"MagicBox", 1);
     gLoadData.AccessModel(MODEL_POTION + 12, L"Data\\Item\\", L"Event", 1);
 
@@ -1386,6 +1391,11 @@ void OpenItemTextures()
         gLoadData.OpenTexture(MODEL_WING + i, L"Item\\");
         gLoadData.OpenTexture(MODEL_POTION + i, L"Item\\");
         gLoadData.OpenTexture(MODEL_ETC + i, L"Item\\");
+    }
+
+    for (int i = 0; i < CharacterTitle::ScrollCount; ++i)
+    {
+        gLoadData.OpenTexture(MODEL_POTION + CharacterTitle::ScrollFirstNumber + i, L"Item\\");
     }
 
     for (int i = 14; i <= 20; ++i)
