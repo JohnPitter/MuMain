@@ -12917,4 +12917,397 @@
   <data name="HuntAnalyzerProfitPerHour" xml:space="preserve"><value>GANANCIA/H</value></data>
   <data name="HuntAnalyzerHint" xml:space="preserve"><value>Sigue la EXP, la ganancia y el rendimiento de la cacería.</value></data>
   <data name="HuntAnalyzerVip" xml:space="preserve"><value>Suscribir VIP</value></data>
+  <data name="AutoBattlerActivate" xml:space="preserve">
+    <value>Activar</value>
+  </data>
+  <data name="AutoBattlerCurrentMap" xml:space="preserve">
+    <value>Estás en: %ls</value>
+  </data>
+  <data name="AutoBattlerHint" xml:space="preserve">
+    <value>Caza a todos los monstruos delante. Se detiene con inventario lleno o cuota. 1h/día, 12h VIP.</value>
+  </data>
+  <data name="AutoBattlerInfoTab" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="AutoBattlerInventoryFull" xml:space="preserve">
+    <value>Inventario lleno. Auto Battler detenido.</value>
+  </data>
+  <data name="AutoBattlerLoot" xml:space="preserve">
+    <value>Botín posible</value>
+  </data>
+  <data name="AutoBattlerLootTab" xml:space="preserve">
+    <value>Botín</value>
+  </data>
+  <data name="AutoBattlerMaps" xml:space="preserve">
+    <value>Mapas</value>
+  </data>
+  <data name="AutoBattlerMobs" xml:space="preserve">
+    <value>Criaturas</value>
+  </data>
+  <data name="AutoBattlerMobsTab" xml:space="preserve">
+    <value>Mobs</value>
+  </data>
+  <data name="AutoBattlerNoTime" xml:space="preserve">
+    <value>No te queda tiempo de Auto Battler hoy.</value>
+  </data>
+  <data name="AutoBattlerQuota" xml:space="preserve">
+    <value>Restante: %ls / %ls%ls</value>
+  </data>
+  <data name="AutoBattlerQuotaLabel" xml:space="preserve">
+    <value>Restante</value>
+  </data>
+  <data name="AutoBattlerQuotaTotal" xml:space="preserve">
+    <value>Cuota diaria</value>
+  </data>
+  <data name="AutoBattlerSafeZone" xml:space="preserve">
+    <value>Estás en zona segura. Sal de la ciudad para iniciar el Auto Battler.</value>
+  </data>
+  <data name="AutoBattlerStart" xml:space="preserve">
+    <value>Iniciar</value>
+  </data>
+  <data name="AutoBattlerStatusOff" xml:space="preserve">
+    <value>Detenido</value>
+  </data>
+  <data name="AutoBattlerStatusOn" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="AutoBattlerStop" xml:space="preserve">
+    <value>Detener</value>
+  </data>
+  <data name="AutoBattlerTitle" xml:space="preserve">
+    <value>Auto Battler</value>
+  </data>
+  <data name="AutoBattlerVip" xml:space="preserve">
+    <value> (VIP)</value>
+  </data>
+  <data name="AutoBattlerVipLabel" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="AutoBattlerVipNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="AutoBattlerVipYes" xml:space="preserve">
+    <value>Sí</value>
+  </data>
+  <data name="BasicAttackFallback" xml:space="preserve">
+    <value>Ataque básico de respaldo</value>
+  </data>
+  <data name="CashShopConfirmPurchase" xml:space="preserve">
+    <value>Comprar</value>
+  </data>
+  <data name="CashShopOpeningPurchasePage" xml:space="preserve">
+    <value>Abriendo la tienda de monedas en el navegador...</value>
+  </data>
+  <data name="CashShopTransferAmountLabel" xml:space="preserve">
+    <value>Cantidad</value>
+  </data>
+  <data name="CashShopTransferInvalidInput" xml:space="preserve">
+    <value>Introduce un personaje y una cantidad válida.</value>
+  </data>
+  <data name="CashShopTransferTargetLabel" xml:space="preserve">
+    <value>Personaje destino</value>
+  </data>
+  <data name="CashShopTransferTitle" xml:space="preserve">
+    <value>Enviar WCoin</value>
+  </data>
+  <data name="ChatCommandsAddFavourite" xml:space="preserve">
+    <value>Añadir a favoritos</value>
+  </data>
+  <data name="ChatCommandsBack" xml:space="preserve">
+    <value>Atrás</value>
+  </data>
+  <data name="ChatCommandsExecute" xml:space="preserve">
+    <value>Ejecutar</value>
+  </data>
+  <data name="ChatCommandsFillRequired" xml:space="preserve">
+    <value>Introduce primero los valores obligatorios.</value>
+  </data>
+  <data name="ChatCommandsNoTemplates" xml:space="preserve">
+    <value>Aún no hay plantillas guardadas.</value>
+  </data>
+  <data name="ChatCommandsNotSupported" xml:space="preserve">
+    <value>Este servidor no ofrece una lista de comandos.</value>
+  </data>
+  <data name="ChatCommandsRemoveFavourite" xml:space="preserve">
+    <value>Quitar de favoritos</value>
+  </data>
+  <data name="ChatCommandsSaveTemplate" xml:space="preserve">
+    <value>Guardar como plantilla</value>
+  </data>
+  <data name="ChatCommandsTemplates" xml:space="preserve">
+    <value>Plantillas</value>
+  </data>
+  <data name="ChatCommandsTitle" xml:space="preserve">
+    <value>Comandos</value>
+  </data>
+  <data name="ChatCommandsUnknownCommand" xml:space="preserve">
+    <value>Este comando ya no está disponible.</value>
+  </data>
+  <data name="SpecialCommands" xml:space="preserve">
+    <value>Especial</value>
+  </data>
+  <data name="JToggleChatCommands" xml:space="preserve">
+    <value>J : Comandos de chat sí/no</value>
+  </data>
+  <data name="Checking server availability" xml:space="preserve">
+    <value>Comprobando disponibilidad del servidor</value>
+  </data>
+  <data name="Connection lost" xml:space="preserve">
+    <value>Conexión perdida</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Crédito</value>
+  </data>
+  <data name="Entering the game" xml:space="preserve">
+    <value>Entrando al juego</value>
+  </data>
+  <data name="Loading character list" xml:space="preserve">
+    <value>Cargando lista de personajes</value>
+  </data>
+  <data name="Logging in" xml:space="preserve">
+    <value>Iniciando sesión</value>
+  </data>
+  <data name="Retrying in seconds" xml:space="preserve">
+    <value>Reintentando en %d segundos...</value>
+  </data>
+  <data name="LoginRememberPassword" xml:space="preserve">
+    <value>Recordar contraseña</value>
+  </data>
+  <data name="LoginRememberUsername" xml:space="preserve">
+    <value>Recordar usuario</value>
+  </data>
+  <data name="LoginSavePasswordWarningBody" xml:space="preserve">
+    <value>Cualquiera que use este PC podrá entrar en tu cuenta. Hazlo solo en un equipo de confianza. ¿Guardar la contraseña?</value>
+  </data>
+  <data name="LoginSavePasswordWarningTitle" xml:space="preserve">
+    <value>¡AVISO!</value>
+  </data>
+  <data name="LoginTrustWarning" xml:space="preserve">
+    <value>Guarda la contraseña solo en un PC de confianza.</value>
+  </data>
+  <data name="InvalidItemIndexBuyConfirm" xml:space="preserve">
+    <value>Índice de ítem inválido</value>
+  </data>
+  <data name="InvalidItemIndexBuySelect" xml:space="preserve">
+    <value>Índice de ítem inválido.</value>
+  </data>
+  <data name="MarketplaceAccessories" xml:space="preserve">
+    <value>Accesorios</value>
+  </data>
+  <data name="MarketplaceAll" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="MarketplaceAnnounce" xml:space="preserve">
+    <value>Anunciar</value>
+  </data>
+  <data name="MarketplaceArmors" xml:space="preserve">
+    <value>Armaduras</value>
+  </data>
+  <data name="MarketplaceBannerSubtitle" xml:space="preserve">
+    <value>Mercado</value>
+  </data>
+  <data name="MarketplaceBuyTab" xml:space="preserve">
+    <value>Comprar</value>
+  </data>
+  <data name="MarketplaceCancelSale" xml:space="preserve">
+    <value>Cancelar anuncio</value>
+  </data>
+  <data name="MarketplaceCartTab" xml:space="preserve">
+    <value>Carrito</value>
+  </data>
+  <data name="MarketplaceCategories" xml:space="preserve">
+    <value>Categorías</value>
+  </data>
+  <data name="MarketplaceCoins" xml:space="preserve">
+    <value>Monedas</value>
+  </data>
+  <data name="MarketplaceConsumables" xml:space="preserve">
+    <value>Consumibles</value>
+  </data>
+  <data name="MarketplaceDays" xml:space="preserve">
+    <value>%d días</value>
+  </data>
+  <data name="MarketplaceDemoNotice" xml:space="preserve">
+    <value>Catálogo de prueba. Anuncia un objeto del inventario para vender de verdad.</value>
+  </data>
+  <data name="MarketplaceDuration" xml:space="preserve">
+    <value>Duración</value>
+  </data>
+  <data name="MarketplaceEmptyInv" xml:space="preserve">
+    <value>Selecciona un objeto en la pestaña Inventario para anunciarlo.</value>
+  </data>
+  <data name="MarketplaceFeatureConfirm" xml:space="preserve">
+    <value>Destacar este objeto cuesta %d W durante %d horas. ¿Continuar?</value>
+  </data>
+  <data name="MarketplaceFeatureCost" xml:space="preserve">
+    <value>Coste: %d W / %d h</value>
+  </data>
+  <data name="MarketplaceFeatureHours" xml:space="preserve">
+    <value>%d h destacado</value>
+  </data>
+  <data name="MarketplaceFeatured" xml:space="preserve">
+    <value>Destacado</value>
+  </data>
+  <data name="MarketplaceFeeNotice" xml:space="preserve">
+    <value>Tasa: 3%</value>
+  </data>
+  <data name="MarketplaceHighestPrice" xml:space="preserve">
+    <value>Alto $</value>
+  </data>
+  <data name="MarketplaceHighlightButton" xml:space="preserve">
+    <value>Destacar</value>
+  </data>
+  <data name="MarketplaceHistoryTab" xml:space="preserve">
+    <value>Historial</value>
+  </data>
+  <data name="MarketplaceInvTab" xml:space="preserve">
+    <value>Inv.</value>
+  </data>
+  <data name="MarketplaceItemsTab" xml:space="preserve">
+    <value>Objetos</value>
+  </data>
+  <data name="MarketplaceJewels" xml:space="preserve">
+    <value>Joyas</value>
+  </data>
+  <data name="MarketplaceLimit" xml:space="preserve">
+    <value>Límite de anuncios activos alcanzado.</value>
+  </data>
+  <data name="MarketplaceListItem" xml:space="preserve">
+    <value>Anunciar+</value>
+  </data>
+  <data name="MarketplaceListed" xml:space="preserve">
+    <value>Anuncio actualizado.</value>
+  </data>
+  <data name="MarketplaceListingFee" xml:space="preserve">
+    <value>Tasa: 3% de la venta</value>
+  </data>
+  <data name="MarketplaceLowestPrice" xml:space="preserve">
+    <value>Bajo $</value>
+  </data>
+  <data name="MarketplaceMySalesTab" xml:space="preserve">
+    <value>Mis ventas</value>
+  </data>
+  <data name="MarketplaceNewest" xml:space="preserve">
+    <value>Recientes</value>
+  </data>
+  <data name="MarketplaceNotEnoughW" xml:space="preserve">
+    <value>W Coin insuficiente.</value>
+  </data>
+  <data name="MarketplaceNotEnoughZen" xml:space="preserve">
+    <value>Saldo insuficiente para esta acción.</value>
+  </data>
+  <data name="MarketplaceNotFound" xml:space="preserve">
+    <value>Anuncio no encontrado o ya cerrado.</value>
+  </data>
+  <data name="MarketplaceOthers" xml:space="preserve">
+    <value>Otros</value>
+  </data>
+  <data name="MarketplaceOwnItem" xml:space="preserve">
+    <value>No puedes comprar tu propio anuncio.</value>
+  </data>
+  <data name="MarketplacePackages" xml:space="preserve">
+    <value>Paquetes</value>
+  </data>
+  <data name="MarketplacePets" xml:space="preserve">
+    <value>Mascotas</value>
+  </data>
+  <data name="MarketplacePrice" xml:space="preserve">
+    <value>Precio</value>
+  </data>
+  <data name="MarketplaceQty" xml:space="preserve">
+    <value>Cant.</value>
+  </data>
+  <data name="MarketplaceRechargeHint" xml:space="preserve">
+    <value>Página de recarga abierta. Usa solo el login de la cuenta, sin contraseña. Luego pulsa Actualizar.</value>
+  </data>
+  <data name="MarketplaceSelectInv" xml:space="preserve">
+    <value>(selecciona del inventario)</value>
+  </data>
+  <data name="MarketplaceSeller" xml:space="preserve">
+    <value>Vendedor</value>
+  </data>
+  <data name="MarketplaceSpecial" xml:space="preserve">
+    <value>Especiales</value>
+  </data>
+  <data name="MarketplaceTitle" xml:space="preserve">
+    <value>Mercado</value>
+  </data>
+  <data name="MarketplaceViewOffer" xml:space="preserve">
+    <value>Ver oferta</value>
+  </data>
+  <data name="MarketplaceWeapons" xml:space="preserve">
+    <value>Armas</value>
+  </data>
+  <data name="MarketplaceWings" xml:space="preserve">
+    <value>Alas</value>
+  </data>
+  <data name="MuHelperActivationSkill1" xml:space="preserve">
+    <value>Activación 1</value>
+  </data>
+  <data name="MuHelperActivationSkill2" xml:space="preserve">
+    <value>Activación 2</value>
+  </data>
+  <data name="MuHelperAddExtraItem" xml:space="preserve">
+    <value>Añadir extra</value>
+  </data>
+  <data name="MuHelperAutoAcceptFriend" xml:space="preserve">
+    <value>Aceptar amigo</value>
+  </data>
+  <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
+    <value>Aceptar gremio</value>
+  </data>
+  <data name="MuHelperBasicAttackFallback" xml:space="preserve">
+    <value>Ataque básico</value>
+  </data>
+  <data name="MuHelperBasicSkill" xml:space="preserve">
+    <value>Básico</value>
+  </data>
+  <data name="MuHelperCombo" xml:space="preserve">
+    <value>Combo</value>
+  </data>
+  <data name="MuHelperCondition" xml:space="preserve">
+    <value>Condición</value>
+  </data>
+  <data name="MuHelperConfigure" xml:space="preserve">
+    <value>Configurar</value>
+  </data>
+  <data name="MuHelperDistance" xml:space="preserve">
+    <value>Distancia</value>
+  </data>
+  <data name="MuHelperLongDistanceCounterAttack" xml:space="preserve">
+    <value>Contraataque a distancia</value>
+  </data>
+  <data name="MuHelperOtherSettings" xml:space="preserve">
+    <value>Otros</value>
+  </data>
+  <data name="MuHelperPickAll" xml:space="preserve">
+    <value>Recoger objetos cercanos</value>
+  </data>
+  <data name="MuHelperPickSelected" xml:space="preserve">
+    <value>Recoger seleccionados</value>
+  </data>
+  <data name="MuHelperPotion" xml:space="preserve">
+    <value>Poción</value>
+  </data>
+  <data name="MuHelperPvpCounterattack" xml:space="preserve">
+    <value>Contraataque PVP</value>
+  </data>
+  <data name="MuHelperRange" xml:space="preserve">
+    <value>Alcance</value>
+  </data>
+  <data name="PackageItemInformationUnavailable" xml:space="preserve">
+    <value>La información del paquete no está disponible.</value>
+  </data>
+  <data name="YouAlreadyReachedMaximumLevel" xml:space="preserve">
+    <value>Ya alcanzaste el nivel máximo.</value>
+  </data>
+  <data name="YouAlreadyReachedMaximumMasterLevel" xml:space="preserve">
+    <value>Ya alcanzaste el nivel máster máximo.</value>
+  </data>
+  <data name="YouCannotEnterThisArea" xml:space="preserve">
+    <value>No puedes entrar en esta zona.</value>
+  </data>
+  <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
+    <value>Necesitas matar monstruos más fuertes para ganar experiencia máster.</value>
+  </data>
 </root>

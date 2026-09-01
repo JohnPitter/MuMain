@@ -13139,4 +13139,109 @@
   <data name="HuntAnalyzerProfitPerHour" xml:space="preserve"><value>LUCRO/H</value></data>
   <data name="HuntAnalyzerHint" xml:space="preserve"><value>Acompanhe EXP, lucro e o desempenho da caçada.</value></data>
   <data name="HuntAnalyzerVip" xml:space="preserve"><value>Assinar VIP</value></data>
+  <data name="ChatCommandsAddFavourite" xml:space="preserve">
+    <value>Adicionar aos favoritos</value>
+  </data>
+  <data name="ChatCommandsBack" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+  <data name="ChatCommandsExecute" xml:space="preserve">
+    <value>Executar</value>
+  </data>
+  <data name="ChatCommandsFillRequired" xml:space="preserve">
+    <value>Preencha primeiro os valores obrigatórios.</value>
+  </data>
+  <data name="ChatCommandsNoTemplates" xml:space="preserve">
+    <value>Nenhum modelo salvo ainda.</value>
+  </data>
+  <data name="ChatCommandsNotSupported" xml:space="preserve">
+    <value>Este servidor não oferece uma lista de comandos.</value>
+  </data>
+  <data name="ChatCommandsRemoveFavourite" xml:space="preserve">
+    <value>Remover dos favoritos</value>
+  </data>
+  <data name="ChatCommandsSaveTemplate" xml:space="preserve">
+    <value>Salvar como modelo</value>
+  </data>
+  <data name="ChatCommandsTemplates" xml:space="preserve">
+    <value>Modelos</value>
+  </data>
+  <data name="ChatCommandsTitle" xml:space="preserve">
+    <value>Comandos</value>
+  </data>
+  <data name="ChatCommandsUnknownCommand" xml:space="preserve">
+    <value>Este comando não está mais disponível.</value>
+  </data>
+  <data name="SpecialCommands" xml:space="preserve">
+    <value>Especiais</value>
+  </data>
+  <data name="JToggleChatCommands" xml:space="preserve">
+    <value>J : Comandos do chat ligar/desligar</value>
+  </data>
+  <data name="Gatekeeper" xml:space="preserve">
+    <value>Guardião do Portão</value>
+  </data>
+  <data name="Jewel of Guardian" xml:space="preserve">
+    <value>Joia do Guardião</value>
+  </data>
+  <data name="Seed Master" xml:space="preserve">
+    <value>Mestre das Sementes</value>
+  </data>
+  <data name="Silver Box" xml:space="preserve">
+    <value>Caixa de Prata</value>
+  </data>
+  <data name="Official MU Helper" xml:space="preserve">
+    <value>MU Helper oficial</value>
+  </data>
+  <data name="Official MU Helper Setting" xml:space="preserve">
+    <value>Configuração do MU Helper oficial</value>
+  </data>
+  <data name="Start Official MU Helper" xml:space="preserve">
+    <value>Iniciar MU Helper oficial</value>
+  </data>
+  <data name="Stop Official MU Helper" xml:space="preserve">
+    <value>Parar MU Helper oficial</value>
+  </data>
+  <data name="Official MU Helper is running." xml:space="preserve">
+    <value>O MU Helper oficial está em execução.</value>
+  </data>
+  <data name="Official MU Helper is closed" xml:space="preserve">
+    <value>O MU Helper oficial foi encerrado</value>
+  </data>
+  <data name="Official MU Helper Setting has been saved." xml:space="preserve">
+    <value>A configuração do MU Helper oficial foi salva.</value>
+  </data>
+  <data name="Official MU Helper can't be implemented in this region." xml:space="preserve">
+    <value>O MU Helper oficial não pode ser usado nesta região.</value>
+  </data>
+  <data name="Official MU Helper only runs in filed" xml:space="preserve">
+    <value>O MU Helper oficial só funciona no campo</value>
+  </data>
+  <data name="Any characters under level %d can't run Official MU Helper." xml:space="preserve">
+    <value>Personagens abaixo do nível %d não podem usar o MU Helper oficial.</value>
+  </data>
+  <data name="In order to run Official MU Helper, please close Inventory window" xml:space="preserve">
+    <value>Para usar o MU Helper oficial, feche a janela do Inventário</value>
+  </data>
+  <data name="In order to run Official MU Helper, please close MU Guide window" xml:space="preserve">
+    <value>Para usar o MU Helper oficial, feche a janela do Guia MU</value>
+  </data>
+  <data name="In order to run Official MU Helper, please install Add-on first" xml:space="preserve">
+    <value>Para usar o MU Helper oficial, instale o complemento primeiro</value>
+  </data>
+  <data name="Official MU Helper is closed due to the excess of %d hour(s)" xml:space="preserve">
+    <value>O MU Helper oficial foi encerrado por exceder %d hora(s)</value>
+  </data>
+  <data name="%d zen(s) have been spent in implementing Official MU Helper" xml:space="preserve">
+    <value>%d zen foram gastos ao executar o MU Helper oficial</value>
+  </data>
+  <data name="Zen is not sufficient to run Official MU Helper" xml:space="preserve">
+    <value>Zen insuficiente para executar o MU Helper oficial</value>
+  </data>
+  <data name="You can do a Goblin combination with a Silver Key to create a Silver Box." xml:space="preserve">
+    <value>Você pode fazer uma combinação Goblin com uma Chave de Prata para criar uma Caixa de Prata.</value>
+  </data>
+  <data name="of Jewel of Harmony, orignal" xml:space="preserve">
+    <value>de Joia da Harmonia, original</value>
+  </data>
 </root>

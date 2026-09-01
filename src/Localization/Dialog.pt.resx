@@ -940,4 +940,7 @@
     <value>Termine de contar a história</value>
     <comment>legacy_id=2740</comment>
   </data>
+  <data name="Text_0" xml:space="preserve">
+    <value>Olá! Precisa de alguma coisa?</value>
+  </data>
 </root>

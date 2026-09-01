@@ -12887,4 +12887,457 @@
   <data name="DefaultFont" xml:space="preserve">
     <value>預設</value>
   </data>
+  <data name="AutoBattlerActivate" xml:space="preserve">
+    <value>啟用</value>
+  </data>
+  <data name="AutoBattlerCurrentMap" xml:space="preserve">
+    <value>目前位於：%ls</value>
+  </data>
+  <data name="AutoBattlerHint" xml:space="preserve">
+    <value>攻擊前方所有怪物。背包滿或額度用完即停止。每日 1 小時，VIP 12 小時。</value>
+  </data>
+  <data name="AutoBattlerInfoTab" xml:space="preserve">
+    <value>資訊</value>
+  </data>
+  <data name="AutoBattlerInventoryFull" xml:space="preserve">
+    <value>背包已滿。自動戰鬥已停止。</value>
+  </data>
+  <data name="AutoBattlerLoot" xml:space="preserve">
+    <value>可能掉落</value>
+  </data>
+  <data name="AutoBattlerLootTab" xml:space="preserve">
+    <value>掉落</value>
+  </data>
+  <data name="AutoBattlerMaps" xml:space="preserve">
+    <value>地圖</value>
+  </data>
+  <data name="AutoBattlerMobs" xml:space="preserve">
+    <value>怪物</value>
+  </data>
+  <data name="AutoBattlerMobsTab" xml:space="preserve">
+    <value>怪物</value>
+  </data>
+  <data name="AutoBattlerNoTime" xml:space="preserve">
+    <value>今日自動戰鬥時間已用完。</value>
+  </data>
+  <data name="AutoBattlerQuota" xml:space="preserve">
+    <value>剩餘：%ls / %ls%ls</value>
+  </data>
+  <data name="AutoBattlerQuotaLabel" xml:space="preserve">
+    <value>剩餘</value>
+  </data>
+  <data name="AutoBattlerQuotaTotal" xml:space="preserve">
+    <value>每日額度</value>
+  </data>
+  <data name="AutoBattlerSafeZone" xml:space="preserve">
+    <value>你在安全區。離開城市後才能開始自動戰鬥。</value>
+  </data>
+  <data name="AutoBattlerStart" xml:space="preserve">
+    <value>開始</value>
+  </data>
+  <data name="AutoBattlerStatusOff" xml:space="preserve">
+    <value>已停止</value>
+  </data>
+  <data name="AutoBattlerStatusOn" xml:space="preserve">
+    <value>進行中</value>
+  </data>
+  <data name="AutoBattlerStop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="AutoBattlerTitle" xml:space="preserve">
+    <value>自動戰鬥</value>
+  </data>
+  <data name="AutoBattlerVip" xml:space="preserve">
+    <value> (VIP)</value>
+  </data>
+  <data name="AutoBattlerVipLabel" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="AutoBattlerVipNo" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="AutoBattlerVipYes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="BasicAttackFallback" xml:space="preserve">
+    <value>基本攻擊備援</value>
+  </data>
+  <data name="CashShopConfirmPurchase" xml:space="preserve">
+    <value>購買</value>
+  </data>
+  <data name="CashShopInventoryMaxExtensions" xml:space="preserve">
+    <value>背包擴充已達上限。</value>
+  </data>
+  <data name="CashShopInventoryMaxExtensionsTitle" xml:space="preserve">
+    <value>背包已達上限</value>
+  </data>
+  <data name="CashShopOpeningPurchasePage" xml:space="preserve">
+    <value>正在瀏覽器開啟幣商店...</value>
+  </data>
+  <data name="CashShopTransferAmountLabel" xml:space="preserve">
+    <value>數量</value>
+  </data>
+  <data name="CashShopTransferInvalidInput" xml:space="preserve">
+    <value>請輸入角色與有效數量。</value>
+  </data>
+  <data name="CashShopTransferTargetLabel" xml:space="preserve">
+    <value>目標角色</value>
+  </data>
+  <data name="CashShopTransferTitle" xml:space="preserve">
+    <value>發送 WCoin</value>
+  </data>
+  <data name="CashShopVaultAlreadyExpanded" xml:space="preserve">
+    <value>倉庫已擴充。</value>
+  </data>
+  <data name="CashShopVaultAlreadyExpandedTitle" xml:space="preserve">
+    <value>倉庫已擴充</value>
+  </data>
+  <data name="ChatCommandsAddFavourite" xml:space="preserve">
+    <value>加入最愛</value>
+  </data>
+  <data name="ChatCommandsBack" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="ChatCommandsExecute" xml:space="preserve">
+    <value>執行</value>
+  </data>
+  <data name="ChatCommandsFillRequired" xml:space="preserve">
+    <value>請先填寫必填欄位。</value>
+  </data>
+  <data name="ChatCommandsNoTemplates" xml:space="preserve">
+    <value>尚未儲存任何範本。</value>
+  </data>
+  <data name="ChatCommandsNotSupported" xml:space="preserve">
+    <value>此伺服器不提供指令列表。</value>
+  </data>
+  <data name="ChatCommandsRemoveFavourite" xml:space="preserve">
+    <value>從最愛移除</value>
+  </data>
+  <data name="ChatCommandsSaveTemplate" xml:space="preserve">
+    <value>儲存為範本</value>
+  </data>
+  <data name="ChatCommandsTemplates" xml:space="preserve">
+    <value>範本</value>
+  </data>
+  <data name="ChatCommandsTitle" xml:space="preserve">
+    <value>指令</value>
+  </data>
+  <data name="ChatCommandsUnknownCommand" xml:space="preserve">
+    <value>此指令已無法使用。</value>
+  </data>
+  <data name="SpecialCommands" xml:space="preserve">
+    <value>特殊</value>
+  </data>
+  <data name="JToggleChatCommands" xml:space="preserve">
+    <value>J：聊天指令 開/關</value>
+  </data>
+  <data name="Checking server availability" xml:space="preserve">
+    <value>正在檢查伺服器狀態</value>
+  </data>
+  <data name="Connection lost" xml:space="preserve">
+    <value>連線中斷</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>點數</value>
+  </data>
+  <data name="Entering the game" xml:space="preserve">
+    <value>正在進入遊戲</value>
+  </data>
+  <data name="Loading character list" xml:space="preserve">
+    <value>正在載入角色列表</value>
+  </data>
+  <data name="Logging in" xml:space="preserve">
+    <value>登入中</value>
+  </data>
+  <data name="Retrying in seconds" xml:space="preserve">
+    <value>%d 秒後重試...</value>
+  </data>
+  <data name="LoginRememberPassword" xml:space="preserve">
+    <value>記住密碼</value>
+  </data>
+  <data name="LoginRememberUsername" xml:space="preserve">
+    <value>記住帳號</value>
+  </data>
+  <data name="LoginSavePasswordWarningBody" xml:space="preserve">
+    <value>使用這台電腦的人都能登入你的帳號。請只在信任的電腦儲存。要儲存密碼嗎？</value>
+  </data>
+  <data name="LoginSavePasswordWarningTitle" xml:space="preserve">
+    <value>警告！！！</value>
+  </data>
+  <data name="LoginTrustWarning" xml:space="preserve">
+    <value>請只在信任的電腦儲存密碼。</value>
+  </data>
+  <data name="GiftAction" xml:space="preserve">
+    <value>贈禮</value>
+  </data>
+  <data name="HuntAnalyzerExpPerHour" xml:space="preserve">
+    <value>經驗/時</value>
+  </data>
+  <data name="HuntAnalyzerExpTotal" xml:space="preserve">
+    <value>總經驗</value>
+  </data>
+  <data name="HuntAnalyzerHint" xml:space="preserve">
+    <value>追蹤經驗、收益與狩獵表現。</value>
+  </data>
+  <data name="HuntAnalyzerNextLevel" xml:space="preserve">
+    <value>下一等級</value>
+  </data>
+  <data name="HuntAnalyzerProfitPerHour" xml:space="preserve">
+    <value>收益/時</value>
+  </data>
+  <data name="HuntAnalyzerProfitTotal" xml:space="preserve">
+    <value>總收益</value>
+  </data>
+  <data name="HuntAnalyzerSession" xml:space="preserve">
+    <value>目前場次</value>
+  </data>
+  <data name="HuntAnalyzerTitle" xml:space="preserve">
+    <value>狩獵分析</value>
+  </data>
+  <data name="HuntAnalyzerVip" xml:space="preserve">
+    <value>訂閱 VIP</value>
+  </data>
+  <data name="InGameShopGiftCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="InGameShopGiftConfirm" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="InGameShopGiftMessage" xml:space="preserve">
+    <value>訊息</value>
+  </data>
+  <data name="InGameShopGiftRecipient" xml:space="preserve">
+    <value>收件人</value>
+  </data>
+  <data name="InGameShopGiftTitle" xml:space="preserve">
+    <value>贈禮</value>
+  </data>
+  <data name="InGameShopGiftWCoin" xml:space="preserve">
+    <value>W Coin</value>
+  </data>
+  <data name="InvalidItemIndexBuyConfirm" xml:space="preserve">
+    <value>無效的物品編號</value>
+  </data>
+  <data name="InvalidItemIndexBuySelect" xml:space="preserve">
+    <value>無效的物品編號。</value>
+  </data>
+  <data name="MarketplaceAccessories" xml:space="preserve">
+    <value>飾品</value>
+  </data>
+  <data name="MarketplaceAll" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="MarketplaceAnnounce" xml:space="preserve">
+    <value>上架</value>
+  </data>
+  <data name="MarketplaceArmors" xml:space="preserve">
+    <value>防具</value>
+  </data>
+  <data name="MarketplaceBannerSubtitle" xml:space="preserve">
+    <value>市集</value>
+  </data>
+  <data name="MarketplaceBuyTab" xml:space="preserve">
+    <value>購買</value>
+  </data>
+  <data name="MarketplaceCancelSale" xml:space="preserve">
+    <value>取消上架</value>
+  </data>
+  <data name="MarketplaceCartTab" xml:space="preserve">
+    <value>購物車</value>
+  </data>
+  <data name="MarketplaceCategories" xml:space="preserve">
+    <value>分類</value>
+  </data>
+  <data name="MarketplaceCoins" xml:space="preserve">
+    <value>貨幣</value>
+  </data>
+  <data name="MarketplaceConsumables" xml:space="preserve">
+    <value>消耗品</value>
+  </data>
+  <data name="MarketplaceDays" xml:space="preserve">
+    <value>%d 天</value>
+  </data>
+  <data name="MarketplaceDemoNotice" xml:space="preserve">
+    <value>測試目錄。從背包上架物品才能真正出售。</value>
+  </data>
+  <data name="MarketplaceDuration" xml:space="preserve">
+    <value>期間</value>
+  </data>
+  <data name="MarketplaceEmptyInv" xml:space="preserve">
+    <value>在背包分頁選擇要上架的物品。</value>
+  </data>
+  <data name="MarketplaceFeatureConfirm" xml:space="preserve">
+    <value>將此物品置頂需 %d W，為時 %d 小時。繼續？</value>
+  </data>
+  <data name="MarketplaceFeatureCost" xml:space="preserve">
+    <value>費用：%d W / %d 小時</value>
+  </data>
+  <data name="MarketplaceFeatureHours" xml:space="preserve">
+    <value>置頂 %d 小時</value>
+  </data>
+  <data name="MarketplaceFeatured" xml:space="preserve">
+    <value>精選</value>
+  </data>
+  <data name="MarketplaceFeeNotice" xml:space="preserve">
+    <value>手續費：3%</value>
+  </data>
+  <data name="MarketplaceHighestPrice" xml:space="preserve">
+    <value>高價 $</value>
+  </data>
+  <data name="MarketplaceHighlightButton" xml:space="preserve">
+    <value>置頂</value>
+  </data>
+  <data name="MarketplaceHistoryTab" xml:space="preserve">
+    <value>紀錄</value>
+  </data>
+  <data name="MarketplaceInvTab" xml:space="preserve">
+    <value>背包</value>
+  </data>
+  <data name="MarketplaceItemsTab" xml:space="preserve">
+    <value>物品</value>
+  </data>
+  <data name="MarketplaceJewels" xml:space="preserve">
+    <value>寶石</value>
+  </data>
+  <data name="MarketplaceLimit" xml:space="preserve">
+    <value>已達上架上限。</value>
+  </data>
+  <data name="MarketplaceListItem" xml:space="preserve">
+    <value>上架+</value>
+  </data>
+  <data name="MarketplaceListed" xml:space="preserve">
+    <value>已更新上架。</value>
+  </data>
+  <data name="MarketplaceListingFee" xml:space="preserve">
+    <value>手續費：售價 3%</value>
+  </data>
+  <data name="MarketplaceLowestPrice" xml:space="preserve">
+    <value>低價 $</value>
+  </data>
+  <data name="MarketplaceMySalesTab" xml:space="preserve">
+    <value>我的出售</value>
+  </data>
+  <data name="MarketplaceNewest" xml:space="preserve">
+    <value>最新</value>
+  </data>
+  <data name="MarketplaceNotEnoughW" xml:space="preserve">
+    <value>W Coin 不足。</value>
+  </data>
+  <data name="MarketplaceNotEnoughZen" xml:space="preserve">
+    <value>餘額不足，無法執行此操作。</value>
+  </data>
+  <data name="MarketplaceNotFound" xml:space="preserve">
+    <value>找不到此上架，或已結束。</value>
+  </data>
+  <data name="MarketplaceOthers" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="MarketplaceOwnItem" xml:space="preserve">
+    <value>不能購買自己上架的物品。</value>
+  </data>
+  <data name="MarketplacePackages" xml:space="preserve">
+    <value>組合包</value>
+  </data>
+  <data name="MarketplacePets" xml:space="preserve">
+    <value>寵物</value>
+  </data>
+  <data name="MarketplacePrice" xml:space="preserve">
+    <value>價格</value>
+  </data>
+  <data name="MarketplaceQty" xml:space="preserve">
+    <value>數量</value>
+  </data>
+  <data name="MarketplaceRechargeHint" xml:space="preserve">
+    <value>已開啟儲值頁。只需帳號登入、不要密碼。然後按重新整理。</value>
+  </data>
+  <data name="MarketplaceSelectInv" xml:space="preserve">
+    <value>（從背包選擇）</value>
+  </data>
+  <data name="MarketplaceSeller" xml:space="preserve">
+    <value>賣家</value>
+  </data>
+  <data name="MarketplaceSpecial" xml:space="preserve">
+    <value>特殊</value>
+  </data>
+  <data name="MarketplaceTitle" xml:space="preserve">
+    <value>市集</value>
+  </data>
+  <data name="MarketplaceViewOffer" xml:space="preserve">
+    <value>查看商品</value>
+  </data>
+  <data name="MarketplaceWeapons" xml:space="preserve">
+    <value>武器</value>
+  </data>
+  <data name="MarketplaceWings" xml:space="preserve">
+    <value>翅膀</value>
+  </data>
+  <data name="MuHelperActivationSkill1" xml:space="preserve">
+    <value>發動 1</value>
+  </data>
+  <data name="MuHelperActivationSkill2" xml:space="preserve">
+    <value>發動 2</value>
+  </data>
+  <data name="MuHelperAddExtraItem" xml:space="preserve">
+    <value>新增額外</value>
+  </data>
+  <data name="MuHelperAutoAcceptFriend" xml:space="preserve">
+    <value>接受好友</value>
+  </data>
+  <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
+    <value>接受公會</value>
+  </data>
+  <data name="MuHelperBasicAttackFallback" xml:space="preserve">
+    <value>基本攻擊</value>
+  </data>
+  <data name="MuHelperBasicSkill" xml:space="preserve">
+    <value>基本</value>
+  </data>
+  <data name="MuHelperCombo" xml:space="preserve">
+    <value>連擊</value>
+  </data>
+  <data name="MuHelperCondition" xml:space="preserve">
+    <value>條件</value>
+  </data>
+  <data name="MuHelperConfigure" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="MuHelperDistance" xml:space="preserve">
+    <value>距離</value>
+  </data>
+  <data name="MuHelperLongDistanceCounterAttack" xml:space="preserve">
+    <value>遠距反擊</value>
+  </data>
+  <data name="MuHelperOtherSettings" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="MuHelperPickAll" xml:space="preserve">
+    <value>撿附近物品</value>
+  </data>
+  <data name="MuHelperPickSelected" xml:space="preserve">
+    <value>撿選取物品</value>
+  </data>
+  <data name="MuHelperPotion" xml:space="preserve">
+    <value>藥水</value>
+  </data>
+  <data name="MuHelperPvpCounterattack" xml:space="preserve">
+    <value>PVP 反擊</value>
+  </data>
+  <data name="MuHelperRange" xml:space="preserve">
+    <value>範圍</value>
+  </data>
+  <data name="PackageItemInformationUnavailable" xml:space="preserve">
+    <value>無法取得組合包資訊。</value>
+  </data>
+  <data name="YouAlreadyReachedMaximumLevel" xml:space="preserve">
+    <value>你已達到最高等級。</value>
+  </data>
+  <data name="YouAlreadyReachedMaximumMasterLevel" xml:space="preserve">
+    <value>你已達到最高大師等級。</value>
+  </data>
+  <data name="YouCannotEnterThisArea" xml:space="preserve">
+    <value>無法進入此區域。</value>
+  </data>
+  <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
+    <value>需要擊殺更強的怪物才能獲得大師經驗。</value>
+  </data>
 </root>
