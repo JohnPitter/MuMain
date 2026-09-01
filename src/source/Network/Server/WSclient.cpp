@@ -1320,6 +1320,7 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
     }
 
     s_JoinMapBusy = true;
+    CharacterTitle::Reset();
     gMapManager.WorldActive = Data->Map;
     gMapManager.LoadWorld(gMapManager.WorldActive);
 
@@ -1345,8 +1346,7 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
     SetCharacterClass(c);
 
     Hero = c;
-    CharacterTitle::Reset();
-    c->CosmeticTitleId = 0;
+    c->CosmeticTitleId = static_cast<BYTE>(CharacterTitle::SelectedId());
 
     memset(c->ID, 0, sizeof c->ID);
     wcscpy(c->ID, CharacterAttribute->Name);
@@ -2382,22 +2382,23 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 {
     SEASON3B::CNewUIInventoryCtrl::BackupPickedItem();
 
-    // OpenMU S6 MapChanged: C3 len 1C 0F IsMapChange MapH MapL X Y Rot
-    // MuMain packed (live Main.exe): C3 len 1C FlagLo FlagHi Map X Y Angle
-    // Reading S6 with the packed struct produced HUD (0, realX) on Lorencia.
+    // Vanilla OpenMU S6 MapChanged (Length=15, map ushort BE):
+    //   C3 0F 1C 0F IsMapChange MapH MapL X Y Rot [pad]
+    // The published Main used WORD Flag + 1-byte map, so MapL became HeroX=0
+    // and the real X became Y — HUD (0,147) while GS stayed at 147,136.
     BYTE flag;
-    BYTE map;
+    int map;
     BYTE posX;
     BYTE posY;
     BYTE angle;
-    const BYTE packetSize = ReceiveBuffer[1];
-    if (packetSize >= 15 && ReceiveBuffer[3] == 0x0F)
+    if (ReceiveBuffer[3] == 0x0F)
     {
-        flag = ReceiveBuffer[4];
-        map = ReceiveBuffer[6];
-        posX = ReceiveBuffer[7];
-        posY = ReceiveBuffer[8];
-        angle = ReceiveBuffer[9];
+        auto Data = (LPPRECEIVE_TELEPORT_POSITION)ReceiveBuffer;
+        flag = Data->Flag;
+        map = (static_cast<int>(Data->MapH) << 8) | Data->MapL;
+        posX = Data->PositionX;
+        posY = Data->PositionY;
+        angle = Data->Angle;
     }
     else
     {
