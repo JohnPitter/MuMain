@@ -223,6 +223,12 @@ namespace
                     continue;
                 TerrainMappingLayer1[i] = kStoneMapping;
                 SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
+                const int dx = x - kCenterTileX;
+                const int dy = y - kCenterTileY;
+                if ((dx * dx + dy * dy) <= (kPvpRadiusTiles * kPvpRadiusTiles))
+                    SubTerrainAttribute(x, y, TW_SAFEZONE);
+                else
+                    AddTerrainAttribute(x, y, TW_SAFEZONE);
             }
         }
     }
