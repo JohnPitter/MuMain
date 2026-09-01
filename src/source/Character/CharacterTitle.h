@@ -37,6 +37,7 @@ namespace CharacterTitle
     // PK status → the rank this character actually holds.
     const wchar_t* FromHeroState(BYTE pk);
 
-    // What to draw above `owner`'s name. CosmeticTitleId 0 = follow PK.
+    // Gold line above `owner`'s name in-world. Id 0 draws nothing.
+    // Never used on character-select balloons.
     void Fill(CHARACTER* owner, wchar_t* dest, size_t destChars);
 }

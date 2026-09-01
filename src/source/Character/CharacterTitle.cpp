@@ -299,14 +299,15 @@ void Fill(CHARACTER* owner, wchar_t* dest, size_t destChars)
         return;
     }
 
-    // Automático / Commoner / Plebeu must not replace the character name.
+    // Id 0 = Automático: no gold line (name stays SeuAntonio). Equipped
+    // cosmetics (1–19) draw above the name only — never as the name.
     if (owner->CosmeticTitleId == AutoId)
     {
         return;
     }
 
     const wchar_t* title = NameForId(owner->CosmeticTitleId);
-    if (title == nullptr || title[0] == L'\0' || title == I18N::Game::Commoner)
+    if (title == nullptr || title[0] == L'\0')
     {
         return;
     }
