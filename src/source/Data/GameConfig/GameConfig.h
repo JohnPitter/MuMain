@@ -77,6 +77,10 @@ public:
     const std::vector<std::wstring>& GetChatCommandTemplates() const { return m_chatCommandTemplates; }
     void SetChatCommandTemplates(const std::vector<std::wstring>& templates);
 
+    // Cosmetic title drawn above the nameplate. 0 = follow Character.State / PK.
+    int GetCharacterTitleId(const std::wstring& characterName) const;
+    void SetCharacterTitleId(const std::wstring& characterName, int titleId);
+
     // Camera
     int GetZoom() const { return m_zoom; }
     void SetZoom(int zoom);

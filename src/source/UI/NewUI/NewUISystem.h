@@ -52,6 +52,7 @@
 #include "UI/NewUI/Combat/NewUIDuelWindow.h"
 #include "UI/NewUI/Combat/NewUISeigeWarfare.h"
 #include "UI/NewUI/Character/NewUINameWindow.h"
+#include "UI/NewUI/Character/NewUITitleWindow.h"
 #include "UI/NewUI/Inventory/NewUIItemEnduranceInfo.h"
 #include "UI/NewUI/HUD/NewUIBuffWindow.h"
 #include "UI/NewUI/Events/NewUICursedTempleEnter.h"
@@ -196,6 +197,7 @@ namespace SEASON3B
         CNewUIOptionWindow* m_pNewOptionWindow;
         CNewUIHelpWindow* m_pNewHelpWindow;
         CNewUIChatCommandWindow* m_pNewChatCommandWindow;
+        CNewUITitleWindow* m_pNewTitleWindow;
         CNewUIItemExplanationWindow* m_pNewItemExplanationWindow;
         CNewUISetItemExplanation* m_pNewSetItemExplanation;
         CNewUIQuickCommandWindow* m_pNewQuickCommandWindow;
@@ -281,6 +283,7 @@ namespace SEASON3B
         CNewUIOptionWindow* GetUI_NewOptionWindow() const;
         CNewUIHelpWindow* GetUI_NewHelpWindow() const;
         CNewUIChatCommandWindow* GetUI_NewChatCommandWindow() const;
+        CNewUITitleWindow* GetUI_NewTitleWindow() const;
         CNewUIItemExplanationWindow* GetUI_NewItemExplanationWindow() const;
         CNewUISetItemExplanation* GetUI_NewSetItemExplanation() const;
         CNewUIQuickCommandWindow* GetUI_NewQuickCommandWindow() const;
@@ -367,6 +370,7 @@ namespace SEASON3B
 #define g_pChaosCastleTime SEASON3B::CNewUISystem::GetInstance()->GetUI_NewChaosCastleTime()
 #define g_pBattleSoccerScore SEASON3B::CNewUISystem::GetInstance()->GetUI_NewBattleSoccerScore()
 #define g_pChatCommandWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewChatCommandWindow()
+#define g_pTitleWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewTitleWindow()
 #define g_pCommandWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewCommandWindow()
 #define g_pWindowMenu SEASON3B::CNewUISystem::GetInstance()->GetUI_NewWindowMenu()
 #define g_pOption SEASON3B::CNewUISystem::GetInstance()->GetUI_NewOptionWindow()

@@ -30,6 +30,7 @@
 #include "I18N/All.h"
 #include "GameLogic/Events/MatchEvent.h"
 #include "GameLogic/Items/PersonalShopTitleImp.h"
+#include "Character/CharacterTitle.h"
 #include "GameLogic/Quests/CSQuest.h"
 #include "GameLogic/Items/CSItemOption.h"
 #include "GameLogic/NPCs/npcBreeder.h"
@@ -57,6 +58,7 @@ typedef struct
     wchar_t      Union[30];
     wchar_t      Guild[30];
     wchar_t      szShopTitle[16];
+    wchar_t      Title[32];
     char      Color;
     char      GuildColor;
     float       IDLifeTime;
@@ -94,6 +96,12 @@ void SetBooleanPosition(CHAT* c)
     bResult[2] = GetTextExtentPoint32(g_pRenderText->GetFontDC(), c->Text[1], lstrlen(c->Text[1]), &Size[2]);
     bResult[3] = GetTextExtentPoint32(g_pRenderText->GetFontDC(), c->Union, lstrlen(c->Union), &Size[3]);
     bResult[4] = GetTextExtentPoint32(g_pRenderText->GetFontDC(), c->Guild, lstrlen(c->Guild), &Size[4]);
+    SIZE titleSize = { 0, 0 };
+    const bool hasTitle = c->Title[0] != L'\0';
+    if (hasTitle)
+    {
+        GetTextExtentPoint32(g_pRenderText->GetFontDC(), c->Title, lstrlen(c->Title), &titleSize);
+    }
 
     Size[0].cx += 3;
 
@@ -104,7 +112,11 @@ void SetBooleanPosition(CHAT* c)
         c->Width = std::max<int>(std::max<int>(Size[0].cx, Size[1].cx), std::max<int>(Size[3].cx, Size[4].cx));
     else
         c->Width = std::max<int>(std::max<int>(Size[0].cx, Size[3].cx), Size[4].cx);
+    if (hasTitle && titleSize.cx > c->Width)
+        c->Width = titleSize.cx;
     c->Height = FontHeight * (bResult[0] + bResult[1] + bResult[2] + bResult[3] + bResult[4]);
+    if (hasTitle)
+        c->Height += FontHeight;
 
     if (lstrlen(c->szShopTitle) > 0)
     {
@@ -264,6 +276,30 @@ void RenderBoolean(int x, int y, CHAT* c)
         RenderPos.y += iLineHeight;
     }
 
+    if (c->Title[0])
+    {
+        g_pRenderText->SetTextColor(255, 220, 120, 255);
+        g_pRenderText->SetBgColor(40, 30, 0, 150);
+        g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->Title, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
+        RenderPos.y += iLineHeight;
+
+        if (c->Owner == Hero)
+        {
+            g_pRenderText->SetBgColor(60, 100, 0, 150);
+            g_pRenderText->SetTextColor(200, 255, 0, 255);
+        }
+        else if (c->Owner->GuildMarkIndex == Hero->GuildMarkIndex)
+        {
+            g_pRenderText->SetBgColor(GetGuildRelationShipBGColor(GR_UNION));
+            g_pRenderText->SetTextColor(GetGuildRelationShipTextColor(GR_UNION));
+        }
+        else
+        {
+            g_pRenderText->SetBgColor(GetGuildRelationShipBGColor(c->Owner->GuildRelationShip));
+            g_pRenderText->SetTextColor(GetGuildRelationShipTextColor(c->Owner->GuildRelationShip));
+        }
+    }
+
     if (bGmMode)
     {
         g_pRenderText->SetTextColor(100, 250, 250, 255);
@@ -392,6 +428,8 @@ void AddGuildName(CHAT* c, CHARACTER* Owner)
     else {
         c->szShopTitle[0] = '\0';
     }
+
+    CharacterTitle::Fill(Owner, c->Title, sizeof(c->Title) / sizeof(c->Title[0]));
 
     if (Owner->GuildMarkIndex >= 0 && GuildMark[Owner->GuildMarkIndex].UnionName[0])
     {

@@ -174,8 +174,8 @@ void SEASON3B::CNewUINameWindow::RenderName()
 {
     // Season 6 vanilla only created a name balloon on hover / chat / GM
     // `/charactername`. After hover was tightened, that left player heads
-    // blank in town. Always refresh name + guild tag for living players
-    // (no later-season titles). Chaos Castle still hides names.
+    // blank in town. Always refresh name + guild tag + hero-state title
+    // (Plebeu / Herói / ...) for living players. Chaos Castle still hides names.
 #ifndef GUILD_WAR_EVENT
     const bool hidePlayerNameplates = gMapManager.InChaosCastle();
 #else

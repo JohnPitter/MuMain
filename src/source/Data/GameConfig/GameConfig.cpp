@@ -92,6 +92,30 @@ void GameConfig::Load()
     RemoveObsoleteSection(L"PARTITION");                      // launcher metadata, never read by client
 }
 
+int GameConfig::GetCharacterTitleId(const std::wstring& characterName) const
+{
+    if (characterName.empty())
+    {
+        return 0;
+    }
+
+    return GetPrivateProfileIntW(L"Titles", characterName.c_str(), 0, m_configPath.wstring().c_str());
+}
+
+void GameConfig::SetCharacterTitleId(const std::wstring& characterName, int titleId)
+{
+    if (characterName.empty())
+    {
+        return;
+    }
+
+    WritePrivateProfileStringW(
+        L"Titles",
+        characterName.c_str(),
+        std::to_wstring(titleId).c_str(),
+        m_configPath.wstring().c_str());
+}
+
 void GameConfig::Save()
 {
     using namespace CfgSections;
