@@ -172,18 +172,33 @@ bool SEASON3B::CNewUINameWindow::Render()
 
 void SEASON3B::CNewUINameWindow::RenderName()
 {
-    if (g_bGMObservation == true)
+    // Season 6 vanilla only created a name balloon on hover / chat / GM
+    // `/charactername`. After hover was tightened, that left player heads
+    // blank in town. Always refresh name + guild tag for living players
+    // (no later-season titles). Chaos Castle still hides names.
+#ifndef GUILD_WAR_EVENT
+    const bool hidePlayerNameplates = gMapManager.InChaosCastle();
+#else
+    const bool hidePlayerNameplates = false;
+#endif
+
+    if (!hidePlayerNameplates)
     {
         for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
         {
             CHARACTER* c = &CharactersClient[i];
             OBJECT* o = &c->Object;
-            if (o->Live && o->Kind == KIND_PLAYER)
+            if (!o->Live || o->Kind != KIND_PLAYER)
+                continue;
+#ifdef ASG_ADD_GENS_SYSTEM
+#ifndef PBG_MOD_STRIFE_GENSMARKRENDER
+            if (::IsStrifeMap(World) && Hero->m_byGensInfluence != c->m_byGensInfluence)
+                continue;
+#endif
+#endif
+            if (IsShopTitleVisible(c) == false)
             {
-                if (IsShopTitleVisible(c) == false)
-                {
-                    UI::Chat::CreateChat(c->ID, L"", c);
-                }
+                UI::Chat::CreateChat(c->ID, L"", c);
             }
         }
     }

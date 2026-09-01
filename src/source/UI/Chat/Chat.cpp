@@ -661,11 +661,24 @@ void RenderBooleans()
         CHAT* ci = &Chat[i];
         if (ci->IDLifeTime > 0 || ci->LifeTime[0] > 0)
         {
-            //. Fit to screen
+            if (ci->Owner != NULL)
+            {
+                OBJECT* o = &ci->Owner->Object;
+                vec3_t Position, transformPos;
+                Vector(o->Position[0], o->Position[1], o->Position[2] + o->BoundingBoxMax[2] + 60.f, Position);
+                VectorTransform(Position, g_Camera.Matrix, transformPos);
+                if (transformPos[2] >= 0)
+                    continue;
+            }
+
+            // WorldToScreen returns 640×480 HUD coords. Clamping against
+            // WindowWidth (pixels) shoved labels off the canvas at 16:9.
             if (ci->x < 0) ci->x = 0;
-            if (ci->x >= (int)WindowWidth - ci->Width) ci->x = WindowWidth - ci->Width;
+            if (ci->Width < REFERENCE_WIDTH && ci->x >= REFERENCE_WIDTH - ci->Width)
+                ci->x = REFERENCE_WIDTH - ci->Width;
             if (ci->y < 0) ci->y = 0;
-            if (ci->y >= (int)WindowHeight - ci->Height) ci->y = WindowHeight - ci->Height;
+            if (ci->Height < REFERENCE_HEIGHT && ci->y >= REFERENCE_HEIGHT - ci->Height)
+                ci->y = REFERENCE_HEIGHT - ci->Height;
             RenderBoolean(ci->x, ci->y, ci);
         }
     }
