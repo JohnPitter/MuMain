@@ -143,9 +143,13 @@ static void InitializeMainScene()
 
     g_ConsoleDebug->Write(MCD_SEND, L"SendRequestJoinMapServer");
 
-    CurrentProtocolState = REQUEST_JOIN_MAP_SERVER;
-    if (selectName[0] != L'\0')
-        SocketClient->ToGameServer()->SendSelectCharacter(selectName);
+    if (CurrentProtocolState != REQUEST_JOIN_MAP_SERVER
+        && CurrentProtocolState != RECEIVE_JOIN_MAP_SERVER)
+    {
+        CurrentProtocolState = REQUEST_JOIN_MAP_SERVER;
+        if (selectName[0] != L'\0')
+            SocketClient->ToGameServer()->SendSelectCharacter(selectName);
+    }
 
     // Remember which character is in play so auto-reconnect can re-select it.
     ReconnectManager::Instance().CacheCharacter(selectName);

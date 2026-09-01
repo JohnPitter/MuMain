@@ -319,17 +319,20 @@ void RenderBoolean(int x, int y, CHAT* c)
         g_pRenderText->SetTextColor(Temp);
     }
 
-    if (bGmMode)
+    if (c->ID[0] != L'\0')
     {
-        g_pRenderText->SetFont(g_hFontBold);
-        g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
-        RenderPos.y += iLineHeight;
-        g_pRenderText->SetFont(g_hFont);
-    }
-    else
-    {
-        g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
-        RenderPos.y += iLineHeight;
+        if (bGmMode)
+        {
+            g_pRenderText->SetFont(g_hFontBold);
+            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
+            RenderPos.y += iLineHeight;
+            g_pRenderText->SetFont(g_hFont);
+        }
+        else
+        {
+            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
+            RenderPos.y += iLineHeight;
+        }
     }
 
     if (c->GuildColor == 0)
@@ -359,16 +362,17 @@ void RenderBoolean(int x, int y, CHAT* c)
         dwTextColor[1] = RGBA(230, 220, 200, byAlpha[1]);
     }
 
-    if (c->LifeTime[1] > 0)
+    if (c->LifeTime[1] > 0 && c->Text[1][0] != L'\0')
     {
         g_pRenderText->SetTextColor(dwTextColor[1]);
         g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->Text[1], RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
         RenderPos.y += iLineHeight;
 
         g_pRenderText->SetTextColor(dwTextColor[0]);
-        g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->Text[0], RenderBoxSize.cx, iLineHeight);
+        if (c->Text[0][0] != L'\0')
+            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->Text[0], RenderBoxSize.cx, iLineHeight);
     }
-    else if (c->LifeTime[0] > 0)
+    else if (c->LifeTime[0] > 0 && c->Text[0][0] != L'\0')
     {
         g_pRenderText->SetTextColor(dwTextColor[0]);
         g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->Text[0], RenderBoxSize.cx, iLineHeight);
@@ -483,6 +487,11 @@ void CreateChat(wchar_t* character_name, const wchar_t* chat_text, CHARACTER* Ow
 {
     OBJECT* o = &Owner->Object;
     if (!o->Live || !o->Visible) return;
+    if ((character_name == nullptr || character_name[0] == L'\0') && Owner == Hero
+        && CharacterAttribute != nullptr && CharacterAttribute->Name[0] != L'\0')
+    {
+        character_name = CharacterAttribute->Name;
+    }
 
     int Color;
     if (SetColor != -1)

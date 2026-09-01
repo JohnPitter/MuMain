@@ -299,13 +299,14 @@ void Fill(CHARACTER* owner, wchar_t* dest, size_t destChars)
         return;
     }
 
-    const wchar_t* title = FromHeroState(owner->PK);
-    if (owner->CosmeticTitleId != AutoId)
+    // Automático / Commoner / Plebeu must not replace the character name.
+    if (owner->CosmeticTitleId == AutoId)
     {
-        title = NameForId(owner->CosmeticTitleId);
+        return;
     }
 
-    if (title == nullptr || title[0] == L'\0')
+    const wchar_t* title = NameForId(owner->CosmeticTitleId);
+    if (title == nullptr || title[0] == L'\0' || title == I18N::Game::Commoner)
     {
         return;
     }
