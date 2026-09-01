@@ -1233,8 +1233,6 @@ void LogSafeCastSizeMismatch(const char* packet_type, std::size_t received, std:
 BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
 {
     MouseLButton = false;
-    HeroIndex = rand() % MAX_CHARACTERS_CLIENT;
-    CHARACTER* c = &CharactersClient[HeroIndex];
 
     CharacterAttribute->Ability = 0;
     CharacterAttribute->AbilityTime[0] = 0;
@@ -1276,19 +1274,52 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
     CharacterAttribute->MaxAttackSpeed = Data->MaxAttackSpeed;
     CharacterMachine->Gold = Data->Gold;
 
-    if (Hero != nullptr && CurrentProtocolState == RECEIVE_JOIN_MAP_SERVER)
+    CHARACTER* existingHero = nullptr;
+    const int existingIndex = FindCharacterIndex(HeroKey);
+    if (existingIndex >= 0 && existingIndex < MAX_CHARACTERS_CLIENT)
     {
-        // OpenMU reuses CharacterInformation (F3 03) for in-game stat updates,
-        // such as the inventory expansion purchased in the cash shop. Keep the
-        // existing hero and world objects so NPCs and other characters survive.
-        Hero->PositionX = Data->PositionX;
-        Hero->PositionY = Data->PositionY;
-        Hero->PK = Data->PK;
-        Hero->CtlCode = Data->CtlCode;
-        Hero->Object.Angle[2] = ((float)Data->Angle - 1.f) * 45.f;
+        existingHero = &CharactersClient[existingIndex];
+    }
+
+    if (existingHero != nullptr)
+    {
+        // Second F3 03 (stat refresh or duplicate enter). Never create another model.
+        Hero = existingHero;
+        HeroIndex = static_cast<int>(existingHero - CharactersClient);
+        existingHero->Key = HeroKey;
+        existingHero->PositionX = Data->PositionX;
+        existingHero->PositionY = Data->PositionY;
+        existingHero->PK = Data->PK;
+        existingHero->CtlCode = Data->CtlCode;
+        existingHero->Object.Angle[2] = ((float)Data->Angle - 1.f) * 45.f;
+        CurrentProtocolState = RECEIVE_JOIN_MAP_SERVER;
         return true;
     }
 
+    static bool s_JoinMapBusy = false;
+    if (s_JoinMapBusy)
+    {
+        // Nested packet during LoadWorld — first call still owns the single spawn.
+        CurrentProtocolState = RECEIVE_JOIN_MAP_SERVER;
+        return true;
+    }
+
+    HeroIndex = rand() % MAX_CHARACTERS_CLIENT;
+    CHARACTER* c = &CharactersClient[HeroIndex];
+    if (c->Object.Live)
+    {
+        for (int i = 0; i < MAX_CHARACTERS_CLIENT; ++i)
+        {
+            if (!CharactersClient[i].Object.Live)
+            {
+                HeroIndex = i;
+                c = &CharactersClient[i];
+                break;
+            }
+        }
+    }
+
+    s_JoinMapBusy = true;
     gMapManager.WorldActive = Data->Map;
     gMapManager.LoadWorld(gMapManager.WorldActive);
 
@@ -1414,6 +1445,16 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
 
     g_ConsoleDebug->Write(MCD_RECEIVE, L"0x03 [ReceiveJoinMapServer]");
 
+    for (int i = 0; i < MAX_CHARACTERS_CLIENT; ++i)
+    {
+        CHARACTER* extra = &CharactersClient[i];
+        if (extra != Hero && extra->Object.Live && extra->Key == HeroKey)
+        {
+            extra->Object.Live = false;
+        }
+    }
+
+    s_JoinMapBusy = false;
     return (TRUE);
 }
 
@@ -2259,6 +2300,12 @@ void ReceiveMoveCharacter(std::span<const BYTE> ReceiveBuffer)
         return;
     }
 
+    if (o->Type == MODEL_STORAGE)
+    {
+        PinStationaryStorageNpc(c);
+        return;
+    }
+
     if (o->Type == MODEL_CRUST)
     {
         c->PositionX = Data->TargetX;
@@ -2765,7 +2812,24 @@ void ReceiveCreatePlayerViewportExtended(std::span<const BYTE> ReceiveBuffer)
     int CreateFlag = (Key >> 15);
     Key &= 0x7FFF;
 
-    
+    if (Key == HeroKey && Hero != nullptr && Hero->Object.Live)
+    {
+        // Join already created the hero. Viewport must refresh gear, not spawn a ghost.
+        HeroIndex = static_cast<int>(Hero - CharactersClient);
+        CMultiLanguage::ConvertFromUtf8(Hero->ID, Data->ID, MAX_USERNAME_SIZE);
+        Hero->Class = gCharacterManager.ChangeServerClassTypeToClientClassType(Data->Class);
+        Hero->SkinIndex = gCharacterManager.GetSkinModelIndex(Hero->Class);
+        Hero->AttackSpeed = Data->AttackSpeed;
+        Hero->MagicSpeed = Data->MagicSpeed;
+        Hero->PK = Data->RotationAndHeroState & 0xf;
+        Hero->Object.Angle[2] = ((float)(Data->RotationAndHeroState >> 4) - 1.f) * 45.f;
+        Hero->PositionX = Data->PositionX;
+        Hero->PositionY = Data->PositionY;
+        ReadEquipmentExtended(HeroIndex, Data->Flags, Data->Equipment);
+        SetCharacterClass(Hero);
+        SetCharacterScale(Hero);
+        return;
+    }
 
     //if (Index != MAX_CHARACTERS_CLIENT)
     //{
@@ -3218,6 +3282,10 @@ void ReceiveCreateMonsterViewport(const BYTE* ReceiveBuffer)
             iDefaultWall = TW_NOMOVE;
         }
 
+        if (o->Type == MODEL_STORAGE)
+        {
+            PinStationaryStorageNpc(c);
+        }
         else if (PathFinding2(c->PositionX, c->PositionY, Data2->TargetX, Data2->TargetY, &c->Path, 0.0f, iDefaultWall))
         {
             c->Movement = true;

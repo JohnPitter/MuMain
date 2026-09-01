@@ -4093,6 +4093,11 @@ void CreateWeaponBlur(CHARACTER* c, OBJECT* o, BMD* b)
 
 void MoveCharacter(CHARACTER* c, OBJECT* o)
 {
+    if (o->Type == MODEL_STORAGE)
+    {
+        PinStationaryStorageNpc(c);
+    }
+
     if (o->Type == MODEL_WARCRAFT)
     {
         wchar_t Text[100];
@@ -11639,6 +11644,28 @@ int FindCharacterIndex(int Key)
     return MAX_CHARACTERS_CLIENT;
 }
 
+void PinStationaryStorageNpc(CHARACTER* c)
+{
+    if (c == nullptr)
+    {
+        return;
+    }
+
+    OBJECT* o = &c->Object;
+    if (o->Type != MODEL_STORAGE)
+    {
+        return;
+    }
+
+    o->Kind = KIND_NPC;
+    o->Velocity = 0.f;
+    c->Movement = false;
+    c->Path.PathNum = 0;
+    c->Path.CurrentPath = 0;
+    c->TargetX = c->PositionX;
+    c->TargetY = c->PositionY;
+}
+
 int FindCharacterIndexByMonsterIndex(int Type)
 {
     for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
@@ -14465,6 +14492,7 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
     case MONSTER_BAZ_THE_VAULT_KEEPER:
         OpenNpc(MODEL_STORAGE);
         c = CreateCharacter(Key, MODEL_STORAGE, PositionX, PositionY);
+        PinStationaryStorageNpc(c);
         break;
     case MONSTER_GUILD_MASTER:
         OpenNpc(MODEL_MASTER);

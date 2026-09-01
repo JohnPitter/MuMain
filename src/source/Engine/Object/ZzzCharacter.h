@@ -44,6 +44,7 @@ void ClearCharacters(int Key = -1);
 void DeleteCharacter(int Key);
 void DeleteCharacter(CHARACTER* c, OBJECT* o);
 int FindCharacterIndex(int Key);
+void PinStationaryStorageNpc(CHARACTER* c);
 int FindCharacterIndexByMonsterIndex(int Type);
 
 void DeadCharacterBuff(OBJECT* o);

@@ -3742,6 +3742,12 @@ void MoveObject(OBJECT* o)
     b->CurrentAction = o->CurrentAction;
 
     float fSpeed = o->Velocity;
+    if (o->Type == MODEL_TREASURE_CHEST)
+    {
+        o->Velocity = 0.f;
+        o->CurrentAction = 0;
+        fSpeed = 0.f;
+    }
     if (gMapManager.WorldActive == WD_8TARKAN)
     {
         switch (o->Type)
@@ -4652,6 +4658,10 @@ OBJECT* CreateObject(int Type, vec3_t Position, vec3_t Angle, float Scale)
             break;
         case MODEL_TREASURE_CHEST:
             o->Velocity = 0.f;
+            o->CurrentAction = 0;
+            o->PriorAction = 0;
+            o->AnimationFrame = 0.f;
+            o->PriorAnimationFrame = 0.f;
             break;
         case MODEL_SIGN01:
         case MODEL_SIGN01 + 1:
