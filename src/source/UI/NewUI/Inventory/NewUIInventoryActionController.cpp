@@ -77,6 +77,16 @@ bool CNewUIInventoryActionController::HandlePickedItemPlacement(CNewUIInventoryC
     const int iSourceIndex = pPickedItem->GetSourceLinealPos();
     const int iTargetIndex = pPickedItem->GetTargetLinealPos(targetControl);
 
+    // Apply jewels even when owner inventory != drop target (ext inv / pick
+    // after RemoveItem). Previously this fell through to item-move and ate JoL.
+    if (IsUpgradeJewel(pPickItem) && iTargetIndex != -1)
+    {
+        if (ApplyJewels(targetControl, pPickedItem, pPickItem, iSourceIndex, iTargetIndex))
+        {
+            return true;
+        }
+    }
+
     const bool bFromInventorySystem =
         (pPickedItem->GetOwnerInventory() == targetControl)
         || (g_pMyInventoryExt != nullptr && g_pMyInventoryExt->GetOwnerOf(pPickedItem) != nullptr);
@@ -141,8 +151,34 @@ bool CNewUIInventoryActionController::HandleRightClick(CNewUIInventoryCtrl* targ
 {
     m_pContext->ResetMouseRButton();
 
+    if (CNewUIPickedItem* pPickedItem = CNewUIInventoryCtrl::GetPickedItem())
+    {
+        ITEM* pPickItem = pPickedItem->GetItem();
+        if (IsUpgradeJewel(pPickItem))
+        {
+            ITEM* hovered = targetControl->FindItemAtPt(MouseX, MouseY);
+            if (hovered != nullptr)
+            {
+                const int iSourceIndex = pPickedItem->GetSourceLinealPos();
+                const int iTargetIndex = targetControl->GetIndexByItem(hovered);
+                if (iTargetIndex >= 0
+                    && ApplyJewels(targetControl, pPickedItem, pPickItem, iSourceIndex, iTargetIndex))
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
     if (g_pNewUISystem->IsVisible(INTERFACE_STORAGE))
     {
+        ITEM* hovered = targetControl->FindItemAtPt(MouseX, MouseY);
+        if (hovered != nullptr && IsUpgradeJewel(hovered)
+            && targetControl->GetStorageType() == STORAGE_TYPE::INVENTORY)
+        {
+            return HandleInventoryRightClickActions(targetControl);
+        }
+
         return HandleStorageAutoMove(targetControl);
     }
 
@@ -267,12 +303,32 @@ bool CNewUIInventoryActionController::HandleSellToNPC(CNewUIInventoryCtrl* targe
 
 bool CNewUIInventoryActionController::HandleInventoryRightClickActions(CNewUIInventoryCtrl* targetControl) const
 {
+    ITEM* pItem = targetControl->FindItemAtPt(MouseX, MouseY);
+    if (pItem != nullptr)
+    {
+        const int jewelIndex = targetControl->GetIndexByItem(pItem);
+        if (jewelIndex >= 0 && IsUpgradeJewel(pItem))
+        {
+            if (CNewUIInventoryCtrl::GetPickedItem())
+            {
+                return true;
+            }
+
+            if (!CNewUIInventoryCtrl::CreatePickedItem(targetControl, pItem))
+            {
+                return false;
+            }
+
+            targetControl->RemoveItem(pItem);
+            return true;
+        }
+    }
+
     if (g_pNewUISystem->IsVisible(INTERFACE_INVENTORY_EXT))
     {
         return TryTransferBetweenInventorySections(targetControl);
     }
 
-    ITEM* pItem = targetControl->FindItemAtPt(MouseX, MouseY);
     if (pItem == nullptr)
     {
         return false;
@@ -588,6 +644,7 @@ bool CNewUIInventoryActionController::ApplyJewels(CNewUIInventoryCtrl* targetCon
         const int targetIndex = targetControl->GetIndexByItem(pItem);
         SendRequestUse(iSourceIndex, targetIndex);
         PlayBuffer(SOUND_GET_ITEM01);
+        pPickedItem->HidePickedItem();
         return true;
     }
 

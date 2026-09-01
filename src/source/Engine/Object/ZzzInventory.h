@@ -158,6 +158,7 @@ void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSo
 void SendRequestUse(int Index, int Target, bool addPoints = true);
 bool SendRequestEquipmentItem(STORAGE_TYPE iSrcType, int iSrcIndex, ITEM* pItem, STORAGE_TYPE iDstType, int iDstIndex);
 bool IsCanUseItem();
+bool IsUpgradeJewel(const ITEM* pItem);
 bool IsCanTrade();
 //  Party.
 void InitPartyList();

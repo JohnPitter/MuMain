@@ -474,7 +474,9 @@ void RenderTipTextList(const int sx, const int sy, int TextNum, int Tab, int iSo
 
 void SendRequestUse(int Index, int Target, bool addPoints)
 {
-    if (!IsCanUseItem())
+    // Targeted consume (jewels dropped on an item) must work with the vault open.
+    // Untargeted consume (potions, Target==0) stays blocked while vault/trade is open.
+    if (Target == 0 && !IsCanUseItem())
     {
         g_pSystemLogBox->AddText(I18N::Game::YouCannotUseYourItemsWhileUsingTheVaultOrWhileTrading, SEASON3B::TYPE_ERROR_MESSAGE);
         return;
@@ -540,6 +542,21 @@ bool IsCanUseItem()
     {
         return true;
     }
+}
+
+bool IsUpgradeJewel(const ITEM* pItem)
+{
+    if (pItem == nullptr)
+    {
+        return false;
+    }
+
+    return pItem->Type == ITEM_JEWEL_OF_BLESS
+        || pItem->Type == ITEM_JEWEL_OF_SOUL
+        || pItem->Type == ITEM_JEWEL_OF_LIFE
+        || pItem->Type == ITEM_JEWEL_OF_HARMONY
+        || pItem->Type == ITEM_LOWER_REFINE_STONE
+        || pItem->Type == ITEM_HIGHER_REFINE_STONE;
 }
 
 bool IsCanTrade()

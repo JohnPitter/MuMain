@@ -1417,6 +1417,15 @@ bool CNewUIMyInventory::EquipmentWindowProcess()
                 return true;
             }
 
+            if (IsUpgradeJewel(pItemObj))
+            {
+                SendRequestUse(iSourceIndex, iTargetIndex);
+                PlayBuffer(SOUND_GET_ITEM01);
+                pPickedItem->HidePickedItem();
+                ResetMouseLButton();
+                return true;
+            }
+
             if (g_ChangeRingMgr->CheckChangeRing(pPickedItem->GetItem()->Type))
             {
                 ITEM* pItemRingLeft = &CharacterMachine->Equipment[EQUIPMENT_RING_LEFT];
