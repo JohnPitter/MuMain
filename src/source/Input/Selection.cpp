@@ -314,6 +314,18 @@ void SelectObjects()
 {
     BYTE CKind_1, CKind_2;
 
+    if (SceneFlag == CHARACTER_SCENE)
+    {
+        SelectedCharacter = -1;
+        SelectedItem = -1;
+        SelectedNpc = -1;
+        SelectedOperate = -1;
+        Attacking = -1;
+        if (!MouseOnWindow)
+            SelectedCharacter = SelectCharacter(KIND_PLAYER);
+        return;
+    }
+
     if (g_pOption->IsAutoAttack() && gMapManager.WorldActive != WD_6STADIUM && gMapManager.InChaosCastle() == false)
     {
         if (SelectedCharacter < 0 || SelectedCharacter >= MAX_CHARACTERS_CLIENT + 1)

@@ -11,7 +11,6 @@
 #include "I18N/All.h"
 
 #include <algorithm>
-#include <array>
 #include <cwchar>
 
 #include "Camera/CameraProjection.h"
@@ -31,20 +30,6 @@ namespace
         destination[N - 1] = L'\0';
     }
 
-    struct GuildStatusText
-    {
-        std::uint8_t status;
-        int textIndex;
-    };
-
-    constexpr std::array<GuildStatusText, 5> kGuildStatusTexts{ {
-        {   0, 1330 },
-        {  32, 1302 },
-        {  64, 1301 },
-        { 128, 1300 },
-        { 255, 488 },
-    } };
-
     DWORD ResolveNameColor(std::uint8_t controlCode)
     {
         if (controlCode & CTLCODE_01BLOCKCHAR)
@@ -57,17 +42,6 @@ namespace
             return ARGB(255, 255, 0, 0);
 
         return CLRDW_WHITE;
-    }
-
-    int ResolveGuildTextIndex(std::uint8_t guildStatus)
-    {
-        const auto it = std::lower_bound(
-            kGuildStatusTexts.begin(),
-            kGuildStatusTexts.end(),
-            guildStatus,
-            [](const GuildStatusText& entry, std::uint8_t status) { return entry.status < status; });
-
-        return (it != kGuildStatusTexts.end() && it->status == guildStatus) ? it->textIndex : 0;
     }
 }
 
@@ -141,25 +115,21 @@ void CCharInfoBalloon::Render()
         RT3_SORT_CENTER
     );
 
-    g_pRenderText->SetTextColor(CLRDW_WHITE);
-    g_pRenderText->RenderText(
-        nTextPosX,
-        int((spriteY + 22 - g_fScreenOff_y) / g_fScreenRate_y),
-        m_szGuild,
-        boxW,
-        0,
-        RT3_SORT_CENTER
-    );
-
-    g_pRenderText->SetTextColor(CLRDW_BR_ORANGE);
-    g_pRenderText->RenderText(
-        nTextPosX,
-        int((spriteY + 38 - g_fScreenOff_y) / g_fScreenRate_y),
-        m_szClass,
-        boxW,
-        0,
-        RT3_SORT_CENTER
-    );
+    // Never draw the guild/status line on character select. Empty text with
+    // boxW > 0 still goes through GDI and reprints the previous glyph (the
+    // first letter of the name: "e" under erererer, "S" under SeuAntonio).
+    if (m_szClass[0] != L'\0')
+    {
+        g_pRenderText->SetTextColor(CLRDW_BR_ORANGE);
+        g_pRenderText->RenderText(
+            nTextPosX,
+            int((spriteY + 28 - g_fScreenOff_y) / g_fScreenRate_y),
+            m_szClass,
+            boxW,
+            0,
+            RT3_SORT_CENTER
+        );
+    }
     EnableAlphaTest();
 }
 
@@ -180,17 +150,9 @@ void CCharInfoBalloon::SetInfo()
 
     CopyWideString(m_szName, m_pCharInfo->ID);
 
+    // Select balloon is name + class/level only. Status 255, Commoner/Plebeu,
+    // guild role, and any leftover initial must never appear under the name.
     m_szGuild[0] = L'\0';
-    // 255 = no guild. Message 488 is Commoner/Plebeu (PK title) — never
-    // show it on the select balloon or names look like a shifted title field.
-    if (m_pCharInfo->GuildStatus != 255)
-    {
-        const int guildTextIndex = ResolveGuildTextIndex(m_pCharInfo->GuildStatus);
-        if (guildTextIndex != 0 && guildTextIndex != 488)
-        {
-            mu_swprintf_s(m_szGuild, L"(%ls)", I18N::Game::Lookup(guildTextIndex));
-        }
-    }
 
     mu_swprintf_s(m_szClass, L"%ls %d",
         gCharacterManager.GetCharacterClassText(m_pCharInfo->Class),

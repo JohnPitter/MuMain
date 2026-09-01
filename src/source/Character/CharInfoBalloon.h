@@ -33,8 +33,7 @@ public:
     void SetInfo();
 
 private:
-    // Re-runs SetInfo() on locale change so the cached guild / class
-    // strings displayed over the character flip to the new language
+    // Re-runs SetInfo() on locale change so class text flips language
     // without waiting for the next character refresh.
     static void OnLocaleChanged(void* ctx) noexcept;
 };

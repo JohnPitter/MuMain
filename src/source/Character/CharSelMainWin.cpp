@@ -217,6 +217,21 @@ void CCharSelMainWin::UpdateDisplay()
 {
     m_aBtn[CSMW_BTN_CREATE].SetEnable(HasEmptyCharacterSlot());
 
+    if (SelectedHero < 0 || SelectedHero >= kCharacterSlotCount
+        || CharactersClient[SelectedHero].Object.Live == 0
+        || CharactersClient[SelectedHero].ID[0] == L'\0')
+    {
+        SelectedHero = -1;
+        for (int i = 0; i < kCharacterSlotCount; ++i)
+        {
+            if (CharactersClient[i].Object.Live != 0 && CharactersClient[i].ID[0] != L'\0')
+            {
+                SelectedHero = i;
+                break;
+            }
+        }
+    }
+
     const bool hasSelection = (SelectedHero > -1);
     m_aBtn[CSMW_BTN_CONNECT].SetEnable(hasSelection);
     m_aBtn[CSMW_BTN_DELETE].SetEnable(hasSelection);
