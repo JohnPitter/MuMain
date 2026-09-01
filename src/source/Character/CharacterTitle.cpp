@@ -7,6 +7,11 @@
 #include "Engine/Object/ZzzObject.h"
 #include "I18N/All.h"
 
+extern int CurrentProtocolState;
+#ifndef RECEIVE_JOIN_MAP_SERVER
+#define RECEIVE_JOIN_MAP_SERVER 61
+#endif
+
 #include <cwchar>
 #include <set>
 
@@ -164,7 +169,7 @@ void Select(int id)
         Hero->CosmeticTitleId = static_cast<BYTE>(id);
     }
 
-    if (SocketClient == nullptr)
+    if (SocketClient == nullptr || CurrentProtocolState != RECEIVE_JOIN_MAP_SERVER)
     {
         return;
     }
