@@ -103,17 +103,19 @@ void CreateForce(OBJECT* o, vec3_t Pos)
     }
 }
 
+namespace
+{
+    // Keep this literal in Main.exe so published builds can be grepped.
+    char const g_SpawnAppearVfxDisabled[] = "SPAWN_APPEAR_VFX_DISABLED";
+}
+
 void CreateSpawnAppearEffect(OBJECT* owner)
 {
     (void)owner;
-    // Fully disabled: BITMAP_MAGIC+2 (even SubType 2) still left a yellow ring
-    // plus a sharp black floor polygon at login spawn (Lorencia 147,135).
-    // SubType 2 skipped RenderCircle but still called RenderTerrainAlphaBitmap
-    // with an uninitialized Scale when LifeTime <= 10 — leftover size from the
-    // previous effect in the render loop drew a huge dark quad on the tile.
-    // Marker kept so published Main.exe can be grepped to confirm this build.
-    volatile const char* kSpawnAppearVfxDisabled = "SPAWN_APPEAR_VFX_DISABLED";
-    (void)kSpawnAppearVfxDisabled;
+    (void)g_SpawnAppearVfxDisabled[0];
+    // Fully disabled: BITMAP_MAGIC / BITMAP_MAGIC+2 spawn VFX left a sharp
+    // black triangle on Lorencia spawn stone (147,136). No SubType 2 ring.
+    DeleteEffect(BITMAP_MAGIC + 2);
 }
 
 void EffectDestructor(OBJECT* o)
@@ -346,6 +348,11 @@ void CreateEffectFpsChecked(int Type, vec3_t Position, vec3_t Angle, vec3_t Ligh
 
 void CreateEffect(int Type, vec3_t Position, vec3_t Angle, vec3_t Light, int SubType, OBJECT* Owner, short PKKey, WORD SkillIndex, WORD Skill, WORD SkillSerialNum, float Scale, short int sTargetIndex)
 {
+    if (Type == BITMAP_MAGIC + 2)
+    {
+        return;
+    }
+
     for (int icntEffect = 0; icntEffect < MAX_EFFECTS; icntEffect++)
     {
         OBJECT* o = &Effects[icntEffect];

@@ -330,13 +330,23 @@ namespace
 
     void ClearCourtyardWalkability()
     {
-        for (int y = kYardMinY; y <= kYardMaxY; ++y)
+        constexpr int kFountainStoneR2 = 22 * 22;
+        for (int y = kPlazaMinY; y <= kPlazaMaxY; ++y)
         {
-            for (int x = kYardMinX; x <= kYardMaxX; ++x)
+            for (int x = kPlazaMinX; x <= kPlazaMaxX; ++x)
             {
                 if (x < 0 || y < 0 || x >= TERRAIN_SIZE || y >= TERRAIN_SIZE)
                     continue;
                 if (IsWebzenSentinelTile(x, y))
+                    continue;
+                const bool inYard = x >= kYardMinX && x <= kYardMaxX
+                    && y >= kYardMinY && y <= kYardMaxY;
+                const int i = TERRAIN_INDEX(x, y);
+                const bool stone = TerrainMappingLayer1[i] == kStoneMapping;
+                const int dx = x - kCenterTileX;
+                const int dy = y - kCenterTileY;
+                const bool nearFountain = (dx * dx + dy * dy) <= kFountainStoneR2;
+                if (!inYard && !(stone && nearFountain && !KeepGrassAt(x, y)))
                     continue;
                 SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
                 if (InPvpCircle(x, y))
