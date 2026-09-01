@@ -918,8 +918,10 @@ typedef struct {
 #pragma pack(push, 1)
 typedef struct {
     PBMSG_HEADER Header;
-    WORD		 Flag;
-    BYTE         Map;
+    BYTE         SubCode;
+    BYTE         Flag;
+    BYTE         MapH;
+    BYTE         MapL;
     BYTE         PositionX;
     BYTE         PositionY;
     BYTE         Angle;
