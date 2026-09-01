@@ -221,10 +221,12 @@ void NewMoveCharacterScene()
     }
     else if (rInput.IsLBtnDn())
     {
-        if (SelectedCharacter < 0 || SelectedCharacter >= MAX_CHARACTERS_PER_ACCOUNT)
-            SelectedHero = -1;
-        else
+        if (SelectedCharacter >= 0 && SelectedCharacter < MAX_CHARACTERS_PER_ACCOUNT
+            && CharactersClient[SelectedCharacter].Object.Live != 0
+            && CharactersClient[SelectedCharacter].ID[0] != L'\0')
+        {
             SelectedHero = SelectedCharacter;
+        }
         rUIMng.m_CharSelMainWin.UpdateDisplay();
     }
 
@@ -424,6 +426,12 @@ bool NewRenderCharacterScene(HDC hDC)
         g_pOption->Render();
         EndBitmap();
     }
+
+    // After CUIMng *and* the late NewUI options pass so the arrow is never
+    // covered by that window (RenderInfomation used to draw the cursor too early).
+    BeginBitmap();
+    RenderCursor();
+    EndBitmap();
 
     EndOpengl();
 

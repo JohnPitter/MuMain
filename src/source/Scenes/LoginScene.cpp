@@ -492,6 +492,10 @@ bool NewRenderLogInScene(HDC hDC)
         g_MessageBox->Render();
     }
 
+    // After CUIMng *and* the late NewUI options/message-box pass. Drawing the
+    // cursor earlier (inside RenderInfomation) put the arrow behind those windows.
+    RenderCursor();
+
     EndBitmap();
 
     EndOpengl();

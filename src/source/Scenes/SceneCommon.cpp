@@ -318,11 +318,6 @@ void RenderInfomation()
 
     CUIMng::Instance().Render();
 
-    if (SceneFlag == LOG_IN_SCENE || SceneFlag == CHARACTER_SCENE)
-    {
-        RenderCursor();
-    }
-
     RenderInfomation3D();
 }
 
