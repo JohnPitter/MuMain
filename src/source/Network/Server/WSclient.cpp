@@ -790,25 +790,39 @@ void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer)
 {
     InitGuildWar();
 
-    auto Data = (LPPHEADER_DEFAULT_CHARACTER_LIST)ReceiveBuffer;
-
-    int Offset = sizeof(PHEADER_DEFAULT_CHARACTER_LIST);
+    // Season 6 CharacterList is C1 F3 00. Offsets are fixed; do not use
+    // unpacked struct sizeof (title work must never shift name/level).
+    // 0:C1 1:len 2:F3 3:00 4:unlock 5:move 6:count 7:vault
+    // each char @ 8 + i*44: slot, name[10], pad, level u16, ctl, class, flags, eq[25], guild
+    constexpr int kHeaderSize = 8;
+    constexpr int kEntrySize = 44;
+    const int characterCount = ReceiveBuffer[6];
+    CharacterAttribute->IsVaultExtended = ReceiveBuffer[7] != 0;
 
 #ifdef _DEBUG
-    g_ConsoleDebug->Write(MCD_RECEIVE, L"[ReceiveList Count %d Max class %d]", Data->CharacterCount, Data->MaxClass);
+    g_ConsoleDebug->Write(MCD_RECEIVE, L"[ReceiveList Count %d]", characterCount);
 #else
-    g_ErrorReport.Write(L"[ReceiveList Count %d Max class %d]", Data->CharacterCount, Data->MaxClass);
+    g_ErrorReport.Write(L"[ReceiveList Count %d]", characterCount);
 #endif
 
-    CharacterAttribute->IsVaultExtended = Data->IsVaultExtended;
-    for (int i = 0; i < Data->CharacterCount; i++)
+    for (int i = 0; i < characterCount; i++)
     {
-        auto Data2 = (LPPRECEIVE_CHARACTER_LIST_EXTENDED)(ReceiveBuffer + Offset);
+        const BYTE* row = ReceiveBuffer + kHeaderSize + (i * kEntrySize);
+        const BYTE index = row[0];
+        char nameUtf8[11] = {};
+        memcpy(nameUtf8, row + 1, 10);
+        const WORD level = static_cast<WORD>(row[12] | (row[13] << 8));
+        const BYTE ctlCode = row[14];
+        const auto serverClass = static_cast<SERVER_CLASS_TYPE>(row[15]);
+        const BYTE flags = row[16];
+        BYTE equipment[EQUIPMENT_LENGTH_EXTENDED] = {};
+        memcpy(equipment, row + 17, EQUIPMENT_LENGTH_EXTENDED);
+        const BYTE guildStatus = row[42];
 
-        auto iClass = gCharacterManager.ChangeServerClassTypeToClientClassType(Data2->Class);
+        auto iClass = gCharacterManager.ChangeServerClassTypeToClientClassType(serverClass);
         float fPos[2], fAngle = 0.0f;
 
-        switch (Data2->Index)
+        switch (index)
         {
             case 0:	fPos[0] = 8008.0f;	fPos[1] = 18885.0f;	fAngle = 115.0f; break;
             case 1:	fPos[0] = 7986.0f;	fPos[1] = 19145.0f;	fAngle = 90.0f; break;
@@ -818,22 +832,30 @@ void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer)
             default: return;
         }
 
-        CHARACTER* c = CreateHero(Data2->Index, iClass, 0, fPos[0], fPos[1], fAngle);
+        CHARACTER* c = CreateHero(index, iClass, 0, fPos[0], fPos[1], fAngle);
 
-        c->Level = Data2->Level;
-        c->CtlCode = Data2->CtlCode;
-
+        c->Level = level;
+        c->CtlCode = ctlCode;
         memset(c->ID, 0, sizeof(c->ID));
+        CMultiLanguage::ConvertFromUtf8(c->ID, nameUtf8, 10, MAX_USERNAME_SIZE + 1);
+        if (c->ID[0] == L'\0')
+        {
+            for (int n = 0; n < 10 && nameUtf8[n] != '\0'; ++n)
+            {
+                c->ID[n] = static_cast<wchar_t>(static_cast<unsigned char>(nameUtf8[n]));
+            }
+        }
 
-        CMultiLanguage::ConvertFromUtf8(c->ID, Data2->ID, MAX_USERNAME_SIZE);
+        g_ErrorReport.Write(L"[CharacterList] slot=%u name=%ls level=%u raw=%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
+            index, c->ID, c->Level,
+            row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10]);
 
-        ReadEquipmentExtended(Data2->Index, Data2->Flags, Data2->Equipment);
-
-        c->GuildStatus = Data2->byGuildStatus;
-        Offset += sizeof(PRECEIVE_CHARACTER_LIST_EXTENDED);
+        ReadEquipmentExtended(index, flags, equipment);
+        c->GuildStatus = guildStatus;
     }
 
     CurrentProtocolState = RECEIVE_CHARACTERS_LIST;
+    CUIMng::Instance().m_CharInfoBalloonMng.UpdateDisplay();
 }
 
 CHARACTER_ENABLE g_CharCardEnable;

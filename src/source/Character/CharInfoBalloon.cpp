@@ -180,8 +180,18 @@ void CCharInfoBalloon::SetInfo()
 
     CopyWideString(m_szName, m_pCharInfo->ID);
 
-    const int guildTextIndex = ResolveGuildTextIndex(m_pCharInfo->GuildStatus);
-    mu_swprintf_s(m_szGuild, L"(%ls)", I18N::Game::Lookup(guildTextIndex));
+    m_szGuild[0] = L'\0';
+    // 255 = no guild. Message 488 is Commoner/Plebeu (PK title) — never
+    // show it on the select balloon or names look like a shifted title field.
+    if (m_pCharInfo->GuildStatus != 255)
+    {
+        const int guildTextIndex = ResolveGuildTextIndex(m_pCharInfo->GuildStatus);
+        if (guildTextIndex != 0 && guildTextIndex != 488)
+        {
+            mu_swprintf_s(m_szGuild, L"(%ls)", I18N::Game::Lookup(guildTextIndex));
+        }
+    }
+
     mu_swprintf_s(m_szClass, L"%ls %d",
         gCharacterManager.GetCharacterClassText(m_pCharInfo->Class),
         m_pCharInfo->Level);

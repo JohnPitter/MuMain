@@ -8,6 +8,7 @@
 #include "I18N/All.h"
 
 extern int CurrentProtocolState;
+extern EGameScene SceneFlag;
 #ifndef RECEIVE_JOIN_MAP_SERVER
 #define RECEIVE_JOIN_MAP_SERVER 61
 #endif
@@ -293,7 +294,7 @@ void Fill(CHARACTER* owner, wchar_t* dest, size_t destChars)
     }
 
     dest[0] = L'\0';
-    if (owner == nullptr || owner->Object.Kind != KIND_PLAYER)
+    if (owner == nullptr || owner->Object.Kind != KIND_PLAYER || SceneFlag == CHARACTER_SCENE)
     {
         return;
     }
