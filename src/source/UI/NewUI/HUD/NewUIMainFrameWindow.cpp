@@ -1389,6 +1389,14 @@ bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
         return true;
     }
 
+    extern int MouseWheel;
+    if (MouseWheel != 0 && (m_bSkillList || IsMouseOnSkillHud()))
+    {
+        CycleCurrentSkill(MouseWheel > 0 ? 1 : -1);
+        MouseWheel = 0;
+        return false;
+    }
+
     BYTE bySkillNumber = CharacterAttribute->SkillNumber;
     BYTE bySkillMasterNumber = CharacterAttribute->SkillMasterNumber;
 
@@ -1503,7 +1511,7 @@ bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
 
             BYTE bySkillUseType = SkillAttribute[bySkillType].SkillUseType;
 
-            if (bySkillUseType == SKILL_USE_TYPE_MASTERLEVEL)
+            if (bySkillUseType == SKILL_USE_TYPE_MASTER || bySkillUseType == SKILL_USE_TYPE_MASTERLEVEL)
             {
                 continue;
             }
@@ -1570,7 +1578,7 @@ bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
 
         BYTE bySkillUseType = SkillAttribute[bySkillType].SkillUseType;
 
-        if (bySkillUseType == SKILL_USE_TYPE_MASTERLEVEL)
+        if (bySkillUseType == SKILL_USE_TYPE_MASTER || bySkillUseType == SKILL_USE_TYPE_MASTERLEVEL)
         {
             continue;
         }
@@ -1648,7 +1656,9 @@ bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
 
     if (PrevEventState != m_EventState)
     {
-        if (m_EventState == EVENT_NONE || m_EventState == EVENT_BTN_HOVER_SKILLLIST)
+        // Consume hover/down on the swap strip so world-clicks (and TAB overlay)
+        // cannot steal the mouse before the list selects a skill.
+        if (m_EventState == EVENT_NONE)
             return true;
         return false;
     }
@@ -1665,7 +1675,7 @@ bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
                 if (m_EventState == EVENT_NONE && MouseLButtonPush == false)
                 {
                     m_EventState = EVENT_BTN_HOVER_SKILLLIST;
-                    return true;
+                    return false;
                 }
                 if (m_EventState == EVENT_BTN_HOVER_SKILLLIST && MouseLButtonPush == true)
                 {
@@ -1715,6 +1725,11 @@ bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
             m_EventState = EVENT_NONE;
             return true;
         }
+        return false;
+    }
+
+    if (bMouseOnSkillList)
+    {
         return false;
     }
 
@@ -2061,7 +2076,84 @@ void SEASON3B::CNewUISkillList::RenderSkillInfo()
 
 float SEASON3B::CNewUISkillList::GetLayerDepth()
 {
-    return 5.2f;
+    // Above TAB MiniMap (8.1) so the swap strip at y=390 receives clicks.
+    // Below Option (10.5) and MainFrame (10.6) so options/HUD buttons stay on top.
+    return 10.2f;
+}
+
+bool SEASON3B::CNewUISkillList::IsSkillPaletteOpen() const
+{
+    return m_bSkillList;
+}
+
+bool SEASON3B::CNewUISkillList::IsMouseOnSkillHud() const
+{
+    if (SEASON3B::CheckMouseIn(222, 431, 32 * 5, 38))
+    {
+        return true;
+    }
+    if (SEASON3B::CheckMouseIn(385, 431, 32, 38))
+    {
+        return true;
+    }
+    if (m_bSkillList && SEASON3B::CheckMouseIn(180, 340, 320, 91))
+    {
+        return true;
+    }
+    return false;
+}
+
+bool SEASON3B::CNewUISkillList::IsCycleableSkillSlot(int iSlot) const
+{
+    if (iSlot < 0 || iSlot >= MAX_MAGIC || CharacterAttribute == NULL)
+    {
+        return false;
+    }
+
+    WORD bySkillType = CharacterAttribute->Skill[iSlot];
+    if (bySkillType == 0 || (bySkillType >= AT_SKILL_STUN && bySkillType <= AT_SKILL_REMOVAL_BUFF))
+    {
+        return false;
+    }
+
+    BYTE bySkillUseType = SkillAttribute[bySkillType].SkillUseType;
+    if (bySkillUseType == SKILL_USE_TYPE_MASTER || bySkillUseType == SKILL_USE_TYPE_MASTERLEVEL)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void SEASON3B::CNewUISkillList::CycleCurrentSkill(int delta)
+{
+    if (delta == 0 || CharacterAttribute == NULL || CharacterAttribute->SkillNumber <= 0 || Hero == NULL)
+    {
+        return;
+    }
+
+    const int step = delta > 0 ? 1 : -1;
+    int i = Hero->CurrentSkill;
+    for (int n = 0; n < MAX_MAGIC; ++n)
+    {
+        i += step;
+        if (i >= MAX_MAGIC)
+        {
+            i = 0;
+        }
+        else if (i < 0)
+        {
+            i = MAX_MAGIC - 1;
+        }
+
+        if (IsCycleableSkillSlot(i))
+        {
+            m_wHeroPriorSkill = CharacterAttribute->Skill[Hero->CurrentSkill];
+            Hero->CurrentSkill = i;
+            PlayBuffer(SOUND_CLICK01);
+            return;
+        }
+    }
 }
 
 WORD SEASON3B::CNewUISkillList::GetHeroPriorSkill()

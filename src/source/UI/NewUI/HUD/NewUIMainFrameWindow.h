@@ -115,7 +115,7 @@ namespace SEASON3B
         bool Update();
         bool Render();
         void RenderSkillInfo();
-        float GetLayerDepth();		// 10.6f
+        float GetLayerDepth();		// 10.2f — above TAB MiniMap (8.1), below Option (10.5)
 
         WORD GetHeroPriorSkill();
         void SetHeroPriorSkill(BYTE bySkill);
@@ -128,6 +128,8 @@ namespace SEASON3B
         void RenderCurrentSkillAndHotSkillList();
 
         bool IsSkillListUp();
+        bool IsSkillPaletteOpen() const;
+        bool IsMouseOnSkillHud() const;
 
         static void UI2DEffectCallback(LPVOID pClass, DWORD dwParamA, DWORD dwParamB);
 
@@ -136,6 +138,8 @@ namespace SEASON3B
         void UnloadImages();
         bool IsArrayUp(BYTE bySkill);
         bool IsArrayIn(BYTE bySkill);
+        bool IsCycleableSkillSlot(int iSlot) const;
+        void CycleCurrentSkill(int delta);
         void UseHotKey(int iHotKey);
 
         void RenderSkillIcon(int iIndex, float x, float y, float width, float height);
@@ -201,7 +205,7 @@ namespace SEASON3B
 
         bool IsVisible() const;
 
-        float GetLayerDepth();		// 10.2f
+        float GetLayerDepth();		// 10.6f
         float GetKeyEventOrder();	// 7.f
 
         void SetItemHotKey(int iHotKey, int iItemType, int iItemLevel);

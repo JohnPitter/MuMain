@@ -338,8 +338,14 @@ bool SEASON3B::CNewUIMiniMap::UpdateMouseEvent()
         }
     }
 
-    // Overlay covers the world, not the skill-list popup (y=390) or hotbar (y=431).
-    if (CheckMouseIn(0, 0, REFERENCE_WIDTH, 380))
+    if (g_pSkillList && (g_pSkillList->IsSkillPaletteOpen() || g_pSkillList->IsMouseOnSkillHud()))
+    {
+        return ret;
+    }
+
+    // Overlay covers the world. The swap strip sits ~30-50px above the numbered
+    // bar (y=390, pet row y=352); keep the cutoff below that HUD band.
+    if (CheckMouseIn(0, 0, REFERENCE_WIDTH, 340))
     {
         return false;
     }
