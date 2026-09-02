@@ -90,7 +90,7 @@ SEASON3B::CNewUINameWindow::CNewUINameWindow()
     m_Pos.x = m_Pos.y = 0;
 
     m_bShowItemName = false;
-    m_bShowMonsterHealthBar = false;
+    m_bShowMonsterHealthBar = true;
 }
 
 SEASON3B::CNewUINameWindow::~CNewUINameWindow()
@@ -312,6 +312,15 @@ void SEASON3B::CNewUINameWindow::RenderMonsterHealthBars()
             || ScreenX > (REFERENCE_WIDTH + 100)
             || ScreenY > (REFERENCE_HEIGHT + 100))
             continue;
+
+        // Show the monster's local name and its health together, so the bar is
+        // always identifiable even before the first damage status is received.
+        if (c->ID[0] != L'\0')
+        {
+            g_pRenderText->SetTextColor(255, 230, 200, 255);
+            g_pRenderText->SetBgColor(100, 0, 0, 255);
+            g_pRenderText->RenderText(ScreenX, ScreenY - 14, c->ID, 0, 0, RT3_WRITE_CENTER);
+        }
 
         // Bar fixed at ~3/7 of the original width, with 8 segments so each one
         // stays close to the original thickness (see DrawHealthBar for geometry).
