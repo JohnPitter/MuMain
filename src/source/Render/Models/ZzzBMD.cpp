@@ -2400,10 +2400,12 @@ void BMD::AddMeshShadowTriangles(const int blendMesh, const int hiddenMesh, cons
         gpuBodyOrigin = m_LastTranslate ? BodyOrigin : nullptr;
         gpuBodyScale  = m_LastTranslate ? BodyScale  : 1.0f;
 
-        // Mirrors RenderMesh()'s active-bone-palette resolution (ZzzBMD.cpp ~1498-1500);
-        // UploadBones() dedups on (pointer, g_BoneTransformVersion), so this is cheap even when
-        // RenderMesh() already uploaded the same palette earlier this frame.
-        const void* activeBones = g_pActiveBoneTransform ? (const void*)g_pActiveBoneTransform : (m_pCurrentBoneTransform ? (const void*)m_pCurrentBoneTransform : (const void*)BoneTransform);
+        // Prefer this BMD's last Transform() palette. RenderLinkObject restores
+        // g_pActiveBoneTransform to the character skeleton after drawing a linked
+        // wing/cape; using that palette here skins wing verts with body bones and
+        // projects a solid jagged blob under 2nd-level wings.
+        const void* activeBones = m_pCurrentBoneTransform ? (const void*)m_pCurrentBoneTransform
+            : (g_pActiveBoneTransform ? (const void*)g_pActiveBoneTransform : (const void*)BoneTransform);
         BoneUBO::Instance().UploadBones(activeBones, MAX_BONES, g_BoneTransformVersion);
     }
 

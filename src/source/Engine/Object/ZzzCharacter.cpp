@@ -2822,7 +2822,9 @@ bool AttackStage(CHARACTER* c, OBJECT* o)
                 c->SetLastAttackEffectTime();
             }
 
-            if (o->AnimationFrame >= 3.f && rand_fps_check(1))
+            // One-shot slash wave. Do not gate on rand_fps_check(1): at 60 FPS that
+            // check is ~42% per frame and the AttackTime=15 jump can skip the spawn.
+            if (o->AnimationFrame >= 3.f && c->AttackTime < 15)
             {
                 o->PKKey = getTargetCharacterKey(c, SelectedCharacter);
 
@@ -8460,6 +8462,10 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
     if (gMapManager.WorldActive != WD_10HEAVEN && gMapManager.InHellas() == FALSE && !g_Direction.m_CKanturu.IsMayaScene()
         && !IsWingShadowDisabledDebug()) // DXP-23 diagnostic
     {
+        // Extra wing/cape shadow runs after g_pActiveBoneTransform was restored to
+        // the character. Bind this item's last Animation/Transform palette so the
+        // GPU planar-shadow pass skins the wing, not the body.
+        SetActiveBoneTransform(BoneTransform);
         switch (Type)        // 날개인지 검사
         {
         case MODEL_WINGS_OF_ELF:        // Wings of Elf
@@ -8483,7 +8489,7 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         case MODEL_WING + 132:        // Small Wings of Elf
         case MODEL_WING + 133:        // Small Wings of Heaven
         case MODEL_WING + 134:        // Small Wings of Satan
-            b->RenderBodyShadow();
+            b->RenderBodyShadow(Object->BlendMesh, Object->HiddenMesh);
             break;
             
         case MODEL_CAPE_OF_LORD:    // Cape of Lord
@@ -8501,6 +8507,7 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
             }
             break;
         }
+        SetActiveBoneTransform(savedActiveBones);
     }
 }
 
