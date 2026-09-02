@@ -14,11 +14,6 @@ namespace
     constexpr int kCenterTileY = 128;
     constexpr int kPvpRadiusTiles = 5;
 
-    constexpr int kYardMinX = 131;
-    constexpr int kYardMinY = 118;
-    constexpr int kYardMaxX = 151;
-    constexpr int kYardMaxY = 138;
-
     constexpr int kPlazaMinX = 111;
     constexpr int kPlazaMaxX = 164;
     constexpr int kPlazaMinY = 105;
@@ -321,13 +316,6 @@ namespace
         PlaceFloor(kFountainX, kFountainY, ground + kFloorLift, kBaseScale);
     }
 
-    bool InPvpCircle(int x, int y)
-    {
-        const int dx = x - kCenterTileX;
-        const int dy = y - kCenterTileY;
-        return (dx * dx + dy * dy) <= (kPvpRadiusTiles * kPvpRadiusTiles);
-    }
-
     void RestoreFencedLawnNoMove()
     {
         for (int y = kPlazaMinY; y <= kPlazaMaxY; ++y)
@@ -342,38 +330,6 @@ namespace
         }
     }
 
-    void ClearCourtyardWalkability()
-    {
-        constexpr int kFountainStoneR2 = 22 * 22;
-        for (int y = kPlazaMinY; y <= kPlazaMaxY; ++y)
-        {
-            for (int x = kPlazaMinX; x <= kPlazaMaxX; ++x)
-            {
-                if (x < 0 || y < 0 || x >= TERRAIN_SIZE || y >= TERRAIN_SIZE)
-                    continue;
-                if (IsWebzenSentinelTile(x, y))
-                    continue;
-                if (KeepGrassAt(x, y))
-                    continue;
-                const bool inYard = x >= kYardMinX && x <= kYardMaxX
-                    && y >= kYardMinY && y <= kYardMaxY;
-                const int i = TERRAIN_INDEX(x, y);
-                const bool stone = TerrainMappingLayer1[i] == kStoneMapping;
-                const int dx = x - kCenterTileX;
-                const int dy = y - kCenterTileY;
-                const bool nearFountain = (dx * dx + dy * dy) <= kFountainStoneR2;
-                if (!inYard && !(stone && nearFountain && !KeepGrassAt(x, y)))
-                    continue;
-                if (!stone && TerrainMappingLayer1[i] == kGrassMapping)
-                    continue;
-                SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
-                if (InPvpCircle(x, y))
-                    SubTerrainAttribute(x, y, TW_SAFEZONE);
-                else
-                    AddTerrainAttribute(x, y, TW_SAFEZONE);
-            }
-        }
-    }
 }
 
 namespace World::Lorencia
@@ -415,7 +371,6 @@ namespace World::Lorencia
         MarkKeepGrassFromProps();
         PaveOrphanGrassTiles();
         RestoreFencedLawnNoMove();
-        ClearCourtyardWalkability();
         LoadCrywolfFloor();
         HideFountainCluster();
         SpawnCrywolfPlaza();

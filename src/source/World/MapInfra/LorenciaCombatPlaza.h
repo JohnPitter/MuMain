@@ -4,9 +4,8 @@ namespace World::Lorencia
 {
     // Hide fountain courtyard clutter, pave orphan TileGrass01 islands on
     // stone (keep grass next to chests/walls), strip leftover planter
-    // frames on those empty rows, make the 21x21 fountain square walkable,
-    // clear TW_SAFEZONE only inside the circular PvP plaza, and spawn the
-    // Crywolf circular floor.
+    // frames on those empty rows, keep EncTerrain walk flags (no courtyard
+    // punch), and spawn the Crywolf circular floor.
     void ApplyFountainCombatPlaza();
 
     bool IsCombatPlazaFloor(int type);
