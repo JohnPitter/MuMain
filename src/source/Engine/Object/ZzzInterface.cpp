@@ -1112,7 +1112,7 @@ void SendRequestMagic(int Type, int Key)
     if (Type == 40 || Type == 263 || Type == 261 || abs((int)(GetTickCount() - g_dwLatestMagicTick)) > 300)
     {
         g_dwLatestMagicTick = GetTickCount();
-        SocketClient->ToGameServer()->SendTargetedSkill075(static_cast<BYTE>(FindHotKey(Type)), Key);
+        SocketClient->ToGameServer()->SendTargetedSkill(Type, Key);
         g_ConsoleDebug->Write(MCD_SEND, L"0x19 [SendRequestMagic(%d %d)]", Type, Key);
     }
 }
@@ -1135,7 +1135,7 @@ void SendRequestMagicContinue(int Type, int x, int y, int Angle, BYTE Dest, BYTE
 {
     CurrentSkill = Type;
 
-    SocketClient->ToGameServer()->SendAreaSkill075(static_cast<BYTE>(FindHotKey(Type)), x, y, Angle);
+    SocketClient->ToGameServer()->SendAreaSkill(Type, x, y, Angle, TKey, MakeSkillSerialNumber(pSkillSerial));
 
     g_ConsoleDebug->Write(MCD_SEND, L"0x1E [SendRequestMagicContinue]");
 }
