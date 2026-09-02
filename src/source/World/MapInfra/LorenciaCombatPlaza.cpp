@@ -233,8 +233,9 @@ namespace
                 if (g_keepGrass[i])
                     continue;
                 TerrainMappingLayer1[i] = kStoneMapping;
-                if (!IsWebzenSentinelTile(x, y))
-                    SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
+                // Visual stone only. Walk flags stay on EncTerrain — punching
+                // TW_NOMOVE here desynced the client from GS after the official
+                // plaza cobble revert.
                 const int dx = x - kCenterTileX;
                 const int dy = y - kCenterTileY;
                 if ((dx * dx + dy * dy) <= (kPvpRadiusTiles * kPvpRadiusTiles))

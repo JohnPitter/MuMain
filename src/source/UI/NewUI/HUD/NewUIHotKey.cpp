@@ -133,7 +133,22 @@ bool SEASON3B::CNewUIHotKey::UpdateKeyEvent()
 
     if (SEASON3B::IsPress(VK_TAB) == false && g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MINI_MAP) == true)
     {
-        return false;
+        // Keep digit skill hotkeys (1-0) working while the TAB map is open.
+        const bool skillDigit =
+            (SEASON3B::IsPress('0') == true)
+            || (SEASON3B::IsPress('1') == true)
+            || (SEASON3B::IsPress('2') == true)
+            || (SEASON3B::IsPress('3') == true)
+            || (SEASON3B::IsPress('4') == true)
+            || (SEASON3B::IsPress('5') == true)
+            || (SEASON3B::IsPress('6') == true)
+            || (SEASON3B::IsPress('7') == true)
+            || (SEASON3B::IsPress('8') == true)
+            || (SEASON3B::IsPress('9') == true);
+        if (skillDigit == false)
+        {
+            return false;
+        }
     }
 
     if (g_isCharacterBuff((&Hero->Object), eBuff_DuelWatch))

@@ -68,6 +68,10 @@ bool SEASON3B::CNewUIMiniMap::Create(CNewUIManager* pNewUIMng, int x, int y)
     m_Lenth[5].y = 1800;
     m_MiniPos = 0;
     m_bSuccess = false;
+    // Default CNewUIObj visibility is true. This overlay eats (0,0)-(640,430)
+    // in UpdateMouseEvent; leaving it shown from login blocks walk clicks and
+    // the skill-list popup (y=390) until HideAll happens to run.
+    Show(false);
     return true;
 }
 
@@ -312,6 +316,11 @@ void SEASON3B::CNewUIMiniMap::UnloadImages()
 
 bool SEASON3B::CNewUIMiniMap::UpdateMouseEvent()
 {
+    if (m_bSuccess == false)
+    {
+        return true;
+    }
+
     bool ret = true;
 
     if (m_BtnExit.UpdateMouseEvent() == true)
@@ -329,7 +338,8 @@ bool SEASON3B::CNewUIMiniMap::UpdateMouseEvent()
         }
     }
 
-    if (CheckMouseIn(0, 0, REFERENCE_WIDTH, 430))
+    // Overlay covers the world, not the bottom HUD / skill bar (y >= 431).
+    if (CheckMouseIn(0, 0, REFERENCE_WIDTH, 429))
     {
         return false;
     }

@@ -2382,16 +2382,15 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 {
     SEASON3B::CNewUIInventoryCtrl::BackupPickedItem();
 
-    // Vanilla OpenMU S6 MapChanged (Length=15, map ushort BE):
+    // Vanilla OpenMU S6 MapChanged (C3HeaderWithSubCode, Length=15):
     //   C3 0F 1C 0F IsMapChange MapH MapL X Y Rot [pad]
-    // The published Main used WORD Flag + 1-byte map, so MapL became HeroX=0
-    // and the real X became Y — HUD (0,147) while GS stayed at 147,136.
+    // [1] is length, [3] is SubCode 0x0F — not Flag. Flag lives at [4].
     BYTE flag;
     int map;
     BYTE posX;
     BYTE posY;
     BYTE angle;
-    if (ReceiveBuffer[3] == 0x0F)
+    if (ReceiveBuffer[1] == 0x0F && ReceiveBuffer[3] == 0x0F)
     {
         auto Data = (LPPRECEIVE_TELEPORT_POSITION)ReceiveBuffer;
         flag = Data->Flag;
@@ -2448,11 +2447,13 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         // MapChangeFailed arrives as Flag=0. CheckGate already set LoadingWorld
         // to 9999999; without this reset the client stays frozen on the loading
         // gate forever (MainScene skips input while LoadingWorld >= 30).
-        if (LoadingWorld > 30)
+        const bool mapChangeFailed = LoadingWorld > 30;
+        if (mapChangeFailed)
             LoadingWorld = 0;
         g_bWhileMovingZone = FALSE;
         g_dwLatestZoneMoving = GetTickCount();
-        g_pSystemLogBox->AddText(I18N::Game::YouCannotEnterThisArea, SEASON3B::TYPE_SYSTEM_MESSAGE);
+        if (mapChangeFailed)
+            g_pSystemLogBox->AddText(I18N::Game::YouCannotEnterThisArea, SEASON3B::TYPE_SYSTEM_MESSAGE);
     }
     else
     {
