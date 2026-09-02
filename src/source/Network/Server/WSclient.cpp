@@ -2292,11 +2292,9 @@ void ReceiveMoveCharacter(std::span<const BYTE> ReceiveBuffer)
 
     if (Key == HeroKey)
     {
-        if (!c->Movement)
-        {
-            c->PositionX = Data->TargetX;
-            c->PositionY = Data->TargetY;
-        }
+        // Vanilla OpenMU D4 has no Source/Target — those bytes are path metadata.
+        // Snapping the hero to TargetX/Y teleports the HUD to (0,4)/(20,35)
+        // while the server stays on the real tile (mobs attack "from elsewhere").
         return;
     }
 
@@ -2362,8 +2360,9 @@ void ReceiveMovePosition(const BYTE* ReceiveBuffer)
     // InstantMove (C1 15) sets JumpTime hop + SetPlayerStop. During a swing
     // that hop is the "teleport" other players see and SetPlayerStop cancels
     // the attack/skill animation. Server no longer InstantMoves attackers on
-    // hit, but leftover C1 15 must not snap or cancel the swing.
-    if (c->AttackTime > 0)
+    // hit, but leftover C1 15 must not snap or cancel the swing — except the
+    // hero, who needs the rubberband when EncTerrain / D4 desyncs X/Y.
+    if (c->AttackTime > 0 && Key != HeroKey)
     {
         return;
     }
