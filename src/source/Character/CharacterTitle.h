@@ -12,6 +12,8 @@ class CHARACTER;
 namespace CharacterTitle
 {
     constexpr int AutoId = 0;
+    // Sentinel equipped id: title display hidden (nothing above the name).
+    constexpr int HiddenId = 255;
     constexpr int ScrollFirstNumber = 170;
     constexpr int ScrollCount = 19;
 
@@ -29,6 +31,11 @@ namespace CharacterTitle
 
     int SelectedId();
     void Select(int id);
+
+    // Show/hide toggle used by the Y window button. Hidden draws no title;
+    // toggling back restores the last visible selection.
+    void ToggleHidden();
+    bool IsHidden();
 
     void Reset();
     void ReceiveOwned(const BYTE* buffer, int32_t size);

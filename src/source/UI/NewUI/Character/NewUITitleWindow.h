@@ -17,6 +17,7 @@ namespace SEASON3B
             IMAGE_TITLE_RIGHT = CNewUIMyInventory::IMAGE_INVENTORY_BACK_RIGHT,
             IMAGE_TITLE_BOTTOM = CNewUIMyInventory::IMAGE_INVENTORY_BACK_BOTTOM,
             IMAGE_TITLE_BTN_EXIT = CNewUIMyInventory::IMAGE_INVENTORY_EXIT_BTN,
+            IMAGE_TITLE_BTN = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_SMALL,
         };
 
         enum eWINDOW_SIZE
@@ -41,6 +42,10 @@ namespace SEASON3B
             EXIT_BUTTON_Y = 392,
             EXIT_BUTTON_WIDTH = 36,
             EXIT_BUTTON_HEIGHT = 29,
+            TOGGLE_X = 55,
+            TOGGLE_Y = 392,
+            TOGGLE_WIDTH = 122,
+            TOGGLE_HEIGHT = 29,
         };
 
     public:
@@ -72,6 +77,7 @@ namespace SEASON3B
         CNewUIManager* m_pNewUIMng;
         POINT m_Pos;
         CNewUIButton m_BtnExit;
+        CNewUIButton m_BtnToggle;
         int m_scrollOffset;
     };
 }

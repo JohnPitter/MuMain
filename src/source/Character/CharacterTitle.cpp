@@ -30,6 +30,7 @@ namespace
     std::vector<Rank> g_visible;
     std::set<int> g_owned;
     int g_equipped = AutoId;
+    int g_prevVisible = AutoId;
     bool g_catalogReady = false;
 
     void SplitGensNames()
@@ -131,7 +132,7 @@ namespace
 
     bool CanEquip(int id)
     {
-        return id == AutoId || g_owned.count(id) != 0;
+        return id == AutoId || id == HiddenId || g_owned.count(id) != 0;
     }
 }
 
@@ -159,7 +160,7 @@ int SelectedId()
 
 void Select(int id)
 {
-    if (!IsKnown(id) || !CanEquip(id))
+    if (id != HiddenId && (!IsKnown(id) || !CanEquip(id)))
     {
         id = AutoId;
     }
@@ -179,10 +180,29 @@ void Select(int id)
     SocketClient->Send(packet, 5);
 }
 
+void ToggleHidden()
+{
+    if (g_equipped == HiddenId)
+    {
+        Select(g_prevVisible);
+    }
+    else
+    {
+        g_prevVisible = g_equipped;
+        Select(HiddenId);
+    }
+}
+
+bool IsHidden()
+{
+    return g_equipped == HiddenId;
+}
+
 void Reset()
 {
     g_owned.clear();
     g_equipped = AutoId;
+    g_prevVisible = AutoId;
     g_visible.clear();
 }
 
@@ -200,7 +220,7 @@ void ReceiveOwned(const BYTE* buffer, int32_t size)
     }
 
     g_equipped = buffer[4 + header];
-    if (!IsKnown(g_equipped))
+    if (g_equipped != HiddenId && !IsKnown(g_equipped))
     {
         g_equipped = AutoId;
     }
@@ -222,7 +242,7 @@ void ReceiveOwned(const BYTE* buffer, int32_t size)
         }
     }
 
-    if (!CanEquip(g_equipped))
+    if (g_equipped != HiddenId && !CanEquip(g_equipped))
     {
         g_equipped = AutoId;
     }
@@ -256,11 +276,11 @@ void ReceiveAppearance(const BYTE* buffer, int32_t size)
     }
 
     CHARACTER* owner = &CharactersClient[index];
-    owner->CosmeticTitleId = static_cast<BYTE>(IsKnown(titleId) ? titleId : AutoId);
+    owner->CosmeticTitleId = static_cast<BYTE>((titleId == HiddenId || IsKnown(titleId)) ? titleId : AutoId);
     if (owner == Hero)
     {
         g_equipped = owner->CosmeticTitleId;
-        if (!CanEquip(g_equipped))
+        if (g_equipped != HiddenId && !CanEquip(g_equipped))
         {
             g_equipped = AutoId;
             owner->CosmeticTitleId = AutoId;
@@ -299,14 +319,17 @@ void Fill(CHARACTER* owner, wchar_t* dest, size_t destChars)
         return;
     }
 
-    // Id 0 = Automático: no gold line (name stays SeuAntonio). Equipped
-    // cosmetics (1–19) draw above the name only — never as the name.
-    if (owner->CosmeticTitleId == AutoId)
+    // Hidden: draw nothing above the name.
+    if (owner->CosmeticTitleId == HiddenId)
     {
         return;
     }
 
-    const wchar_t* title = NameForId(owner->CosmeticTitleId);
+    // Id 0 (Automatico) follows hero state: Plebeu by default, Heroi / outlaw
+    // when the state applies. Cosmetics 1-19 draw their catalog name.
+    const wchar_t* title = (owner->CosmeticTitleId == AutoId)
+        ? FromHeroState(owner->PK)
+        : NameForId(owner->CosmeticTitleId);
     if (title == nullptr || title[0] == L'\0')
     {
         return;
