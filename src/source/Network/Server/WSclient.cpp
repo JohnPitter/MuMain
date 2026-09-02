@@ -2401,11 +2401,13 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
     }
     else
     {
+        // OpenMU's 0.75 dialect is C3 08 1C Flag Map X Y Rotation.
+        // Unlike the S6 packet above it has no subcode, so the map is at [4].
         flag = ReceiveBuffer[3];
-        map = ReceiveBuffer[5];
-        posX = ReceiveBuffer[6];
-        posY = ReceiveBuffer[7];
-        angle = ReceiveBuffer[8];
+        map = ReceiveBuffer[4];
+        posX = ReceiveBuffer[5];
+        posY = ReceiveBuffer[6];
+        angle = ReceiveBuffer[7];
     }
 
     Hero->PositionX = posX;
