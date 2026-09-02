@@ -35,7 +35,7 @@ namespace
     constexpr float kVoiceBtnW = 36.f;
     constexpr float kVoiceBtnH = 23.f;
     constexpr float kVoiceGap = 4.f;
-    constexpr float kVoiceIconScale = 0.42f;
+    constexpr float kVoiceIconScale = 0.58f;
     const wchar_t* const kVoiceMicrophoneTooltip = L"Voz: ligar ou desligar o microfone";
     const wchar_t* const kVoiceListeningTooltip = L"Voz: ligar ou desligar a escuta";
 
