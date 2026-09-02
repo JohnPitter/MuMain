@@ -75,7 +75,6 @@ void CNewUITitleWindow::InitButtons()
     m_BtnExit.ChangeToolTipText(closeText, true);
 
     m_BtnToggle.ChangeButtonImgState(true, IMAGE_TITLE_BTN, true);
-    m_BtnToggle.ChangeTextColor(0xFFFFDC78);
 }
 
 float CNewUITitleWindow::GetLayerDepth()
@@ -105,7 +104,7 @@ void CNewUITitleWindow::LoadImages()
     LoadBitmap(L"Interface\\newui_item_back02-R.tga", IMAGE_TITLE_RIGHT, GL_LINEAR);
     LoadBitmap(L"Interface\\newui_item_back03.tga", IMAGE_TITLE_BOTTOM, GL_LINEAR);
     LoadBitmap(L"Interface\\newui_exit_00.tga", IMAGE_TITLE_BTN_EXIT, GL_LINEAR);
-    LoadBitmap(L"Interface\\newui_btn_empty_small.tga", IMAGE_TITLE_BTN, GL_LINEAR);
+    LoadBitmap(L"Interface\\newui_btn_empty.tga", IMAGE_TITLE_BTN, GL_LINEAR);
 }
 
 void CNewUITitleWindow::UnloadImages()
@@ -277,9 +276,17 @@ bool CNewUITitleWindow::Render()
         g_pRenderText->RenderText(m_Pos.x + CONTENT_LEFT, y, label, CONTENT_WIDTH, ROW_HEIGHT, RT3_SORT_LEFT);
     }
 
-    m_BtnToggle.ChangeText(CharacterTitle::IsHidden() ? L"Mostrar t\u00edtulo" : L"Ocultar t\u00edtulo");
-    m_BtnToggle.SetFont(g_hFont);
     m_BtnToggle.Render();
+    g_pRenderText->SetFont(g_hFont);
+    g_pRenderText->SetBgColor(0);
+    g_pRenderText->SetTextColor(kTitleRed, kTitleGreen, kTitleBlue, 255);
+    g_pRenderText->RenderText(
+        m_Pos.x + TOGGLE_X,
+        m_Pos.y + TOGGLE_Y + 8,
+        CharacterTitle::IsHidden() ? L"Mostrar t\u00edtulo" : L"Ocultar t\u00edtulo",
+        TOGGLE_WIDTH,
+        0,
+        RT3_SORT_CENTER);
 
     m_BtnExit.Render();
     DisableAlphaBlend();

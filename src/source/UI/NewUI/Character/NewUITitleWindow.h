@@ -17,7 +17,7 @@ namespace SEASON3B
             IMAGE_TITLE_RIGHT = CNewUIMyInventory::IMAGE_INVENTORY_BACK_RIGHT,
             IMAGE_TITLE_BOTTOM = CNewUIMyInventory::IMAGE_INVENTORY_BACK_BOTTOM,
             IMAGE_TITLE_BTN_EXIT = CNewUIMyInventory::IMAGE_INVENTORY_EXIT_BTN,
-            IMAGE_TITLE_BTN = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_SMALL,
+            IMAGE_TITLE_BTN = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY,
         };
 
         enum eWINDOW_SIZE
@@ -42,9 +42,13 @@ namespace SEASON3B
             EXIT_BUTTON_Y = 392,
             EXIT_BUTTON_WIDTH = 36,
             EXIT_BUTTON_HEIGHT = 29,
+            // Native newui_btn_empty.tga is 108×29. The small 64px frame cannot
+            // hold "Ocultar título"; CNewUIButton::Render also pre-centers the
+            // glyph then left-aligns it in the full width, shoving the label
+            // out of the frame.
             TOGGLE_X = 55,
             TOGGLE_Y = 392,
-            TOGGLE_WIDTH = 122,
+            TOGGLE_WIDTH = 108,
             TOGGLE_HEIGHT = 29,
         };
 

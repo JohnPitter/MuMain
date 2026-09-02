@@ -31,6 +31,7 @@
 #include "GameLogic/Events/MatchEvent.h"
 #include "GameLogic/Items/PersonalShopTitleImp.h"
 #include "Character/CharacterTitle.h"
+#include "UI/Voice/VoiceIcons.h"
 #include "GameLogic/Quests/CSQuest.h"
 #include "GameLogic/Items/CSItemOption.h"
 #include "GameLogic/NPCs/npcBreeder.h"
@@ -391,6 +392,15 @@ void RenderBoolean(int x, int y, CHAT* c)
         else if (2 == c->Owner->m_byGensInfluence)
             g_pNewUIGensRanking->RanderMark(x, y, (SEASON3B::CNewUIGensRanking::GENS_TYPE)c->Owner->m_byGensInfluence, c->Owner->GensRanking, SEASON3B::CNewUIGensRanking::MARK_BOOLEAN, (float)RenderPos.y);
     }
+
+    if (c->LifeTime[0] > 0)
+    {
+        UI::Voice::DrawMicrophoneIcon(
+            static_cast<float>(x) - 14.f,
+            static_cast<float>(y) + static_cast<float>(iLineHeight),
+            1.f,
+            true);
+    }
 }
 void AddChat(CHAT* c, const wchar_t* chat_text, int flag)
 {
@@ -586,34 +596,50 @@ int CreateChat(wchar_t* character_name, const wchar_t* chat_text, OBJECT* Owner,
     return 0;
 }
 
+bool ChatOwnerNameEquals(const CHARACTER* c, const wchar_t* character_name)
+{
+    if (c == nullptr || character_name == nullptr || character_name[0] == L'\0')
+        return false;
+    if (c->ID[0] != L'\0' && wcscmp(c->ID, character_name) == 0)
+        return true;
+    // CharacterJoin can leave Hero->ID empty while CharacterAttribute->Name
+    // is already set. Nameplates paper over that in CreateChat; chat balloons
+    // have to match here or the speak icon never attaches.
+    if (c == Hero && CharacterAttribute != nullptr && CharacterAttribute->Name[0] != L'\0'
+        && wcscmp(CharacterAttribute->Name, character_name) == 0)
+        return true;
+    return false;
+}
+
+CHARACTER* FindChatOwner(const wchar_t* character_name, BYTE kind)
+{
+    CHARACTER* hidden = nullptr;
+    for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
+    {
+        CHARACTER* c = &CharactersClient[i];
+        OBJECT* o = &c->Object;
+        if (!o->Live || o->Kind != kind)
+            continue;
+        if (!ChatOwnerNameEquals(c, character_name))
+            continue;
+        if (o->Visible)
+            return c;
+        if (hidden == nullptr)
+            hidden = c;
+    }
+    return hidden;
+}
+
 void AssignChat(wchar_t* character_name, const wchar_t* chat_text, int flag)
 {
-    for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
+    if (CHARACTER* owner = FindChatOwner(character_name, KIND_PLAYER))
     {
-        CHARACTER* c = &CharactersClient[i];
-        OBJECT* o = &c->Object;
-        if (o->Live && o->Kind == KIND_PLAYER)
-        {
-            if (wcscmp(c->ID, character_name) == 0)
-            {
-                CreateChat(character_name, chat_text, c, flag);
-                return;
-            }
-        }
+        CreateChat(character_name, chat_text, owner, flag);
+        return;
     }
-
-    for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
+    if (CHARACTER* owner = FindChatOwner(character_name, KIND_MONSTER))
     {
-        CHARACTER* c = &CharactersClient[i];
-        OBJECT* o = &c->Object;
-        if (o->Live && o->Kind == KIND_MONSTER)
-        {
-            if (wcscmp(c->ID, character_name) == 0)
-            {
-                CreateChat(character_name, chat_text, c, flag);
-                return;
-            }
-        }
+        CreateChat(character_name, chat_text, owner, flag);
     }
 }
 
