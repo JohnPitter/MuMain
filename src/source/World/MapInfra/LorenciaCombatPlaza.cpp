@@ -10,10 +10,6 @@
 
 namespace
 {
-    constexpr int kCenterTileX = 141;
-    constexpr int kCenterTileY = 128;
-    constexpr int kPvpRadiusTiles = 5;
-
     constexpr int kPlazaMinX = 111;
     constexpr int kPlazaMaxX = 164;
     constexpr int kPlazaMinY = 105;
@@ -233,15 +229,9 @@ namespace
                 if (g_keepGrass[i])
                     continue;
                 TerrainMappingLayer1[i] = kStoneMapping;
-                // Visual stone only. Walk flags stay on EncTerrain — punching
-                // TW_NOMOVE here desynced the client from GS after the official
-                // plaza cobble revert.
-                const int dx = x - kCenterTileX;
-                const int dy = y - kCenterTileY;
-                if ((dx * dx + dy * dy) <= (kPvpRadiusTiles * kPvpRadiusTiles))
-                    SubTerrainAttribute(x, y, TW_SAFEZONE);
-                else
-                    AddTerrainAttribute(x, y, TW_SAFEZONE);
+                // Visual stone only. EncTerrain walk AND safe/combat flags stay
+                // official — do not punch TW_NOMOVE or strip TW_SAFEZONE (the
+                // fountain PVP leftover made town/NPC pockets feel like combat).
             }
         }
     }

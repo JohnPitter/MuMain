@@ -338,8 +338,8 @@ bool SEASON3B::CNewUIMiniMap::UpdateMouseEvent()
         }
     }
 
-    // Overlay covers the world, not the bottom HUD / skill bar (y >= 431).
-    if (CheckMouseIn(0, 0, REFERENCE_WIDTH, 429))
+    // Overlay covers the world, not the skill-list popup (y=390) or hotbar (y=431).
+    if (CheckMouseIn(0, 0, REFERENCE_WIDTH, 380))
     {
         return false;
     }
