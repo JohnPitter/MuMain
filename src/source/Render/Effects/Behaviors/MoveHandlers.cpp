@@ -4996,7 +4996,9 @@ namespace Render::Effects::Behaviors
         vec3_t Light;
         Vector(1.f, 1.f, 1.f, Light);
         vec3_t Position;
-        if (o->LifeTime == 30.f) // at the first frame of the effect
+        // First frame only. CreateJointFpsChecked skipped this one-shot ~58% of the
+        // time at 60 FPS, so Fire Slash spawned the wrapper effect with no slash wave.
+        if ((int)o->LifeTime == 30)
         {
             VectorCopy(o->Position, Position);
             Position[2] += 100.f;
@@ -5004,13 +5006,16 @@ namespace Render::Effects::Behaviors
             {
                 vec3_t Light;
                 Vector(1.f, 1.f, 1.f, Light);
-                CreateJointFpsChecked(BITMAP_JOINT_FORCE, Position, Position, o->HeadAngle, 10, o->Owner, 150.f, o->PKKey, o->Skill, 0, -1, Light);
+                CreateJoint(BITMAP_JOINT_FORCE, Position, Position, o->HeadAngle, 10, o->Owner, 150.f, o->PKKey, o->Skill, 0, -1, Light);
+            }
+            else if (o->SubType == 0)
+            {
+                CreateJoint(BITMAP_JOINT_FORCE, Position, Position, o->HeadAngle, 0, o->Owner, 150.f, o->PKKey, o->Skill);
             }
             else
-                if (o->SubType == 0)
-                    CreateJointFpsChecked(BITMAP_JOINT_FORCE, Position, Position, o->HeadAngle, 0, o->Owner, 150.f, o->PKKey, o->Skill);
-                else
-                    CreateJointFpsChecked(BITMAP_JOINT_FORCE, Position, Position, o->HeadAngle, 8, o->Owner, 150.f, o->PKKey, o->Skill);
+            {
+                CreateJoint(BITMAP_JOINT_FORCE, Position, Position, o->HeadAngle, 8, o->Owner, 150.f, o->PKKey, o->Skill);
+            }
         }
         return true;
     }
