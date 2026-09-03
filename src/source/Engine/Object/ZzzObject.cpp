@@ -5883,11 +5883,12 @@ void ItemAngle(OBJECT* o)
     else if (o->Type == MODEL_BROKEN_HORN)
     {
         o->Angle[2] = 90.f;
-        o->Scale = 1.3f;
+        o->Scale = 0.5f;
     }
     else if (o->Type == MODEL_HORN_OF_FENRIR)
     {
         o->Angle[2] = 180.f;
+        o->Scale = 0.55f;
     }
     else if (o->Type == MODEL_JEWEL_OF_LIFE)
     {
@@ -6272,6 +6273,10 @@ void CreateItemDrop(ITEM_t* ip, ItemCreationParams params, vec3_t position, bool
         || o->Type == MODEL_JEWEL_OF_HARMONY)
     {
         o->Scale *= 0.77f;
+    }
+    else if (o->Type == MODEL_HORN_OF_DINORANT)
+    {
+        o->Scale = 0.5f;
     }
 }
 

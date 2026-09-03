@@ -33,6 +33,32 @@
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "UI/HUD/HudToolbar.h"
 
+namespace
+{
+    float FitHudNumberScale(int value, float maxWidth)
+    {
+        int digits = 1;
+        unsigned int v = value < 0 ? static_cast<unsigned int>(-value) : static_cast<unsigned int>(value);
+        while (v >= 10u)
+        {
+            v /= 10u;
+            ++digits;
+        }
+        const float span = 0.2f + 0.8f * static_cast<float>(digits);
+        float scale = maxWidth / (12.f * span) + 0.3f;
+        if (scale > 1.f)
+            scale = 1.f;
+        if (scale < 0.55f)
+            scale = 0.55f;
+        return scale;
+    }
+
+    void RenderHudGaugeNumber(float centerX, float y, int value, float maxWidth)
+    {
+        SEASON3B::RenderNumber(centerX, y, value, FitHudNumberScale(value, maxWidth));
+    }
+}
+
 SEASON3B::CNewUIMainFrameWindow::CNewUIMainFrameWindow()
 {
     m_bExpEffect = false;
@@ -199,6 +225,10 @@ void SEASON3B::CNewUIMainFrameWindow::Render3D()
 
 void SEASON3B::CNewUIMainFrameWindow::UI2DEffectCallback(LPVOID pClass, DWORD dwParamA, DWORD dwParamB)
 {
+    // RenderUI2DEffect only queues this; it runs later in CNewUI3DCamera::Render
+    // after MainFrame::Render's FixedToolbarScope has already died. Re-arm so
+    // 640x480 potion counts land on the scaled bar, not the window corner.
+    UI::HUD::FixedToolbarScope hudScope;
     g_pMainFrame->RenderHotKeyItemCount();
 }
 
@@ -291,7 +321,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderLifeMana()
         RenderBitmap(IMAGE_GAUGE_RED, x, fY, width, fH, 0.f, fV * height / 64.f, width / 64.f, (1.0f - fV) * height / 64.f);
     }
 
-    SEASON3B::RenderNumber(x + 25, REFERENCE_HEIGHT - 18, wLife);
+    RenderHudGaugeNumber(x + width * 0.5f, y + height - 13.f, static_cast<int>(wLife), width - 6.f);
 
     wchar_t strTipText[256];
     if (SEASON3B::CheckMouseIn(x, y, width, height) == true)
@@ -311,7 +341,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderLifeMana()
     fV = fMana;
     RenderBitmap(IMAGE_GAUGE_BLUE, x, fY, width, fH, 0.f, fV * height / 64.f, width / 64.f, (1.0f - fV) * height / 64.f);
 
-    SEASON3B::RenderNumber(x + 30, REFERENCE_HEIGHT - 18, wMana);
+    RenderHudGaugeNumber(x + width * 0.5f, y + height - 13.f, static_cast<int>(wMana), width - 6.f);
 
     // mana
     if (SEASON3B::CheckMouseIn(x, y, width, height) == true)
@@ -353,7 +383,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderGuageAG()
     fV = fSkillMana;
 
     RenderBitmap(IMAGE_GAUGE_AG, x, fY, width, fH, 0.f, fV * height / 64.f, width / 16.f, (1.0f - fV) * height / 64.f);
-    SEASON3B::RenderNumber(x + 10, REFERENCE_HEIGHT - 18, (int)dwSkillMana);
+    RenderHudGaugeNumber(x + width * 0.5f, y + height - 13.f, (int)dwSkillMana, width + 6.f);
 
     if (SEASON3B::CheckMouseIn(x, y, width, height) == true)
     {
@@ -396,7 +426,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderGuageSD()
     fV = fShield;
 
     RenderBitmap(IMAGE_GAUGE_SD, x, fY, width, fH, 0.f, fV * height / 64.f, width / 16.f, (1.0f - fV) * height / 64.f);
-    SEASON3B::RenderNumber(x + 15, REFERENCE_HEIGHT - 18, (int)wShield);
+    RenderHudGaugeNumber(x + width * 0.5f, y + height - 13.f, (int)wShield, width + 6.f);
 
     height = 39.f;
     y = (float)REFERENCE_HEIGHT - 10.f - 39.f;

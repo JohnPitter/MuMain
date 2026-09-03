@@ -8057,6 +8057,73 @@ static bool IsRenderableInventoryModel(int Type)
     return model->m_bCompletedAlloc && model->NumMeshs > 0 && model->Meshs != nullptr;
 }
 
+namespace
+{
+    float s_uiItemSlotW = 20.f;
+    float s_uiItemSlotH = 20.f;
+
+    bool IsUiJewelModel(int Type)
+    {
+        return Type == MODEL_JEWEL_OF_BLESS
+            || Type == MODEL_JEWEL_OF_SOUL
+            || Type == MODEL_JEWEL_OF_LIFE
+            || Type == MODEL_JEWEL_OF_CHAOS
+            || Type == MODEL_JEWEL_OF_CREATION
+            || Type == MODEL_JEWEL_OF_GUARDIAN
+            || Type == MODEL_JEWEL_OF_HARMONY;
+    }
+
+    float UiItemScreenRateFit()
+    {
+        const float windowRate = (WindowWidth > 0)
+            ? (static_cast<float>(WindowWidth) / static_cast<float>(REFERENCE_WIDTH))
+            : 1.f;
+        const float currentRate = (g_fScreenRate_x > 0.01f) ? g_fScreenRate_x : windowRate;
+        float fit = currentRate / windowRate;
+        if (fit < 0.2f)
+            fit = 0.2f;
+        if (fit > 1.5f)
+            fit = 1.5f;
+        return fit;
+    }
+
+    void ApplyUiItemSlotScale(int Type, float& Scale)
+    {
+        const float rateFit = UiItemScreenRateFit();
+
+        // Jewel of Chaos is MODEL_WING+15, so the wing catch-all gives it 0.002
+        // (meant for large wing meshes). UI jewels should fill a 1x1 cell.
+        // World drops keep the 0.77 shrink in ZzzObject.cpp.
+        if (IsUiJewelModel(Type))
+            Scale = 0.0036f;
+
+        Scale *= rateFit;
+
+        if (rateFit < 0.98f && s_uiItemSlotW <= 22.f && s_uiItemSlotH <= 22.f)
+            Scale *= 0.88f;
+
+        const int attrIndex = Type - MODEL_ITEM;
+        if (attrIndex < 0 || attrIndex >= MAX_ITEM || ItemAttribute == nullptr)
+            return;
+
+        const ITEM_ATTRIBUTE& attr = ItemAttribute[attrIndex];
+        const int cellW = std::max<int>(1, attr.Width);
+        const int cellH = std::max<int>(1, attr.Height);
+        if (cellW * cellH <= 1)
+            return;
+
+        const float invW = static_cast<float>(cellW) * 20.f;
+        const float invH = static_cast<float>(cellH) * 20.f;
+        if (s_uiItemSlotW <= 1.f || s_uiItemSlotH <= 1.f)
+            return;
+
+        float slotFit = std::min(s_uiItemSlotW / invW, s_uiItemSlotH / invH);
+        if (slotFit > 1.f)
+            slotFit = 1.f;
+        Scale *= slotFit * 0.82f;
+    }
+}
+
 void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancientDiscriminator, vec3_t Target, int Select, bool PickUp)
 {
     if (!IsRenderableInventoryModel(Type))
@@ -10086,16 +10153,7 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
     if (Scale < 0.0005f)
         Scale = 0.003f;
 
-    if (Type == MODEL_JEWEL_OF_BLESS
-        || Type == MODEL_JEWEL_OF_SOUL
-        || Type == MODEL_JEWEL_OF_LIFE
-        || Type == MODEL_JEWEL_OF_CHAOS
-        || Type == MODEL_JEWEL_OF_CREATION
-        || Type == MODEL_JEWEL_OF_GUARDIAN
-        || Type == MODEL_JEWEL_OF_HARMONY)
-    {
-        Scale *= 0.77f;
-    }
+    ApplyUiItemSlotScale(Type, Scale);
 
     b->Animation(BoneTransform, ObjectSelect.AnimationFrame, ObjectSelect.PriorAnimationFrame, ObjectSelect.PriorAction, ObjectSelect.Angle, ObjectSelect.HeadAngle, false, false);
 
@@ -10127,6 +10185,9 @@ void RenderItem3D(float sx, float sy, float Width, float Height, int Type, int L
 {
     if (Type < 0 || Type >= MAX_ITEM)
         return;
+
+    s_uiItemSlotW = Width;
+    s_uiItemSlotH = Height;
 
     bool Success = false;
     if ((g_pPickedItem == NULL || PickUp)

@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "UI/NewUI/NewUI3DRenderMng.h"
 #include "UI/NewUI/NewUIManager.h"
+#include "UI/HUD/HudToolbar.h"
 #include "Camera/CameraProjection.h"
 #include "Render/Core/RenderConfig.h"
 #include "Render/Core/GlobalUBO.h"
@@ -182,14 +183,27 @@ bool SEASON3B::CNewUI3DCamera::Render()
     BeginBitmap();
     RestoreCameraPerspective();
 
-    while (!m_deque2DEffects.empty())
+    auto flush2DEffects = [this]()
     {
-        UI_2DEFFECT_INFO& UI2DEffectInfo = m_deque2DEffects.front();
-        if (UI2DEffectInfo.pCallbackFunc)
+        while (!m_deque2DEffects.empty())
         {
-            (*UI2DEffectInfo.pCallbackFunc)(UI2DEffectInfo.pClass, UI2DEffectInfo.dwParamA, UI2DEffectInfo.dwParamB);
+            UI_2DEFFECT_INFO& UI2DEffectInfo = m_deque2DEffects.front();
+            if (UI2DEffectInfo.pCallbackFunc)
+            {
+                (*UI2DEffectInfo.pCallbackFunc)(UI2DEffectInfo.pClass, UI2DEffectInfo.dwParamA, UI2DEffectInfo.dwParamB);
+            }
+            m_deque2DEffects.pop_front();
         }
-        m_deque2DEffects.pop_front();
+    };
+
+    if (m_fZOrder == ITEMHOTKEYNUMBER_CAMERA_Z_ORDER)
+    {
+        UI::HUD::FixedToolbarScope hudScope;
+        flush2DEffects();
+    }
+    else
+    {
+        flush2DEffects();
     }
 
     return true;

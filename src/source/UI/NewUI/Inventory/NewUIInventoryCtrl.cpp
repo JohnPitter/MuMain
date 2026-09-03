@@ -1445,6 +1445,11 @@ void SEASON3B::CNewUIInventoryCtrl::RenderNumberOfItem()
 {
     EnableAlphaTest();
     glColor3f(1.f, 1.f, 1.f);
+    auto renderStackCount = [](float x, float y, float width, float height, int count)
+    {
+        glColor3f(1.f, 0.9f, 0.7f);
+        SEASON3B::RenderNumber(x + width * 0.5f, y + height * 0.5f - 6.f, count);
+    };
     auto li = m_vecItem.begin();
     for (; li != m_vecItem.end(); ++li)
     {
@@ -1457,49 +1462,40 @@ void SEASON3B::CNewUIInventoryCtrl::RenderNumberOfItem()
 
         if (pItem->Type >= ITEM_POTION && pItem->Type <= ITEM_ANTIDOTE && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type >= ITEM_JACK_OLANTERN_BLESSINGS && pItem->Type <= ITEM_JACK_OLANTERN_DRINK && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type >= ITEM_SMALL_SHIELD_POTION && pItem->Type <= ITEM_LARGE_COMPLEX_POTION && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type >= ITEM_POTION + 70 && pItem->Type <= ITEM_POTION + 71 && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type == ITEM_POTION + 94 && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type >= ITEM_POTION + 78 && pItem->Type <= ITEM_POTION + 82 && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type >= ITEM_CHERRY_BLOSSOM_WINE && pItem->Type <= ITEM_GOLDEN_CHERRY_BLOSSOM_BRANCH && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (pItem->Type == ITEM_POTION + 133 && pItem->Durability > 1)
         {
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, pItem->Durability);
+            renderStackCount(x, y, width, height, pItem->Durability);
         }
         else if (COMGEM::isCompiledGem(pItem))
         {
             const int Level = pItem->Level;
-            glColor3f(1.f, 0.9f, 0.7f);
-            SEASON3B::RenderNumber(x + width - 6, y + 1, (Level + 1) * COMGEM::FIRST);
+            renderStackCount(x, y, width, height, (Level + 1) * COMGEM::FIRST);
         }
     }
     glColor3f(1.f, 1.f, 1.f);
