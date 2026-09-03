@@ -32,6 +32,8 @@ namespace SEASON3B
             IMAGE_AB_TABLE_LEFT_PIXEL = CNewUIInventoryCtrl::IMAGE_ITEM_TABLE_LEFT_PIXEL,
             IMAGE_AB_TABLE_RIGHT_PIXEL = CNewUIInventoryCtrl::IMAGE_ITEM_TABLE_RIGHT_PIXEL,
             IMAGE_AB_ITEMBOX = CNewUIInventoryCtrl::IMAGE_ITEM_SQUARE,
+            IMAGE_AB_SCROLL_UP = BITMAP_INTERFACE_NEW_CASTLE_WINDOW_BEGIN,   // newui_Bt_scroll_up.jpg (15x13 x 3)
+            IMAGE_AB_SCROLL_DOWN,                                            // newui_Bt_scroll_dn.jpg
         };
 
         static constexpr int kMapSlots = 8;
@@ -69,6 +71,7 @@ namespace SEASON3B
         void InitMapButtons();
         void RefreshMapButtons();
         void RefreshActivateButton();
+        void RefreshDropScrollButtons();
         void RenderFrame();
         void RenderTexts();
         void RenderButtons();

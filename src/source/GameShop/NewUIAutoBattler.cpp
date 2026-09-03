@@ -2,6 +2,7 @@
 #include "I18N/All.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "GameShop/NewUIAutoBattler.h"
+#include "GameShop/NewUIInGameShop.h"
 #include "UI/NewUI/NewUICommon.h"
 #include "GameShop/MsgBoxIGSCommon.h"
 #include "Engine/Object/ZzzInventory.h"
@@ -61,8 +62,11 @@ namespace
     constexpr int kDropH = 336;         // 68+336=404, above the 45px bottom frame
     constexpr int kDropPad = 6;
     constexpr int kDropVisible = (kDropH - kLootTitleH - kDropPad) / kLootRowH; // 11
-    constexpr int kDropArrowW = 22;
-    constexpr int kDropArrowH = 23;
+    // Native castle/gateman scroll arrows: newui_Bt_scroll_{up,dn}.jpg, 15x13 per state.
+    constexpr int kDropArrowW = 15;
+    constexpr int kDropArrowH = 13;
+    constexpr int kMapPageBtnW = 20;
+    constexpr int kMapPageBtnH = 23;
     // Right column: status on top, mob list, Activate below the list.
     constexpr int kStatusY = 68;
     constexpr int kStatusH = 66;
@@ -766,6 +770,10 @@ void CNewUIAutoBattler::LoadImages()
     LoadBitmap(L"Interface\\newui_item_table03(L).tga", IMAGE_AB_TABLE_LEFT_PIXEL);
     LoadBitmap(L"Interface\\newui_item_table03(R).tga", IMAGE_AB_TABLE_RIGHT_PIXEL);
     LoadBitmap(L"Interface\\newui_item_box.tga", IMAGE_AB_ITEMBOX);
+    LoadBitmap(L"Interface\\newui_Bt_scroll_up.jpg", IMAGE_AB_SCROLL_UP, GL_LINEAR);
+    LoadBitmap(L"Interface\\newui_Bt_scroll_dn.jpg", IMAGE_AB_SCROLL_DOWN, GL_LINEAR);
+    LoadBitmap(L"Interface\\InGameShop\\ingame_Bt_page_L.tga", CNewUIInGameShop::IMAGE_IGS_PAGE_LEFT, GL_LINEAR);
+    LoadBitmap(L"Interface\\InGameShop\\ingame_Bt_page_R.tga", CNewUIInGameShop::IMAGE_IGS_PAGE_RIGHT, GL_LINEAR);
 }
 
 int CNewUIAutoBattler::HuntCount() const
@@ -798,28 +806,30 @@ void CNewUIAutoBattler::SetBtnInfo()
     m_StartButton.MoveTextPos(0, -1);
     RefreshActivateButton();
 
-    m_PrevButton.ChangeButtonImgState(true, IMAGE_AB_BTN_MAP, true);
-    m_PrevButton.ChangeButtonInfo(m_Pos.x + kCatX, m_Pos.y + kBackH - 36, 22, 23);
-    m_PrevButton.ChangeText(L"<");
-    m_NextButton.ChangeButtonImgState(true, IMAGE_AB_BTN_MAP, true);
-    m_NextButton.ChangeButtonInfo(m_Pos.x + kCatX + 54, m_Pos.y + kBackH - 36, 22, 23);
-    m_NextButton.ChangeText(L">");
+    m_PrevButton.ChangeButtonImgState(true, CNewUIInGameShop::IMAGE_IGS_PAGE_LEFT, true);
+    m_PrevButton.ChangeButtonInfo(m_Pos.x + kCatX, m_Pos.y + kBackH - 36, kMapPageBtnW, kMapPageBtnH);
+    m_PrevButton.ChangeText(L"");
+    m_NextButton.ChangeButtonImgState(true, CNewUIInGameShop::IMAGE_IGS_PAGE_RIGHT, true);
+    m_NextButton.ChangeButtonInfo(m_Pos.x + kCatX + kCatW - kMapPageBtnW, m_Pos.y + kBackH - 36, kMapPageBtnW, kMapPageBtnH);
+    m_NextButton.ChangeText(L"");
 
-    const int dropArrowY = m_Pos.y + kDropY;
-    m_DropUpButton.ChangeButtonImgState(true, IMAGE_AB_BTN_MAP, true);
+    // Drops page arrows live in the Drops title strip; coordinates are UI 640×480 (same as CheckMouseIn).
+    const int dropArrowY = m_Pos.y + kDropY + 4;
+    m_DropUpButton.ChangeButtonImgState(true, IMAGE_AB_SCROLL_UP, true);
     m_DropUpButton.ChangeButtonInfo(
-        m_Pos.x + kDropX + kDropW - (kDropArrowW * 2) - 6,
+        m_Pos.x + kDropX + kDropW - (kDropArrowW * 2) - 8,
         dropArrowY,
         kDropArrowW,
         kDropArrowH);
-    m_DropUpButton.ChangeText(L"^");
-    m_DropDownButton.ChangeButtonImgState(true, IMAGE_AB_BTN_MAP, true);
+    m_DropUpButton.ChangeText(L"");
+    m_DropDownButton.ChangeButtonImgState(true, IMAGE_AB_SCROLL_DOWN, true);
     m_DropDownButton.ChangeButtonInfo(
-        m_Pos.x + kDropX + kDropW - kDropArrowW - 4,
+        m_Pos.x + kDropX + kDropW - kDropArrowW - 6,
         dropArrowY,
         kDropArrowW,
         kDropArrowH);
-    m_DropDownButton.ChangeText(L"v");
+    m_DropDownButton.ChangeText(L"");
+    RefreshDropScrollButtons();
 
     InitMapButtons();
 }
@@ -854,6 +864,22 @@ void CNewUIAutoBattler::RefreshActivateButton()
     m_StartButton.ChangeText(m_bSessionActive ? &I18N::Game::AutoBattlerStop : &I18N::Game::AutoBattlerActivate);
 }
 
+void CNewUIAutoBattler::RefreshDropScrollButtons()
+{
+    const bool canScroll = m_iHunt >= 0 && m_iHunt < HuntCount()
+        && DropHiddenCount(HuntLootItems(m_iHunt)) > 0;
+    if (canScroll)
+    {
+        m_DropUpButton.UnLock();
+        m_DropDownButton.UnLock();
+    }
+    else
+    {
+        m_DropUpButton.Lock();
+        m_DropDownButton.Lock();
+    }
+}
+
 void CNewUIAutoBattler::SelectHunt(int huntIndex)
 {
     if (huntIndex < 0 || huntIndex >= HuntCount())
@@ -863,6 +889,7 @@ void CNewUIAutoBattler::SelectHunt(int huntIndex)
     m_iDropScroll = 0;
     m_iMobScroll = 0;
     RefreshMapButtons();
+    RefreshDropScrollButtons();
     // Deferred: never OpenMonsterModel sync here (WER 0xc0000374 on UI open).
     QueueHuntPreviewModels(huntIndex);
     SendCatalogRequest();
@@ -874,6 +901,7 @@ void CNewUIAutoBattler::ScrollDrops(int delta)
         return;
     m_iDropScroll += delta;
     ClampScroll(m_iDropScroll, DropHiddenCount(HuntLootItems(m_iHunt)));
+    RefreshDropScrollButtons();
 }
 
 namespace
@@ -1359,6 +1387,7 @@ void CNewUIAutoBattler::ReceiveCatalog(const BYTE* buffer, int size)
     s_serverLootReady[huntIndex] = n > 0;
     if (huntIndex == m_iHunt)
         m_iDropScroll = 0;
+    RefreshDropScrollButtons();
 }
 
 void CNewUIAutoBattler::TickSession()
@@ -1518,19 +1547,41 @@ bool CNewUIAutoBattler::BtnProcess()
         return true;
     }
 
-    if (m_DropUpButton.UpdateMouseEvent())
+    // Drops ▲/▼: hit-test in UI 640×480 (same space as CheckMouseIn on the Drops panel).
+    // Padded past the 15×13 glyph so the click is usable; CNewUIButton::UpdateMouseEvent is
+    // not used here because IsRelease + tiny rect was dropping clicks on a scaled window.
+    const int dropUpX = m_Pos.x + kDropX + kDropW - (kDropArrowW * 2) - 8;
+    const int dropDnX = m_Pos.x + kDropX + kDropW - kDropArrowW - 6;
+    const int dropArrowY = m_Pos.y + kDropY + 4;
+    constexpr int kDropHitPad = 8;
+    const int dropHitW = kDropArrowW + (kDropHitPad * 2);
+    const int dropHitH = kDropArrowH + (kDropHitPad * 2);
+    if (!m_DropUpButton.IsLock()
+        && IsPress(VK_LBUTTON)
+        && CheckMouseIn(dropUpX - kDropHitPad, dropArrowY - kDropHitPad, dropHitW, dropHitH))
     {
         ScrollDrops(-1);
         PlayBuffer(SOUND_CLICK01);
+        MouseLButton = false;
+        MouseLButtonPop = false;
+        MouseLButtonPush = false;
         return true;
     }
 
-    if (m_DropDownButton.UpdateMouseEvent())
+    if (!m_DropDownButton.IsLock()
+        && IsPress(VK_LBUTTON)
+        && CheckMouseIn(dropDnX - kDropHitPad, dropArrowY - kDropHitPad, dropHitW, dropHitH))
     {
         ScrollDrops(1);
         PlayBuffer(SOUND_CLICK01);
+        MouseLButton = false;
+        MouseLButtonPop = false;
+        MouseLButtonPush = false;
         return true;
     }
+
+    m_DropUpButton.UpdateMouseEvent();
+    m_DropDownButton.UpdateMouseEvent();
 
     const int mapIndex = m_MapButton.UpdateMouseEvent();
     if (mapIndex != RADIOGROUPEVENT_NONE)
