@@ -123,6 +123,7 @@ namespace SEASON3B
         void SendBuy(int listingId);
         void SendCreate();
         void SendCancel(int listingId);
+        void SendFeature(int listingId);
         const wchar_t* CategoryName(int index) const;
         const wchar_t* SortName(int index) const;
         const wchar_t* TabName(int index) const;
@@ -205,5 +206,6 @@ namespace SEASON3B
         wchar_t m_szPrice[16];
         wchar_t m_szQty[8];
         int m_iPriceFocus;
+        BYTE m_iCurrency;
     };
 }

@@ -342,7 +342,7 @@ CNewUIMarketplace::CNewUIMarketplace()
     m_iTotalPages = 1;
     m_iListingCount = 0;
     m_iSelectedListing = 0;
-    m_bDemoMode = true;
+    m_bDemoMode = false;
     m_iDemoCount = 0;
     m_iCartCount = 0;
     m_iPurchasedCount = 0;
@@ -356,6 +356,7 @@ CNewUIMarketplace::CNewUIMarketplace()
     m_bUiReady = false;
     m_iDialogCategory = 0;
     m_iDialogDays = 7;
+    m_iCurrency = 0;
     m_szPrice[0] = 0;
     m_szQty[0] = L'1';
     m_szQty[1] = 0;
@@ -392,7 +393,6 @@ bool CNewUIMarketplace::Create(CNewUIManager* pNewUIMng, int x, int y)
     SetPos(x, y);
     Show(false);
     Enable(false);
-    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: Create done");
     return true;
 }
 
@@ -543,22 +543,22 @@ void CNewUIMarketplace::InitSortButtons()
 
 void CNewUIMarketplace::OpeningProcess()
 {
-    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: OpeningProcess enter");
     PlayBuffer(SOUND_CLICK01);
     m_bShowDialog = false;
-    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: SetBtnInfo");
     SetBtnInfo();
-    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: FillDemo");
-    FillDemoListings();
-    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: CollectInv");
+    m_iListingCount = 0;
+    m_iFeaturedCount = 0;
+    m_iPurchasedCount = 0;
+    memset(m_Listings, 0, sizeof(m_Listings));
+    memset(m_Featured, 0, sizeof(m_Featured));
+    memset(m_Purchased, 0, sizeof(m_Purchased));
     CollectInventory();
-    ApplyVisibleListings();
+    m_bDemoMode = false;
     m_bUiReady = true;
     Enable(true);
     SendListRequest();
     if (SocketClient != nullptr && SocketClient->ToGameServer() != nullptr)
         SocketClient->ToGameServer()->SendCashShopPointInfoRequest();
-    g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: OpeningProcess ok listings=%d inv=%d", m_iListingCount, m_iInvCount);
 }
 
 void CNewUIMarketplace::ClosingProcess()
@@ -615,6 +615,16 @@ void CNewUIMarketplace::SendCancel(int listingId)
     SocketClient->Send(packet, 8);
 }
 
+void CNewUIMarketplace::SendFeature(int listingId)
+{
+    if (IsDemoListing(listingId) || SocketClient == nullptr)
+        return;
+
+    BYTE packet[8] = { 0xC1, 8, kGroup, 0x04 };
+    memcpy(packet + 4, &listingId, 4);
+    SocketClient->Send(packet, 8);
+}
+
 void CNewUIMarketplace::SendCreate()
 {
     if (m_iSelectedInv < 0 || m_iSelectedInv >= m_iInvCount)
@@ -627,12 +637,6 @@ void CNewUIMarketplace::SendCreate()
     BYTE qty = static_cast<BYTE>(_wtoi(m_szQty));
     if (qty == 0)
         qty = 1;
-
-    if (m_bDemoMode)
-    {
-        DemoCreateListing(price, qty);
-        return;
-    }
 
     if (SocketClient == nullptr)
         return;
@@ -662,15 +666,10 @@ void CNewUIMarketplace::ReceiveList(const BYTE* buffer)
     if (m_iListingCount > kGridCount)
         m_iListingCount = kGridCount;
 
-    if (m_iListingCount <= 0)
-    {
-        m_bDemoMode = true;
-        ApplyVisibleListings();
-        return;
-    }
-
     m_bDemoMode = false;
     memset(m_Listings, 0, sizeof(m_Listings));
+    m_iFeaturedCount = 0;
+    memset(m_Featured, 0, sizeof(m_Featured));
     for (int i = 0; i < m_iListingCount; ++i)
     {
         const BYTE* src = buffer + 8 + (i * 27);
@@ -683,10 +682,16 @@ void CNewUIMarketplace::ReceiveList(const BYTE* buffer)
         m_Listings[i].Quantity = src[13];
         m_Listings[i].Category = src[14];
         m_Listings[i].Status = src[15];
+        m_Listings[i].FeatureHours = src[26];
         char seller[11] = { 0 };
         memcpy(seller, src + 16, 10);
         MultiByteToWideChar(CP_UTF8, 0, seller, -1, m_Listings[i].Seller, 12);
+        if (m_Listings[i].FeatureHours > 0)
+            AddFeatured(m_Listings[i]);
     }
+
+    const int listBytes = 8 + (m_iListingCount * 27);
+    m_iCurrency = (buffer[1] >= listBytes + 1) ? buffer[listBytes] : 0;
 
     SyncSlotButtons();
     RefreshListBox();
@@ -956,24 +961,7 @@ void CNewUIMarketplace::ConfirmHighlight()
     if (index < 0)
         return;
 
-    const double cash = g_InGameShopSystem->GetCashCreditCard();
-    if (cash < kFeatureCostW)
-    {
-        ShowMarketplaceNotice(I18N::Game::Error, I18N::Game::MarketplaceNotEnoughW);
-        return;
-    }
-
-    g_InGameShopSystem->SetCashCreditCard(cash - kFeatureCostW);
-    AddFeatured(m_Listings[index]);
-    for (int i = 0; i < m_iFeaturedCount; ++i)
-    {
-        if (m_Featured[i].Id == listingId)
-        {
-            m_iFeaturedSlide = i;
-            break;
-        }
-    }
-    m_dwFeaturedTick = GetTickCount();
+    SendFeature(listingId);
 }
 
 void CNewUIMarketplace::SyncSlotButtons()
@@ -1101,7 +1089,7 @@ void CNewUIMarketplace::ShowListing(const Listing& listing, bool canBuy)
     title[79] = 0;
     ConvertGold(listing.Price, price);
     mu_swprintf(sellerLine, L"%ls: %ls", I18N::Game::MarketplaceSeller, listing.Seller);
-    mu_swprintf(priceLine, L"%ls: %ls W", I18N::Game::MarketplacePrice, price);
+    mu_swprintf(priceLine, L"%ls: %ls %ls", I18N::Game::MarketplacePrice, price, m_iCurrency == 1 ? L"Zen" : L"W");
 
     ITEM preview = MakeListingItem(listing);
 
@@ -1634,13 +1622,6 @@ bool CNewUIMarketplace::Render()
     if (!m_bUiReady || !IsVisible())
         return true;
 
-    static bool s_loggedFirstRender = false;
-    if (!s_loggedFirstRender)
-    {
-        s_loggedFirstRender = true;
-        g_ConsoleDebug->Write(MCD_ERROR, L"MP-TRACE: first Render listings=%d", m_iListingCount);
-    }
-
     EnableAlphaTest();
     glColor4f(1.f, 1.f, 1.f, 1.f);
     RenderFrame();
@@ -1746,7 +1727,7 @@ void CNewUIMarketplace::RenderTexts()
         GetItemName(m_Listings[i].ItemCode, m_Listings[i].Level, szText);
         g_pRenderText->RenderText(m_Pos.x + kNameX + ((i % kGridCols) * kSlotDX), m_Pos.y + kNameY + ((i / kGridCols) * kSlotDY), szText, kNameW, 0, RT3_SORT_CENTER);
         ConvertGold(m_Listings[i].Price, szValue);
-        mu_swprintf(szText, L"%ls W", szValue);
+        mu_swprintf(szText, L"%ls %ls", szValue, m_iCurrency == 1 ? L"Zen" : L"W");
         g_pRenderText->SetTextColor(255, 238, 161, 255);
         g_pRenderText->RenderText(m_Pos.x + kNameX + ((i % kGridCols) * kSlotDX), m_Pos.y + kPriceY + ((i / kGridCols) * kSlotDY), szText, kNameW, 0, RT3_SORT_CENTER);
         g_pRenderText->SetTextColor(255, 255, 255, 255);
@@ -1786,8 +1767,16 @@ void CNewUIMarketplace::RenderTexts()
     const wchar_t* heroName = (Hero && Hero->ID[0]) ? Hero->ID : L"";
     g_pRenderText->RenderText(m_Pos.x + kCharNameX, m_Pos.y + 23, heroName, kCharNameW, 0, RT3_SORT_CENTER);
 
-    ConvertGold(g_InGameShopSystem->GetCashCreditCard(), szValue);
-    mu_swprintf(szText, I18N::Game::MyWCoinS, szValue);
+    if (m_iCurrency == 1)
+    {
+        ConvertGold(CharacterMachine ? CharacterMachine->Gold : 0, szValue);
+        mu_swprintf(szText, L"Zen: %ls", szValue);
+    }
+    else
+    {
+        ConvertGold(g_InGameShopSystem->GetCashCreditCard(), szValue);
+        mu_swprintf(szText, I18N::Game::MyWCoinS, szValue);
+    }
     g_pRenderText->SetTextColor(255, 238, 161, 255);
     g_pRenderText->RenderText(m_Pos.x + kCashX, m_Pos.y + kCashY, szText, kCashW, 0, RT3_SORT_LEFT);
 
@@ -1798,7 +1787,7 @@ void CNewUIMarketplace::RenderTexts()
     g_pRenderText->RenderText(m_Pos.x + kStorageHeaderNameX, m_Pos.y + kStorageHeaderY,
         I18N::Game::ItemName, kStorageHeaderNameW, 0, RT3_SORT_CENTER);
     g_pRenderText->RenderText(m_Pos.x + kStorageHeaderQtyX, m_Pos.y + kStorageHeaderY,
-        IsInvTab() ? I18N::Game::MarketplaceQty : L"W", kStorageHeaderQtyW, 0, RT3_SORT_CENTER);
+        IsInvTab() ? I18N::Game::MarketplaceQty : (m_iCurrency == 1 ? L"Zen" : L"W"), kStorageHeaderQtyW, 0, RT3_SORT_CENTER);
     g_pRenderText->SetFont(g_hFont);
 
     g_pRenderText->RenderText(m_Pos.x + 251 + 23, m_Pos.y + 404, L"/", 10, 0, RT3_SORT_CENTER);
