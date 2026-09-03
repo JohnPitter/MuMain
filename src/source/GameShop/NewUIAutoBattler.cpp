@@ -78,7 +78,8 @@ namespace
     constexpr int kVipQuota = 43200;
     constexpr int kHuntRange = 18;
     constexpr int kObtainRange = 8;
-    constexpr int kLootSlots = 8;
+    constexpr int kLootSlots = 48;
+    constexpr int kMaxHunts = 16;
     constexpr int kMaxRoamWps = 6;
     constexpr float kBackSrcW = 190.f;
     constexpr float kBackSrcH = 429.f;
@@ -187,6 +188,32 @@ namespace
             ITEM_LARGE_HEALING_POTION, ITEM_TOWN_PORTAL_SCROLL, ITEM_LARGE_MANA_POTION, ITEM_KRIS
         } },
     };
+
+    WORD s_serverLoot[kMaxHunts][kLootSlots] = {};
+    bool s_serverLootReady[kMaxHunts] = {};
+
+    const WORD* HuntLootItems(int huntIndex)
+    {
+        const int huntCount = static_cast<int>(sizeof(kHunts) / sizeof(kHunts[0]));
+        if (huntIndex < 0 || huntIndex >= huntCount)
+            return nullptr;
+        if (huntIndex < kMaxHunts && s_serverLootReady[huntIndex])
+            return s_serverLoot[huntIndex];
+        return kHunts[huntIndex].loot;
+    }
+
+    int CountLootItems(const WORD* loot)
+    {
+        if (loot == nullptr)
+            return 0;
+        int count = 0;
+        for (int i = 0; i < kLootSlots; ++i)
+        {
+            if (loot[i] != 0)
+                ++count;
+        }
+        return count;
+    }
 
     float s_PreProj[16];
     float s_PreView[16];
@@ -315,13 +342,7 @@ namespace
 
     int CountHuntLoot(const HuntDef& hunt)
     {
-        int count = 0;
-        for (int i = 0; i < kLootSlots; ++i)
-        {
-            if (hunt.loot[i] != 0)
-                ++count;
-        }
-        return count;
+        return CountLootItems(hunt.loot);
     }
 
     void BeginPreviewCamera()
@@ -623,8 +644,10 @@ namespace
         UpdateMousePositionn();
     }
 
-    void RenderLootGrid(const HuntDef& hunt, int originX, int originY, int scroll)
+    void RenderLootGrid(const WORD* loot, int originX, int originY, int scroll)
     {
+        if (loot == nullptr)
+            return;
         const float aspect = (float)WindowWidth / (float)WindowHeight;
         glViewport2(0, 0, WindowWidth, WindowHeight);
         gluPerspective2(1.f, aspect, RENDER_ITEMVIEW_NEAR, RENDER_ITEMVIEW_FAR);
@@ -650,14 +673,14 @@ namespace
         int shown = 0;
         for (int i = scroll; i < kLootSlots && shown < kGridCount; ++i)
         {
-            if (hunt.loot[i] == 0)
+            if (loot[i] == 0)
                 continue;
             const float bx = static_cast<float>(originX + ((shown % kGridCols) * kSlotDX));
             const float by = static_cast<float>(originY + ((shown / kGridCols) * kSlotDY));
             ClearDepthBuffer();
             ScissorSlot(bx, by, static_cast<float>(kItem3DW), static_cast<float>(kItem3DH));
             RenderItem3D(bx, by, static_cast<float>(kItem3DW), static_cast<float>(kItem3DH),
-                hunt.loot[i], 0, 0, 0, false);
+                loot[i], 0, 0, 0, false);
             ++shown;
         }
 
@@ -853,6 +876,7 @@ void CNewUIAutoBattler::SelectHunt(int huntIndex)
     RefreshMapButtons();
     // Deferred: never OpenMonsterModel sync here (WER 0xc0000374 on UI open).
     QueueHuntPreviewModels(huntIndex);
+    SendCatalogRequest();
 }
 
 namespace
@@ -1074,6 +1098,14 @@ void CNewUIAutoBattler::SendStatusRequest()
     SocketClient->Send(packet, 4);
 }
 
+void CNewUIAutoBattler::SendCatalogRequest()
+{
+    if (SocketClient == nullptr || m_iHunt < 0 || m_iHunt >= HuntCount())
+        return;
+    BYTE packet[5] = { 0xC1, 5, kGroup, 0x03, kHunts[m_iHunt].world };
+    SocketClient->Send(packet, 5);
+}
+
 void CNewUIAutoBattler::SendStart()
 {
     if (SocketClient == nullptr)
@@ -1113,6 +1145,7 @@ void CNewUIAutoBattler::ApplyHelperHunt()
     hunt.bReturnToOriginalPosition = false;
     hunt.bFallbackBasicAttack = true;
     hunt.bLongRangeCounterAttack = true;
+    hunt.bUseSelfDefense = false;
     hunt.bUseCombo = false;
     hunt.bSupportParty = false;
     hunt.bUseDarkRaven = false;
@@ -1300,6 +1333,37 @@ void CNewUIAutoBattler::ReceiveStatus(const BYTE* buffer)
     RefreshActivateButton();
 }
 
+void CNewUIAutoBattler::ReceiveCatalog(const BYTE* buffer, int size)
+{
+    if (buffer == nullptr || size < 6)
+        return;
+
+    const BYTE mapIndex = buffer[4];
+    const BYTE count = buffer[5];
+    if (size < 6 + (count * 2))
+        return;
+
+    int huntIndex = -1;
+    for (int i = 0; i < HuntCount(); ++i)
+    {
+        if (kHunts[i].world == mapIndex)
+        {
+            huntIndex = i;
+            break;
+        }
+    }
+    if (huntIndex < 0 || huntIndex >= kMaxHunts)
+        return;
+
+    memset(s_serverLoot[huntIndex], 0, sizeof(s_serverLoot[huntIndex]));
+    const int n = count > kLootSlots ? kLootSlots : static_cast<int>(count);
+    for (int i = 0; i < n; ++i)
+        memcpy(&s_serverLoot[huntIndex][i], buffer + 6 + (i * 2), 2);
+    s_serverLootReady[huntIndex] = n > 0;
+    if (huntIndex == m_iHunt)
+        m_iDropScroll = 0;
+}
+
 void CNewUIAutoBattler::TickSession()
 {
     if (!m_bSessionActive)
@@ -1390,7 +1454,7 @@ bool CNewUIAutoBattler::UpdateMouseEvent()
         const HuntDef& hunt = kHunts[m_iHunt];
         if (CheckMouseIn(m_Pos.x + kItem3DX, m_Pos.y + kItem3DY, kGridCols * kSlotDX, 3 * kSlotDY))
         {
-            int hidden = CountHuntLoot(hunt) - kGridCount;
+            int hidden = CountLootItems(HuntLootItems(m_iHunt)) - kGridCount;
             if (hidden < 0) hidden = 0;
             m_iDropScroll -= MouseWheel;
             if (m_iDropScroll < 0) m_iDropScroll = 0;
@@ -1549,11 +1613,11 @@ void CNewUIAutoBattler::RenderFrame()
 
     if (m_iHunt >= 0 && m_iHunt < HuntCount())
     {
-        const HuntDef& hunt = kHunts[m_iHunt];
+        const WORD* loot = HuntLootItems(m_iHunt);
         int shown = 0;
         for (int i = m_iDropScroll; i < kLootSlots && shown < kGridCount; ++i)
         {
-            if (hunt.loot[i] == 0)
+            if (loot == nullptr || loot[i] == 0)
                 continue;
             const float bx = static_cast<float>(m_Pos.x + kItem3DX + ((shown % kGridCols) * kSlotDX));
             const float by = static_cast<float>(m_Pos.y + kItem3DY + ((shown / kGridCols) * kSlotDY));
@@ -1728,7 +1792,7 @@ void CNewUIAutoBattler::RenderGrid()
         ++shown;
     }
 
-    RenderLootGrid(hunt, m_Pos.x + kItem3DX, m_Pos.y + kItem3DY, m_iDropScroll);
+    RenderLootGrid(HuntLootItems(m_iHunt), m_Pos.x + kItem3DX, m_Pos.y + kItem3DY, m_iDropScroll);
 
     glViewport2(0, 0, WindowWidth, WindowHeight);
     UpdateMousePositionn();
@@ -1742,12 +1806,13 @@ void CNewUIAutoBattler::RenderGrid()
     g_pRenderText->SetFont(g_hFont);
     g_pRenderText->SetTextColor(255, 255, 255, 255);
     shown = 0;
+    const WORD* loot = HuntLootItems(m_iHunt);
     for (int i = m_iDropScroll; i < kLootSlots && shown < kGridCount; ++i)
     {
-        if (hunt.loot[i] == 0)
+        if (loot == nullptr || loot[i] == 0)
             continue;
         wchar_t lootName[MAX_TEXT_LENGTH] = {};
-        GetItemName(hunt.loot[i], 0, lootName);
+        GetItemName(loot[i], 0, lootName);
         if (lootName[0] != 0)
         {
             g_pRenderText->RenderText(

@@ -54,6 +54,7 @@ namespace SEASON3B
         void OpeningProcess();
         void ClosingProcess();
         void ReceiveStatus(const BYTE* buffer);
+        void ReceiveCatalog(const BYTE* buffer, int size);
         void TickSession();
 
         // After LoadWorld: queue this map's hunt mob BMDs and load 1/frame.
@@ -76,6 +77,7 @@ namespace SEASON3B
         bool BtnProcess();
         void SelectHunt(int huntIndex);
         void SendStatusRequest();
+        void SendCatalogRequest();
         void SendStart();
         void SendStop();
         void TryStartHunt();

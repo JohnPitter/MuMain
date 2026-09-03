@@ -101,6 +101,8 @@ namespace MUHelper
 		ActionSkillType GetDrainLifeSkill();
 		bool HasAssignedBuffSkill();
 		bool IsSelfPositionSkill(ActionSkillType iSkill);
+		bool IsLegalLockedTarget(CHARACTER* pTarget) const;
+		bool AllowsPlayerTargets() const;
 
 	private:
 		ConfigData m_config;

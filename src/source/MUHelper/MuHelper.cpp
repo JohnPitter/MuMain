@@ -20,6 +20,7 @@
 #include "World/MapInfra/MapManager.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Network/Server/WSclient.h"
+#include "Network/Server/ServerListManager.h"
 
 #include "MuHelper.h"
 
@@ -294,7 +295,7 @@ namespace MUHelper
             return false;
 
         CHARACTER* pTarget = &CharactersClient[iCharIndex];
-        if (!pTarget->Object.Live || pTarget->Dead > 0 || !IsMonster(pTarget))
+        if (!pTarget->Object.Live || pTarget->Dead > 0 || !IsLegalLockedTarget(pTarget))
             return false;
 
         // While the hero walks a path, MovePath() (ZzzAI.cpp) owns the body angle.
@@ -455,9 +456,20 @@ namespace MUHelper
 
         int iDistance = ComputeDistanceFromTarget(pTarget);
 
+        const bool isMonster = IsMonster(pTarget);
+        const bool isPlayer = IsPlayer(pTarget);
+        if (!isMonster)
+        {
+            if (!isPlayer || !bIsAttacking || !AllowsPlayerTargets())
+            {
+                return;
+            }
+        }
+
         if ((iDistance <= m_iHuntingDistance)
             || m_bIgnoreHuntRange
-            || (bIsAttacking && m_config.bLongRangeCounterAttack))
+            || (bIsAttacking && m_config.bLongRangeCounterAttack)
+            || (isPlayer && bIsAttacking && AllowsPlayerTargets()))
         {
             _targetsLock.lock();
 
@@ -471,7 +483,7 @@ namespace MUHelper
             _targetsLock.unlock();
         }
 
-        if (m_config.bUseSelfDefense && IsMonster(pTarget))
+        if (isPlayer && bIsAttacking && AllowsPlayerTargets())
         {
             m_iCurrentTarget = iTargetId;
         }
@@ -587,7 +599,12 @@ namespace MUHelper
 
             CHARACTER* pTarget = &CharactersClient[iIndex];
 
-            if (!IsMonster(pTarget) || IsBlacklisted(iMonsterId))
+            if (IsBlacklisted(iMonsterId))
+            {
+                continue;
+            }
+
+            if (!IsMonster(pTarget) && !(AllowsPlayerTargets() && IsPlayer(pTarget)))
             {
                 continue;
             }
@@ -1192,7 +1209,7 @@ namespace MUHelper
                     if (iCharIndex != MAX_CHARACTERS_CLIENT)
                     {
                         CHARACTER* pCurrentTarget = &CharactersClient[iCharIndex];
-                        if (pCurrentTarget->Dead > 0 || !IsMonster(pCurrentTarget))
+                        if (pCurrentTarget->Dead > 0 || !IsLegalLockedTarget(pCurrentTarget))
                         {
                             DeleteTarget(iTarget);
                             return 0;
@@ -1309,7 +1326,7 @@ namespace MUHelper
         }
 
         CHARACTER* pTarget = &CharactersClient[iCharIndex];
-        if (pTarget->Dead > 0 || !IsMonster(pTarget))
+        if (pTarget->Dead > 0 || !IsLegalLockedTarget(pTarget))
         {
             DeleteTarget(iTarget);
             return 0;
@@ -1379,6 +1396,26 @@ namespace MUHelper
         Attacking = 1;
         Action(Hero, &Hero->Object, true);
         return 1;
+    }
+
+    bool CMuHelper::AllowsPlayerTargets() const
+    {
+        return m_config.bUseSelfDefense && !g_ServerListManager->IsNonPvP();
+    }
+
+    bool CMuHelper::IsLegalLockedTarget(CHARACTER* pTarget) const
+    {
+        if (pTarget == nullptr || !pTarget->Object.Live || pTarget->Dead > 0)
+        {
+            return false;
+        }
+
+        if (IsMonster(pTarget))
+        {
+            return true;
+        }
+
+        return IsPlayer(pTarget) && AllowsPlayerTargets();
     }
 
     void CMuHelper::CollectNearbyMonsters()
@@ -1522,7 +1559,7 @@ namespace MUHelper
         }
 
         CHARACTER* pTarget = &CharactersClient[iCharIndex];
-        if (!pTarget->Object.Live || pTarget->Dead > 0 || !IsMonster(pTarget))
+        if (!pTarget->Object.Live || pTarget->Dead > 0 || !IsLegalLockedTarget(pTarget))
         {
             ReleaseChaseTarget(iTargetId, "dead-or-invalid");
             return false;

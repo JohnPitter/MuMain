@@ -3953,10 +3953,7 @@ void ReceiveAction(const BYTE* ReceiveBuffer, int Size)
         c->Object.AnimationFrame = 0;
 
         c->TargetCharacter = HeroIndex;
-        if (IsMonster(c))
-        {
-            MUHelper::g_MuHelper.AddTarget(Key, true);
-        }
+        MUHelper::g_MuHelper.AddTarget(Key, true);
 
         AttackPlayer = Index;
         break;
@@ -15258,6 +15255,8 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         const BYTE subcode = ReceiveBuffer[bIsC1C3 ? 3 : 4];
         if (subcode == 0x10 && g_pAutoBattler && Size >= 15)
             g_pAutoBattler->ReceiveStatus(ReceiveBuffer);
+        else if (subcode == 0x11 && g_pAutoBattler && Size >= 6)
+            g_pAutoBattler->ReceiveCatalog(ReceiveBuffer, Size);
     }
     break;
     case 0x4A:
