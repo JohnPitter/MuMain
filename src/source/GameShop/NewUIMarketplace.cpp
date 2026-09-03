@@ -115,6 +115,24 @@ namespace
     int s_PendingHighlightId = 0;
     bool s_HasPendingHighlight = false;
 
+    // OpenMU IsStackable: !IsWearable() && Definition.Durability > 1.
+    // Wearable <=> ITEM_ATTRIBUTE.m_byItemSlot is an equipment slot (0..11).
+    // Arrows/bolts occupy a weapon slot, but Durability is the stack count
+    // (same as inventory / ZzzInfomation item value).
+    BYTE MarketplaceInventoryQuantity(const ITEM* pItem)
+    {
+        if (pItem == nullptr || pItem->Type < 0 || pItem->Type >= MAX_ITEM)
+            return 1;
+
+        const ITEM_ATTRIBUTE* attr = &ItemAttribute[pItem->Type];
+        const bool wearable = attr->m_byItemSlot < MAX_EQUIPMENT_INDEX;
+        const bool arrowOrBolt = (pItem->Type == ITEM_ARROWS || pItem->Type == ITEM_BOLT);
+        const bool stackable = (!wearable || arrowOrBolt) && attr->Durability > 1;
+        if (!stackable)
+            return 1;
+        return pItem->Durability > 0 ? pItem->Durability : 1;
+    }
+
     class CMarketplaceAnnounceLayout : public TMsgBoxLayout<CNewUITextInputMsgBox>
     {
     public:
@@ -634,9 +652,9 @@ void CNewUIMarketplace::SendCreate()
     if (price <= 0)
         return;
 
-    BYTE qty = static_cast<BYTE>(_wtoi(m_szQty));
-    if (qty == 0)
-        qty = 1;
+    BYTE qty = 1;
+    if (m_iSelectedInv >= 0 && m_iSelectedInv < m_iInvCount && m_InvQty[m_iSelectedInv] > 0)
+        qty = m_InvQty[m_iSelectedInv];
 
     if (SocketClient == nullptr)
         return;
@@ -1152,8 +1170,10 @@ void CNewUIMarketplace::ConfirmAnnounce(const wchar_t* priceText)
         return;
     wcsncpy(m_szPrice, priceText, 15);
     m_szPrice[15] = 0;
-    m_szQty[0] = L'1';
-    m_szQty[1] = 0;
+    const BYTE qty = (m_iSelectedInv >= 0 && m_iSelectedInv < m_iInvCount && m_InvQty[m_iSelectedInv] > 0)
+        ? m_InvQty[m_iSelectedInv]
+        : 1;
+    mu_swprintf(m_szQty, L"%u", qty);
     m_iDialogDays = 7;
     SendCreate();
 }
@@ -1220,7 +1240,7 @@ void CNewUIMarketplace::CollectFromCtrl(CNewUIInventoryCtrl* pCtrl)
         m_InvSlots[m_iInvCount] = pCtrl->GetIndexByItem(pItem);
         m_InvTypes[m_iInvCount] = static_cast<WORD>(pItem->Type);
         m_InvLevels[m_iInvCount] = static_cast<BYTE>(pItem->Level);
-        m_InvQty[m_iInvCount] = pItem->Durability > 0 ? pItem->Durability : 1;
+        m_InvQty[m_iInvCount] = MarketplaceInventoryQuantity(pItem);
         m_InvExcellent[m_iInvCount] = pItem->ExcellentFlags;
         m_InvAncient[m_iInvCount] = pItem->AncientDiscriminator;
         m_InvOption[m_iInvCount] = pItem->OptionLevel;
