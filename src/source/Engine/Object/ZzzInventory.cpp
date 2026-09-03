@@ -10086,6 +10086,17 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
     if (Scale < 0.0005f)
         Scale = 0.003f;
 
+    if (Type == MODEL_JEWEL_OF_BLESS
+        || Type == MODEL_JEWEL_OF_SOUL
+        || Type == MODEL_JEWEL_OF_LIFE
+        || Type == MODEL_JEWEL_OF_CHAOS
+        || Type == MODEL_JEWEL_OF_CREATION
+        || Type == MODEL_JEWEL_OF_GUARDIAN
+        || Type == MODEL_JEWEL_OF_HARMONY)
+    {
+        Scale *= 0.77f;
+    }
+
     b->Animation(BoneTransform, ObjectSelect.AnimationFrame, ObjectSelect.PriorAnimationFrame, ObjectSelect.PriorAction, ObjectSelect.Angle, ObjectSelect.HeadAngle, false, false);
 
     CHARACTER Armor;

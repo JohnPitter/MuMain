@@ -75,6 +75,15 @@ void GameConfig::Load()
 
     m_uiLocale = ReadString(CfgSectionUI, CfgKeyUILocale, CfgDefaultUILocale);
     m_fontSelection = ReadString(CfgSectionUI, CfgKeyFont, CfgDefaultFont);
+    m_fixedToolbar = ReadBool(CfgSectionUI, CfgKeyFixedToolbar, CfgDefaultFixedToolbar);
+    {
+        wchar_t scaleDefault[16] = {};
+        swprintf_s(scaleDefault, L"%.2f", CfgDefaultFixedToolbarScale);
+        const std::wstring scaleStr = ReadString(CfgSectionUI, CfgKeyFixedToolbarScale, scaleDefault);
+        m_fixedToolbarScale = static_cast<float>(_wtof(scaleStr.c_str()));
+        if (m_fixedToolbarScale <= 0.f)
+            m_fixedToolbarScale = CfgDefaultFixedToolbarScale;
+    }
 
     m_zoom = ReadInt(CfgSectionCamera, CfgKeyZoom, CfgDefaultZoom);
 
@@ -142,6 +151,12 @@ void GameConfig::Save()
 
     WriteString(CfgSectionUI, CfgKeyUILocale, m_uiLocale);
     WriteString(CfgSectionUI, CfgKeyFont, m_fontSelection);
+    WriteBool(CfgSectionUI, CfgKeyFixedToolbar, m_fixedToolbar);
+    {
+        wchar_t scaleBuf[16] = {};
+        swprintf_s(scaleBuf, L"%.2f", m_fixedToolbarScale);
+        WriteString(CfgSectionUI, CfgKeyFixedToolbarScale, scaleBuf);
+    }
 
     WriteInt(CfgSectionCamera, CfgKeyZoom, m_zoom);
 }
@@ -235,6 +250,16 @@ void GameConfig::SetUILocale(const std::wstring& locale)
 void GameConfig::SetFontSelection(const std::wstring& font)
 {
     m_fontSelection = font;
+}
+
+void GameConfig::SetFixedToolbar(bool fixed)
+{
+    m_fixedToolbar = fixed;
+}
+
+void GameConfig::SetFixedToolbarScale(float scale)
+{
+    m_fixedToolbarScale = scale;
 }
 
 void GameConfig::SetEncryptedUsername(const std::wstring& encryptedUsername)

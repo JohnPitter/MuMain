@@ -68,6 +68,13 @@ public:
     std::wstring GetFontSelection() const { return m_fontSelection; }
     void SetFontSelection(const std::wstring& font);
 
+    // Bottom HUD toolbar at 1:1 reference size, centered. Default on.
+    bool GetFixedToolbar() const { return m_fixedToolbar; }
+    void SetFixedToolbar(bool fixed);
+
+    float GetFixedToolbarScale() const { return m_fixedToolbarScale; }
+    void SetFixedToolbarScale(float scale);
+
     // Chat commands - the favourites and the named templates of the command
     // window. They belong to the installation, not to a character.
     // A template is stored as "name|command|value|value|...".
@@ -120,6 +127,8 @@ private:
 
     std::wstring m_uiLocale;
     std::wstring m_fontSelection;
+    bool m_fixedToolbar;
+    float m_fixedToolbarScale;
 
     int m_zoom;
 

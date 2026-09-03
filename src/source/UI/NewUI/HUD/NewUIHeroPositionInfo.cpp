@@ -28,7 +28,6 @@ namespace
     constexpr float kCapBody = kCapNativeW - kCapRound;
     constexpr float kCapBodyDest = kCapBody + kCapExtra;
     constexpr float kCapTotal = kCapBodyDest + kCapRound;
-    constexpr float kCashFrame = 25.f;
 }
 
 CNewUIHeroPositionInfo::CNewUIHeroPositionInfo()
@@ -273,34 +272,12 @@ bool CNewUIHeroPositionInfo::Render()
         kCapH);
     //--
     m_BtnConfig.Render();
-
-    MUHelper::g_MuHelper.IsActive() ? m_BtnStop.Render() : m_BtnStart.Render();
-
+    if (MUHelper::g_MuHelper.IsActive())
+        m_BtnStop.Render();
+    else
+        m_BtnStart.Render();
     s_BtnAuto.Render();
-    {
-        const POINT pos = s_BtnAuto.GetPos();
-        g_pRenderText->SetFont(g_hFontBold);
-        g_pRenderText->SetTextColor(255, 238, 161, 255);
-        g_pRenderText->SetBgColor(0, 0, 0, 0);
-        g_pRenderText->RenderText(pos.x, pos.y + 1, L"A", 18, 11, RT3_SORT_CENTER);
-        g_pRenderText->SetFont(g_hFont);
-        g_pRenderText->SetTextColor(255, 255, 255, 255);
-    }
-
     s_BtnMarket.Render();
-    {
-        const POINT pos = s_BtnMarket.GetPos();
-        RenderImageStretch(
-            IMAGE_HERO_POSITION_INFO_MARKET,
-            static_cast<float>(pos.x),
-            static_cast<float>(pos.y),
-            18.f,
-            13.f,
-            0.f,
-            0.f,
-            kCashFrame,
-            kCashFrame);
-    }
 
     // Voice M/S dock to the middle of the right screen edge (MiniMapCorner).
     //--

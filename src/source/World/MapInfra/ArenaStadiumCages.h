@@ -2,7 +2,7 @@
 
 namespace World::Arena
 {
-    // Stadium (map 6) hunting cages: fence rails = NOMOVE, one official door
-    // per pit. Server C1-46 mirrors this. Does not touch Webzen sentinel tiles.
+    // Stadium (map 6): fence rails = NOMOVE, one door per pit, safezone only
+    // on the named plaza (65,43 r=10) and warp pad. Server C1-46 mirrors this.
     void ApplyCageDoors();
 }

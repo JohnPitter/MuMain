@@ -81,10 +81,19 @@ namespace
         { 65, 71, 71, 77 },
     };
 
+    // Legacy 154 campus — UNSET so corridors are PvP again.
     constexpr TileRect kPlazaCampus[] =
     {
         { 0, 25, 120, 135 },
     };
+
+    // Mirrors OpenMU ArenaCageDoors plaza + warp (Chebyshev squares).
+    constexpr int kPlazaCenterX = 65;
+    constexpr int kPlazaCenterY = 43;
+    constexpr int kPlazaSafeRadius = 10;
+    constexpr int kWarpSafeX = 102;
+    constexpr int kWarpSafeY = 116;
+    constexpr int kWarpSafeRadius = 3;
 
     bool InRectList(const TileRect* rects, int count, int x, int y)
     {
@@ -105,6 +114,23 @@ namespace
                 return true;
         }
         return false;
+    }
+
+    bool InChebyshev(int x, int y, int cx, int cy, int radius)
+    {
+        int dx = x - cx;
+        int dy = y - cy;
+        if (dx < 0) dx = -dx;
+        if (dy < 0) dy = -dy;
+        return dx <= radius && dy <= radius;
+    }
+
+    bool IsPlayerSafeTile(int x, int y)
+    {
+        if (InDoor(x, y))
+            return false;
+        return InChebyshev(x, y, kPlazaCenterX, kPlazaCenterY, kPlazaSafeRadius)
+            || InChebyshev(x, y, kWarpSafeX, kWarpSafeY, kWarpSafeRadius);
     }
 
     void ApplyRect(const TileRect& rect, bool seal)
@@ -152,10 +178,21 @@ namespace
                 {
                     if (x < 0 || y < 0 || x >= TERRAIN_SIZE || y >= TERRAIN_SIZE)
                         continue;
-                    if (InDoor(x, y) || InRectList(kHuntingBoxes, kBoxCount, x, y))
-                        continue;
-                    AddTerrainAttribute(x, y, TW_SAFEZONE);
+                    if (IsPlayerSafeTile(x, y) && !InRectList(kHuntingBoxes, kBoxCount, x, y))
+                        AddTerrainAttribute(x, y, TW_SAFEZONE);
+                    else
+                        SubTerrainAttribute(x, y, TW_SAFEZONE);
                 }
+            }
+        }
+
+        for (int y = kWarpSafeY - kWarpSafeRadius; y <= kWarpSafeY + kWarpSafeRadius; ++y)
+        {
+            for (int x = kWarpSafeX - kWarpSafeRadius; x <= kWarpSafeX + kWarpSafeRadius; ++x)
+            {
+                if (x < 0 || y < 0 || x >= TERRAIN_SIZE || y >= TERRAIN_SIZE)
+                    continue;
+                AddTerrainAttribute(x, y, TW_SAFEZONE);
             }
         }
 

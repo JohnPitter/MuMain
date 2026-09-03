@@ -6262,6 +6262,17 @@ void CreateItemDrop(ITEM_t* ip, ItemCreationParams params, vec3_t position, bool
     }
 
     ItemAngle(o);
+
+    if (o->Type == MODEL_JEWEL_OF_BLESS
+        || o->Type == MODEL_JEWEL_OF_SOUL
+        || o->Type == MODEL_JEWEL_OF_LIFE
+        || o->Type == MODEL_JEWEL_OF_CHAOS
+        || o->Type == MODEL_JEWEL_OF_CREATION
+        || o->Type == MODEL_JEWEL_OF_GUARDIAN
+        || o->Type == MODEL_JEWEL_OF_HARMONY)
+    {
+        o->Scale *= 0.77f;
+    }
 }
 
 void CreateMoneyDrop(ITEM_t* ip, int amount, vec3_t position, bool isFreshDrop)

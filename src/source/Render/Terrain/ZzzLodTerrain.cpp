@@ -33,6 +33,7 @@
 #include "Camera/Frustum.h"
 #include "Camera/ConvexHull2D.h"
 #include "Engine/Object/CullingConstants.h"
+#include "UI/HUD/HudToolbar.h"
 
 // DevEditor function declarations
 #ifdef _EDITOR
@@ -2649,7 +2650,7 @@ void CreateFrustrum2D(vec3_t Position)
             int refWidth = GetScreenWidth();
             int refHeight = REFERENCE_HEIGHT;
             if (SceneFlag == MAIN_SCENE && !g_Camera.TopViewEnable)
-                refHeight = REFERENCE_HEIGHT - 48;
+                refHeight = UI::HUD::MainSceneWorldRefHeight();
             else if (SceneFlag == CHARACTER_SCENE || SceneFlag == LOG_IN_SCENE)
                 refHeight = 430;
             float vpW = ConvertX(static_cast<float>(refWidth));

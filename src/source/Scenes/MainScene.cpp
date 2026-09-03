@@ -39,6 +39,7 @@
 #include "Camera/CameraProjection.h"
 #include "Camera/CameraManager.h"
 #include "Camera/CameraMode.h"
+#include "UI/HUD/HudToolbar.h"
 #ifdef _EDITOR
 #include "Camera/FrustumRenderer.h"
 #include "Camera/CameraDebugLog.h"
@@ -233,7 +234,7 @@ static void UpdateUIAndInput()
     if (g_Camera.TopViewEnable || LoadingWorld >= 30)
         return;
 
-    if (MouseY >= (int)(REFERENCE_HEIGHT - 48))
+    if (!UI::HUD::IsFixedToolbar() && MouseY >= (int)(REFERENCE_HEIGHT - 48))
         MouseOnWindow = true;
 
     g_pPartyManager->Update();
@@ -371,9 +372,9 @@ static void SetupMainSceneViewport(int& outWidth, int& outHeight, BYTE& outByWat
 
     if (g_Camera.TopViewEnable == false)
     {
-        // Use hardcoded value from original game (in 640×480 reference coordinates)
-        // This is then scaled by BeginOpengl() to actual window size
-        outHeight = REFERENCE_HEIGHT - 48;
+        // Legacy stretch HUD reserved 48 ref-px and letterboxed the 3D view.
+        // Fixed toolbar is an overlay — the world must reach the window bottom.
+        outHeight = UI::HUD::MainSceneWorldRefHeight();
     }
     else
     {

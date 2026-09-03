@@ -31,6 +31,7 @@
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "GameShop/InGameShopSystem.h"
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
+#include "UI/HUD/HudToolbar.h"
 
 SEASON3B::CNewUIMainFrameWindow::CNewUIMainFrameWindow()
 {
@@ -169,6 +170,7 @@ void SEASON3B::CNewUIMainFrameWindow::Release()
 
 bool SEASON3B::CNewUIMainFrameWindow::Render()
 {
+    UI::HUD::FixedToolbarScope hudScope;
     EnableAlphaTest();
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -191,6 +193,7 @@ bool SEASON3B::CNewUIMainFrameWindow::Render()
 
 void SEASON3B::CNewUIMainFrameWindow::Render3D()
 {
+    UI::HUD::FixedToolbarScope hudScope;
     m_ItemHotKey.RenderItems();
 }
 
@@ -733,6 +736,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderFriendButtonState()
 
 bool SEASON3B::CNewUIMainFrameWindow::UpdateMouseEvent()
 {
+    UI::HUD::FixedToolbarScope hudScope;
     if (g_pNewUIHotKey->IsStateGameOver() == true)
     {
         return true;
@@ -903,6 +907,7 @@ int SEASON3B::CNewUIMainFrameWindow::GetItemHotKeyLevel(int iHotKey)
 
 void SEASON3B::CNewUIMainFrameWindow::UseHotKeyItemRButton()
 {
+    UI::HUD::FixedToolbarScope hudScope;
     m_ItemHotKey.UseItemRButton();
 }
 
@@ -1376,6 +1381,7 @@ void SEASON3B::CNewUISkillList::UnloadImages()
 
 bool SEASON3B::CNewUISkillList::UpdateMouseEvent()
 {
+    UI::HUD::FixedToolbarScope hudScope;
 #ifdef MOD_SKILLLIST_UPDATEMOUSE_BLOCK
     if (GFxProcess::GetInstancePtr()->GetUISelect() == 1)
     {
@@ -1978,6 +1984,7 @@ void SEASON3B::CNewUISkillList::RenderCurrentSkillAndHotSkillList()
 
 bool SEASON3B::CNewUISkillList::Render()
 {
+    UI::HUD::FixedToolbarScope hudScope;
     int i;
     float x, y, width, height;
 
@@ -2088,6 +2095,7 @@ bool SEASON3B::CNewUISkillList::IsSkillPaletteOpen() const
 
 bool SEASON3B::CNewUISkillList::IsMouseOnSkillHud() const
 {
+    UI::HUD::FixedToolbarScope hudScope;
     if (SEASON3B::CheckMouseIn(222, 431, 32 * 5, 38))
     {
         return true;
@@ -2729,7 +2737,7 @@ void SEASON3B::CNewUIMainFrameWindow::SetBtnState(int iBtnType, bool bStateDown)
         }
     }
     break;
-#endif //defined defined PBG_ADD_INGAMESHOP_UI_MAINFRAME
+#endif
     case MAINFRAME_BTN_CHAINFO:
     {
         if (bStateDown)

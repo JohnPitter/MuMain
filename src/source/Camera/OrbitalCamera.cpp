@@ -9,6 +9,7 @@
 
 #include "UI/Legacy/UIControls.h"
 #include "Data/GameConfig/GameConfig.h"
+#include "UI/HUD/HudToolbar.h"
 #include "CameraDebugLog.h"
 
 #ifndef M_PI
@@ -837,7 +838,7 @@ void OrbitalCamera::UpdateFrustum()
     if (SceneFlag == MAIN_SCENE)
     {
         refWidth = GetScreenWidth();
-        refHeight = g_Camera.TopViewEnable ? REFERENCE_HEIGHT : (REFERENCE_HEIGHT - 48);
+        refHeight = g_Camera.TopViewEnable ? REFERENCE_HEIGHT : UI::HUD::MainSceneWorldRefHeight();
     }
     else if (SceneFlag == CHARACTER_SCENE || SceneFlag == LOG_IN_SCENE)
     {
