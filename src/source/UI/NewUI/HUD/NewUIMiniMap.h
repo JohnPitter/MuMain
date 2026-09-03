@@ -77,6 +77,7 @@ namespace SEASON3B
         void UnloadImages();
 
     private:
+        void ApplyWorldScale(const wchar_t* worldName);
         void Render_Text();
         void Render_Icon();
         void Render_Scroll();

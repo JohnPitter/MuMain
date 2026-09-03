@@ -54,19 +54,7 @@ bool SEASON3B::CNewUIMiniMap::Create(CNewUIManager* pNewUIMng, int x, int y)
 
     SetPos(x, y);
 
-    m_Lenth[0].x = 800;
-    m_Lenth[1].x = 1000;
-    m_Lenth[2].x = 1200;
-    m_Lenth[3].x = 1400;
-    m_Lenth[4].x = 1600;
-    m_Lenth[5].x = 1800;
-    m_Lenth[0].y = 800;
-    m_Lenth[1].y = 1000;
-    m_Lenth[2].y = 1200;
-    m_Lenth[3].y = 1400;
-    m_Lenth[4].y = 1600;
-    m_Lenth[5].y = 1800;
-    m_MiniPos = 0;
+    ApplyWorldScale(nullptr);
     m_bSuccess = false;
     // Default CNewUIObj visibility is true. This overlay eats (0,0)-(640,430)
     // in UpdateMouseEvent; leaving it shown from login blocks walk clicks and
@@ -236,8 +224,28 @@ bool SEASON3B::CNewUIMiniMap::Update()
     return true;
 }
 
+void SEASON3B::CNewUIMiniMap::ApplyWorldScale(const wchar_t* worldName)
+{
+    // Default TAB scale: 800px for the full 256-tile sheet. Stadium's
+    // walkable campus is only ~102x120 of that sheet; 1200px fills the
+    // overlay once unused tiles are transparent (see make_arena_minimap.py).
+    int base = 800;
+    if (worldName && wcsstr(worldName, L"World7"))
+        base = 1200;
+
+    m_MiniPos = 0;
+    for (int i = 0; i < 6; ++i)
+    {
+        const int size = base + (i * 200);
+        m_Lenth[i].x = size;
+        m_Lenth[i].y = size;
+    }
+}
+
 void SEASON3B::CNewUIMiniMap::LoadImages(const wchar_t* Filename)
 {
+    ApplyWorldScale(Filename);
+
     wchar_t Fname[300];
     int i = 0;
     mu_swprintf(Fname, L"Data\\%ls\\mini_map.ozt", Filename);
