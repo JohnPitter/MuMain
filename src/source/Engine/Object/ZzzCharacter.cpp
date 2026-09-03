@@ -12912,12 +12912,16 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
 {
     CHARACTER* c;
     if (pCharacter == NULL)
+    {
+        if (Key < 0 || Key >= MAX_CHARACTERS_CLIENT)
+            return;
         c = &CharactersClient[Key];
+    }
     else
         c = pCharacter;
 
     OBJECT* o = &c->Object;
-    if (o->Type != MODEL_PLAYER)
+    if (o->Type != MODEL_PLAYER || Equipment == nullptr)
         return;
 
     c->ExtendState = (flags & 0x10) > 0;
@@ -12934,17 +12938,19 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
             bool isAncient = Equipment[offset + 2] & 0x04;
             bool isExcellent = Equipment[offset + 2] & 0x08;
             BYTE glowLevel = (Equipment[offset + 2] & 0xF0) >> 4;
-            if (number > MAX_ITEM_INDEX)
+            if (number >= MAX_ITEM_INDEX || group >= MAX_ITEM_TYPE)
             {
                 // not supported yet!
             }
             else if (group == ITEM_GROUP_HELPER && number == ITEM_NUMBER_DARK_SPIRIT)
             {
-                ITEM* pEquipmentItemSlot = &CharacterMachine->Equipment[i];
-                PET_INFO* pPetInfo = giPetManager::GetPetInfo(pEquipmentItemSlot);
                 giPetManager::CreatePetDarkSpirit(c);
-                if (!gMapManager.InChaosCastle())
+                if (!gMapManager.InChaosCastle() && c->m_pPet != nullptr && CharacterMachine != nullptr)
+                {
+                    ITEM* pEquipmentItemSlot = &CharacterMachine->Equipment[i];
+                    PET_INFO* pPetInfo = giPetManager::GetPetInfo(pEquipmentItemSlot);
                     ((CSPetSystem*)c->m_pPet)->SetPetInfo(pPetInfo);
+                }
             }
             else
             {
@@ -12982,7 +12988,7 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
             bool isAncient = Equipment[offset + 2] & 0x04;
             bool isExcellent = Equipment[offset + 2] & 0x08;
 
-            if (number > MAX_ITEM_INDEX)
+            if (number >= MAX_ITEM_INDEX || group >= MAX_ITEM_TYPE)
             {
                 // not supported
             }
@@ -13008,7 +13014,7 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
         {
             short number = Equipment[offset + 1] + ((Equipment[offset] & 0xF) << 4);
             BYTE group = (Equipment[offset] & 0xF0) >> 4;
-            if (number > MAX_ITEM_INDEX)
+            if (number >= MAX_ITEM_INDEX || group >= MAX_ITEM_TYPE)
             {
                 // not supported
             }
@@ -13034,8 +13040,11 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
             short itemNumber = number & (MAX_ITEM_INDEX-1);
             HelperVariant = (Equipment[offset] & 0xE) >> 1;
             BYTE group = (Equipment[offset] & 0xF0) >> 4;
-            auto modelOffset = group * MAX_ITEM_INDEX + itemNumber;
-            c->Helper.Type = MODEL_ITEM + modelOffset;
+            if (group < MAX_ITEM_TYPE)
+            {
+                auto modelOffset = group * MAX_ITEM_INDEX + itemNumber;
+                c->Helper.Type = MODEL_ITEM + modelOffset;
+            }
         }
 
         // offset += 2;
@@ -13044,7 +13053,8 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
     if (pHelper == nullptr)
     {
         DeleteMount(o);
-        ThePetProcess().DeletePet(c, c->Helper.Type - MODEL_ITEM, true);
+        if (c->Helper.Type >= MODEL_ITEM)
+            ThePetProcess().DeletePet(c, c->Helper.Type - MODEL_ITEM, true);
     }
     else
     {

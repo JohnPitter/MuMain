@@ -1293,6 +1293,10 @@ void CMapManager::LoadWorld(int Map)
             mu_swprintf(FileName, L"Data\\%ls\\EncTerrain%d.att", WorldName, iMapWorld);
         }
     iResult = OpenTerrainAttribute(FileName);
+    if (this->WorldActive == WD_39KANTURU_3RD)
+    {
+        M39Kanturu3rd::PrepareCombatArenas();
+    }
     if (iMapWorld != iResult && -1 != iResult)
     {
         wchar_t Text[256];
@@ -1707,7 +1711,13 @@ const wchar_t* CMapManager::GetMapName(int iMap)
     }
     else if (iMap == WD_39KANTURU_3RD)
     {
-        return(I18N::Game::RefineryTower);
+        // Official WD_39 is Kanturu Remain. Refinery Tower is only the Elpis pit (~77,177).
+        if (Hero != NULL && Hero->PositionY >= 150)
+        {
+            return(I18N::Game::RefineryTower);
+        }
+
+        return L"Kanturu Remain";
     }
     else if (iMap == WD_40AREA_FOR_GM)
     {

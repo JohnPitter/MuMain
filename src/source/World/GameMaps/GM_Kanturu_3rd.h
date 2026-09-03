@@ -27,6 +27,9 @@ namespace M39Kanturu3rd {
 
     void Kanturu3rdInit();
     bool IsSuccessBattle();
+    // EncTerrain39 marks Maya/Nightmare pits as TW_SAFEZONE (same file the server
+    // strips). Official combat happens there; keep Tower/Elpis (Y>=150) safe.
+    void PrepareCombatArenas();
     void CheckSuccessBattle(BYTE State, BYTE DetailState);
     void Kanturu3rdState(BYTE State, BYTE DetailState);
     void MayaSceneMayaAction(BYTE Skill);

@@ -229,7 +229,15 @@ void SEASON3B::CNewUIKanturu2ndEnterNpc::ReceiveKanturu3rdInfo(BYTE btState, BYT
         {
             wcscpy(m_strSubject, I18N::Game::YouMayNowProceedToTheRefineryTower);
             wcscpy(m_strStateText[0], I18N::Game::PathToTheRefineryTowerIsNowOpened);
-            mu_swprintf(m_strStateText[1], I18N::Game::PathToTheRefineryTowerWillBeClosedInDHours, iRemainTime / 3600);
+            if (iRemainTime >= 3600)
+            {
+                mu_swprintf(m_strStateText[1], I18N::Game::PathToTheRefineryTowerWillBeClosedInDHours, iRemainTime / 3600);
+            }
+            else
+            {
+                int remain = iRemainTime < 0 ? 0 : iRemainTime;
+                mu_swprintf(m_strStateText[1], I18N::Game::DMinutesDSeconds, remain / 60, remain % 60);
+            }
             m_iStateTextNum = 2;
         }
         else
@@ -351,7 +359,12 @@ void SEASON3B::CNewUIKanturu2ndEnterNpc::ReceiveKanturu3rdInfo(BYTE btState, BYT
         wcscpy(m_strSubject, I18N::Game::BossBattleWillStartSoon);
         if (btDetailState == 1)	// STANBY_START
         {
-            mu_swprintf(m_strStateText[0], I18N::Game::ForceOfTheNightmareHasInvaded, iRemainTime / 60);
+            int minutes = (iRemainTime + 59) / 60;
+            if (minutes < 1)
+            {
+                minutes = iRemainTime > 0 ? 1 : 0;
+            }
+            mu_swprintf(m_strStateText[0], I18N::Game::ForceOfTheNightmareHasInvaded, minutes);
         }
         else // STANBY_NONE || STANBY_NOTIFY || STANBY_END || STANBY_ENDCYCLE
         {
@@ -714,18 +727,13 @@ void SEASON3B::CNewUIKanturuInfoWindow::RenderInfo()
 
     int iCurrentTime = (GetTickCount() - m_dwSyncTime) / 1000;
     int iPastSecond = m_iSecond - iCurrentTime;
+    if (iPastSecond < 0)
+    {
+        iPastSecond = 0;
+    }
 
     m_iMinute = iPastSecond / 60;
-    int iSecond;
-
-    if (m_iMinute <= 0)
-    {
-        iSecond = 0;
-    }
-    else
-    {
-        iSecond = iPastSecond % (60 * m_iMinute);
-    }
+    int iSecond = iPastSecond % 60;
 
     static DWORD dwTime = timeGetTime();
     static bool bRender = true;

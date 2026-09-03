@@ -490,6 +490,51 @@ int SearchArrowCount()
     return Count;
 }
 
+static bool IsKanturuEventBossModel(int type)
+{
+    return type == MODEL_MAYA_HAND_LEFT
+        || type == MODEL_MAYA_HAND_RIGHT
+        || type == MODEL_MAYA
+        || type == MODEL_DARK_SKULL_SOLDIER_5;
+}
+
+// Maya hands spawn at a pit origin; the clickable mesh hangs over the platform.
+// Official clients hit them from those tiles. Our BMD pick box stays at the origin
+// (often behind TW_NOMOVE), so left-click never selects them and CheckWall/pathing
+// walks into the pit instead of sending 0x11.
+static int FindNearestKanturuEventBoss()
+{
+    int best = -1;
+    int bestDist = 0x7fffffff;
+    for (int i = 0; i < MAX_CHARACTERS_CLIENT; ++i)
+    {
+        CHARACTER* t = &CharactersClient[i];
+        if (!t->Object.Live || t->Dead > 0)
+        {
+            continue;
+        }
+        if (!IsKanturuEventBossModel(t->Object.Type))
+        {
+            continue;
+        }
+        int dx = t->PositionX - Hero->PositionX;
+        int dy = t->PositionY - Hero->PositionY;
+        if (dx < 0) dx = -dx;
+        if (dy < 0) dy = -dy;
+        int dist = dx > dy ? dx : dy;
+        if (dist > 24)
+        {
+            continue;
+        }
+        if (dist < bestDist)
+        {
+            bestDist = dist;
+            best = i;
+        }
+    }
+    return best;
+}
+
 bool CheckTile(CHARACTER* c, OBJECT* o, float Range)
 {
     if (!c || !o) return false;
@@ -1260,6 +1305,14 @@ void Action(CHARACTER* c, OBJECT* o, bool Now)
         if (gCharacterManager.GetEquipedBowType() != BOWTYPE_NONE)
         {
             Range = 6.f;
+        }
+
+        if (gMapManager.WorldActive == WD_39KANTURU_3RD
+            && ActionTarget >= 0 && ActionTarget < MAX_CHARACTERS_CLIENT
+            && IsKanturuEventBossModel(CharactersClient[ActionTarget].Object.Type))
+        {
+            // Hands/Maya/Nightmare origins sit off the walkable platform.
+            Range = 24.f;
         }
 
         if (ActionTarget == -1)
@@ -3195,6 +3248,16 @@ void MoveHero()
                 Success = CheckAttack();
             }
 
+            if (!Success && !c->SafeZone && gMapManager.WorldActive == WD_39KANTURU_3RD)
+            {
+                int boss = FindNearestKanturuEventBoss();
+                if (boss >= 0)
+                {
+                    SelectedCharacter = boss;
+                    Success = CheckAttack();
+                }
+            }
+
             if (Success)
             {
 #ifdef SEND_POSITION_TO_SERVER
@@ -3216,7 +3279,12 @@ void MoveHero()
                     TargetX = (int)(CharactersClient[ActionTarget].Object.Position[0] / TERRAIN_SCALE);
                     TargetY = (int)(CharactersClient[ActionTarget].Object.Position[1] / TERRAIN_SCALE);
 
-                    if (CheckWall((c->PositionX), (c->PositionY), TargetX, TargetY))
+                    if (gMapManager.WorldActive == WD_39KANTURU_3RD
+                        && IsKanturuEventBossModel(CharactersClient[ActionTarget].Object.Type))
+                    {
+                        Action(c, o, true);
+                    }
+                    else if (CheckWall((c->PositionX), (c->PositionY), TargetX, TargetY))
                     {
                         if (!PathFinding2((c->PositionX), (c->PositionY), TargetX, TargetY, &c->Path))
                         {

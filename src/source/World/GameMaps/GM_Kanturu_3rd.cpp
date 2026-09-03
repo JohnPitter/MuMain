@@ -35,6 +35,13 @@ bool M39Kanturu3rd::IsInKanturu3rd()
     return (gMapManager.WorldActive == WD_39KANTURU_3RD) ? true : false;
 }
 
+void M39Kanturu3rd::PrepareCombatArenas()
+{
+    // Same rectangles as OpenMU KanturuEventPlugIn.PrepareCombatArenas.
+    AddTerrainAttributeRange(48, 56, 112 - 48 + 1, 128 - 56 + 1, TW_SAFEZONE, 0);
+    AddTerrainAttributeRange(152, 72, 216 - 152 + 1, 144 - 72 + 1, TW_SAFEZONE, 0);
+}
+
 void M39Kanturu3rd::Kanturu3rdInit()
 {
     KanturuSuccessMap = false;
@@ -87,6 +94,7 @@ void M39Kanturu3rd::CheckSuccessBattle(BYTE State, BYTE DetailState)
     }
 
     OpenTerrainAttribute(FileName);
+    PrepareCombatArenas();
 }
 
 bool M39Kanturu3rd::CreateKanturu3rdObject(OBJECT* o)

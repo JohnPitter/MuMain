@@ -786,7 +786,35 @@ void ReceiveChangePassword(const BYTE* ReceiveBuffer)
     }
 }
 
-void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer)
+static bool IsKnownServerClassType(BYTE raw)
+{
+    switch (static_cast<SERVER_CLASS_TYPE>(raw))
+    {
+    case DarkWizard:
+    case SoulMaster:
+    case GrandMaster:
+    case DarkKnight:
+    case BladeKnight:
+    case BladeMaster:
+    case FairyElf:
+    case MuseElf:
+    case HighElf:
+    case MagicGladiator:
+    case DuelMaster:
+    case DarkLord:
+    case LordEmperor:
+    case Summoner:
+    case BloodySummoner:
+    case DimensionMaster:
+    case RageFighter:
+    case FistMaster:
+        return true;
+    default:
+        return false;
+    }
+}
+
+void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer, int32_t Size)
 {
     InitGuildWar();
 
@@ -796,32 +824,73 @@ void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer)
     // each char @ 8 + i*44: slot, name[10], pad, level u16, ctl, class, flags, eq[25], guild
     constexpr int kHeaderSize = 8;
     constexpr int kEntrySize = 44;
-    const int characterCount = ReceiveBuffer[6];
-    CharacterAttribute->IsVaultExtended = ReceiveBuffer[7] != 0;
+    constexpr int kMaxSelectSlots = 5;
+
+    if (ReceiveBuffer == nullptr || Size < kHeaderSize)
+    {
+        g_ErrorReport.Write(L"[ReceiveList] truncated header size=%d\r\n", Size);
+        CurrentProtocolState = RECEIVE_CHARACTERS_LIST;
+        return;
+    }
+
+    int characterCount = ReceiveBuffer[6];
+    const int maxBySize = (Size - kHeaderSize) / kEntrySize;
+    if (characterCount < 0)
+        characterCount = 0;
+    if (characterCount > maxBySize)
+        characterCount = maxBySize;
+    if (characterCount > kMaxSelectSlots)
+        characterCount = kMaxSelectSlots;
+
+    if (CharacterAttribute != nullptr)
+        CharacterAttribute->IsVaultExtended = ReceiveBuffer[7] != 0;
 
 #ifdef _DEBUG
     g_ConsoleDebug->Write(MCD_RECEIVE, L"[ReceiveList Count %d]", characterCount);
 #else
-    g_ErrorReport.Write(L"[ReceiveList Count %d]", characterCount);
+    g_ErrorReport.Write(L"[ReceiveList Count %d]\r\n", characterCount);
 #endif
 
+    bool usedSlot[kMaxSelectSlots] = {};
     for (int i = 0; i < characterCount; i++)
     {
         const BYTE* row = ReceiveBuffer + kHeaderSize + (i * kEntrySize);
         const BYTE index = row[0];
+        if (index >= kMaxSelectSlots)
+        {
+            g_ErrorReport.Write(L"[CharacterList] skip slot=%u\r\n", index);
+            continue;
+        }
+        if (usedSlot[index])
+        {
+            g_ErrorReport.Write(L"[CharacterList] skip duplicate slot=%u\r\n", index);
+            continue;
+        }
+
         char nameUtf8[11] = {};
         memcpy(nameUtf8, row + 1, 10);
         const WORD level = static_cast<WORD>(row[12] | (row[13] << 8));
         const BYTE ctlCode = row[14];
-        const auto serverClass = static_cast<SERVER_CLASS_TYPE>(row[15]);
+        const BYTE classByte = row[15];
         const BYTE flags = row[16];
         BYTE equipment[EQUIPMENT_LENGTH_EXTENDED] = {};
         memcpy(equipment, row + 17, EQUIPMENT_LENGTH_EXTENDED);
         const BYTE guildStatus = row[42];
 
-        auto iClass = gCharacterManager.ChangeServerClassTypeToClientClassType(serverClass);
-        float fPos[2], fAngle = 0.0f;
+        CLASS_TYPE iClass = CLASS_WIZARD;
+        if (IsKnownServerClassType(classByte))
+        {
+            iClass = gCharacterManager.ChangeServerClassTypeToClientClassType(
+                static_cast<SERVER_CLASS_TYPE>(classByte));
+        }
+        else
+        {
+            g_ErrorReport.Write(L"[CharacterList] unknown class=%02X slot=%u, default DW\r\n",
+                classByte, index);
+        }
 
+        float fPos[2] = {};
+        float fAngle = 0.0f;
         switch (index)
         {
             case 0:	fPos[0] = 8008.0f;	fPos[1] = 18885.0f;	fAngle = 115.0f; break;
@@ -829,10 +898,13 @@ void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer)
             case 2:	fPos[0] = 8046.0f;	fPos[1] = 19400.0f;	fAngle = 75.0f; break;
             case 3:	fPos[0] = 8133.0f;	fPos[1] = 19645.0f;	fAngle = 60.0f; break;
             case 4:	fPos[0] = 8282.0f;	fPos[1] = 19845.0f;	fAngle = 35.0f; break;
-            default: return;
+            default: continue;
         }
 
+        usedSlot[index] = true;
         CHARACTER* c = CreateHero(index, iClass, 0, fPos[0], fPos[1], fAngle);
+        if (c == nullptr)
+            continue;
 
         c->Level = level;
         c->CtlCode = ctlCode;
@@ -846,8 +918,8 @@ void ReceiveCharacterListExtended(const BYTE* ReceiveBuffer)
             }
         }
 
-        g_ErrorReport.Write(L"[CharacterList] slot=%u name=%ls level=%u raw=%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
-            index, c->ID, c->Level,
+        g_ErrorReport.Write(L"[CharacterList] slot=%u name=%ls level=%u class=%02X raw=%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
+            index, c->ID, c->Level, classByte,
             row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10]);
 
         ReadEquipmentExtended(index, flags, equipment);
@@ -13804,7 +13876,7 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             CharacterTitle::ReceiveAppearance(ReceiveBuffer, Size);
             break;
         case 0x00: //receive characters list
-            ReceiveCharacterListExtended(ReceiveBuffer);
+            ReceiveCharacterListExtended(ReceiveBuffer, Size);
             break;
         case 0x01: //receive create character
             ReceiveCreateCharacter(ReceiveBuffer);
