@@ -157,13 +157,13 @@ bool SEASON3B::CNewUINameWindow::Render()
 {
     EnableAlphaTest();
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    UI::Voice::RenderSpeakingIndicators();
     RenderName();
     RenderTimes();
     matchEvent::RenderMatchTimes();
     UI::Chat::RenderBooleans();
     RenderMonsterHealthBars();
     DrawPersonalShopTitleImp();
-    UI::Voice::RenderSpeakingIndicators();
     UI::HUD::MiniMap::Render();
     UI::HUD::MiniMap::RenderCommands();
     DisableAlphaBlend();

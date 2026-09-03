@@ -48,6 +48,10 @@ namespace
 
 namespace UI::Voice
 {
+    // Must run before RenderName()/text output in CNewUINameWindow::Render:
+    // the text pass leaves GL state behind that makes the RenderColor quads
+    // land on the last drawn name label (or vanish), which is how the glyph
+    // ended up over NPC names instead of the speaker's head.
     void RenderSpeakingIndicators()
     {
         for (int i = 0; i < MAX_CHARACTERS_CLIENT; ++i)
