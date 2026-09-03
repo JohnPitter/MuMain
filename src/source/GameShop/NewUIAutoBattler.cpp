@@ -48,28 +48,26 @@ namespace
     constexpr int kCatGap = 3;
     constexpr int kViewW = 108;
     constexpr int kViewH = 29;
-    constexpr int kGridCols = 3;
-    constexpr int kGridCount = 9;
-    constexpr int kSlotDX = 100;
-    constexpr int kSlotDY = 92;
-    constexpr int kNameX = 96;
-    constexpr int kNameY = 150;
-    constexpr int kNameW = 96;
-    constexpr int kItem3DX = 96;
-    constexpr int kItem3DY = 76;
-    constexpr int kItem3DW = 96;
-    constexpr int kItem3DH = 70;
     constexpr int kInfoX = 410;
     constexpr int kInfoW = 156;
-    // Right column: status panel on top, enlarged drop list in the middle, Activate button in
-    // its own strip below the list, right-aligned and inside the frame.
+    constexpr int kLootTitleH = 22;
+    constexpr int kLootRowH = 28;
+    constexpr int kLootIcon = 26;
+    // Center Drops: scrollable list (20×20 3D icon + name). Map column ends at 68;
+    // right column (Parado / Mobs / Ativar) starts at kInfoX. Do not cover them.
+    constexpr int kDropX = 76;
+    constexpr int kDropY = 68;
+    constexpr int kDropW = 326;         // 410 - 76 - 8 gap
+    constexpr int kDropH = 336;         // 68+336=404, above the 45px bottom frame
+    constexpr int kDropPad = 6;
+    constexpr int kDropVisible = (kDropH - kLootTitleH - kDropPad) / kLootRowH; // 11
+    constexpr int kDropArrowW = 22;
+    constexpr int kDropArrowH = 23;
+    // Right column: status on top, mob list, Activate below the list.
     constexpr int kStatusY = 68;
     constexpr int kStatusH = 66;
     constexpr int kLootY = 140;
     constexpr int kLootH = 248;         // 22 title + 8 rows x 28 + 2 padding
-    constexpr int kLootTitleH = 22;
-    constexpr int kLootRowH = 28;       // comfortable row height (was 20)
-    constexpr int kLootIcon = 26;       // fixed icon box inside each row (was 20)
     constexpr int kActivateX = kInfoX + kInfoW - kViewW;   // 458: right-aligned in column
     constexpr int kActivateY = 392;     // below the drop list (140+248+4); 392+29=421 < 460
     constexpr float kPreviewPlace = 0.10f;
@@ -78,7 +76,7 @@ namespace
     constexpr int kVipQuota = 43200;
     constexpr int kHuntRange = 18;
     constexpr int kObtainRange = 8;
-    constexpr int kLootSlots = 48;
+    constexpr int kLootSlots = 48;      // must hold AutoBattleDropCatalog.MaxItems (C1 D5 11)
     constexpr int kMaxHunts = 16;
     constexpr int kMaxRoamWps = 6;
     constexpr float kBackSrcW = 190.f;
@@ -214,6 +212,28 @@ namespace
         }
         return count;
     }
+
+    int DropHiddenCount(const WORD* loot)
+    {
+        const int hidden = CountLootItems(loot) - kDropVisible;
+        return hidden < 0 ? 0 : hidden;
+    }
+
+    void ClampScroll(int& scroll, int hidden)
+    {
+        if (scroll < 0)
+            scroll = 0;
+        if (scroll > hidden)
+            scroll = hidden;
+    }
+
+    float DropRowIconY(int panelY, int shown)
+    {
+        return static_cast<float>(panelY + kLootTitleH + 2) + (shown * static_cast<float>(kLootRowH)) + 1.f;
+    }
+
+    static_assert(kDropVisible >= 8 && kDropVisible <= 12, "Drops list must show ~8-12 rows");
+    static_assert(kLootSlots >= 48, "client catalog array must hold server MaxItems");
 
     float s_PreProj[16];
     float s_PreView[16];
@@ -592,62 +612,13 @@ namespace
     // NewUI3DRenderMng.cpp): identity view, 1-degree fov, full-window viewport. The item
     // pipeline is hard-wired to that context: RenderItem3D places the model via
     // ScreenToWorldRay on g_Camera and RenderObjectScreen sets fixed WORLD-SPACE model
-    // angles tuned for an identity view. Under the monster frontal preview camera those
-    // same items were seen from an arbitrary angle. Each row uses a 20x20 inventory cell
+    // angles tuned for an identity view. Each list row uses a 20x20 inventory cell
     // (same as CNewUIInventoryCtrl) centred in the 26x26 icon box, with a per-row scissor.
-    void RenderLootIcons(const HuntDef& hunt, int panelX, int panelY)
-    {
-        const float aspect = (float)WindowWidth / (float)WindowHeight;
-        glViewport2(0, 0, WindowWidth, WindowHeight);
-        gluPerspective2(1.f, aspect, RENDER_ITEMVIEW_NEAR, RENDER_ITEMVIEW_FAR);
-
-        constexpr float kItemFovDeg = 1.f;
-        const float fovRad = kItemFovDeg * 0.5f * Q_PI / 180.0f;
-        const float f = 1.0f / tanf(fovRad);
-        float cpuProj[16];
-        BuildPerspectiveProjection(f, aspect, RENDER_ITEMVIEW_NEAR, RENDER_ITEMVIEW_FAR, cpuProj);
-        GlobalUBO::Instance().SetProj(cpuProj);
-
-        static const float kIdentityView[16] = {
-            1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-            0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f };
-        GlobalUBO::Instance().SetView(kIdentityView);
-        static const float kIdentityCameraMatrix[3][4] = {
-            { 1.f, 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f, 0.f }, { 0.f, 0.f, 1.f, 0.f } };
-        memcpy(g_Camera.Matrix, kIdentityCameraMatrix, sizeof(kIdentityCameraMatrix));
-
-        EnableDepthTest();
-        EnableDepthMask();
-
-        // RenderItem3D expects the TOP-LEFT of an inventory cell and then adds class-specific
-        // anchors (e.g. sy += Height*0.8). Inventory uses 20x20 squares
-        // (CNewUIInventoryCtrl::INVENTORY_SQUARE_*). The previous 20x27 box centered on the
-        // row mid-line inflated those anchors (~35%) and dropped every model below its slot;
-        // tall gear (armor) looked like a cumulative sink down the list.
-        constexpr float kCell = 20.f;
-        const float slotX = static_cast<float>(panelX + 6);
-        float slotY = static_cast<float>(panelY + kLootTitleH + 2) + 1.f;
-        const float cellInset = (static_cast<float>(kLootIcon) - kCell) * 0.5f;
-        for (int i = 0; i < kLootSlots; ++i)
-        {
-            ClearDepthBuffer();
-            ScissorSlot(slotX, slotY, static_cast<float>(kLootIcon), static_cast<float>(kLootIcon));
-            RenderItem3D(slotX + cellInset, slotY + cellInset, kCell, kCell,
-                hunt.loot[i], 0, 0, 0, false);
-            slotY += static_cast<float>(kLootRowH);
-        }
-
-        IR::Flush(IR::FlushCause::Other);
-        DisableScissorTest();
-        // ScreenToWorldRay overwrites MousePosition with the camera eye (origin here);
-        // refresh it before the caller's restore recomputes the real cursor position.
-        UpdateMousePositionn();
-    }
-
-    void RenderLootGrid(const WORD* loot, int originX, int originY, int scroll)
+    void RenderLootGrid(const WORD* loot, int panelX, int panelY, int scroll)
     {
         if (loot == nullptr)
             return;
+
         const float aspect = (float)WindowWidth / (float)WindowHeight;
         glViewport2(0, 0, WindowWidth, WindowHeight);
         gluPerspective2(1.f, aspect, RENDER_ITEMVIEW_NEAR, RENDER_ITEMVIEW_FAR);
@@ -670,16 +641,18 @@ namespace
         EnableDepthTest();
         EnableDepthMask();
 
+        constexpr float kCell = 20.f;
+        const float slotX = static_cast<float>(panelX + 6);
+        const float cellInset = (static_cast<float>(kLootIcon) - kCell) * 0.5f;
         int shown = 0;
-        for (int i = scroll; i < kLootSlots && shown < kGridCount; ++i)
+        for (int i = scroll; i < kLootSlots && shown < kDropVisible; ++i)
         {
             if (loot[i] == 0)
                 continue;
-            const float bx = static_cast<float>(originX + ((shown % kGridCols) * kSlotDX));
-            const float by = static_cast<float>(originY + ((shown / kGridCols) * kSlotDY));
+            const float slotY = DropRowIconY(panelY, shown);
             ClearDepthBuffer();
-            ScissorSlot(bx, by, static_cast<float>(kItem3DW), static_cast<float>(kItem3DH));
-            RenderItem3D(bx, by, static_cast<float>(kItem3DW), static_cast<float>(kItem3DH),
+            ScissorSlot(slotX, slotY, static_cast<float>(kLootIcon), static_cast<float>(kLootIcon));
+            RenderItem3D(slotX + cellInset, slotY + cellInset, kCell, kCell,
                 loot[i], 0, 0, 0, false);
             ++shown;
         }
@@ -832,6 +805,22 @@ void CNewUIAutoBattler::SetBtnInfo()
     m_NextButton.ChangeButtonInfo(m_Pos.x + kCatX + 54, m_Pos.y + kBackH - 36, 22, 23);
     m_NextButton.ChangeText(L">");
 
+    const int dropArrowY = m_Pos.y + kDropY;
+    m_DropUpButton.ChangeButtonImgState(true, IMAGE_AB_BTN_MAP, true);
+    m_DropUpButton.ChangeButtonInfo(
+        m_Pos.x + kDropX + kDropW - (kDropArrowW * 2) - 6,
+        dropArrowY,
+        kDropArrowW,
+        kDropArrowH);
+    m_DropUpButton.ChangeText(L"^");
+    m_DropDownButton.ChangeButtonImgState(true, IMAGE_AB_BTN_MAP, true);
+    m_DropDownButton.ChangeButtonInfo(
+        m_Pos.x + kDropX + kDropW - kDropArrowW - 4,
+        dropArrowY,
+        kDropArrowW,
+        kDropArrowH);
+    m_DropDownButton.ChangeText(L"v");
+
     InitMapButtons();
 }
 
@@ -877,6 +866,14 @@ void CNewUIAutoBattler::SelectHunt(int huntIndex)
     // Deferred: never OpenMonsterModel sync here (WER 0xc0000374 on UI open).
     QueueHuntPreviewModels(huntIndex);
     SendCatalogRequest();
+}
+
+void CNewUIAutoBattler::ScrollDrops(int delta)
+{
+    if (delta == 0 || m_iHunt < 0 || m_iHunt >= HuntCount())
+        return;
+    m_iDropScroll += delta;
+    ClampScroll(m_iDropScroll, DropHiddenCount(HuntLootItems(m_iHunt)));
 }
 
 namespace
@@ -1438,6 +1435,20 @@ bool CNewUIAutoBattler::UpdateKeyEvent()
         g_pNewUISystem->Hide(INTERFACE_AUTOBATTLER);
         return false;
     }
+
+    if (CheckMouseIn(m_Pos.x + kDropX, m_Pos.y + kDropY, kDropW, kDropH))
+    {
+        if (IsPress(VK_UP))
+        {
+            ScrollDrops(-1);
+            return false;
+        }
+        if (IsPress(VK_DOWN))
+        {
+            ScrollDrops(1);
+            return false;
+        }
+    }
     return true;
 }
 
@@ -1452,13 +1463,9 @@ bool CNewUIAutoBattler::UpdateMouseEvent()
     if (MouseWheel != 0 && m_iHunt >= 0 && m_iHunt < HuntCount())
     {
         const HuntDef& hunt = kHunts[m_iHunt];
-        if (CheckMouseIn(m_Pos.x + kItem3DX, m_Pos.y + kItem3DY, kGridCols * kSlotDX, 3 * kSlotDY))
+        if (CheckMouseIn(m_Pos.x + kDropX, m_Pos.y + kDropY, kDropW, kDropH))
         {
-            int hidden = CountLootItems(HuntLootItems(m_iHunt)) - kGridCount;
-            if (hidden < 0) hidden = 0;
-            m_iDropScroll -= MouseWheel;
-            if (m_iDropScroll < 0) m_iDropScroll = 0;
-            if (m_iDropScroll > hidden) m_iDropScroll = hidden;
+            ScrollDrops(-MouseWheel);
             MouseWheel = 0;
             return false;
         }
@@ -1507,6 +1514,20 @@ bool CNewUIAutoBattler::BtnProcess()
             StopHunt();
         else
             TryStartHunt();
+        PlayBuffer(SOUND_CLICK01);
+        return true;
+    }
+
+    if (m_DropUpButton.UpdateMouseEvent())
+    {
+        ScrollDrops(-1);
+        PlayBuffer(SOUND_CLICK01);
+        return true;
+    }
+
+    if (m_DropDownButton.UpdateMouseEvent())
+    {
+        ScrollDrops(1);
         PlayBuffer(SOUND_CLICK01);
         return true;
     }
@@ -1611,22 +1632,8 @@ void CNewUIAutoBattler::RenderFrame()
         h - static_cast<float>(kHeaderH) - 45.f, 0.f, 0.f, 21.f, 320.f);
     RenderImageStretch(IMAGE_AB_BOTTOM, x, y + h - 45.f, w, 45.f, 0.f, 0.f, 190.f, 45.f);
 
-    if (m_iHunt >= 0 && m_iHunt < HuntCount())
-    {
-        const WORD* loot = HuntLootItems(m_iHunt);
-        int shown = 0;
-        for (int i = m_iDropScroll; i < kLootSlots && shown < kGridCount; ++i)
-        {
-            if (loot == nullptr || loot[i] == 0)
-                continue;
-            const float bx = static_cast<float>(m_Pos.x + kItem3DX + ((shown % kGridCols) * kSlotDX));
-            const float by = static_cast<float>(m_Pos.y + kItem3DY + ((shown / kGridCols) * kSlotDY));
-            RenderImageStretch(IMAGE_AB_ITEMBOX, bx, by, static_cast<float>(kItem3DW), static_cast<float>(kItem3DH),
-                0.f, 0.f, 20.f, 20.f);
-            ++shown;
-        }
-    }
-
+    RenderTable(static_cast<float>(m_Pos.x + kDropX), static_cast<float>(m_Pos.y + kDropY),
+        static_cast<float>(kDropW), static_cast<float>(kDropH), static_cast<float>(kLootTitleH));
     RenderTable(static_cast<float>(m_Pos.x + kInfoX), static_cast<float>(m_Pos.y + kStatusY),
         static_cast<float>(kInfoW), static_cast<float>(kStatusH), 14.f);
     RenderTable(static_cast<float>(m_Pos.x + kInfoX), static_cast<float>(m_Pos.y + kLootY),
@@ -1635,10 +1642,23 @@ void CNewUIAutoBattler::RenderFrame()
     if (m_iHunt >= 0 && m_iHunt < HuntCount())
     {
         glColor4f(1.f, 1.f, 1.f, 1.f);
+        const WORD* loot = HuntLootItems(m_iHunt);
+        int shown = 0;
+        for (int i = m_iDropScroll; i < kLootSlots && shown < kDropVisible; ++i)
+        {
+            if (loot == nullptr || loot[i] == 0)
+                continue;
+            const float bx = static_cast<float>(m_Pos.x + kDropX + 6);
+            const float by = DropRowIconY(m_Pos.y + kDropY, shown);
+            RenderImage(IMAGE_AB_ITEMBOX, bx, by,
+                static_cast<float>(kLootIcon), static_cast<float>(kLootIcon));
+            ++shown;
+        }
+
         const float mobIconX = static_cast<float>(m_Pos.x + kInfoX + 6);
         float mobRowY = static_cast<float>(m_Pos.y + kLootY + kLootTitleH + 2);
         const HuntDef& hunt = kHunts[m_iHunt];
-        int shown = 0;
+        shown = 0;
         int skipped = 0;
         for (int i = 0; i < 5 && shown < kLootSlots; ++i)
         {
@@ -1672,6 +1692,8 @@ void CNewUIAutoBattler::RenderButtons()
 
     m_MapButton.Render();
     m_StartButton.Render();
+    m_DropUpButton.Render();
+    m_DropDownButton.Render();
     if (MapPageCount() > 1)
     {
         m_PrevButton.Render();
@@ -1718,7 +1740,8 @@ void CNewUIAutoBattler::RenderTexts()
 
     g_pRenderText->SetFont(g_hFontBold);
     g_pRenderText->SetTextColor(255, 238, 161, 255);
-    g_pRenderText->RenderText(m_Pos.x + kItem3DX, m_Pos.y + kItem3DY - 16, I18N::Game::AutoBattlerLootTab, kItem3DW * 2, 0, RT3_SORT_LEFT);
+    g_pRenderText->RenderText(m_Pos.x + kDropX + 8, m_Pos.y + kDropY + 5, I18N::Game::AutoBattlerLootTab,
+        kDropW - (kDropArrowW * 2) - 20, 0, RT3_SORT_LEFT);
 
     const int lootX = m_Pos.x + kInfoX + 8;
     const int lootW = kInfoW - 16;
@@ -1792,7 +1815,7 @@ void CNewUIAutoBattler::RenderGrid()
         ++shown;
     }
 
-    RenderLootGrid(HuntLootItems(m_iHunt), m_Pos.x + kItem3DX, m_Pos.y + kItem3DY, m_iDropScroll);
+    RenderLootGrid(HuntLootItems(m_iHunt), m_Pos.x + kDropX, m_Pos.y + kDropY, m_iDropScroll);
 
     glViewport2(0, 0, WindowWidth, WindowHeight);
     UpdateMousePositionn();
@@ -1804,10 +1827,12 @@ void CNewUIAutoBattler::RenderGrid()
     EnableAlphaTest();
     g_pRenderText->SetBgColor(0);
     g_pRenderText->SetFont(g_hFont);
-    g_pRenderText->SetTextColor(255, 255, 255, 255);
+    g_pRenderText->SetTextColor(255, 238, 161, 255);
     shown = 0;
     const WORD* loot = HuntLootItems(m_iHunt);
-    for (int i = m_iDropScroll; i < kLootSlots && shown < kGridCount; ++i)
+    const int nameX = m_Pos.x + kDropX + 6 + kLootIcon + 6;
+    const int nameW = kDropW - 6 - kLootIcon - 16;
+    for (int i = m_iDropScroll; i < kLootSlots && shown < kDropVisible; ++i)
     {
         if (loot == nullptr || loot[i] == 0)
             continue;
@@ -1816,12 +1841,12 @@ void CNewUIAutoBattler::RenderGrid()
         if (lootName[0] != 0)
         {
             g_pRenderText->RenderText(
-                m_Pos.x + kNameX + ((shown % kGridCols) * kSlotDX),
-                m_Pos.y + kNameY + ((shown / kGridCols) * kSlotDY),
+                nameX,
+                m_Pos.y + kDropY + kLootTitleH + 2 + (shown * kLootRowH) + 8,
                 lootName,
-                kNameW,
+                nameW,
                 0,
-                RT3_SORT_CENTER);
+                RT3_SORT_LEFT);
         }
         ++shown;
     }

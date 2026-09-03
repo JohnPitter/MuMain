@@ -76,6 +76,7 @@ namespace SEASON3B
         void RenderTable(float x, float y, float width, float height, float titleHeight);
         bool BtnProcess();
         void SelectHunt(int huntIndex);
+        void ScrollDrops(int delta);
         void SendStatusRequest();
         void SendCatalogRequest();
         void SendStart();
@@ -99,6 +100,8 @@ namespace SEASON3B
         CNewUIButton m_StartButton;
         CNewUIButton m_PrevButton;
         CNewUIButton m_NextButton;
+        CNewUIButton m_DropUpButton;
+        CNewUIButton m_DropDownButton;
 
         MUHelper::ConfigData m_HelperBackup;
         int m_iHunt;
