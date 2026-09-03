@@ -143,6 +143,8 @@ void SEASON3B::CNewUIMainFrameWindow::SetButtonInfo()
     x_Next += x_Add;
     m_BtnCShop.ChangeImgColor(BUTTON_STATE_UP, RGBA(255, 255, 255, 255));
     m_BtnCShop.ChangeImgColor(BUTTON_STATE_DOWN, RGBA(255, 255, 255, 255));
+    if (g_hFontBold)
+        m_BtnCShop.SetToolTipFont(g_hFontBold);
     m_BtnCShop.ChangeToolTipText(&I18N::Game::MUItemShopX, true);
 
     m_BtnChaInfo.ChangeTextBackColor(RGBA(255, 255, 255, 0));
@@ -151,6 +153,8 @@ void SEASON3B::CNewUIMainFrameWindow::SetButtonInfo()
     x_Next += x_Add;
     m_BtnChaInfo.ChangeImgColor(BUTTON_STATE_UP, RGBA(255, 255, 255, 255));
     m_BtnChaInfo.ChangeImgColor(BUTTON_STATE_DOWN, RGBA(255, 255, 255, 255));
+    if (g_hFontBold)
+        m_BtnChaInfo.SetToolTipFont(g_hFontBold);
     m_BtnChaInfo.ChangeToolTipText(&I18N::Game::CharacterC, true);
 
     m_BtnMyInven.ChangeTextBackColor(RGBA(255, 255, 255, 0));
@@ -159,6 +163,8 @@ void SEASON3B::CNewUIMainFrameWindow::SetButtonInfo()
     x_Next += x_Add;
     m_BtnMyInven.ChangeImgColor(BUTTON_STATE_UP, RGBA(255, 255, 255, 255));
     m_BtnMyInven.ChangeImgColor(BUTTON_STATE_DOWN, RGBA(255, 255, 255, 255));
+    if (g_hFontBold)
+        m_BtnMyInven.SetToolTipFont(g_hFontBold);
     m_BtnMyInven.ChangeToolTipText(&I18N::Game::InventoryIV, true);
 
     m_BtnFriend.ChangeTextBackColor(RGBA(255, 255, 255, 0));
@@ -167,6 +173,8 @@ void SEASON3B::CNewUIMainFrameWindow::SetButtonInfo()
     x_Next += x_Add;
     m_BtnFriend.ChangeImgColor(BUTTON_STATE_UP, RGBA(255, 255, 255, 255));
     m_BtnFriend.ChangeImgColor(BUTTON_STATE_DOWN, RGBA(255, 255, 255, 255));
+    if (g_hFontBold)
+        m_BtnFriend.SetToolTipFont(g_hFontBold);
     m_BtnFriend.ChangeToolTipText(&I18N::Game::FriendF, true);
 
     m_BtnWindow.ChangeTextBackColor(RGBA(255, 255, 255, 0));
@@ -174,6 +182,8 @@ void SEASON3B::CNewUIMainFrameWindow::SetButtonInfo()
     m_BtnWindow.ChangeButtonInfo(x_Next, y_Next, x_Add, y_Add);
     m_BtnWindow.ChangeImgColor(BUTTON_STATE_UP, RGBA(255, 255, 255, 255));
     m_BtnWindow.ChangeImgColor(BUTTON_STATE_DOWN, RGBA(255, 255, 255, 255));
+    if (g_hFontBold)
+        m_BtnWindow.SetToolTipFont(g_hFontBold);
     m_BtnWindow.ChangeToolTipText(&I18N::Game::MenuU, true);
 }
 

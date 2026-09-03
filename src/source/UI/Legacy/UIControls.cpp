@@ -2647,8 +2647,10 @@ bool CUIRenderTextOriginal::Create(HDC hDC)
     DIB_INFO = (BITMAPINFO*)new BYTE[sizeof(BITMAPINFOHEADER) + sizeof(PALETTEENTRY) * 256];
     memset(DIB_INFO, 0x00, sizeof(BITMAPINFOHEADER));
     DIB_INFO->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    DIB_INFO->bmiHeader.biWidth = REFERENCE_WIDTH * g_fScreenRate_x;		//. 640
-    DIB_INFO->bmiHeader.biHeight = -(REFERENCE_HEIGHT * g_fScreenRate_y);		//. 480
+    m_fontDcWidth = static_cast<int>(REFERENCE_WIDTH * g_fScreenRate_x);
+    m_fontDcHeight = static_cast<int>(REFERENCE_HEIGHT * g_fScreenRate_y);
+    DIB_INFO->bmiHeader.biWidth = m_fontDcWidth;
+    DIB_INFO->bmiHeader.biHeight = -m_fontDcHeight;
     DIB_INFO->bmiHeader.biPlanes = 1;
     DIB_INFO->bmiHeader.biBitCount = 24;
     DIB_INFO->bmiHeader.biCompression = BI_RGB;
@@ -2708,7 +2710,9 @@ void CUIRenderTextOriginal::WriteText(int iOffset, int iWidth, int iHeight)
 {
     const int LIMIT_WIDTH = 256, LIMIT_HEIGHT = 32;
 
-    SIZE FontDCSize = { (int)(REFERENCE_WIDTH * g_fScreenRate_x), (int)(REFERENCE_HEIGHT * g_fScreenRate_y) };
+    const int dcWidth = m_fontDcWidth > 0 ? m_fontDcWidth : static_cast<int>(REFERENCE_WIDTH * g_fScreenRate_x);
+    const int dcHeight = m_fontDcHeight > 0 ? m_fontDcHeight : static_cast<int>(REFERENCE_HEIGHT * g_fScreenRate_y);
+    SIZE FontDCSize = { dcWidth, dcHeight };
     int iPitch = ((FontDCSize.cx * 24 + 31) & ~31) >> 3;
 
     BITMAP_t* pBitmapFont = &Bitmaps[BITMAP_FONT];

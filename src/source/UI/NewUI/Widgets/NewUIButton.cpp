@@ -6,6 +6,7 @@
 
 #include "UI/NewUI/Widgets/NewUIButton.h"
 #include "UI/Legacy/UIControls.h"
+#include "UI/HUD/HudToolbar.h"
 #include "Render/Sprites/GlobalBitmap.h"
 #include "Render/Textures/ZzzTexture.h"
 #include "I18N/All.h"
@@ -28,6 +29,8 @@ namespace
         DWORD backuptextcolor = g_pRenderText->GetTextColor();
         DWORD backuptextbackcolor = g_pRenderText->GetBgColor();
 
+        // Glyph atlas is white; RenderBitmap modulates by g_CurrentColor.
+        glColor4f(1.f, 1.f, 1.f, 1.f);
         g_pRenderText->SetTextColor(color);
         g_pRenderText->SetBgColor(backcolor);
         g_pRenderText->RenderText(x, y, text, sx, sy, sort);
@@ -486,6 +489,10 @@ bool SEASON3B::CNewUIButton::Render(bool RendOption)
     {
         if (CheckMouseIn(m_Pos.x, m_Pos.y, m_Size.x, m_Size.y))
         {
+            int x = m_Pos.x + m_Size.x / 2;
+            int y = m_IsTopPos ? m_Pos.y : (m_Pos.y + m_Size.y + 2);
+            UI::HUD::FixedToolbarTextScope textScope(x, y);
+
             SIZE Fontsize;
             g_pRenderText->SetFont(m_hToolTipFont);
             GetTextExtentPoint32(g_pRenderText->GetFontDC(), m_TooltipText.c_str(), m_TooltipText.size(), &Fontsize);
@@ -493,16 +500,16 @@ bool SEASON3B::CNewUIButton::Render(bool RendOption)
             Fontsize.cx = Fontsize.cx / g_fScreenRate_x;
             Fontsize.cy = Fontsize.cy / g_fScreenRate_y;
 
-            int x = m_Pos.x + ((m_Size.x / 2) - (Fontsize.cx / 2));
-            int y = m_Pos.y + m_Size.y + 2;
+            x -= Fontsize.cx / 2;
+            if (m_IsTopPos)
+                y -= (Fontsize.cy + 2);
 
             int _iTempWidth = x + Fontsize.cx + 6;
             x = (_iTempWidth > REFERENCE_WIDTH) ? (x - (_iTempWidth - REFERENCE_WIDTH)) : x;
+            if (x < 0)
+                x = 0;
 
-            if (m_IsTopPos) y = m_Pos.y - (Fontsize.cy + 2);
-
-            RenderText(m_TooltipText.c_str(), x + m_iMoveTextTipPosX, y + m_iMoveTextTipPosY, Fontsize.cx + 6, 0, m_hToolTipFont, m_TooltipTextColor, RGBA(0, 0, 0, 180), RT3_SORT_CENTER);
-            //RenderText( m_TooltipText.c_str(), x, y, Fontsize.cx+6, 0, m_hToolTipFont, m_TooltipTextColor, RGBA(0, 0, 0, 180), RT3_SORT_CENTER );
+            RenderText(m_TooltipText.c_str(), x + m_iMoveTextTipPosX, y + m_iMoveTextTipPosY, Fontsize.cx + 6, 0, m_hToolTipFont, m_TooltipTextColor, RGBA(0, 0, 0, 220), RT3_SORT_CENTER);
         }
     }
 

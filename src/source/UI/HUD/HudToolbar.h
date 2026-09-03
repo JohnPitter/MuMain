@@ -22,4 +22,24 @@ namespace UI::HUD
     private:
         bool m_armed = false;
     };
+
+    // GDI RenderText uses ConvertPosX AND the font-DIB pitch from g_fScreenRate.
+    // Inside FixedToolbarScope those are the bar scale (~1.25), so glyphs land
+    // in window pixels while the DIB pitch / box size assume toolbar space —
+    // tiny black text, tooltip background misses. Pause the bar transform,
+    // rewrite (x,y) from toolbar-640 into window-640, draw, then restore.
+    // MouseX/Y stay in toolbar space so hit-tests keep working. No-op when
+    // the bar scope is not armed.
+    class FixedToolbarTextScope
+    {
+    public:
+        FixedToolbarTextScope(int& x, int& y);
+        ~FixedToolbarTextScope();
+
+        FixedToolbarTextScope(const FixedToolbarTextScope&) = delete;
+        FixedToolbarTextScope& operator=(const FixedToolbarTextScope&) = delete;
+
+    private:
+        bool m_armed = false;
+    };
 }

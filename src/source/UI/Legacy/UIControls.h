@@ -767,6 +767,8 @@ class CUIRenderTextOriginal : public IUIRenderText
     BYTE* m_pFontBuffer;
     DWORD m_dwTextColor, m_dwBackColor;
     std::vector<BYTE> m_tightUploadBuffer;
+    int m_fontDcWidth = 0;
+    int m_fontDcHeight = 0;
 public:
     CUIRenderTextOriginal();
     virtual ~CUIRenderTextOriginal();

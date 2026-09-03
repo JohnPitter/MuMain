@@ -18,6 +18,10 @@ namespace
     float s_oldOy = 0.f;
     int s_oldMx = 0;
     int s_oldMy = 0;
+    float s_barRx = 1.f;
+    float s_barRy = 1.f;
+    float s_barOx = 0.f;
+    float s_barOy = 0.f;
 
     float ClampedScale()
     {
@@ -76,6 +80,10 @@ namespace UI::HUD
         g_fScreenRate_y = scale;
         g_fScreenOff_x = (static_cast<float>(WindowWidth) - kBarW * scale) * 0.5f;
         g_fScreenOff_y = static_cast<float>(WindowHeight) - static_cast<float>(REFERENCE_HEIGHT) * scale;
+        s_barRx = g_fScreenRate_x;
+        s_barRy = g_fScreenRate_y;
+        s_barOx = g_fScreenOff_x;
+        s_barOy = g_fScreenOff_y;
 
         MouseX = static_cast<int>((pixelX - g_fScreenOff_x) / g_fScreenRate_x);
         MouseY = static_cast<int>((pixelY - g_fScreenOff_y) / g_fScreenRate_y);
@@ -97,6 +105,38 @@ namespace UI::HUD
         MouseX = s_oldMx;
         MouseY = s_oldMy;
         --s_depth;
+        m_armed = false;
+    }
+
+    FixedToolbarTextScope::FixedToolbarTextScope(int& x, int& y)
+    {
+        if (s_depth <= 0)
+            return;
+
+        m_armed = true;
+        const float wx = g_fScreenOff_x + static_cast<float>(x) * g_fScreenRate_x;
+        const float wy = g_fScreenOff_y + static_cast<float>(y) * g_fScreenRate_y;
+
+        g_fScreenRate_x = s_oldRx;
+        g_fScreenRate_y = s_oldRy;
+        g_fScreenOff_x = s_oldOx;
+        g_fScreenOff_y = s_oldOy;
+
+        const float rx = (s_oldRx > 0.f) ? s_oldRx : 1.f;
+        const float ry = (s_oldRy > 0.f) ? s_oldRy : 1.f;
+        x = static_cast<int>((wx - s_oldOx) / rx);
+        y = static_cast<int>((wy - s_oldOy) / ry);
+    }
+
+    FixedToolbarTextScope::~FixedToolbarTextScope()
+    {
+        if (!m_armed)
+            return;
+
+        g_fScreenRate_x = s_barRx;
+        g_fScreenRate_y = s_barRy;
+        g_fScreenOff_x = s_barOx;
+        g_fScreenOff_y = s_barOy;
         m_armed = false;
     }
 }

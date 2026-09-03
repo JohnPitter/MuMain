@@ -28,6 +28,7 @@
 #include "Engine/Pathing/ZzzPath.h"
 #include "Audio/DSPlaySound.h"
 #include "I18N/All.h"
+#include "UI/HUD/HudToolbar.h"
 
 
 #include "GameLogic/Events/MatchEvent.h"
@@ -334,8 +335,10 @@ extern int  AlphaBlendType;
 
 void RenderTipText(int sx, int sy, const wchar_t* Text)
 {
+    UI::HUD::FixedToolbarTextScope textScope(sx, sy);
+
     SIZE TextSize = { 0, 0 };
-    g_pRenderText->SetFont(g_hFont);
+    g_pRenderText->SetFont(g_hFontBold ? g_hFontBold : g_hFont);
     GetTextExtentPoint32(g_pRenderText->GetFontDC(), Text, lstrlen(Text), &TextSize);
 
     int BackupAlphaBlendType = AlphaBlendType;
