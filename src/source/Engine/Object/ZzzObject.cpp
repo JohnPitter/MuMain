@@ -6540,7 +6540,10 @@ void RenderItems()
 
                 // Animate player (armor) or the item itself. Draw uses o->Type so a
                 // missing player BMD cannot skip a loaded helm/sword mesh.
-                if (IsRenderableModelType(animType))
+                // NumActions is checked too: BMD::Animation() early-returns on a
+                // mesh-complete model with no action data and would leave the same
+                // stale pose behind as a model that never finished loading.
+                if (IsRenderableModelType(animType) && Models[animType].NumActions > 0)
                 {
                     BMD* b = &Models[animType];
                     b->CurrentAction = 0;
@@ -6551,6 +6554,24 @@ void RenderItems()
                     ItemHeight(o->Type, b);
                     b->Animation(BoneTransform, o->AnimationFrame, o->PriorAnimationFrame, o->PriorAction, o->Angle, o->HeadAngle, false, false);
                     b->BodyHeight = 0.f;
+                }
+                else
+                {
+                    // ITEMDROP fix: the animate model (the player skeleton for a dropped armor/pants,
+                    // its own model otherwise) is not loaded, so no fresh pose was written into the
+                    // shared global BoneTransform this iteration. Without this the item below would be
+                    // skinned to whatever skeleton the previously rendered object left in that shared
+                    // buffer -- a monster/player pose positioned and scaled for a different model --
+                    // which the GPU rasterises as a grotesque elongated spike. Identity-fill so a
+                    // missing animate collapses the item to its rest pose at the drop instead of
+                    // inheriting a foreign skeleton. (The non-finite guard in BoneUBO::UploadBones is
+                    // the second line of defence for the same class of failure.)
+                    for (int bIdx = 0; bIdx < MAX_BONES; ++bIdx)
+                    {
+                        BoneTransform[bIdx][0][0] = 1.f; BoneTransform[bIdx][0][1] = 0.f; BoneTransform[bIdx][0][2] = 0.f; BoneTransform[bIdx][0][3] = 0.f;
+                        BoneTransform[bIdx][1][0] = 0.f; BoneTransform[bIdx][1][1] = 1.f; BoneTransform[bIdx][1][2] = 0.f; BoneTransform[bIdx][1][3] = 0.f;
+                        BoneTransform[bIdx][2][0] = 0.f; BoneTransform[bIdx][2][1] = 0.f; BoneTransform[bIdx][2][2] = 1.f; BoneTransform[bIdx][2][3] = 0.f;
+                    }
                 }
 
                 if (IsRenderableModelType(Type) || IsRenderableModelType(o->Type))
