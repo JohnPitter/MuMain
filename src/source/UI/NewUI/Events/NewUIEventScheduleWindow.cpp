@@ -265,6 +265,26 @@ void CNewUIEventScheduleWindow::FormatDuration(DWORD seconds, wchar_t* target, s
     mu_swprintf_s(target, targetCount, L"%lus", seconds);
 }
 
+void CNewUIEventScheduleWindow::FormatOpenClock(DWORD secondsFromNow, wchar_t* target, size_t targetCount)
+{
+    if (target == nullptr || targetCount == 0)
+    {
+        return;
+    }
+
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+
+    // Current local time-of-day plus the countdown, wrapped to a 24h clock.
+    unsigned long total = static_cast<unsigned long>(st.wHour) * 3600ul
+        + static_cast<unsigned long>(st.wMinute) * 60ul
+        + static_cast<unsigned long>(st.wSecond)
+        + secondsFromNow;
+    total %= 86400ul;
+
+    mu_swprintf_s(target, targetCount, L"%02lu:%02lu", total / 3600ul, (total % 3600ul) / 60ul);
+}
+
 bool CNewUIEventScheduleWindow::UpdateMouseEvent()
 {
     if (g_pNewUISystem->HandleFrameCornerClose(m_Pos, SEASON3B::INTERFACE_EVENTSCHEDULE))
@@ -402,11 +422,28 @@ bool CNewUIEventScheduleWindow::Render()
         const int y = m_Pos.y + CONTENT_TOP + row * ROW_HEIGHT;
         const StateColor& color = kStateColors[entry.State < 3 ? entry.State : 0];
 
-        // The countdown always points at the next thing that happens: the end of the
-        // current run while it is open/running, otherwise the next start.
-        const DWORD seconds = (entry.State == EVENT_STATE_UPCOMING) ? entry.SecondsToStart : entry.SecondsToEnd;
-        wchar_t timeText[32] = {};
-        FormatDuration(seconds, timeText, 32);
+        // Upcoming events show both the wall-clock time they open (e.g. 21:30) and
+        // the countdown to it (e.g. 1h05m); open/running events show the time left.
+        wchar_t timeText[48] = {};
+        if (entry.State == EVENT_STATE_UPCOMING)
+        {
+            if (entry.SecondsToStart > 0)
+            {
+                wchar_t clockText[16] = {};
+                wchar_t countText[24] = {};
+                FormatOpenClock(entry.SecondsToStart, clockText, 16);
+                FormatDuration(entry.SecondsToStart, countText, 24);
+                mu_swprintf_s(timeText, 48, L"%ls (%ls)", clockText, countText);
+            }
+            else
+            {
+                mu_swprintf_s(timeText, 48, L"--");
+            }
+        }
+        else
+        {
+            FormatDuration(entry.SecondsToEnd, timeText, 48);
+        }
 
         wchar_t nameText[64] = {};
         if (entry.MinLevel > 0)

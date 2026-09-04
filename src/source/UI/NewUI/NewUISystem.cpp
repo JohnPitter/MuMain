@@ -366,7 +366,11 @@ bool CNewUISystem::LoadMainSceneInterface()
     }
 
     m_pNewEventScheduleWindow = new CNewUIEventScheduleWindow;
-    if (m_pNewEventScheduleWindow->Create(m_pNewUIMng, PanelColumnX(1), 0) == false)
+    // The event list is a wide 3-column window (320 px), so it cannot use the
+    // right-aligned 190 px PanelColumnX(1) slot — that pushed its right half
+    // (the "Tempo" column and the right frame) off the 640-wide UI space and
+    // clipped it. Center it like the other wide windows (e.g. the AutoBattler).
+    if (m_pNewEventScheduleWindow->Create(m_pNewUIMng, (640 - CNewUIEventScheduleWindow::kWindowWidth) / 2, (480 - CNewUIEventScheduleWindow::kWindowHeight) / 2) == false)
     {
         return false;
     }

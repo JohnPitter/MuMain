@@ -43,10 +43,10 @@ namespace SEASON3B
             ROW_HEIGHT = 16,
             VISIBLE_ROWS = 20,
             COL_NAME_X = 0,
-            COL_NAME_W = 124,
-            COL_STATE_X = 128,
-            COL_STATE_W = 84,
-            COL_TIME_X = 216,
+            COL_NAME_W = 112,
+            COL_STATE_X = 114,
+            COL_STATE_W = 74,
+            COL_TIME_X = 190,
             COL_TIME_W = CONTENT_WIDTH - COL_TIME_X,
             EXIT_BUTTON_X = 13,
             EXIT_BUTTON_Y = 392,
@@ -55,6 +55,10 @@ namespace SEASON3B
         };
 
     public:
+        // Public so the UI system can center the window on the 640x480 layout.
+        static constexpr int kWindowWidth = WINDOW_WIDTH;
+        static constexpr int kWindowHeight = WINDOW_HEIGHT;
+
         // Mirrors MUnique.OpenMU.GameLogic.Events.EventScheduleState.
         enum eEVENT_STATE
         {
@@ -111,6 +115,9 @@ namespace SEASON3B
         void TickCountdown();
         static const wchar_t* StateText(BYTE state);
         static void FormatDuration(DWORD seconds, wchar_t* target, size_t targetCount);
+        // Wall-clock time (local HH:MM) at which an event starts, derived from the
+        // seconds-until-start the server sent plus the client's current local time.
+        static void FormatOpenClock(DWORD secondsFromNow, wchar_t* target, size_t targetCount);
 
         CNewUIManager* m_pNewUIMng;
         POINT m_Pos;
