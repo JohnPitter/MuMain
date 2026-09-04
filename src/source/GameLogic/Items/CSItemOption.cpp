@@ -349,35 +349,39 @@ void CSItemOption::calcSetOptionList(const SET_SEARCH_RESULT* optionList)
     for (int i = 0; i < m_SetSearchResultCount; ++i)
     {
         auto& set = m_SetSearchResult[i];
-
-        const ITEM_SET_OPTION& setOptions = m_ItemSetOption[set.SetNumber];
-        bool isThisSetComplete = false;
-        if (set.CompleteSetItemCount <= set.ItemCount)
+        if (BuildSetOptions(set, m_ItemSetOption[set.SetNumber], firstClass, secondClass))
         {
             Hero->ExtendState = 1;
-            isThisSetComplete = true;
-        }
-
-        const auto requireClass = isClassRequirementFulfilled(setOptions, firstClass, secondClass);
-        const auto standardOptionCount = std::min<int>(set.CompleteSetItemCount - 1, MAX_ITEM_SET_STANDARD_OPTION_COUNT);
-        for (int o = 0; o < standardOptionCount; ++o)
-        {
-            for (int n = 0; n < MAX_ITEM_SET_STANDARD_OPTION_PER_ITEM_COUNT; ++n)
-            {
-                TryAddSetOption(setOptions.byStandardOption[o][n], setOptions.byStandardOptionValue[o][n], o, set, setOptions, isThisSetComplete, false, false, requireClass, firstClass, secondClass);
-            }
-        }
-
-        for (int o = 0; o < MAX_ITEM_SET_EXT_OPTION_COUNT; ++o)
-        {
-            TryAddSetOption(setOptions.byExtOption[o], setOptions.byExtOptionValue[o], 0, set, setOptions, isThisSetComplete, false, true, requireClass, firstClass, secondClass);
-        }
-
-        for (int o = 0; o < MAX_ITEM_SET_FULL_OPTION_COUNT; ++o)
-        {
-            TryAddSetOption(setOptions.byFullOption[o], setOptions.byFullOptionValue[o], 255, set, setOptions, isThisSetComplete, true, false, requireClass, firstClass, secondClass);
         }
     }
+}
+
+bool CSItemOption::BuildSetOptions(SET_SEARCH_RESULT_OPT& set, const ITEM_SET_OPTION& setOptions, const int firstClass, const int secondClass)
+{
+    set.SetOptionCount = 0;
+    const bool isThisSetComplete = set.CompleteSetItemCount <= set.ItemCount;
+
+    const auto requireClass = isClassRequirementFulfilled(setOptions, firstClass, secondClass);
+    const auto standardOptionCount = std::min<int>(set.CompleteSetItemCount - 1, MAX_ITEM_SET_STANDARD_OPTION_COUNT);
+    for (int o = 0; o < standardOptionCount; ++o)
+    {
+        for (int n = 0; n < MAX_ITEM_SET_STANDARD_OPTION_PER_ITEM_COUNT; ++n)
+        {
+            TryAddSetOption(setOptions.byStandardOption[o][n], setOptions.byStandardOptionValue[o][n], o, set, setOptions, isThisSetComplete, false, false, requireClass, firstClass, secondClass);
+        }
+    }
+
+    for (int o = 0; o < MAX_ITEM_SET_EXT_OPTION_COUNT; ++o)
+    {
+        TryAddSetOption(setOptions.byExtOption[o], setOptions.byExtOptionValue[o], 0, set, setOptions, isThisSetComplete, false, true, requireClass, firstClass, secondClass);
+    }
+
+    for (int o = 0; o < MAX_ITEM_SET_FULL_OPTION_COUNT; ++o)
+    {
+        TryAddSetOption(setOptions.byFullOption[o], setOptions.byFullOptionValue[o], 255, set, setOptions, isThisSetComplete, true, false, requireClass, firstClass, secondClass);
+    }
+
+    return isThisSetComplete;
 }
 
 bool CSItemOption::getExplainText(wchar_t* text, std::uint8_t option, int value)
@@ -1087,6 +1091,7 @@ int CSItemOption::RenderSetOptionListInItem(const ITEM* ip, int TextNum, bool bI
     mu_swprintf(TextList[TNum], L"\n"); TNum++;
 
 
+    bool setFound = false;
     for (int i = 0; i < m_SetSearchResultCount; i++)
     {
         const auto& set = m_SetSearchResult[i];
@@ -1094,8 +1099,24 @@ int CSItemOption::RenderSetOptionListInItem(const ITEM* ip, int TextNum, bool bI
         {
             // Set Found.
             TNum = RenderSetOptionList(set, TNum, bIsEquippedItem, true);
+            setFound = true;
             break;
         }
+    }
+
+    if (!setFound)
+    {
+        // m_SetSearchResult only tracks sets with at least two pieces equipped, so an ancient
+        // item in the inventory (or a single equipped piece) would show the header and no
+        // options. Build the list from the set definition with nothing active, so every
+        // option is listed in gray, like the original client does.
+        SET_SEARCH_RESULT_OPT preview{};
+        preview.SetNumber = m_bySelectedItemOption;
+        preview.CompleteSetItemCount = setOption.bySetItemCount;
+        preview.ItemCount = 0;
+        wcscpy(preview.SetName, setOption.strSetName);
+        BuildSetOptions(preview, setOption, gCharacterManager.GetBaseClass(Hero->Class), gCharacterManager.IsSecondClass(Hero->Class));
+        TNum = RenderSetOptionList(preview, TNum, bIsEquippedItem, true);
     }
 
     mu_swprintf(TextList[TNum], L"\n"); TNum++;
