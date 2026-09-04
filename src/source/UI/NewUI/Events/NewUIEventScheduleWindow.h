@@ -112,12 +112,7 @@ namespace SEASON3B
         void UnloadImages();
         void InitButtons();
         void RenderBaseWindow();
-        void TickCountdown();
         static const wchar_t* StateText(BYTE state);
-        static void FormatDuration(DWORD seconds, wchar_t* target, size_t targetCount);
-        // Wall-clock time (local HH:MM) at which an event starts, derived from the
-        // seconds-until-start the server sent plus the client's current local time.
-        static void FormatOpenClock(DWORD secondsFromNow, wchar_t* target, size_t targetCount);
 
         CNewUIManager* m_pNewUIMng;
         POINT m_Pos;
@@ -128,7 +123,10 @@ namespace SEASON3B
         int m_scrollOffset;
         bool m_bReceived;
         DWORD m_dwLastRequestTick;
-        DWORD m_dwLastCountdownTick;
+        // Local wall-clock seconds-of-day when m_Entries' anchors were received;
+        // display values are pure decays of the anchors (EventScheduleTime.h),
+        // never mutated in place, so the rendered text cannot flicker.
+        DWORD m_dwAnchorWallSec;
     };
 }
 
