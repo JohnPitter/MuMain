@@ -76,6 +76,14 @@ void GameConfig::Load()
     m_uiLocale = ReadString(CfgSectionUI, CfgKeyUILocale, CfgDefaultUILocale);
     m_fontSelection = ReadString(CfgSectionUI, CfgKeyFont, CfgDefaultFont);
     m_fixedToolbar = ReadBool(CfgSectionUI, CfgKeyFixedToolbar, CfgDefaultFixedToolbar);
+    const int fixedToolbarLayoutVersion = ReadInt(CfgSectionUI, CfgKeyFixedToolbarLayoutVersion, 0);
+    if (fixedToolbarLayoutVersion < CfgCurrentFixedToolbarLayoutVersion)
+    {
+        m_fixedToolbar = false;
+        WriteBool(CfgSectionUI, CfgKeyFixedToolbar, false);
+        WriteInt(CfgSectionUI, CfgKeyFixedToolbarLayoutVersion, CfgCurrentFixedToolbarLayoutVersion);
+    }
+
     {
         wchar_t scaleDefault[16] = {};
         swprintf_s(scaleDefault, L"%.2f", CfgDefaultFixedToolbarScale);
@@ -129,6 +137,7 @@ void GameConfig::Save()
 {
     using namespace CfgSections;
     using namespace CfgKeys;
+    using namespace CfgDefaults;
 
     WriteInt(CfgSectionWindow, CfgKeyWidth, m_windowWidth);
     WriteInt(CfgSectionWindow, CfgKeyHeight, m_windowHeight);
@@ -152,6 +161,7 @@ void GameConfig::Save()
     WriteString(CfgSectionUI, CfgKeyUILocale, m_uiLocale);
     WriteString(CfgSectionUI, CfgKeyFont, m_fontSelection);
     WriteBool(CfgSectionUI, CfgKeyFixedToolbar, m_fixedToolbar);
+    WriteInt(CfgSectionUI, CfgKeyFixedToolbarLayoutVersion, CfgCurrentFixedToolbarLayoutVersion);
     {
         wchar_t scaleBuf[16] = {};
         swprintf_s(scaleBuf, L"%.2f", m_fixedToolbarScale);

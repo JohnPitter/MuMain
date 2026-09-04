@@ -39,6 +39,7 @@ namespace CfgKeys
     inline constexpr wchar_t CfgKeyFont[]     = L"Font";
     inline constexpr wchar_t CfgKeyFixedToolbar[] = L"FixedToolbar";
     inline constexpr wchar_t CfgKeyFixedToolbarScale[] = L"FixedToolbarScale";
+    inline constexpr wchar_t CfgKeyFixedToolbarLayoutVersion[] = L"FixedToolbarLayoutVersion";
 
     // Camera
     inline constexpr wchar_t CfgKeyZoom[] = L"Zoom";
@@ -80,10 +81,11 @@ namespace CfgDefaults
     // the user picks a font. Any value is passed through as the GDI face name.
     inline constexpr wchar_t CfgDefaultFont[] = L"";
 
-    // Bottom HUD toolbar stays at the 640x480 pixel size, centered, instead of
-    // stretching with the window. Default on.
-    inline constexpr bool CfgDefaultFixedToolbar = true;
+    // The classic HUD fills the bottom of the window. The fixed-width variant
+    // is still available as an explicit configuration for compatible layouts.
+    inline constexpr bool CfgDefaultFixedToolbar = false;
     inline constexpr float CfgDefaultFixedToolbarScale = 1.25f;
+    inline constexpr int CfgCurrentFixedToolbarLayoutVersion = 1;
 
     // DXP-08 Stage G: flipped to default-on after DXP-08a/DXP-09 prerequisites were fixed and
     // soak-confirmed clean under CoreProfile=1 (2026-08-01). Set CoreProfile=0 in config.ini to
