@@ -57,6 +57,42 @@ namespace
     {
         SEASON3B::RenderNumber(centerX, y, value, FitHudNumberScale(value, maxWidth));
     }
+
+    // The AG/SD toolbar columns are only 16 px wide, so their values are drawn
+    // stacked vertically — one digit per line, most significant at the top,
+    // like the classic S6 client — instead of a horizontal row that bleeds
+    // into the neighboring slots. Digits share the same number sprites; the
+    // line height shrinks with the digit count so even 6 digits stay inside
+    // the bar's 39 px column.
+    void RenderHudGaugeNumberVertical(float centerX, float topY, float availableHeight, int value)
+    {
+        wchar_t digits[12] = {};
+        if (value < 0)
+        {
+            value = 0; // gauges are unsigned quantities
+        }
+        _itow(value, digits, 10);
+        const int count = static_cast<int>(wcslen(digits));
+        if (count <= 0)
+        {
+            return;
+        }
+
+        constexpr float kLineGap = 1.f;
+        constexpr float kMaxLineHeight = 13.f;
+        const float lineH = std::min(kMaxLineHeight, (availableHeight - (count - 1) * kLineGap) / count);
+        const float scale = std::clamp(lineH / 16.f + 0.3f, 0.3f, 1.f); // RenderNumber: h = 16 * (scale - 0.3)
+        const float glyphH = 16.f * (scale - 0.3f);
+        const float stackH = lineH * count - kLineGap;
+
+        float y = topY + std::max(0.f, (availableHeight - stackH) * 0.5f);
+        for (int i = 0; i < count; ++i)
+        {
+            const int digit = digits[i] - L'0';
+            SEASON3B::RenderNumber(centerX, y + (lineH - glyphH) * 0.5f, digit, scale);
+            y += lineH;
+        }
+    }
 }
 
 SEASON3B::CNewUIMainFrameWindow::CNewUIMainFrameWindow()
@@ -393,7 +429,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderGuageAG()
     fV = fSkillMana;
 
     RenderBitmap(IMAGE_GAUGE_AG, x, fY, width, fH, 0.f, fV * height / 64.f, width / 16.f, (1.0f - fV) * height / 64.f);
-    RenderHudGaugeNumber(x + width * 0.5f, y + height - 13.f, (int)dwSkillMana, width + 6.f);
+    RenderHudGaugeNumberVertical(x + width * 0.5f, y + 1.f, height - 2.f, (int)dwSkillMana);
 
     if (SEASON3B::CheckMouseIn(x, y, width, height) == true)
     {
@@ -436,7 +472,7 @@ void SEASON3B::CNewUIMainFrameWindow::RenderGuageSD()
     fV = fShield;
 
     RenderBitmap(IMAGE_GAUGE_SD, x, fY, width, fH, 0.f, fV * height / 64.f, width / 16.f, (1.0f - fV) * height / 64.f);
-    RenderHudGaugeNumber(x + width * 0.5f, y + height - 13.f, (int)wShield, width + 6.f);
+    RenderHudGaugeNumberVertical(x + width * 0.5f, y + 1.f, height - 2.f, (int)wShield);
 
     height = 39.f;
     y = (float)REFERENCE_HEIGHT - 10.f - 39.f;
