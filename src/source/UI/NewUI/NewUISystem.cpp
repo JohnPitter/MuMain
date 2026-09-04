@@ -84,6 +84,7 @@ CNewUISystem::CNewUISystem()
     m_pNewHelpWindow = nullptr;
     m_pNewChatCommandWindow = nullptr;
     m_pNewTitleWindow = nullptr;
+    m_pNewEventScheduleWindow = nullptr;
     m_pNewItemExplanationWindow = nullptr;
     m_pNewSetItemExplanation = nullptr;
     m_pNewQuickCommandWindow = nullptr;
@@ -364,6 +365,12 @@ bool CNewUISystem::LoadMainSceneInterface()
         return false;
     }
 
+    m_pNewEventScheduleWindow = new CNewUIEventScheduleWindow;
+    if (m_pNewEventScheduleWindow->Create(m_pNewUIMng, PanelColumnX(1), 0) == false)
+    {
+        return false;
+    }
+
     m_pNewHelpWindow = new CNewUIHelpWindow;
     if (m_pNewHelpWindow->Create(m_pNewUIMng, 0, 0) == false)
     {
@@ -556,6 +563,7 @@ void CNewUISystem::UnloadMainSceneInterface()
     SAFE_DELETE(m_pNewHelpWindow);
     SAFE_DELETE(m_pNewChatCommandWindow);
     SAFE_DELETE(m_pNewTitleWindow);
+    SAFE_DELETE(m_pNewEventScheduleWindow);
     SAFE_DELETE(m_pNewItemExplanationWindow);
     SAFE_DELETE(m_pNewSetItemExplanation);
     SAFE_DELETE(m_pNewQuickCommandWindow);
@@ -942,6 +950,11 @@ void CNewUISystem::Show(DWORD dwKey)
     {
         HideAllGroupA();
         m_pNewTitleWindow->OpenningProcess();
+    }
+    else if (dwKey == INTERFACE_EVENTSCHEDULE)
+    {
+        HideAllGroupA();
+        m_pNewEventScheduleWindow->OpenningProcess();
     }
     else if (dwKey == INTERFACE_GUILDINFO)
     {
@@ -1454,6 +1467,10 @@ void CNewUISystem::Hide(DWORD dwKey)
     {
         m_pNewTitleWindow->ClosingProcess();
     }
+    else if (dwKey == INTERFACE_EVENTSCHEDULE)
+    {
+        m_pNewEventScheduleWindow->ClosingProcess();
+    }
     else if (dwKey == INTERFACE_WINDOW_MENU)
     {
         g_pMainFrame->SetBtnState(MAINFRAME_BTN_WINDOW, false);
@@ -1694,6 +1711,7 @@ void CNewUISystem::HideAllGroupA()
         INTERFACE_COMMAND,
         INTERFACE_COMMAND_LIST,
         INTERFACE_TITLE,
+        INTERFACE_EVENTSCHEDULE,
         INTERFACE_GUILDINFO,
         INTERFACE_KANTURU2ND_ENTERNPC,
         INTERFACE_DUELWATCH,
@@ -1757,6 +1775,7 @@ void CNewUISystem::HideAllGroupB()
         INTERFACE_COMMAND,
         INTERFACE_COMMAND_LIST,
         INTERFACE_TITLE,
+        INTERFACE_EVENTSCHEDULE,
         INTERFACE_GUILDINFO,
         INTERFACE_KANTURU2ND_ENTERNPC,
         INTERFACE_CURSEDTEMPLE_NPC,
@@ -1800,6 +1819,7 @@ void CNewUISystem::HideGroupBeforeOpenInterface()
         INTERFACE_COMMAND,
         INTERFACE_COMMAND_LIST,
         INTERFACE_TITLE,
+        INTERFACE_EVENTSCHEDULE,
         INTERFACE_GUILDINFO,
         INTERFACE_GOLD_BOWMAN,
         INTERFACE_GOLD_BOWMAN_LENA,
@@ -2387,6 +2407,11 @@ CNewUIHelpWindow* CNewUISystem::GetUI_NewHelpWindow() const
 CNewUIChatCommandWindow* CNewUISystem::GetUI_NewChatCommandWindow() const
 {
     return m_pNewChatCommandWindow;
+}
+
+CNewUIEventScheduleWindow* CNewUISystem::GetUI_NewEventScheduleWindow() const
+{
+    return m_pNewEventScheduleWindow;
 }
 
 CNewUITitleWindow* CNewUISystem::GetUI_NewTitleWindow() const

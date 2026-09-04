@@ -296,6 +296,12 @@ bool SEASON3B::CNewUIHotKey::UpdateKeyEvent()
         PlayBuffer(SOUND_CLICK01);
         return false;
     }
+    else if (SEASON3B::IsPress('O') && g_pChatInputBox->HaveFocus() == false)
+    {
+        g_pNewUISystem->Toggle(SEASON3B::INTERFACE_EVENTSCHEDULE);
+        PlayBuffer(SOUND_CLICK01);
+        return false;
+    }
     else if (SEASON3B::IsPress('M') == true)
     {
         g_pNewUISystem->Toggle(SEASON3B::INTERFACE_MOVEMAP);

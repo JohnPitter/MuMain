@@ -15250,6 +15250,14 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         }
     }
     break;
+    case 0xD6:
+    {
+        // LuxView event list ("Eventos", hotkey O). C2 D6 00 carries the schedule.
+        const BYTE subcode = ReceiveBuffer[bIsC1C3 ? 3 : 4];
+        if (subcode == 0x00)
+            ReceiveEventSchedule(ReceiveBuffer, Size);
+    }
+    break;
     case 0xD5:
     {
         const BYTE subcode = ReceiveBuffer[bIsC1C3 ? 3 : 4];
