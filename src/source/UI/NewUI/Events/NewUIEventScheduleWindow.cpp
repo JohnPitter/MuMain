@@ -392,7 +392,13 @@ bool CNewUIEventScheduleWindow::Render()
     g_pRenderText->SetTextColor(190, 190, 190, 255);
     g_pRenderText->RenderText(contentX + COL_NAME_X, m_Pos.y + HEADER_TOP, L"Evento", COL_NAME_W, ROW_HEIGHT, RT3_SORT_LEFT);
     g_pRenderText->RenderText(contentX + COL_STATE_X, m_Pos.y + HEADER_TOP, L"Estado", COL_STATE_W, ROW_HEIGHT, RT3_SORT_LEFT);
-    g_pRenderText->RenderText(contentX + COL_TIME_X, m_Pos.y + HEADER_TOP, L"Tempo", COL_TIME_W, ROW_HEIGHT, RT3_SORT_RIGHT);
+    // RT3_SORT_LEFT_CLIP, not RT3_SORT_RIGHT: the right-align box math was the only
+    // difference from the two columns that render correctly and let the "Tempo"
+    // texts escape the panel. LEFT_CLIP anchors the draw at the column's left edge
+    // inside this window's rect and hard-clips at the window's inner right edge
+    // (CONTENT_LEFT + COL_TIME_X + COL_TIME_W = WINDOW_WIDTH - CONTENT_LEFT), so the
+    // column can never spill outside the frame at any resolution.
+    g_pRenderText->RenderText(contentX + COL_TIME_X, m_Pos.y + HEADER_TOP, L"Tempo", COL_TIME_W, ROW_HEIGHT, RT3_SORT_LEFT_CLIP);
 
     if (m_iEntryCount == 0)
     {
@@ -458,7 +464,7 @@ bool CNewUIEventScheduleWindow::Render()
         g_pRenderText->SetTextColor(color.r, color.g, color.b, 255);
         g_pRenderText->RenderText(contentX + COL_NAME_X, y, nameText, COL_NAME_W, ROW_HEIGHT, RT3_SORT_LEFT);
         g_pRenderText->RenderText(contentX + COL_STATE_X, y, StateText(entry.State), COL_STATE_W, ROW_HEIGHT, RT3_SORT_LEFT);
-        g_pRenderText->RenderText(contentX + COL_TIME_X, y, timeText, COL_TIME_W, ROW_HEIGHT, RT3_SORT_RIGHT);
+        g_pRenderText->RenderText(contentX + COL_TIME_X, y, timeText, COL_TIME_W, ROW_HEIGHT, RT3_SORT_LEFT_CLIP);
     }
 
     m_BtnExit.Render();
