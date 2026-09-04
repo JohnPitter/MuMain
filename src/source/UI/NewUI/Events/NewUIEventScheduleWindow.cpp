@@ -36,15 +36,25 @@ namespace
     constexpr int CLOSE_W = 13;
     constexpr int CLOSE_H = 12;
 
-    // Local wall-clock seconds since midnight — the ONE time source the
-    // countdown and the opening-hour column share.
-    DWORD LocalSecondsOfDay()
+    // Local wall clock in ONE reading: seconds since midnight (the ONE time
+    // source the countdown and the opening columns share) and the epoch day
+    // feeding the pure opening-date math for events more than a day away.
+    void LocalWallClock(DWORD* secOfDay, std::int64_t* epochDays)
     {
         SYSTEMTIME st;
         GetLocalTime(&st);
-        return static_cast<DWORD>(st.wHour) * 3600ul
+        *secOfDay = static_cast<DWORD>(st.wHour) * 3600ul
             + static_cast<DWORD>(st.wMinute) * 60ul
             + static_cast<DWORD>(st.wSecond);
+        *epochDays = event_schedule_time::days_from_civil(st.wYear, st.wMonth, st.wDay);
+    }
+
+    DWORD LocalSecondsOfDay()
+    {
+        DWORD secOfDay;
+        std::int64_t epochDays;
+        LocalWallClock(&secOfDay, &epochDays);
+        return secOfDay;
     }
 
     struct StateColor
@@ -437,7 +447,9 @@ bool CNewUIEventScheduleWindow::Render()
     }
 
     // One wall-clock reading per frame: every row renders the same instant.
-    const std::uint32_t wallFrameSec = LocalSecondsOfDay();
+    DWORD wallFrameSec = 0;
+    std::int64_t nowEpochDays = 0;
+    LocalWallClock(&wallFrameSec, &nowEpochDays);
     for (int row = 0; row < VISIBLE_ROWS; ++row)
     {
         const int index = m_scrollOffset + row;
@@ -459,19 +471,34 @@ bool CNewUIEventScheduleWindow::Render()
         const std::uint32_t remainingEnd =
             event_schedule_time::remaining_seconds(entry.SecondsToEnd, wallFrameSec, m_dwAnchorWallSec);
 
-        // Upcoming events show both the wall-clock time they open (e.g. 21:30) and
-        // the countdown to it (e.g. 1h05m); open/running events show the time left.
+        // Upcoming events show the wall-clock time they open plus either the
+        // countdown (under a day: "19:59 (3h48m)") or, above 24 hours where an
+        // hour count stops meaning anything, the opening weekday and date
+        // ("15:18 (seg 08/09)"). Open/running events show the time left.
         wchar_t timeText[48] = {};
         if (entry.State == EVENT_STATE_UPCOMING)
         {
             if (remainingStart > 0)
             {
                 wchar_t clockText[16] = {};
-                wchar_t countText[24] = {};
                 event_schedule_time::format_clock(
                     event_schedule_time::open_wall_clock(remainingStart, wallFrameSec), clockText, 16);
-                event_schedule_time::format_duration(remainingStart, countText, 24);
-                mu_swprintf_s(timeText, 48, L"%ls (%ls)", clockText, countText);
+                if (event_schedule_time::should_show_date(remainingStart))
+                {
+                    const event_schedule_time::OpeningDate date =
+                        event_schedule_time::opening_date(nowEpochDays, remainingStart, wallFrameSec);
+                    wchar_t weekdayText[8] = {};
+                    wchar_t dateText[8] = {};
+                    event_schedule_time::format_weekday(date.weekdayIndex, weekdayText, 8);
+                    event_schedule_time::format_date(date.day, date.month, dateText, 8);
+                    mu_swprintf_s(timeText, 48, L"%ls (%ls %ls)", clockText, weekdayText, dateText);
+                }
+                else
+                {
+                    wchar_t countText[24] = {};
+                    event_schedule_time::format_duration(remainingStart, countText, 24);
+                    mu_swprintf_s(timeText, 48, L"%ls (%ls)", clockText, countText);
+                }
             }
             else
             {

@@ -136,3 +136,88 @@ TEST_CASE("a full refresh cycle never increases the displayed minute")
     const std::uint32_t afterRefresh = remaining_seconds(anchor, wallAtRefresh, wallAtRefresh);
     CHECK(afterRefresh == displayed); // display did not jump up
 }
+
+TEST_CASE("civil calendar round-trips and weekday mapping")
+{
+    // 1970-01-01 was a Thursday (qui).
+    CHECK(days_from_civil(1970, 1, 1) == 0);
+    CHECK(weekday_index(0) == 3);
+    // 2026-09-04 is a Friday (sex).
+    const std::int64_t fri = days_from_civil(2026, 9, 4);
+    CHECK(weekday_index(fri) == 4);
+    const CivilDate back = civil_from_days(fri);
+    CHECK(back.year == 2026);
+    CHECK(back.month == 9);
+    CHECK(back.day == 4);
+}
+
+TEST_CASE("above 24 hours shows the date, at 24h it stays a countdown")
+{
+    CHECK_FALSE(should_show_date(86400));        // exactly 24h -> "24h00m"
+    CHECK_FALSE(should_show_date(86400 - 1));    // 23h59m59s
+    CHECK(should_show_date(86400 + 1));          // past one day -> date
+    CHECK(should_show_date(343140));             // the 95h19m Crywolf case
+}
+
+TEST_CASE("opening date lands on the right weekday and day (>24h)")
+{
+    // Now: Friday 2026-09-04, 19:59:00. Crywolf 95h19m away = 3d 23h 19m ->
+    // opens Tuesday 2026-09-08 at 19:18 -> "ter 08/09".
+    const std::int64_t nowDays = days_from_civil(2026, 9, 4);
+    const std::uint32_t remaining = 95 * 3600 + 19 * 60;
+    const OpeningDate date = opening_date(nowDays, remaining, 71940);
+    CHECK(date.weekdayIndex == 1); // ter
+    CHECK(date.day == 8);
+    CHECK(date.month == 9);
+}
+
+TEST_CASE("opening date rolls over the month and the year")
+{
+    // Wed 2026-09-30 12:00 + 3d -> Saturday 2026-10-03 (no 31/09 nonsense).
+    const std::int64_t sep30 = days_from_civil(2026, 9, 30);
+    const OpeningDate october = opening_date(sep30, 3 * 86400, 12 * 3600);
+    CHECK(october.weekdayIndex == 5); // sáb
+    CHECK(october.day == 3);
+    CHECK(october.month == 10);
+
+    // Thu 2026-12-31 23:00 + 2h (next day) -> Friday 2027-01-01.
+    const std::int64_t dec31 = days_from_civil(2026, 12, 31);
+    const OpeningDate january = opening_date(dec31, 2 * 3600, 23 * 3600);
+    CHECK(january.weekdayIndex == 4); // sex
+    CHECK(january.day == 1);
+    CHECK(january.month == 1);
+}
+
+TEST_CASE("opening date stays on today when the countdown is small")
+{
+    const std::int64_t nowDays = days_from_civil(2026, 9, 4);
+    const OpeningDate today = opening_date(nowDays, 3 * 3600, 71940); // 19:59 + 3h
+    CHECK(today.day == 4);
+    CHECK(today.month == 9);
+    CHECK(today.weekdayIndex == 4); // sex
+}
+
+TEST_CASE("weekday and date formatting")
+{
+    struct Formatted
+    {
+        wchar_t text[16] = {};
+        bool operator==(const wchar_t* other) const { return wcscmp(text, other) == 0; }
+    };
+
+    Formatted weekday;
+    format_weekday(0, weekday.text, 16);
+    CHECK((weekday == L"seg"));
+    format_weekday(5, weekday.text, 16);
+    CHECK((weekday == L"s\xe1" L"b")); // sáb
+    format_weekday(6, weekday.text, 16);
+    CHECK((weekday == L"dom"));
+
+    Formatted date;
+    format_date(7, 9, date.text, 16);
+    CHECK((date == L"07/09"));
+    format_date(31, 12, date.text, 16);
+    CHECK((date == L"31/12"));
+    format_date(1, 1, date.text, 16);
+    CHECK((date == L"01/01"));
+}
