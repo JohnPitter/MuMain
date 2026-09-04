@@ -237,10 +237,18 @@ namespace UI::HUD::MiniMap
             }
         }
 
+        // The window stops scrolling once the hero is within half a span of a map
+        // edge (centerU/centerV are clamped above), so the hero is only at the
+        // exact center away from the borders. Project the real position through
+        // the same transform used for party members instead of pinning it.
+        const float heroU = static_cast<float>(Hero->PositionY) / 256.f;
+        const float heroV = static_cast<float>(Hero->PositionX) / 256.f;
+        const float heroPx = mapX + (kMapSize / 2.f) + ((heroU - centerU) / kZoomSpan * kMapSize);
+        const float heroPy = mapY + (kMapSize / 2.f) + ((heroV - centerV) / kZoomSpan * kMapSize);
         glColor4f(0.1f, 0.1f, 0.1f, 1.f);
-        RenderColor(mapX + (kMapSize / 2.f) - 2.5f, mapY + (kMapSize / 2.f) - 2.5f, 5.f, 5.f);
+        RenderColor(heroPx - 2.5f, heroPy - 2.5f, 5.f, 5.f);
         glColor4f(1.f, 0.9f, 0.2f, 1.f);
-        RenderColor(mapX + (kMapSize / 2.f) - 2.f, mapY + (kMapSize / 2.f) - 2.f, 4.f, 4.f);
+        RenderColor(heroPx - 2.f, heroPy - 2.f, 4.f, 4.f);
         EndRenderColor();
         DisableScissorTest();
 
