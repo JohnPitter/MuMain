@@ -75,6 +75,9 @@ namespace SEASON3B
         CNewUIButton m_BtnToolTip;
         void LoadImages(const wchar_t* Filename);
         void UnloadImages();
+        // Draw size the TAB map currently renders the full 256-tile sheet with
+        // (follows the map zoom), for secondary views reusing the same draw.
+        POINT GetTabDrawMetrics() const { return m_Lenth[m_MiniPos]; }
 
     private:
         void ApplyWorldScale(const wchar_t* worldName);

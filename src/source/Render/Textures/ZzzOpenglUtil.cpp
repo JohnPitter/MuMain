@@ -1543,7 +1543,7 @@ void RenderBitmapRotate(int Texture, float x, float y, float Width, float Height
     IR::End();
 }
 
-void RenderBitRotate(int Texture, float x, float y, float Width, float Height, float Rotate)
+void RenderBitRotate(int Texture, float x, float y, float Width, float Height, float Rotate, float pivotX, float pivotY, bool useCustomPivot)
 {
     x = ConvertPosX(x);
     y = ConvertPosY(y);
@@ -1582,6 +1582,10 @@ void RenderBitRotate(int Texture, float x, float y, float Width, float Height, f
     float currColor[4] = { 1.f, 1.f, 1.f, 1.f };
     memcpy(currColor, g_CurrentColor, sizeof(currColor));
 
+    // The world point (x, y) is the rotation pivot and lands exactly here.
+    const float originX = useCustomPivot ? ConvertPosX(pivotX) : (WindowWidth / 2.f);
+    const float originY = useCustomPivot ? (WindowHeight - ConvertPosY(pivotY)) : (WindowHeight / 2.f);
+
     IR::Begin(GL_TRIANGLE_FAN);
     PassthroughShader::Instance().SetUseTexture(true);
     for (int i = 0; i < 4; i++)
@@ -1589,12 +1593,12 @@ void RenderBitRotate(int Texture, float x, float y, float Width, float Height, f
         IR::Color4f(currColor[0], currColor[1], currColor[2], currColor[3]);
         IR::TexCoord2f(c[i][0], c[i][1]);
         VectorRotate(p[i], Matrix, p2[i]);
-        IR::Vertex2f(p2[i][0] + (WindowWidth / 2.f), p2[i][1] + (WindowHeight / 2.f));
+        IR::Vertex2f(p2[i][0] + originX, p2[i][1] + originY);
     }
     IR::End();
 }
 
-void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHeight, float x, float y, float Width, float Height, float Rotate, float Rotate_Loc, float uWidth, float vHeight, int Num)
+void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHeight, float x, float y, float Width, float Height, float Rotate, float Rotate_Loc, float uWidth, float vHeight, int Num, float pivotX, float pivotY, bool useCustomPivot)
 {
     int i = 0;
     vec3_t p, p2[4], p3, p4[4], Angle;
@@ -1635,6 +1639,10 @@ void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHei
     float currColor[4] = { 1.f, 1.f, 1.f, 1.f };
     memcpy(currColor, g_CurrentColor, sizeof(currColor));
 
+    // The world point (x, y) is the rotation pivot and lands exactly here.
+    const float originX = useCustomPivot ? ConvertPosX(pivotX) : (WindowWidth / 2.f);
+    const float originY = useCustomPivot ? (WindowHeight - ConvertPosY(pivotY)) : (WindowHeight / 2.f);
+
     IR::Begin(GL_TRIANGLE_FAN);
     PassthroughShader::Instance().SetUseTexture(true);
     for (i = 0; i < 4; i++)
@@ -1646,15 +1654,15 @@ void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHei
         Matrix[1][3] = p3[1];
         VectorTransform(p2[i], Matrix, p4[i]);
 
-        IR::Vertex2f(p4[i][0] + (WindowWidth / 2.f), p4[i][1] + (WindowHeight / 2.f));
+        IR::Vertex2f(p4[i][0] + originX, p4[i][1] + originY);
     }
     IR::End();
 
     if (Num > -1)
     {
         float dx, dy;
-        dx = p4[0][0] + (WindowWidth / 2.f);
-        dy = p4[0][1] + (WindowHeight / 2.f);
+        dx = p4[0][0] + originX;
+        dy = p4[0][1] + originY;
         dx = (dx - g_fScreenOff_x) / g_fScreenRate_x;
         dy = (dy - g_fScreenOff_y) / g_fScreenRate_y;
         if (Num >= 100)
@@ -1667,7 +1675,6 @@ void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHei
         }
     }
 }
-
 void RenderBitmapLocalRotate(int Texture, float x, float y, float Width, float Height, float Rotate, float u, float v, float uWidth, float vHeight)
 {
     BindTexture(Texture);

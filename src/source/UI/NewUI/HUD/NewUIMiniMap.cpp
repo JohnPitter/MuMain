@@ -6,6 +6,7 @@
 
 #include "UI/NewUI/HUD/NewUIMiniMap.h"
 #include "UI/NewUI/NewUISystem.h"
+#include "Render/Textures/ZzzOpenglUtil.h"
 #include "UI/NewUI/Dialogs/NewUICommonMessageBox.h"
 #include "UI/NewUI/Dialogs/NewUICustomMessageBox.h"
 #include "Audio/DSPlaySound.h"

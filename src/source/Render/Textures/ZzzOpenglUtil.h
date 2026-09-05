@@ -156,8 +156,11 @@ void EndRenderColor();
 void RenderBitmap(int Texture, float x, float y, float Width, float Height, float u = 0.f, float v = 0.f, float uWidth = 1.f, float vHeight = 1.f, bool Scale = true, bool StartScale = true, float Alpha = 0.f);
 void RenderColorBitmap(int Texture, float x, float y, float Width, float Height, float u = 0.f, float v = 0.f, float uWidth = 1.f, float vHeight = 1.f, unsigned int color = 0xffffffff);
 void RenderBitmapRotate(int Texture, float x, float y, float Width, float Height, float Angle, float u = 0.f, float v = 0.f, float uWidth = 1.f, float vHeight = 1.f);
-void RenderBitRotate(int Texture, float x, float y, float Width, float Height, float Rotate);
-void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHeight, float x, float y, float Width, float Height, float Rotate, float Rotate_Loc, float uWidth, float vHeight, int Num = -1);
+// Rotates the full-texture quad so the world point (x, y) lands on the pivot.
+// Without useCustomPivot the pivot is the screen center (TAB map behavior);
+// with it, secondary views (corner minimap) reuse this exact draw.
+void RenderBitRotate(int Texture, float x, float y, float Width, float Height, float Rotate, float pivotX = 0.f, float pivotY = 0.f, bool useCustomPivot = false);
+void RenderPointRotate(int Texture, float ix, float iy, float iWidth, float iHeight, float x, float y, float Width, float Height, float Rotate, float Rotate_Loc, float uWidth, float vHeight, int Num = -1, float pivotX = 0.f, float pivotY = 0.f, bool useCustomPivot = false);
 void RenderBitmapLocalRotate(int Texture, float x, float y, float Width, float Height, float Rotate, float u = 0.f, float v = 0.f, float uWidth = 1.f, float vHeight = 1.f);
 void RenderBitmapAlpha(int Texture, float sx, float sy, float Width, float Height);
 void RenderBitmapUV(int Texture, float x, float y, float Width, float Height, float u, float v, float uWidth, float vHeight);
