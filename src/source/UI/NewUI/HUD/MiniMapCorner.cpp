@@ -35,11 +35,7 @@ namespace
     constexpr float kVoiceBtnW = 36.f;
     constexpr float kVoiceBtnH = 23.f;
     constexpr float kVoiceGap = 4.f;
-    // Glyph size as a fraction of the voice_*.OZT frame (16x23 / 20x17), so
-    // the mic lands at ~13x18 px and the speaker at ~16x14 px inside the
-    // 36x23 button. The old value was tuned for the quad tables, whose
-    // footprint was smaller than the frame they are now drawn from.
-    constexpr float kVoiceIconScale = 0.80f;
+    constexpr float kVoiceIconScale = 0.58f;
     const wchar_t* const kVoiceMicrophoneTooltip = L"Voz: ligar ou desligar o microfone";
     const wchar_t* const kVoiceListeningTooltip = L"Voz: ligar ou desligar a escuta";
 

@@ -310,11 +310,6 @@ enum
     BITMAP_GENS_RANKBACK,
 #endif //PBG_ADD_GENSRANKING
 
-    // LuxUI voice-chat glyphs (Interface\LuxUI\voice_*.OZT). Appended right
-    // before the explicit END terminator so no existing id shifts.
-    BITMAP_LUXUI_VOICE_MIC,
-    BITMAP_LUXUI_VOICE_SOUND,
-
     BITMAP_INTERFACE_TEXTURE_END = 32000,
     BITMAP_EFFECT_TEXTURE_BEGIN = 32001,
 
