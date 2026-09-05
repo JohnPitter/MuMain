@@ -648,7 +648,7 @@
     <comment>legacy_id=158</comment>
   </data>
   <data name="Item option info" xml:space="preserve">
-    <value>Informações de opção de item</value>
+    <value>Opções do Set Antigo</value>
     <comment>legacy_id=159</comment>
   </data>
   <data name="Item info" xml:space="preserve">
@@ -4086,7 +4086,7 @@
     <comment>legacy_id=1088</comment>
   </data>
   <data name="Set" xml:space="preserve">
-    <value>Definir</value>
+    <value>Set</value>
     <comment>legacy_id=1089</comment>
   </data>
   <data name="Ancient Metal" xml:space="preserve">

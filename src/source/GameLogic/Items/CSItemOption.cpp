@@ -1083,7 +1083,7 @@ int CSItemOption::RenderSetOptionListInItem(const ITEM* ip, int TextNum, bool bI
 
 
     mu_swprintf(TextList[TNum], L"\n"); TNum++;
-    mu_swprintf(TextList[TNum], L"%ls %ls", I18N::Game::Set, I18N::Game::ItemOptionInfo);
+    mu_swprintf(TextList[TNum], L"%ls", I18N::Game::ItemOptionInfo);
     TextListColor[TNum] = TEXT_COLOR_YELLOW;
     TNum++;
 
