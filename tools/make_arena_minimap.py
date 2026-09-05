@@ -1,12 +1,19 @@
 """Build Data/World7/mini_map.OZT for Stadium TAB + corner minimap.
 
-Official S6 never shipped a Stadium minimap. Round 4 generated a 1024x1024
-OpenTga blob from Terrain7.att but painted every tile opaque (void = dark
-NoMove). TAB draws that quad over ~640x430, so the screen became a black sheet.
+Official S6 never shipped a Stadium minimap. The sheet must be FULLY OPAQUE:
+CNewUIMiniMap::Render paints an 85% black quad under the map image, so any
+alpha-0 pixel lets the blackened world bleed through (the "mapa escuro / chão
+some" report). Retail sheets (World1) are opaque with a dark void fill; this
+generator follows that convention.
 
-Match Icarus (World11): unused tiles stay alpha 0; only the stadium footprint
-is visible. Colors follow update 162: teal plaza/warp, sand PvP halls, terracotta
-hunting cages, stone walls adjacent to walkable tiles.
+Source of truth is the shipped EncTerrain7.att authoring (plain copy in
+Terrain7.att): fence rails are NOMOVE exactly where the .obj shows rails and
+every visual gap stays walkable. The generator only applies the official cage
+doors and the safezone pads (plaza 65,43 r10 + warp 102,116 r3), mirroring
+OpenMU ArenaCageDoors / update 187.
+
+Colors are terrain-driven: sand ground shaded by TerrainHeight.OZB, dark brown
+fence lines, darker void fill, yellow safezone pads, distinct cage floors.
 """
 from __future__ import annotations
 
@@ -19,26 +26,10 @@ if not ATT.exists():
         r"C:\Users\joaop\Desenvolvimento\openmu"
         r"\OpenMU\src\Persistence\Initialization\Resources\Terrain7.att"
     )
+OZB = ROOT / "src" / "bin" / "Data" / "World7" / "TerrainHeight.OZB"
 OUT = ROOT / "src" / "bin" / "Data" / "World7" / "mini_map.OZT"
 PREVIEW = Path(r"C:\Users\joaop\AppData\Local\Temp\arena-minimap-preview.png")
 
-# BGRA (OpenTga swaps R/B on upload)
-VOID = (0, 0, 0, 0)
-PVP = (0x6E, 0xB4, 0xDC, 0xFF)       # sand RGB(220,180,110)
-SAFE = (0xBE, 0xC8, 0x46, 0xFF)      # teal RGB(70,200,190)
-PVM = (0x3C, 0x5A, 0xD2, 0xFF)       # terracotta RGB(210,90,60)
-WALL = (0x5A, 0x62, 0x6E, 0xE6)      # stone, slight alpha
-WALL_EDGE = (0x28, 0x2C, 0x32, 0xFF)
-
-FENCE_SEALS = [
-    (35, 33, 35, 45), (35, 51, 35, 63), (35, 69, 35, 97),
-    (36, 33, 36, 45), (36, 51, 36, 63), (36, 69, 36, 81), (36, 85, 36, 97),
-    (41, 32, 41, 36), (41, 40, 41, 54), (41, 59, 41, 68), (41, 73, 41, 78), (41, 83, 41, 93),
-    (54, 33, 54, 45), (54, 51, 54, 63), (54, 68, 54, 97),
-    (16, 88, 18, 88), (16, 93, 18, 93),
-    (60, 69, 63, 72), (60, 76, 63, 88), (61, 62, 61, 73), (64, 69, 71, 69), (64, 81, 71, 81),
-    (7, 34, 7, 43), (7, 52, 7, 61), (6, 70, 7, 79), (6, 87, 7, 91), (8, 95, 15, 96),
-]
 DOORS = [
     (16, 37, 16, 39), (16, 55, 16, 57), (16, 73, 16, 75), (16, 89, 18, 92),
     (23, 37, 24, 39), (23, 55, 24, 57), (23, 71, 24, 74), (23, 88, 24, 91),
@@ -51,8 +42,20 @@ HUNTING = [
     (45, 35, 51, 41), (45, 54, 51, 60), (45, 69, 51, 74), (45, 78, 51, 84),
     (65, 71, 71, 77),
 ]
+CAMPUS = (0, 25, 120, 135)
 PLAZA = (65, 43, 10)
 WARP = (102, 116, 3)
+
+# RGB palettes (converted to BGRA on write).
+GROUND = (213, 199, 162)
+GROUND_ALT = (203, 188, 150)
+CAGE = (199, 172, 130)
+CAGE_ALT = (189, 161, 119)
+SAFE = (140, 205, 105)
+SAFE_ALT = (128, 194, 94)
+FENCE = (74, 62, 50)
+FENCE_EDGE = (52, 43, 35)
+VOID = (30, 28, 33)
 
 
 def in_rects(rects, x, y) -> bool:
@@ -76,27 +79,19 @@ def is_safe(x, y) -> bool:
     return chebyshev(x, y, *PLAZA) or chebyshev(x, y, *WARP)
 
 
-def punch(att: bytearray) -> None:
+def official_terrain(att: bytearray) -> None:
+    """Punch doors and stamp safezone pads (update 187 semantics)."""
     def idx(x, y):
         return 3 + x + (y << 8)
 
-    for x1, y1, x2, y2 in FENCE_SEALS:
-        for x in range(x1, x2 + 1):
-            for y in range(y1, y2 + 1):
-                if is_door(x, y):
-                    continue
-                i = idx(x, y)
-                v = att[i]
-                if v == 5 or (v & 8):
-                    continue
-                att[i] = 4
     for x1, y1, x2, y2 in DOORS:
         for x in range(x1, x2 + 1):
             for y in range(y1, y2 + 1):
                 att[idx(x, y)] = 0
-    # Clear leftover campus safezone, then stamp 162 pads.
-    for y in range(25, 136):
-        for x in range(0, 121):
+
+    x1, y1, x2, y2 = CAMPUS
+    for y in range(y1, y2 + 1):
+        for x in range(x1, x2 + 1):
             i = idx(x, y)
             if att[i] == 1 and not is_safe(x, y):
                 att[i] = 0
@@ -112,59 +107,80 @@ def punch(att: bytearray) -> None:
                     att[i] = 1
 
 
-def classify(att: bytes, x: int, y: int, walk: set[tuple[int, int]]) -> bytes:
+def walkable(att: bytes, x: int, y: int) -> bool:
+    if not (0 <= x < 256 and 0 <= y < 256):
+        return False
     v = att[3 + x + (y << 8)]
-    if v in (0, 1):
-        if is_safe(x, y):
-            return bytes(SAFE)
-        if in_rects(HUNTING, x, y):
-            return bytes(PVM)
-        return bytes(PVP)
-    near = False
-    for dx in (-1, 0, 1):
-        for dy in (-1, 0, 1):
-            if (x + dx, y + dy) in walk:
-                near = True
-                break
-        if near:
-            break
-    if not near:
-        return bytes(VOID)
-    # Edge of the footprint: darker outline.
-    walk_n = sum(
-        1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))
-        if (x + dx, y + dy) in walk
-    )
-    return bytes(WALL_EDGE if walk_n else WALL)
+    return v in (0, 1)
+
+
+def load_heights() -> list[int]:
+    try:
+        raw = OZB.read_bytes()
+        # 4-byte size prefix + 1080-byte BMP header, then 256*256 height bytes.
+        return list(raw[1084:1084 + 65536])
+    except OSError:
+        return [128] * 65536
 
 
 def main() -> None:
     att = bytearray(ATT.read_bytes())
     if len(att) < 3 + 256 * 256:
         raise SystemExit(f"Terrain7.att too short: {len(att)}")
-    punch(att)
-    walk = {
-        (x, y)
-        for y in range(256)
-        for x in range(256)
-        if att[3 + x + (y << 8)] in (0, 1)
-    }
+    official_terrain(att)
+    heights = load_heights()
+
     nx = ny = 1024
     scale = nx // 256
     pixels = bytearray(nx * ny * 4)
     rgba_preview = bytearray(nx * ny * 4)
+
     for ty in range(256):
         for tx in range(256):
-            bgra = classify(att, tx, ty, walk)
+            v = att[3 + tx + (ty << 8)]
+            walk_here = v in (0, 1)
+            if walk_here:
+                base = GROUND
+                if in_rects(HUNTING, tx, ty):
+                    base = CAGE
+                if is_safe(tx, ty):
+                    base = SAFE
+                alt = ((tx + ty) & 1) == 0
+                if alt:
+                    base = (SAFE_ALT if base is SAFE else CAGE_ALT if base is CAGE else GROUND_ALT)
+                    if base is GROUND_ALT:
+                        base = GROUND_ALT
+                h = heights[(ty << 8) + tx]
+                shade = (h - 128) // 16  # -8..8
+                r = max(0, min(255, base[0] + shade * 2))
+                g = max(0, min(255, base[1] + shade * 2))
+                b = max(0, min(255, base[2] + shade * 2))
+                rgb = (r, g, b)
+            else:
+                nomove = (v & 4) != 0
+                near = any(
+                    walkable(att, tx + dx, ty + dy)
+                    for dx in (-1, 0, 1)
+                    for dy in (-1, 0, 1)
+                )
+                if nomove and near:
+                    rgb = FENCE_EDGE
+                elif nomove:
+                    rgb = FENCE
+                elif near:
+                    rgb = FENCE_EDGE
+                else:
+                    rgb = VOID
+
+            bgra = bytes((rgb[2], rgb[1], rgb[0], 255))
             # MiniMap UV: U = map Y, V = map X (NewUIMiniMap Tx/Ty swap).
             for oy in range(scale):
                 for ox in range(scale):
                     px = (ty * scale) + ox
                     py = (tx * scale) + oy
                     off = (py * nx + px) * 4
-                    pixels[off : off + 4] = bgra
-                    # preview in RGBA
-                    rgba_preview[off : off + 4] = bytes((bgra[2], bgra[1], bgra[0], bgra[3]))
+                    pixels[off: off + 4] = bgra
+                    rgba_preview[off: off + 4] = bytes((bgra[2], bgra[1], bgra[0], 255))
 
     header = bytearray(22)
     header[2] = 2
@@ -199,10 +215,11 @@ def main() -> None:
 
     opaque = sum(1 for i in range(3, len(pixels), 4) if pixels[i] > 0)
     print(f"wrote {OUT} len={len(blob)} opaque_pct={100 * opaque / (nx * ny):.2f}")
-    samples = [(65, 43, "plaza"), (46, 64, "corridor"), (12, 38, "yeti"), (7, 38, "yeti_back"), (200, 200, "void")]
+    samples = [(65, 43, "plaza"), (102, 116, "warp"), (46, 64, "corridor"),
+               (12, 38, "yeti"), (16, 38, "yeti_door"), (54, 81, "rail_gap"),
+               (200, 200, "void"), (7, 38, "west_gap")]
     for x, y, name in samples:
-        bgra = classify(att, x, y, walk)
-        print(f"  {name:10} ({x},{y}) BGRA={bgra.hex()} att={att[3 + x + (y << 8)]}")
+        print(f"  {name:10} ({x},{y}) att={att[3 + x + (y << 8)]}")
 
 
 if __name__ == "__main__":

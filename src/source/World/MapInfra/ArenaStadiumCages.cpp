@@ -15,6 +15,11 @@ namespace
     };
 
     // Mirrors OpenMU ArenaCageDoors.TerrainHoles (one official door per cage).
+    // The shipped EncTerrain7.att is the official Webzen authoring: fence rails
+    // are NOMOVE exactly where the .obj shows rails, and every visual gap
+    // between rails is walkable. Only the doors are punched open at runtime so
+    // the hunting cages can be entered; no rails beyond the shipped ATT are
+    // ever sealed here or by the server.
     constexpr TileRect kCageDoors[] =
     {
         { 16, 37, 16, 39 },
@@ -30,38 +35,6 @@ namespace
         { 41, 69, 41, 72 },
         { 41, 79, 41, 82 },
         { 60, 73, 64, 75 },
-    };
-
-    // Mirrors OpenMU ArenaCageDoors.FenceSeals (visual rails + over-punched back walls).
-    constexpr TileRect kFenceSeals[] =
-    {
-        { 35, 33, 35, 45 },
-        { 35, 51, 35, 63 },
-        { 35, 69, 35, 97 },
-        { 36, 33, 36, 45 },
-        { 36, 51, 36, 63 },
-        { 36, 69, 36, 81 },
-        { 36, 85, 36, 97 },
-        { 41, 32, 41, 36 },
-        { 41, 40, 41, 54 },
-        { 41, 59, 41, 68 },
-        { 41, 73, 41, 78 },
-        { 41, 83, 41, 93 },
-        { 54, 33, 54, 45 },
-        { 54, 51, 54, 63 },
-        { 54, 68, 54, 97 },
-        { 16, 88, 18, 88 },
-        { 16, 93, 18, 93 },
-        { 60, 69, 63, 72 },
-        { 60, 76, 63, 88 },
-        { 61, 62, 61, 73 },
-        { 64, 69, 71, 69 },
-        { 64, 81, 71, 81 },
-        { 7, 34, 7, 43 },
-        { 7, 52, 7, 61 },
-        { 6, 70, 7, 79 },
-        { 6, 87, 7, 91 },
-        { 8, 95, 15, 96 },
     };
 
     constexpr TileRect kHuntingBoxes[] =
@@ -133,7 +106,7 @@ namespace
             || InChebyshev(x, y, kWarpSafeX, kWarpSafeY, kWarpSafeRadius);
     }
 
-    void ApplyRect(const TileRect& rect, bool seal)
+    void ApplyRect(const TileRect& rect, bool open)
     {
         for (int y = rect.y1; y <= rect.y2; ++y)
         {
@@ -141,30 +114,18 @@ namespace
             {
                 if (x < 0 || y < 0 || x >= TERRAIN_SIZE || y >= TERRAIN_SIZE)
                     continue;
-                if (seal)
-                {
-                    if (InDoor(x, y))
-                        continue;
-                    AddTerrainAttribute(x, y, TW_NOMOVE);
-                }
-                else
-                {
+                if (open)
                     SubTerrainAttribute(x, y, TW_NOMOVE | TW_WATER | TW_NOGROUND);
-                }
+                else
+                    SubTerrainAttribute(x, y, TW_SAFEZONE);
             }
         }
-    }
-
-    void SealFenceTiles()
-    {
-        for (const TileRect& seal : kFenceSeals)
-            ApplyRect(seal, true);
     }
 
     void OpenDoorTiles()
     {
         for (const TileRect& door : kCageDoors)
-            ApplyRect(door, false);
+            ApplyRect(door, true);
     }
 
     void ApplyPlazaSafe()
@@ -231,7 +192,6 @@ namespace World::Arena
         if (gMapManager.WorldActive != WD_6STADIUM)
             return;
 
-        SealFenceTiles();
         OpenDoorTiles();
         ApplyPlazaSafe();
     }
