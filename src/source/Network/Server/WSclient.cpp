@@ -62,6 +62,12 @@
 
 #include "Character/CharacterManager.h"
 
+// Window-title integration (defined in App/Platform/Windows/Winmain.cpp):
+// suffix the OS window title with the entered character's name + level, and
+// restore the plain title when the session ends.
+void MuSetWindowTitleCharacter(const wchar_t* characterName, int level);
+void MuResetWindowTitleToBase();
+
 #ifdef KJH_ADD_INGAMESHOP_UI_SYSTEM
 #include "GameShop/InGameShopSystem.h"
 #include "GameShop/MsgBoxIGSCommon.h"
@@ -1144,6 +1150,7 @@ BOOL ReceiveLogOut(const BYTE* ReceiveBuffer, BOOL bEncrypted)
         CryWolfMVPInit();
 
         SceneFlag = CHARACTER_SCENE;
+        MuResetWindowTitleToBase();
         CurrentProtocolState = REQUEST_CHARACTERS_LIST;
         if (SocketClient != nullptr && SocketClient->ToGameServer() != nullptr)
         {
@@ -1194,6 +1201,7 @@ BOOL ReceiveLogOut(const BYTE* ReceiveBuffer, BOOL bEncrypted)
 
         LogIn = 0;
         g_csMapServer.Init();
+        MuResetWindowTitleToBase();
         InitGame();
     }
 
@@ -1243,6 +1251,7 @@ void ResetClientToLoginScene()
     LogIn = 0;
     g_csMapServer.Init();
     ResetChannelWarpList();
+    MuResetWindowTitleToBase();
     InitGame();
 
     g_pWindowMgr->Reset();
@@ -1422,6 +1431,11 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
 
     memset(c->ID, 0, sizeof c->ID);
     wcscpy(c->ID, CharacterAttribute->Name);
+
+    // Character name + level are both known here (level came from the
+    // character-list on select), so this is the "entered the world" point to
+    // show them in the OS window title. Re-runs on every map change: harmless.
+    MuSetWindowTitleCharacter(CharacterAttribute->Name, CharacterAttribute->Level);
 
     for (auto & i : CharacterMachine->Equipment)
     {
@@ -7295,6 +7309,10 @@ void ReceiveLevelUp(const BYTE* ReceiveBuffer, int Size)
         CreateEffect(BITMAP_MAGIC + 1, o->Position, o->Angle, o->Light, 0, o);
     }
     PlayBuffer(SOUND_LEVEL_UP);
+
+    // Keep the window-title level in sync after a level-up (both the regular
+    // and the extended packet branch above updated CharacterAttribute->Level).
+    MuSetWindowTitleCharacter(CharacterAttribute->Name, CharacterAttribute->Level);
 
     g_ConsoleDebug->Write(MCD_RECEIVE, L"0x05 [ReceiveLevelUp]");
 }

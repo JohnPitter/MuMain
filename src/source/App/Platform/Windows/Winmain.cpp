@@ -1080,6 +1080,36 @@ namespace
     }
 }
 
+// Base window title: shown before a character enters the world and restored
+// on logout / disconnect. SDL takes UTF-8; the character suffix below is
+// converted from UTF-16 with the same helpers the text input path uses, so
+// accented character names render correctly.
+static const char* const kBaseWindowTitle = "Luxview MU Online - Bem-vindo a nostalgia";
+
+// Window title carrying the entered character, e.g.
+// "Luxview MU Online - Bem-vindo a nostalgia - SeuAntonio - 350".
+// Called when the world is joined and on every level-up so the level stays
+// current. Setting it unconditionally (also in fullscreen) is harmless: the
+// title bar simply is not visible in fullscreen.
+void MuSetWindowTitleCharacter(const wchar_t* characterName, int level)
+{
+    if (!g_sdlWindow || characterName == nullptr || characterName[0] == L'\0') return;
+
+    std::wstring title = Utf8ToWide(kBaseWindowTitle);
+    wchar_t suffix[80];
+    swprintf_s(suffix, L" - %s - %d", characterName, level);
+    title += suffix;
+
+    SDL_SetWindowTitle(g_sdlWindow, WideToUtf8(title).c_str());
+}
+
+// Restore the base title (logout / back to character select / disconnect).
+void MuResetWindowTitleToBase()
+{
+    if (!g_sdlWindow) return;
+    SDL_SetWindowTitle(g_sdlWindow, kBaseWindowTitle);
+}
+
 // Resolution change through SDL (issue #462). SDL owns the window on every
 // platform, so resize it via SDL rather than the OS. The old Windows path in
 // ApplyResolution() drove Win32 SetWindowPos/ChangeDisplaySettings on g_hWnd,
@@ -1789,7 +1819,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, kCoreVersionAttempts[i].major);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, kCoreVersionAttempts[i].minor);
 
-            g_sdlWindow = SDL_CreateWindow("Luxview MU Online - Bem-vindo a nostalgia", static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
+            g_sdlWindow = SDL_CreateWindow(kBaseWindowTitle, static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
             if (g_sdlWindow)
             {
                 g_sdlGLContext = SDL_GL_CreateContext(g_sdlWindow);
@@ -1814,7 +1844,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
     {
         // Compatibility profile: unchanged from pre-GLP-08 behavior -- no explicit version
         // request, takes the driver's highest.
-        g_sdlWindow = SDL_CreateWindow("Luxview MU Online - Bem-vindo a nostalgia", static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
+        g_sdlWindow = SDL_CreateWindow(kBaseWindowTitle, static_cast<int>(WindowWidth), static_cast<int>(WindowHeight), windowFlags);
         if (g_sdlWindow)
         {
             g_sdlGLContext = SDL_GL_CreateContext(g_sdlWindow);
