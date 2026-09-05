@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "World/MapInfra/MapManager.h"
 #include "World/MapInfra/LorenciaCombatPlaza.h"
-#include "World/MapInfra/ArenaStadiumCages.h"
 #include "Camera/CameraMove.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
 #include "Audio/DSPlaySound.h"
@@ -1520,7 +1519,6 @@ void CMapManager::LoadWorld(int Map)
     SEASON3B::CNewUIAutoBattler::NotifyWorldLoaded(this->WorldActive);
 
     World::Lorencia::ApplyFountainCombatPlaza();
-    World::Arena::ApplyCageDoors();
 }
 
 void CMapManager::DeleteObjects()

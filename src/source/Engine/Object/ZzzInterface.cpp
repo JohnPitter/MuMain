@@ -2781,8 +2781,11 @@ void CheckGate()
             {
                 continue;
             }
-            // Stadium hunting cages: walk through C1-46 doors. CheckGate would
-            // set LoadingWorld=9999999 and freeze if Gate.bmd has Flag=1 here.
+            // Stadium hunting cages: the doors are plain walkable tiles baked in
+            // EncTerrain7.att (same file-driven terrain as every other world).
+            // Gate.bmd keeps dormant gates 400-412 there (Flag=1); firing them
+            // would teleport players back inside on exit (the landing rect sits
+            // inside the pen), so CheckGate must not process them.
             if (gMapManager.WorldActive == WD_6STADIUM
                 && Hero->PositionX >= 12 && Hero->PositionX <= 68
                 && Hero->PositionY >= 8 && Hero->PositionY <= 94)
