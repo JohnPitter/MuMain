@@ -117,6 +117,60 @@ Four things were wrong and all four are measurable.
    anti-aliaser, not a blur, and snapping there would only cost subpixel
    placement.
 
+Two strip glyphs are redrawn for the pixel budget (v10)
+-------------------------------------------------------
+v8 graded, warmed, contrasted and grid-snapped all five strip glyphs, and two
+of them still would not come up. Measured: match_highlights() converges every
+other glyph onto the toolbar's p88 of 0.672 in two steps, but helper_settings
+clamped out at a total gain of 1.700 and still landed at 0.557, and
+helper_market at 1.692 and 0.560. That is not a grading failure. It is the
+geometry: every part of those two drawings was ONE final pixel wide, so every
+pixel of them was a blend with the black ink ring, and no gain multiplies a
+blend back into a highlight. The fix is to draw less, not to grade harder.
+
+The number that governs both redraws is that the glyph box is 14x9 INCLUDING
+a one-pixel ink ring, so the art is 12 x 7 final pixels -- and fit() preserves
+aspect, so a SQUARE glyph only gets min(12, 7) = 7x7, i.e. 49 of the 84
+pixels the box actually has. Both new drawings are laid out on an explicit
+12x7 grid (see cell()) with a hard floor of 2 final pixels on every stroke.
+
+  helper_settings  was config_2, a gear, and is now a diagonal open-end
+                   spanner. A gear is square, so it gets 7x7, and inside 3.5
+                   px of radius a 2 px rim plus a 2..3 px open hub leaves
+                   exactly nothing for the teeth -- which are the only thing
+                   that distinguishes a gear from a ring. Built to those
+                   limits and measured, a 6-tooth gear lands at p88 0.670 but
+                   correlates 0.915 with the other round glyphs on the strip
+                   and reads as a donut. Squashing it to 12x7 buys the pixels
+                   (0.671, correlation 0.711) at the price of reading as an
+                   eye. The spanner is diagonal, so its bounding box IS 12x7
+                   and it gets all 84 pixels, and it is the only silhouette
+                   on the strip that is neither a lump nor a wedge:
+                   p88 0.667, glyph/plate contrast 1.66 -> 2.21, and the
+                   highest correlation with any of the other four falls from
+                   0.904 to 0.623.
+  helper_market    keeps cand1.png's balance but loses the post, the base,
+                   the finial and the two hangers -- the five parts that were
+                   1 px each, and the post in particular box-filtered into
+                   the vertical smear the strip was judged on. Beam and pans
+                   only, with one row of air between them so the ink ring
+                   lands there and the pans read as hanging rather than as
+                   the legs of an arch: p88 0.579 -> 0.729, contrast 1.73 ->
+                   2.13, worst correlation 0.746 -> 0.541, the lowest of any
+                   glyph on the strip.
+
+helper_play, helper_stop and helper_auto are NOT touched and their bytes are
+identical across this change. They were already primitives on the grid: the
+thinnest run in each is 3, 9 and 2 final pixels, all three converge onto the
+toolbar's p88 within 2.5% (0.670 / 0.688 / 0.675) and all three have been
+snapped since v8. The one number they do not win is play against stop, which
+correlate 0.836 on luminance -- a bright wedge and a bright square inside a
+9x9 box are genuinely similar shapes. That is the strip's ceiling and it is
+pre-existing; what the two redraws achieve is that neither new glyph raises
+it, on either luminance (0.623 and 0.541, both under 0.836) or silhouette
+(0.724 and 0.685, both under play-vs-stop's 0.753). Hue separates that pair
+where shape does not: stop is cooled to R-B = +3.0 and play warmed to +14.6.
+
 The voice glyphs get the same treatment (v9)
 --------------------------------------------
 Same recipe as v8, on voice_mic and voice_sound. Four of the six things v8 did
@@ -442,26 +496,109 @@ def synthetic(draw_fn, size=WORK, **kw):
     return g.crop(g.getbbox())
 
 
+# -- the two glyphs that are DRAWN, in final-pixel terms (v10) --------------
+# The strip's glyph box is 14x9 including a one-pixel ink ring, so the art is
+# 12 x 7 FINAL PIXELS and nothing else. Both drawings below are therefore laid
+# out on a 12x7 grid and rendered at cell()'s scale, so "no stroke thinner
+# than 2 final pixels" is something the drawing promises rather than something
+# the box filter is hoped to leave behind.
+PAL_LO, PAL_MID, PAL_HI = (86, 86, 84), (150, 148, 143), (206, 200, 188)
+PAL_BG = (10, 10, 10)
+
+
+def cell(S, gw, gh):
+    """Map a gw x gh FINAL-PIXEL grid onto the S x S grade canvas, centred,
+    leaving a margin for isolate()'s border ring to fit its backdrop on.
+
+    Returns px(u, v): grid units (floats allowed) -> canvas coordinates.
+    """
+    span = 0.74 * S
+    k = min(span / gw, span / gh)
+    x0, y0 = (S - gw * k) / 2.0, (S - gh * k) / 2.0
+
+    def px(u, v):
+        return (x0 + u * k, y0 + v * k)
+    return px
+
+
+def _rect(d, px, x0, y0, x1, y1, fill):
+    a, b = px(x0, y0)
+    c, e = px(x1, y1)
+    d.rectangle([a, b, c, e], fill=fill)
+
+
+def _ell(d, px, x0, y0, x1, y1, fill):
+    a, b = px(x0, y0)
+    c, e = px(x1, y1)
+    d.ellipse([a, b, c, e], fill=fill)
+
+
+def _poly(d, px, pts, fill):
+    d.polygon([px(u, v) for u, v in pts], fill=fill)
+
+
+def _settings(d, S):
+    """An open-end spanner on the diagonal.
+
+    Not a gear, and the reason is arithmetic rather than taste. fit() keeps
+    aspect, so a SQUARE glyph gets min(12, 7) = 7x7 = 49 of the 84 pixels the
+    box has. At 7x7 a gear that keeps a 2 px rim and a 2..3 px open hub has
+    3.5 px of radius to spend -- 1.25 for the hub, 2 for the rim -- and zero
+    left for teeth: the teeth are what makes a ring a gear, and they do not
+    fit. Measured, a 6-tooth gear built to those limits comes out as a plain
+    donut correlating 0.86..0.92 with anything else round on the strip.
+    A spanner is diagonal, so its bounding box is 12x7 and it gets all 84
+    pixels, and its silhouette is the only one on the strip that is neither a
+    lump nor a wedge.
+
+    Handle 3.2 px across the bar, head 6 px, notch 2.6 px. Nothing under 2.
+    """
+    px = cell(S, 12, 7)
+    ang = 26.0 * 3.14159265358979 / 180.0
+    import math
+    nx, ny = math.sin(ang), math.cos(ang)
+    hw = 1.6
+
+    def bar(x0, y0, x1, y1, w, fill):
+        _poly(d, px, [(x0 + nx * w, y0 + ny * w), (x1 + nx * w, y1 + ny * w),
+                      (x1 - nx * w, y1 - ny * w), (x0 - nx * w, y0 - ny * w)],
+              fill)
+    bar(0.9, 5.9, 7.6, 2.6, hw, PAL_MID)
+    bar(0.9, 5.35, 7.6, 2.05, hw * 0.42, PAL_HI)
+    hx, hy = 9.0, 2.0
+    _ell(d, px, hx - 3.0, hy - 2.0, hx + 3.0, hy + 4.0, PAL_MID)
+    _ell(d, px, hx - 3.0, hy - 2.0, hx + 0.6, hy + 1.4, PAL_HI)
+    _poly(d, px, [(hx + 0.2, hy - 3.0), (hx + 4.0, hy + 0.8),
+                  (hx + 4.0, hy - 3.0)], PAL_BG)
+    _ell(d, px, hx - 1.3, hy + 0.1, hx + 1.3, hy + 2.7, PAL_BG)
+    _ = PAL_LO
+
+
 def _market(d, S):
-    """A two-pan balance, in cand1.png's spirit but built for 8 px: the beam
-    is 6% of the height, the pans are solid wedges, and there are no chains."""
-    def s(v):
-        return v * S / 100.0
-    lo, mid, hi = (86, 86, 84), (150, 148, 143), (206, 200, 188)
-    # base
-    d.polygon([(s(30), s(88)), (s(70), s(88)), (s(62), s(74)), (s(38), s(74))], fill=mid)
-    d.rectangle([s(44), s(28), s(56), s(76)], fill=mid)            # post
-    d.rectangle([s(44), s(28), s(48), s(76)], fill=hi)             # post highlight
-    d.polygon([(s(50), s(12)), (s(58), s(24)), (s(42), s(24))], fill=hi)  # finial
-    d.rectangle([s(10), s(26), s(90), s(36)], fill=hi)             # beam
-    d.rectangle([s(10), s(33), s(90), s(36)], fill=lo)             # beam underside
-    d.rectangle([s(17), s(36), s(20), s(48)], fill=mid)            # hangers
-    d.rectangle([s(80), s(36), s(83), s(48)], fill=mid)
-    # pans: solid wedges, deep enough to survive a 3 px cell
-    d.polygon([(s(4), s(46)), (s(32), s(46)), (s(24), s(62)), (s(12), s(62))], fill=hi)
-    d.polygon([(s(4), s(46)), (s(32), s(46)), (s(30), s(51)), (s(6), s(51))], fill=lo)
-    d.polygon([(s(68), s(46)), (s(96), s(46)), (s(88), s(62)), (s(76), s(62))], fill=mid)
-    d.polygon([(s(68), s(46)), (s(96), s(46)), (s(94), s(51)), (s(70), s(51))], fill=lo)
+    """A balance: one beam, two pans, and one row of air between them.
+
+    cand1.png is still the direction, but v8's transcription of it put a beam,
+    a post, a base, two hangers and two pans inside 12x7 -- the post and the
+    hangers were 1 px each, so every pixel of them was a blend with the ink
+    ring, and the post in particular box-filtered into a vertical smear. The
+    post, the base, the finial and the hangers are gone. What is left is the
+    two parts a balance is actually recognised by, at 2 px and 4 px:
+
+        rows 0..2   beam    12 px wide, 2 px tall
+        row  2..3   air     1 px, which the ink ring fills, so the pans read
+                            as HANGING instead of as the legs of an arch
+        rows 3..7   pans    4.2 px wide at the lip, tapering to 2.4
+
+    The gap is open to the middle of the glyph, so isolate()'s hole filler
+    (which only closes ENCLOSED holes under 10% of the area) leaves it alone.
+    """
+    px = cell(S, 12, 7)
+    _rect(d, px, 0.0, 0.0, 12.0, 2.0, PAL_HI)
+    _rect(d, px, 0.0, 1.4, 12.0, 2.0, PAL_LO)
+    _poly(d, px, [(0.0, 3.0), (4.2, 3.0), (3.3, 7.0), (0.9, 7.0)], PAL_MID)
+    _poly(d, px, [(0.0, 3.0), (4.2, 3.0), (4.1, 4.4), (0.1, 4.4)], PAL_HI)
+    _poly(d, px, [(7.8, 3.0), (12.0, 3.0), (11.1, 7.0), (8.7, 7.0)], PAL_MID)
+    _poly(d, px, [(7.8, 3.0), (12.0, 3.0), (11.9, 4.4), (7.9, 4.4)], PAL_HI)
 
 
 def derive_auto(play_img, gap=0.10):
@@ -844,7 +981,7 @@ def write_png(path, im):
 # ------------------------------------------------------------- the icon set ---
 # name -> (canva render, isolate() overrides)
 STRIP_SRC = {
-    "helper_settings": ("config_2", {}),
+    "helper_settings": (None, {}),    # drawn here, see _settings
     "helper_play": ("play_2", {}),
     "helper_stop": ("stop_1", dict(ring=0.045)),
     "helper_market": (None, {}),      # drawn here, see _market
@@ -871,21 +1008,24 @@ VOICE_SRC = {
 # The focal accent per strip glyph. The toolbar needs none: at 26x37 the
 # grade's own warm highlights survive the downsample, which is exactly what
 # they stop doing at 12x8.
-#   settings  the aro and the teeth, not the hub -- a gear lit all over is a
-#             blob at this size, lit only on the rim it still reads as a gear.
+#   settings  the spanner's head and the top of its handle -- one key light
+#             from the upper right, on the end that carries the shape.
 #   play      the whole triangle. It is one shape and it is the "go".
 #   auto      inherited: derive_auto() copies the already-warmed play.
-#   market    the pans and what is in them.
+#   market    both pans. The beam stays steel, so the glyph reads as two
+#             brass pans hanging off a steel arm rather than as one warm mass.
 #   stop      cooled instead. Warm reads as "go".
 STRIP_ACCENT = {
-    "helper_settings": lambda g: warm_accent(g, 0.28, annulus(0.42, 0.70)),
+    # the spanner's head, i.e. its top half. annulus() went with the gear.
+    "helper_settings": lambda g: warm_accent(g, 0.30, band(-0.10, 0.55)),
     "helper_play": lambda g: warm_accent(g, 0.26),
     # 0.85 rather than a token amount: stop_1 is a framed window whose top
     # edge is the source's own lit rim, and at 12x7 that rim is the only thing
     # left of the frame -- a tan bar across the top of a silver square, which
     # reads as grime, not as light.
     "helper_stop": lambda g: cool_down(g, 0.85),
-    "helper_market": lambda g: warm_accent(g, 0.30, band(0.40, 0.74)),
+    # the pans, all of them: brass pans under a steel beam.
+    "helper_market": lambda g: warm_accent(g, 0.30, band(0.28, 1.10)),
 }
 STRIP_TOP_LIGHT = 0.10
 
@@ -972,6 +1112,7 @@ def build():
             + list(VOICE_SRC.items()):
         if src:
             glyphs[name] = graded(src, **kw)
+    glyphs["helper_settings"] = synthetic(_settings)
     glyphs["helper_market"] = synthetic(_market)
     # Accent BEFORE deriving auto, so its two triangles are the warmed play
     # rather than a second, differently coloured one.
