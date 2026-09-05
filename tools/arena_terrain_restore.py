@@ -15,12 +15,17 @@ also stamped object footprints *inside* the hunting cages, shrinking them from
 
 This tool restores the authored walkability, seals the walkable leftovers the
 editor left on the sheet edges and re-applies the LuxView design on top (13 cage
-doors, the warp landing rect and the plaza/warp safezone pads), writing one
-identical 65536-byte attribute payload into the three files that must agree:
+doors, the warp landing rect and the plaza safezone pad), writing one identical
+65536-byte attribute payload into the three files that must agree:
 
   * MuMain/src/bin/Data/World7/EncTerrain7.att  (client, encrypted, 4B header)
   * MuMain/src/bin/Data/World7/Terrain7.att     (client copy of the server blob)
   * OpenMU/src/Persistence/Initialization/Resources/Terrain7.att (server, 3B header)
+
+Round 5 (server update 192) narrowed the safezone: the stock authoring flags the
+whole stadium interior TW_SAFEZONE and the design used to add a pad around the
+warp arrival, so mobs and players were unattackable far outside the plaza. The
+mask now strips the bit from the entire sheet and stamps only the plaza pad.
 
 The punch mirrors MUnique.OpenMU.GameLogic.ArenaCageDoors.PunchTerrain exactly and
 the sealing is baked into the payload, so the update plug-in that re-bakes the live
@@ -73,13 +78,18 @@ HUNTING_BOXES = [
     (45, 35, 51, 41), (45, 54, 51, 60), (45, 69, 51, 74), (45, 78, 51, 84),
     (65, 71, 71, 77),
 ]
-PLAZA_CAMPUS = [(0, 25, 120, 135)]
 PLAZA = (65, 43, 10)
-WARP = (102, 116, 3)
+# The Arena is a PvP map: the ONLY no-attack area is the walled plaza with the
+# fountain (Chebyshev r10 around 65,43 -> x 55..75, y 33..53). Everything else is
+# fair game, including the warp arrival and the stadium field. The stock Season 8
+# authoring flags the whole stadium interior (x 51..74, y 130..184) TW_SAFEZONE,
+# so the mask below has to clear the bit over the *whole* sheet, not just inside
+# the old campus rect - that leftover is what made mobs unattackable outside the
+# plaza (owner report at 98,113).
 SAFEZONE_RECTS = [
     (PLAZA[0] - PLAZA[2], PLAZA[1] - PLAZA[2], PLAZA[0] + PLAZA[2], PLAZA[1] + PLAZA[2]),
-    (WARP[0] - WARP[2], WARP[1] - WARP[2], WARP[0] + WARP[2], WARP[1] + WARP[2]),
 ]
+WARP = (102, 116)  # arrival tile of ExitGate 50 - walkable, NOT safezone
 # ExitGate 50, the only way into the map. The authoring leaves only its west
 # column walkable, so the punch opens the whole rect (ArenaCageDoors.WarpLanding).
 WARP_LANDING = [(101, 115, 103, 117)]
@@ -135,10 +145,8 @@ def in_rects(x, y, rects):
 def is_player_safe_tile(x, y):
     if in_rects(x, y, TERRAIN_HOLES) or in_rects(x, y, HUNTING_BOXES):
         return False
-    for cx, cy, r in (PLAZA, WARP):
-        if abs(x - cx) <= r and abs(y - cy) <= r:
-            return True
-    return False
+    cx, cy, r = PLAZA
+    return abs(x - cx) <= r and abs(y - cy) <= r
 
 
 def punch(payload: bytes) -> bytes:
@@ -148,14 +156,17 @@ def punch(payload: bytes) -> bytes:
         w[x + (y << 8)] = 0
     for x, y in tiles(WARP_LANDING):
         w[x + (y << 8)] = 0
-    # ApplySafezoneMask: drop legacy safezone inside the campus, then set the pads.
-    for x, y in tiles(PLAZA_CAMPUS):
-        i = x + (y << 8)
-        if w[i] == TW_SAFEZONE and not is_player_safe_tile(x, y):
-            w[i] = 0
+    # ApplySafezoneMask: strip TW_SAFEZONE from the whole sheet (walkable tiles
+    # and blocked ones alike, so the flag is nowhere but the plaza), then stamp
+    # the plaza pad back on.
+    for y in range(256):
+        for x in range(256):
+            i = x + (y << 8)
+            if (w[i] & TW_SAFEZONE) and not is_player_safe_tile(x, y):
+                w[i] &= ~TW_SAFEZONE
     for x, y in tiles(SAFEZONE_RECTS):
         i = x + (y << 8)
-        if w[i] in (0, TW_SAFEZONE):
+        if is_player_safe_tile(x, y) and w[i] in (0, TW_SAFEZONE):
             w[i] = TW_SAFEZONE
     return bytes(w)
 
@@ -223,8 +234,25 @@ def report(payload: bytes) -> bool:
     if (PLAZA[0], PLAZA[1]) not in reach:
         print("  !! plaza centre unreachable")
         ok = False
-    safez = sum(1 for v in payload if v == TW_SAFEZONE)
-    print(f"  safezone tiles ........ {safez}")
+    px, py, pr = PLAZA
+    flagged = [(i & 0xFF, i >> 8) for i, v in enumerate(payload) if v & TW_SAFEZONE]
+    outside = [(x, y) for x, y in flagged
+               if abs(x - px) > pr or abs(y - py) > pr]
+    walk_safe = sum(1 for x, y in flagged if walkable(payload[x + (y << 8)]))
+    print(f"  safezone tiles ........ {len(flagged)} ({walk_safe} walkable)")
+    if outside:
+        xs = [p[0] for p in outside]
+        ys = [p[1] for p in outside]
+        print(f"  !! {len(outside)} safezone tiles outside the plaza "
+              f"(x {min(xs)}..{max(xs)}, y {min(ys)}..{max(ys)})")
+        ok = False
+    else:
+        print(f"  safezone contained .... yes (plaza {px},{py} r{pr})")
+    if not (payload[WARP[0] + (WARP[1] << 8)] & TW_SAFEZONE):
+        print(f"  warp arrival PvP ...... yes ({WARP[0]},{WARP[1]})")
+    else:
+        print(f"  !! warp arrival {WARP} is still safezone")
+        ok = False
     return ok
 
 

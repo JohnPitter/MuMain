@@ -153,7 +153,10 @@ def main() -> None:
             for oy in range(scale):
                 for ox in range(scale):
                     px = (ty * scale) + ox
-                    py = (tx * scale) + oy
+                    # Descriptor 0x08 = bottom-left origin and OpenTga honours
+                    # it, so file row 0 is the BOTTOM of the sheet: map X has to
+                    # be stored descending or the minimap comes out mirrored.
+                    py = (ny - 1) - ((tx * scale) + oy)
                     off = (py * nx + px) * 4
                     pixels[off:off + 4] = bgra
                     rgba_preview[off:off + 4] = bytes((bgra[2], bgra[1], bgra[0], 255))

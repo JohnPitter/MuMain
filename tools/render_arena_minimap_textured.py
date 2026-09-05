@@ -244,9 +244,23 @@ def draw_objects(img: Image.Image) -> Image.Image:
 
 
 def pack_ozt(nat: Image.Image) -> bytes:
-    """OZT blob: client MiniMap swaps axes (U = map Y, V = map X), BGRA, opaque."""
+    """OZT blob: client MiniMap swaps axes (U = map Y, V = map X), BGRA, opaque.
+
+    Row order matters. The TGA descriptor byte is 0x08 (bottom-left origin, like
+    every retail mini_map.OZT), and CGlobalBitmap::OpenTga honours it: it copies
+    file row ``y`` to buffer row ``ny-1-y``, so buffer row 0 - texture ``v`` = 0 -
+    is the LAST row in the file. CNewUIMiniMap centres the sheet on the hero at
+    ``u = PositionY/256, v = PositionX/256``, i.e. map X grows downwards on
+    screen. So the file must store map X descending: ``p[::-1]``.
+
+    Writing ``p`` straight through (as this tool did until 2026-09-05) mirrors
+    the sheet on X. Nobody noticed while the render covered all 256x256 with
+    terrain; once the undesigned filler went near-black, the hero ended up in the
+    black half and TAB showed a chunk of map off in a corner (owner report).
+    """
     arr = np.asarray(nat, dtype=np.uint8)
     p = np.transpose(arr, (1, 0, 2))                       # P[py=mapX][px=mapY]
+    p = p[::-1]                                            # bottom-origin TGA
     bgra = np.empty((FINAL, FINAL, 4), dtype=np.uint8)
     bgra[..., 0] = p[..., 2]
     bgra[..., 1] = p[..., 1]
@@ -259,7 +273,9 @@ def pack_ozt(nat: Image.Image) -> bytes:
     header[18:20] = FINAL.to_bytes(2, "little")
     header[20] = 32
     header[21] = 8
-    blob = bytes(header) + bgra.tobytes() + (b"\x00" * 26)
+    # 26-byte TGA 2.0 footer, byte for byte what the retail sheets carry.
+    footer = (b"\x00" * 8) + b"TRUEVISION-XFILE." + b"\x00"
+    blob = bytes(header) + bgra.tobytes() + footer
     if len(blob) != 4_194_352:
         raise SystemExit(f"unexpected OZT size {len(blob)}")
     return blob
@@ -281,10 +297,11 @@ def main() -> None:
     blob = pack_ozt(final)
     OUT.write_bytes(blob)
 
-    # Client-orientation preview (what the TAB minimap shows).
-    arr = np.asarray(final, dtype=np.uint8)
-    Image.fromarray(np.transpose(arr, (1, 0, 2))).save(
-        TEMP / "arena-minimap-textured-client-1024.png")
+    # Client-orientation preview: decoded back out of the packed blob, so it is
+    # literally what CGlobalBitmap::OpenTga uploads (row 0 = screen top = map X 0).
+    px = np.frombuffer(blob[22:22 + FINAL * FINAL * 4], dtype=np.uint8)
+    px = px.reshape(FINAL, FINAL, 4)[::-1, :, [2, 1, 0]]
+    Image.fromarray(px).save(TEMP / "arena-minimap-textured-client-1024.png")
 
     for dest in (
         ROOT / "src" / "build" / "Release" / "Data" / "World7" / "mini_map.OZT",
