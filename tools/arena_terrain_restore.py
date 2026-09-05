@@ -25,7 +25,17 @@ doors, the warp landing rect and the plaza safezone pad), writing one identical
 Round 5 (server update 192) narrowed the safezone: the stock authoring flags the
 whole stadium interior TW_SAFEZONE and the design used to add a pad around the
 warp arrival, so mobs and players were unattackable far outside the plaza. The
-mask now strips the bit from the entire sheet and stamps only the plaza pad.
+mask now strips the bit from the entire sheet and stamps only the plaza.
+
+Round 6 (server update 193) fits that stamp to the plaza walls. Round 5 used a
+Chebyshev pad (65,43 r10 -> x 55..75, y 33..53) that was drawn by eye and spilled
+a full four tiles past the masonry into the west corridor - the owner stood at
+(59,34), outside the plaza, and could not be attacked. The plaza is walled by four
+L-shaped corner pieces in EncTerrain7.obj (Object7 types 21/22/23, the 200x200 and
+164x115 unit wall models); their outer faces are the plaza's real boundary. Taking
+the model footprints (position +- the rotated, scaled BMD bounding box) the four
+corners span world x 5900..7297, y 3700..5300, i.e. tiles x 59..72, y 37..52, and
+that rectangle is now the whole safezone.
 
 The punch mirrors MUnique.OpenMU.GameLogic.ArenaCageDoors.PunchTerrain exactly and
 the sealing is baked into the payload, so the update plug-in that re-bakes the live
@@ -78,17 +88,30 @@ HUNTING_BOXES = [
     (45, 35, 51, 41), (45, 54, 51, 60), (45, 69, 51, 74), (45, 78, 51, 84),
     (65, 71, 71, 77),
 ]
-PLAZA = (65, 43, 10)
 # The Arena is a PvP map: the ONLY no-attack area is the walled plaza with the
-# fountain (Chebyshev r10 around 65,43 -> x 55..75, y 33..53). Everything else is
-# fair game, including the warp arrival and the stadium field. The stock Season 8
-# authoring flags the whole stadium interior (x 51..74, y 130..184) TW_SAFEZONE,
-# so the mask below has to clear the bit over the *whole* sheet, not just inside
-# the old campus rect - that leftover is what made mobs unattackable outside the
-# plaza (owner report at 98,113).
-SAFEZONE_RECTS = [
-    (PLAZA[0] - PLAZA[2], PLAZA[1] - PLAZA[2], PLAZA[0] + PLAZA[2], PLAZA[1] + PLAZA[2]),
-]
+# fountain. Its bounds are not a guess - they are the bounding box of the four
+# L-shaped masonry corners that fence the paved square, read out of
+# EncTerrain7.obj + Data/Object7/*.bmd (see tools/arena_plaza_walls.py):
+#
+#   corner (-x,-y): records 664/665/666/671/672  world x 5900..6300, y 3700..4300
+#   corner (-x,+y): records 697/698/699/702/703  world x 5900..6300, y 4700..5300
+#   corner (+x,-y): records 1055/1071            world x 6900..7297, y 3700..3900
+#   corner (+x,+y): records 1110/1113            world x 6900..7297, y 5100..5300
+#
+# Bounding box world x 5900..7297.2, y 3700..5300 -> tiles x 59..72, y 37..52
+# (100 world units = 1 tile; tile t covers [t*100, (t+1)*100)). It lines up with
+# the paved floor in EncTerrain7.map, which carries ground texture 4 on
+# x 60..73 / y 38..51 - exactly one tile of masonry outside the pavement on the
+# west and on both y sides, and the stadium building on the east.
+#
+# Everything else is fair game, including the warp arrival, the west corridor and
+# the stadium field. The stock Season 8 authoring flags the whole stadium interior
+# (x 51..74, y 130..184) TW_SAFEZONE, so the mask below has to clear the bit over
+# the *whole* sheet, not just inside a campus rect - that leftover is what made
+# mobs unattackable outside the plaza (owner report at 98,113).
+PLAZA_RECT = (59, 37, 72, 52)
+PLAZA = (65, 43)  # a walkable reference tile inside the plaza (reachability check)
+SAFEZONE_RECTS = [PLAZA_RECT]
 WARP = (102, 116)  # arrival tile of ExitGate 50 - walkable, NOT safezone
 # ExitGate 50, the only way into the map. The authoring leaves only its west
 # column walkable, so the punch opens the whole rect (ArenaCageDoors.WarpLanding).
@@ -145,8 +168,7 @@ def in_rects(x, y, rects):
 def is_player_safe_tile(x, y):
     if in_rects(x, y, TERRAIN_HOLES) or in_rects(x, y, HUNTING_BOXES):
         return False
-    cx, cy, r = PLAZA
-    return abs(x - cx) <= r and abs(y - cy) <= r
+    return in_rects(x, y, [PLAZA_RECT])
 
 
 def punch(payload: bytes) -> bytes:
@@ -231,13 +253,12 @@ def report(payload: bytes) -> bool:
         if not hit:
             ok = False
         print(f"  {flag}cage {i:2d} ({x1},{y1})-({x2},{y2}) walkable {free}/{len(inside)} reachable {hit}")
-    if (PLAZA[0], PLAZA[1]) not in reach:
+    if PLAZA not in reach:
         print("  !! plaza centre unreachable")
         ok = False
-    px, py, pr = PLAZA
+    x0, y0, x1, y1 = PLAZA_RECT
     flagged = [(i & 0xFF, i >> 8) for i, v in enumerate(payload) if v & TW_SAFEZONE]
-    outside = [(x, y) for x, y in flagged
-               if abs(x - px) > pr or abs(y - py) > pr]
+    outside = [(x, y) for x, y in flagged if not (x0 <= x <= x1 and y0 <= y <= y1)]
     walk_safe = sum(1 for x, y in flagged if walkable(payload[x + (y << 8)]))
     print(f"  safezone tiles ........ {len(flagged)} ({walk_safe} walkable)")
     if outside:
@@ -247,7 +268,15 @@ def report(payload: bytes) -> bool:
               f"(x {min(xs)}..{max(xs)}, y {min(ys)}..{max(ys)})")
         ok = False
     else:
-        print(f"  safezone contained .... yes (plaza {px},{py} r{pr})")
+        print(f"  safezone contained .... yes (plaza x {x0}..{x1}, y {y0}..{y1})")
+    for sx, sy in ((59, 34), (55, 45), (65, 53), (98, 113)):
+        if payload[sx + (sy << 8)] & TW_SAFEZONE:
+            print(f"  !! sentinel ({sx},{sy}) outside the plaza walls is safezone")
+            ok = False
+    for sx, sy in ((64, 45), (69, 45), (66, 41), (66, 49)):
+        if not payload[sx + (sy << 8)] & TW_SAFEZONE:
+            print(f"  !! sentinel ({sx},{sy}) next to the fountain is NOT safezone")
+            ok = False
     if not (payload[WARP[0] + (WARP[1] << 8)] & TW_SAFEZONE):
         print(f"  warp arrival PvP ...... yes ({WARP[0]},{WARP[1]})")
     else:
