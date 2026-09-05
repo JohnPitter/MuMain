@@ -70,9 +70,52 @@ plate is no longer drawn: it is LIFTED from the shipped bar art.
              30x41 toolbar buttons in partCharge1/newui_menu_Bt0*.OZJ --
              including the gold rule, which the main bar stops supplying at
              x=488 and which those buttons carry themselves.
-  helper     the same plate below the gold rule (rows 2..40), box-filtered to
-             18x13. There is no gold rule on the Minimap_position bar the
-             helper strip sits on.
+  helper     the black gutter and the GOLD RULE at 1:1 (rows 0 and 1), then
+             the plate below the rule (slot rows 2..40) box-filtered into the
+             remaining 11 rows.
+
+The helper strip gets its life back (v8)
+----------------------------------------
+v7 shipped a helper strip that was correct and dead. Measured on the shipped
+v7 bytes: the plate was exactly neutral on every row (mean R-B = 0.0, no gold
+rule anywhere), the whole 18x13 frame carried 8 to 33 pixels of real warmth
+(R-B >= 8) out of 234, the glyph highlights landed at p88 = 0.51 to 0.62 of
+full value against the toolbar's 0.60 to 0.71, and the glyph/plate luminance
+ratio was 1.35 (settings) to 1.71 (play) against the toolbar's 1.82 to 2.65.
+Four things were wrong and all four are measurable.
+
+1. NO GOLD RULE. v7 dropped it on the grounds that the Minimap_position bar
+   has none. It does, in fact, have a rule -- Minimap_positionB row 1 is a
+   flat neutral grey 127 running the width of the bar, and the 13 px buttons
+   sit right on top of it. So the rule is not an invention, only a recolour of
+   a line that is already there, at the row it is already on. It is lifted
+   from the same shipped gold rule the toolbar plate carries, but sampled at
+   x=96 where the rule is flat and bright (L~190) instead of at x=0 where it
+   is the bar's dim left end cap: the five helper buttons are drawn edge to
+   edge at an 18 px pitch, so the end cap's 0->161 ramp would have tiled into
+   a sawtooth. Same pixels, a representative slice of them.
+
+2. NO WARM ACCENT. grade() locks hue to 41.5 deg and reads saturation off the
+   measured S(V) curve, so warmth is a function of value -- and the strip's
+   art, being a fifth of the toolbar's area, box-filters far enough down the
+   curve that the brass never arrives. warm_accent() moves the focal pixels of
+   each glyph UP that same curve (it adds exactly sat_at(v + shift) -
+   sat_at(v), no new colour model) at the gear's rim and teeth, the whole play
+   triangle, both auto triangles and the market pans. helper_stop is left cool
+   on purpose: it is the "stop", and warm reads as "go".
+
+3. NOT ENOUGH CONTRAST. top_light() lifts the upper half of the glyph and
+   settles the lower half, and the plate is taken down by STRIP_PLATE_GAIN.
+
+4. NOT SHARP ENOUGH. On a 14x9 face a half-covered pixel is a wasted pixel, so
+   the strip composite is snapped to the pixel grid: the outline is one whole
+   final pixel (STRIP_OUTLINE 1.0, i.e. exactly SS at supersample resolution),
+   the fitted glyph is rounded to a whole number of final pixels and the paste
+   offset is a multiple of SS. Every silhouette and ink edge therefore lands
+   on a pixel boundary and the area average stops smearing them across two.
+   The toolbar keeps the unsnapped path -- at 26x37 the box filter is an
+   anti-aliaser, not a blur, and snapping there would only cost subpixel
+   placement.
 
 The four states are not invented either: measured on the border ring of all
 five partCharge1/newui_menu_Bt0*.OZJ, Webzen's own frames are the SAME plate
@@ -122,6 +165,16 @@ SLOT_RECT = (0, 0, 38, 41)
 SLOT_LETTER = (0, 2, 17, 16)      # x0, y0, x1, y1
 SLOT_GOLD_RULE = 2                # rows 0..1 are the main bar's gold top rule
 
+# The helper plate keeps those two rows at 1:1, but takes the gold from a flat
+# stretch of the SAME rule instead of the bar's dim left end cap -- see the
+# module docstring. Row 1 of newui_menu01.OZJ is L~190 and flat from x=64 to
+# x=128; x=96 is the middle of that.
+STRIP_GOLD_SRC_X = 96
+# The lifted rule is brighter than the toolbar's slice of it (L~190 vs ~161),
+# which on an 18 px face would out-shout the glyph. Trimmed to sit just above
+# the toolbar's own rule rather than a third above it.
+STRIP_GOLD_GAIN = 0.86
+
 # Plate gain per frame, measured on the border ring of all five
 # partCharge1/newui_menu_Bt0*.OZJ: up / over / down / down+over. Identical to
 # three decimals across the five buttons, and neutral in all four frames.
@@ -138,7 +191,19 @@ SND_W, SND_FRAME_H, SND_FRAMES = 20, 17, 2
 
 # Glyph box in final pixels, INCLUDING the ink outline, and the outline width.
 # The strip face is 14x9 and the toolbar face 26x37, so these are what fits.
-STRIP_BOX, STRIP_OUTLINE = (13.0, 9.0), 0.7
+# STRIP_* was (13.0, 9.0) / 0.7 through v7. The outline is now exactly one
+# final pixel (0.7 * SS = 5.6, i.e. three quarters of a pixel smeared across
+# two) and the box grew with it, so the glyph inside is 14 - 2*1 = 12 wide
+# against the old 13 - 2*0.7 = 11.6: wider, not narrower, which is what the
+# two glyphs at the edge of legibility (settings, market) needed. The box
+# stays 9 tall and STRIP_DY drops it a row, clear of the gold rule, which
+# leaves a dark row of plate above and below the ink instead of running the
+# glyph into the rule and into the bottom bracket.
+STRIP_BOX, STRIP_OUTLINE = (14.0, 9.0), 1.0
+STRIP_DY = 1.0
+# The plate is taken down a touch so the glyph sits on it rather than in it.
+# Applied on top of the measured per-frame gains, not instead of them.
+STRIP_PLATE_GAIN = 0.90
 # TOOL_BOX was (25.0, 32.0) through v7: 32/41 = 78% of the frame height, against
 # the plated glyphs which now read as too big for the plate's corner brackets.
 # Measured against Webzen's own reference (union of the non-plate bounding
@@ -212,22 +277,46 @@ def _narrow(a, w):
     return out
 
 
+def gold_rule(w):
+    """One row of the shipped gold top rule, w px wide, taken from the flat
+    part of it.
+
+    The helper buttons are drawn edge to edge at an 18 px pitch, so a slice of
+    the bar's left end cap -- which is what the slot itself carries, ramping
+    0 -> 161 -- would tile into a sawtooth with a black notch every 18 px. The
+    same rule at x=96 is flat (L~190 from x=64 to x=128), so five of them in a
+    row read as one line.
+    """
+    import numpy as np
+
+    bar = np.asarray(_ozj(IFACE / "newui_menu01.OZJ"), dtype=np.float64)
+    x0 = STRIP_GOLD_SRC_X
+    return bar[1, x0:x0 + w].copy() * STRIP_GOLD_GAIN
+
+
 def plate_rgb(w, h):
     """The plate at the frame size, before shading.
 
     Toolbar (30x41): the slot is already 41 tall, so only the width changes,
     and it changes by dropping columns rather than by resampling.
-    Helper strip (18x13): the gold rule is dropped -- the Minimap_position bar
-    has none -- and what is left is box-filtered down.
+    Helper strip (18x13): row 0 is the slot's black gutter and row 1 the gold
+    rule, both at 1:1 -- the Minimap_position bar carries a rule of its own at
+    exactly that row (a flat grey 127) and the buttons cover it, so this is a
+    recolour of a line that is there, not a new one. The plate below the rule
+    (slot rows 2..40) is box-filtered into the 11 rows that are left.
     """
     import numpy as np
 
     a = slot_art()
     if h == a.shape[0]:
         return _narrow(a, w)
-    a = a[SLOT_GOLD_RULE:]
-    im = Image.fromarray(np.clip(a, 0, 255).astype("uint8"))
-    return np.asarray(im.resize((w, h), Image.BOX), dtype=np.float64)
+    head = _narrow(a[:SLOT_GOLD_RULE], w)
+    head[1] = gold_rule(w)
+    body = a[SLOT_GOLD_RULE:]
+    im = Image.fromarray(np.clip(body, 0, 255).astype("uint8"))
+    body = np.asarray(im.resize((w, h - SLOT_GOLD_RULE), Image.BOX),
+                      dtype=np.float64)
+    return np.concatenate([head, body * STRIP_PLATE_GAIN], axis=0)
 
 
 def plate_ss(w, h, gain, warm=0.0):
@@ -339,16 +428,187 @@ def mute(img, slash=True):
     return im
 
 
+# ------------------------------------------------------------ warm accent ---
+def _unit_chroma():
+    """The unit-saturation RGB direction of the Webzen highlight hue, used to
+    give a perfectly neutral pixel a hue to be saturated along."""
+    import colorsys
+
+    import numpy as np
+
+    return 1.0 - np.array(colorsys.hsv_to_rgb(wg.WZ_HUE, 1.0, 1.0))
+
+
+def _smoothstep(t):
+    import numpy as np
+
+    t = np.clip(t, 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+
+def annulus(inner=0.45, outer=0.68):
+    """Weight 1 on the rim of the glyph's bounding box, 0 in the middle: the
+    gear's aro and teeth, not its hub."""
+    def f(nx, ny):
+        import numpy as np
+
+        return _smoothstep((np.hypot(nx, ny) - inner) / max(1e-6, outer - inner))
+    return f
+
+
+def band(y0, y1, feather=0.10):
+    """Weight 1 inside a horizontal band of the bounding box (ny 0 = top)."""
+    def f(nx, ny):
+        t = (ny + 1.0) * 0.5
+        return _smoothstep((t - y0) / feather) * _smoothstep((y1 - t) / feather)
+    return f
+
+
+def _shade(glyph, sat_delta=None, vscale=None):
+    """Rewrite a graded glyph's saturation and/or value in place-ish.
+
+    Hue is never touched: grade() already locked it to 41.5 deg, and a pixel
+    that came out perfectly neutral is saturated along that same hue's unit
+    chroma direction rather than given a hue of its own.
+    """
+    import numpy as np
+
+    a = np.asarray(glyph, dtype=np.float64) / 255.0
+    rgb, al = a[..., :3].copy(), a[..., 3:4]
+    v = rgb.max(axis=-1)
+    mn = rgb.min(axis=-1)
+    s = np.where(v > 1e-9, (v - mn) / np.maximum(v, 1e-9), 0.0)
+
+    # unit chroma direction per pixel, falling back to the Webzen hue
+    k = np.where(v[..., None] > 1e-9, 1.0 - rgb / np.maximum(v[..., None], 1e-9), 0.0)
+    ku = np.where(s[..., None] > 1e-4, k / np.maximum(s[..., None], 1e-9),
+                  _unit_chroma()[None, None, :])
+
+    h, w = v.shape
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+    nx = (xx / max(1, w - 1)) * 2.0 - 1.0
+    ny = (yy / max(1, h - 1)) * 2.0 - 1.0
+
+    if vscale is not None:
+        v = np.clip(v * vscale(nx, ny), 0.0, wg.WZ_V_HI)
+    s_new = s if sat_delta is None else np.clip(s + sat_delta(v, nx, ny),
+                                               0.0, wg.WZ_SAT_CAP)
+    out = np.clip(v[..., None] * (1.0 - ku * s_new[..., None]), 0.0, 1.0)
+    return Image.fromarray(
+        (np.concatenate([out, al], axis=-1) * 255 + 0.5).astype("uint8"), "RGBA")
+
+
+def warm_accent(glyph, shift=0.26, region=None):
+    """Push the glyph's focal pixels UP the measured Webzen S(V) ramp.
+
+    No new colour model: the added saturation is exactly the ramp's own
+    difference between this pixel's value and a value `shift` higher, so a lit
+    pixel picks up the brass the toolbar's own highlights have and a shadow
+    pixel -- where the measured curve is 1.8% -- stays neutral. That split is
+    the whole point of the grade and it survives here.
+    """
+    import numpy as np
+
+    sat_v = np.vectorize(wg._sat_at)
+
+    def delta(v, nx, ny):
+        d = (sat_v(np.minimum(1.0, v + shift)) - sat_v(v)) * wg.SAT_TRIM
+        return d if region is None else d * region(nx, ny)
+
+    return _shade(glyph, sat_delta=delta)
+
+
+def cool_down(glyph, amount=0.55):
+    """The opposite, for helper_stop: pull the warmth back out so it reads as
+    clear silver. "Stop" in a warm brass is a mixed message, and stop was in
+    fact the warmest of the five (10.5% mean saturation against play's 5.8)."""
+    import numpy as np
+
+    sat_v = np.vectorize(wg._sat_at)
+
+    def delta(v, nx, ny):
+        return -amount * sat_v(v) * wg.SAT_TRIM
+
+    return _shade(glyph, sat_delta=delta)
+
+
+def top_light(glyph, amount=0.10):
+    """One warm key light from above: lift the top of the glyph, settle the
+    bottom. The Webzen art has exactly this and the v7 strip had none."""
+    def vs(nx, ny):
+        return 1.0 + amount * -ny
+    return _shade(glyph, vscale=vs)
+
+
+HL_PCT = 88.0        # "the highlights" = the 88th percentile of HSV value
+
+
+def highlight_level(img, pct=HL_PCT):
+    """Where this art's highlights sit, on the pixels that actually ship."""
+    import numpy as np
+
+    a = np.asarray(img, dtype=np.float64) / 255.0
+    v = a[..., :3].max(axis=-1)[a[..., 3] >= 0.5]
+    return float(np.percentile(v, pct)) if v.size else 0.0
+
+
+def match_highlights(glyph, geom, target, pct=HL_PCT, iters=2,
+                     lo=0.70, hi=1.70):
+    """Scale the glyph's value so that, AT FINAL SIZE, its highlights land
+    where the toolbar's do.
+
+    grade() matches the value histogram exactly -- at 240 px. The strip then
+    throws away 99.8% of those pixels, and what a box filter leaves behind is
+    a cell mean, which for a posterized distribution sits well inside the band
+    rather than at its ends. Measured on the v7 art the strip's highlights
+    came out at p88 = 0.51 to 0.62 of full value against the toolbar's 0.60 to
+    0.71, and that, not the hue, was most of why the strip read flat.
+
+    The target is not a taste number and not the raw Webzen ceiling either
+    (WZ_V_HI is a p100; aiming the strip at it overshoots every toolbar glyph
+    by a fifth). It is the toolbar's OWN measured level, computed from the
+    toolbar renders in the same run -- so the strip is normalised to the art
+    it has to sit next to, and if the toolbar ever changes the strip follows.
+
+    Iterated, because the map from source value to final value is not a
+    scaling: the ink ring is a fixed 0x11 and it is half of a 12x8 glyph, so
+    one step lands short. Clamped both ways -- this equalises, it does not
+    rescue a glyph that is wrong.
+    """
+    w, h, box, ol = geom
+    total = 1.0
+    for _ in range(max(1, iters)):
+        probe = frames_bare([glyph], w, h, box, ol, snap=True)[0]
+        p = highlight_level(probe, pct)
+        if p <= 1e-6:
+            break
+        g = min(hi / total, max(lo / total, target / p))
+        if abs(g - 1.0) < 0.01:
+            break
+        total *= g
+        glyph = _shade(glyph, vscale=lambda nx, ny, _g=g: _g)
+    return glyph
+
+
 # -------------------------------------------------------------- composing ---
-def fit(glyph, box_w, box_h, outline_px=0.0):
+def fit(glyph, box_w, box_h, outline_px=0.0, snap=False):
     """Scale to fit the glyph box (in final pixels) at SS resolution, aspect
-    preserved. The box includes the ink outline the caller will add."""
+    preserved. The box includes the ink outline the caller will add.
+
+    With `snap`, the result is a whole number of FINAL pixels in both axes, so
+    that the silhouette's bounding edges land on pixel boundaries instead of
+    being averaged across two. Costs up to half a final pixel of aspect; buys
+    back a hard edge, which on a 14x9 face is the better trade.
+    """
     w, h = glyph.size
     box_w -= 2.0 * outline_px
     box_h -= 2.0 * outline_px
     k = min(box_w * SS / w, box_h * SS / h)
-    return glyph.resize((max(1, int(round(w * k))), max(1, int(round(h * k)))),
-                        Image.LANCZOS)
+    tw, th = max(1, int(round(w * k))), max(1, int(round(h * k)))
+    if snap:
+        tw = max(SS, int(round(tw / float(SS))) * SS)
+        th = max(SS, int(round(th / float(SS))) * SS)
+    return glyph.resize((tw, th), Image.LANCZOS)
 
 
 def outlined(glyph_ss, outline_px):
@@ -368,11 +628,19 @@ def outlined(glyph_ss, outline_px):
     return ring
 
 
-def place(base_ss, glyph_ss, w, h, dy=0.0):
-    """Centre the glyph on the plate (both at SS resolution)."""
+def place(base_ss, glyph_ss, w, h, dy=0.0, snap=False):
+    """Centre the glyph on the plate (both at SS resolution).
+
+    With `snap` the offset is a whole number of final pixels, which is what
+    actually makes the snapped fit() pay off: a pixel-sized glyph landed on a
+    half-pixel offset is exactly as blurred as an unsnapped one.
+    """
     gw, gh = glyph_ss.size
     ox = (w * SS - gw) // 2
     oy = (h * SS - gh) // 2 + int(round(dy * SS))
+    if snap:
+        ox = int(round(ox / float(SS))) * SS
+        oy = int(round(oy / float(SS))) * SS
     out = base_ss.copy()
     out.alpha_composite(glyph_ss, (ox, oy))
     return out
@@ -393,21 +661,22 @@ def downsample(img_ss, w, h):
     return Image.fromarray((np.clip(res, 0, 1) * 255 + 0.5).astype("uint8"), "RGBA")
 
 
-def frames_on_plate(glyph, w, h, box, outline_px, states, dy=0.0):
-    g = outlined(fit(glyph, *box, outline_px=outline_px), outline_px)
+def frames_on_plate(glyph, w, h, box, outline_px, states, dy=0.0, snap=False):
+    g = outlined(fit(glyph, *box, outline_px=outline_px, snap=snap), outline_px)
     out = []
     for gain, warm in states:
         plate = plate_ss(w, h, gain, warm)
-        out.append(downsample(place(plate, g, w, h, dy), w, h))
+        out.append(downsample(place(plate, g, w, h, dy, snap=snap), w, h))
     return out
 
 
-def frames_bare(glyphs, w, h, box, outline_px):
+def frames_bare(glyphs, w, h, box, outline_px, snap=False):
     out = []
     for glyph in glyphs:
-        g = outlined(fit(glyph, *box, outline_px=outline_px), outline_px)
+        g = outlined(fit(glyph, *box, outline_px=outline_px, snap=snap),
+                     outline_px)
         base = Image.new("RGBA", (w * SS, h * SS), (0, 0, 0, 0))
-        out.append(downsample(place(base, g, w, h), w, h))
+        out.append(downsample(place(base, g, w, h, snap=snap), w, h))
     return out
 
 
@@ -484,6 +753,27 @@ VOICE_SRC = {
     "voice_sound": ("som_2", {}),
 }
 
+# The focal accent per strip glyph. The toolbar needs none: at 26x37 the
+# grade's own warm highlights survive the downsample, which is exactly what
+# they stop doing at 12x8.
+#   settings  the aro and the teeth, not the hub -- a gear lit all over is a
+#             blob at this size, lit only on the rim it still reads as a gear.
+#   play      the whole triangle. It is one shape and it is the "go".
+#   auto      inherited: derive_auto() copies the already-warmed play.
+#   market    the pans and what is in them.
+#   stop      cooled instead. Warm reads as "go".
+STRIP_ACCENT = {
+    "helper_settings": lambda g: warm_accent(g, 0.28, annulus(0.42, 0.70)),
+    "helper_play": lambda g: warm_accent(g, 0.26),
+    # 0.85 rather than a token amount: stop_1 is a framed window whose top
+    # edge is the source's own lit rim, and at 12x7 that rim is the only thing
+    # left of the frame -- a tan bar across the top of a silver square, which
+    # reads as grime, not as light.
+    "helper_stop": lambda g: cool_down(g, 0.85),
+    "helper_market": lambda g: warm_accent(g, 0.30, band(0.40, 0.74)),
+}
+STRIP_TOP_LIGHT = 0.10
+
 # name -> (frame w, frame h, glyph box, outline) for the glyph-only renders
 # the comparison tool measures (the plate is not part of the icon art).
 GEOM = {}
@@ -535,12 +825,27 @@ def build():
         if src:
             glyphs[name] = graded(src, **kw)
     glyphs["helper_market"] = synthetic(_market)
+    # Accent BEFORE deriving auto, so its two triangles are the warmed play
+    # rather than a second, differently coloured one.
+    for name, fn in STRIP_ACCENT.items():
+        glyphs[name] = fn(glyphs[name])
     glyphs["helper_auto"] = derive_auto(glyphs["helper_play"])
+    # Where the toolbar's highlights land once it is down at final size. The
+    # strip is normalised to this, so "as bright as the menus" is a
+    # measurement rather than an opinion.
+    target = sum(highlight_level(frames_bare([glyphs[n]], *GEOM[n][:2],
+                                             GEOM[n][2], GEOM[n][3])[0])
+                 for n in TOOLBAR_SRC) / len(TOOLBAR_SRC)
+    for name in STRIP_SRC:
+        glyphs[name] = top_light(
+            match_highlights(glyphs[name], GEOM[name], target),
+            STRIP_TOP_LIGHT)
 
     out = {}
     for name in STRIP_SRC:
         out[name] = frames_on_plate(glyphs[name], STRIP_W, STRIP_FRAME_H,
-                                    STRIP_BOX, STRIP_OUTLINE, STRIP_STATES)
+                                    STRIP_BOX, STRIP_OUTLINE, STRIP_STATES,
+                                    dy=STRIP_DY, snap=True)
     for name in TOOLBAR_SRC:
         out[name] = frames_on_plate(glyphs[name], TOOL_W, TOOL_FRAME_H,
                                     TOOL_BOX, TOOL_OUTLINE, TOOL_STATES)
@@ -560,7 +865,8 @@ def glyph_only(glyphs):
     out = {}
     for name, g in glyphs.items():
         w, h, box, ol = GEOM[name]
-        out[name] = frames_bare([g], w, h, box, ol)[0]
+        out[name] = frames_bare([g], w, h, box, ol,
+                                snap=name in STRIP_SRC)[0]
     return out
 
 
