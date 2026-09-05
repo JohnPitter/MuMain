@@ -6,7 +6,6 @@
 #include "I18N/All.h"
 
 #include "Audio/DSPlaySound.h"
-#include "UI/NewUI/HUD/HudIcons.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "UI/NewUI/NewUICommon.h"
 #include "World/MapInfra/MapManager.h"
@@ -30,25 +29,6 @@ namespace
     constexpr float kCapBodyDest = kCapBody + kCapExtra;
     constexpr float kCapTotal = kCapBodyDest + kCapRound;
 
-    // New-style strip button: the neutral steel plate (HudIcons) replaces the
-    // pre-baked MacroUI art, then the action glyph on top — the same grey box
-    // + icon pattern as the voice mic/som buttons. Keep the button object for
-    // its tooltip and hit testing; positions and sizes are untouched.
-    void RenderStripButton(SEASON3B::CNewUIButton& button, UI::HUD::Icons::GlyphFn glyph, bool active)
-    {
-        button.Render();
-
-        const POINT pos = button.GetPos();
-        const POINT size = button.GetSize();
-        const SEASON3B::BUTTON_STATE state = button.GetBTState();
-        UI::HUD::Icons::DrawButtonPlate(static_cast<float>(pos.x), static_cast<float>(pos.y),
-            static_cast<float>(size.x), static_cast<float>(size.y),
-            UI::HUD::Icons::PlateStateFor(state == SEASON3B::BUTTON_STATE_OVER,
-                state == SEASON3B::BUTTON_STATE_DOWN, active, false));
-        glyph(static_cast<float>(pos.x) + static_cast<float>(size.x) * 0.5f,
-            static_cast<float>(pos.y) + static_cast<float>(size.y) * 0.5f,
-            UI::HUD::Icons::kStripGlyphScale, true);
-    }
 }
 
 CNewUIHeroPositionInfo::CNewUIHeroPositionInfo()
@@ -129,7 +109,7 @@ bool CNewUIHeroPositionInfo::Create(CNewUIManager* pNewUIMng, int x, int y)
 
     SetButtonInfo(
         &s_BtnAuto,
-        IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3,
+        IMAGE_HERO_POSITION_INFO_AUTO,
         x + WidenX + 77,
         y,
         18,
@@ -144,7 +124,7 @@ bool CNewUIHeroPositionInfo::Create(CNewUIManager* pNewUIMng, int x, int y)
 
     SetButtonInfo(
         &s_BtnMarket,
-        IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3,
+        IMAGE_HERO_POSITION_INFO_MARKET_ICON,
         x + WidenX + 95,
         y,
         18,
@@ -292,16 +272,13 @@ bool CNewUIHeroPositionInfo::Render()
         kCapRound,
         kCapH);
     //--
-    RenderStripButton(m_BtnConfig, UI::HUD::Icons::DrawSettingsGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MUHELPER));
+    m_BtnConfig.Render();
     if (MUHelper::g_MuHelper.IsActive())
-        RenderStripButton(m_BtnStop, UI::HUD::Icons::DrawStopGlyph, true);
+        m_BtnStop.Render();
     else
-        RenderStripButton(m_BtnStart, UI::HUD::Icons::DrawPlayGlyph, false);
-    RenderStripButton(s_BtnAuto, UI::HUD::Icons::DrawAutoBattleGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_AUTOBATTLER));
-    RenderStripButton(s_BtnMarket, UI::HUD::Icons::DrawMarketplaceGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MARKETPLACE));
+        m_BtnStart.Render();
+    s_BtnAuto.Render();
+    s_BtnMarket.Render();
 
     // Voice M/S dock to the middle of the right screen edge (MiniMapCorner).
     //--
@@ -337,10 +314,11 @@ void CNewUIHeroPositionInfo::LoadImages()
     LoadBitmap(L"Interface\\Minimap_positionA.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW, GL_LINEAR);
     LoadBitmap(L"Interface\\Minimap_positionB.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 1, GL_LINEAR);
     LoadBitmap(L"Interface\\MacroUI\\Minimap_positionC.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 2, GL_LINEAR);
-    LoadBitmap(L"Interface\\MacroUI\\MacroUI_Setup.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3, GL_LINEAR);
-    LoadBitmap(L"Interface\\MacroUI\\MacroUI_Start.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 4, GL_LINEAR);
-    LoadBitmap(L"Interface\\MacroUI\\MacroUI_Stop.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 5, GL_LINEAR);
-    LoadBitmap(L"Interface\\InGameShop\\Ingame_Bt_Cash.tga", IMAGE_HERO_POSITION_INFO_MARKET, GL_LINEAR);
+    LoadBitmap(L"Interface\\LuxUI\\helper_settings.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 3, GL_LINEAR);
+    LoadBitmap(L"Interface\\LuxUI\\helper_play.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 4, GL_LINEAR);
+    LoadBitmap(L"Interface\\LuxUI\\helper_stop.tga", IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 5, GL_LINEAR);
+    LoadBitmap(L"Interface\\LuxUI\\helper_auto.tga", IMAGE_HERO_POSITION_INFO_AUTO, GL_LINEAR);
+    LoadBitmap(L"Interface\\LuxUI\\helper_market.tga", IMAGE_HERO_POSITION_INFO_MARKET_ICON, GL_LINEAR);
 }
 
 void CNewUIHeroPositionInfo::UnloadImages()
@@ -349,6 +327,8 @@ void CNewUIHeroPositionInfo::UnloadImages()
     DeleteBitmap(IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 1);
     DeleteBitmap(IMAGE_HERO_POSITION_INFO_BASE_WINDOW + 2);
     DeleteBitmap(IMAGE_HERO_POSITION_INFO_MARKET);
+    DeleteBitmap(IMAGE_HERO_POSITION_INFO_AUTO);
+    DeleteBitmap(IMAGE_HERO_POSITION_INFO_MARKET_ICON);
 }
 
 void CNewUIHeroPositionInfo::SetButtonInfo(CNewUIButton* m_Btn, int imgindex, int x, int y, int sx, int sy, bool overflg, bool isimgwidth, bool bClickEffect, bool MoveTxt, const wchar_t* const* btnameSlot, const wchar_t* const* tooltipSlot, bool istoppos)

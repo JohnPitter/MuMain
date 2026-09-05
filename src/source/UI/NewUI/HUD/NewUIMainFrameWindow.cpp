@@ -32,7 +32,6 @@
 #include "GameShop/InGameShopSystem.h"
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "UI/HUD/HudToolbar.h"
-#include "UI/NewUI/HUD/HudIcons.h"
 
 namespace
 {
@@ -95,25 +94,6 @@ namespace
         }
     }
 
-    // New-style main toolbar button: the neutral steel plate (HudIcons)
-    // replaces the pre-baked art, then the action glyph on top — the same grey
-    // box + icon pattern as the voice mic/som buttons. The button object still
-    // renders its tooltip; rect, hit box and click behavior are untouched.
-    void RenderToolbarButton(SEASON3B::CNewUIButton& button, UI::HUD::Icons::GlyphFn glyph, bool active, bool alert = false)
-    {
-        button.Render();
-
-        const POINT pos = button.GetPos();
-        const POINT size = button.GetSize();
-        const SEASON3B::BUTTON_STATE state = button.GetBTState();
-        UI::HUD::Icons::DrawButtonPlate(static_cast<float>(pos.x), static_cast<float>(pos.y),
-            static_cast<float>(size.x), static_cast<float>(size.y),
-            UI::HUD::Icons::PlateStateFor(state == SEASON3B::BUTTON_STATE_OVER,
-                state == SEASON3B::BUTTON_STATE_DOWN, active, alert));
-        glyph(static_cast<float>(pos.x) + static_cast<float>(size.x) * 0.5f,
-            static_cast<float>(pos.y) + static_cast<float>(size.y) * 0.5f,
-            UI::HUD::Icons::kToolbarGlyphScale, true);
-    }
 }
 
 SEASON3B::CNewUIMainFrameWindow::CNewUIMainFrameWindow()
@@ -143,11 +123,11 @@ void SEASON3B::CNewUIMainFrameWindow::LoadImages()
     LoadBitmap(L"Interface\\newui_menu_sd.jpg", IMAGE_GAUGE_SD, GL_LINEAR);
     LoadBitmap(L"Interface\\newui_exbar.jpg", IMAGE_GAUGE_EXBAR, GL_LINEAR);
     LoadBitmap(L"Interface\\Exbar_Master.jpg", IMAGE_MASTER_GAUGE_BAR, GL_LINEAR);
-    LoadBitmap(L"Interface\\partCharge1\\newui_menu_Bt05.jpg", IMAGE_MENU_BTN_CSHOP, GL_LINEAR, GL_CLAMP_TO_EDGE);
-    LoadBitmap(L"Interface\\partCharge1\\newui_menu_Bt01.jpg", IMAGE_MENU_BTN_CHAINFO, GL_LINEAR, GL_CLAMP_TO_EDGE);
-    LoadBitmap(L"Interface\\partCharge1\\newui_menu_Bt02.jpg", IMAGE_MENU_BTN_MYINVEN, GL_LINEAR, GL_CLAMP_TO_EDGE);
-    LoadBitmap(L"Interface\\partCharge1\\newui_menu_Bt03.jpg", IMAGE_MENU_BTN_FRIEND, GL_LINEAR, GL_CLAMP_TO_EDGE);
-    LoadBitmap(L"Interface\\partCharge1\\newui_menu_Bt04.jpg", IMAGE_MENU_BTN_WINDOW, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    LoadBitmap(L"Interface\\LuxUI\\toolbar_cashshop.tga", IMAGE_MENU_BTN_CSHOP, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    LoadBitmap(L"Interface\\LuxUI\\toolbar_character.tga", IMAGE_MENU_BTN_CHAINFO, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    LoadBitmap(L"Interface\\LuxUI\\toolbar_inventory.tga", IMAGE_MENU_BTN_MYINVEN, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    LoadBitmap(L"Interface\\LuxUI\\toolbar_friends.tga", IMAGE_MENU_BTN_FRIEND, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    LoadBitmap(L"Interface\\LuxUI\\toolbar_menu.tga", IMAGE_MENU_BTN_WINDOW, GL_LINEAR, GL_CLAMP_TO_EDGE);
 }
 
 void SEASON3B::CNewUIMainFrameWindow::UnloadImages()
@@ -748,52 +728,51 @@ void SEASON3B::CNewUIMainFrameWindow::RenderHotKeyItemCount()
 void SEASON3B::CNewUIMainFrameWindow::RenderButtons()
 {
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
-    RenderToolbarButton(m_BtnCShop, UI::HUD::Icons::DrawCashShopGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INGAMESHOP));
+    m_BtnCShop.Render();
 #endif //defined PBG_ADD_INGAMESHOP_UI_MAINFRAME
 
     RenderCharInfoButton();
-    RenderToolbarButton(m_BtnMyInven, UI::HUD::Icons::DrawInventoryGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY));
+    m_BtnMyInven.Render();
 
     RenderFriendButton();
 
-    RenderToolbarButton(m_BtnWindow, UI::HUD::Icons::DrawMenuGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_WINDOW_MENU));
+    m_BtnWindow.Render();
 }
 
 void SEASON3B::CNewUIMainFrameWindow::RenderCharInfoButton()
 {
-    bool questAlert = false;
-    if (!g_QuestMng.IsQuestIndexByEtcListEmpty())
+    m_BtnChaInfo.Render();
+
+    if (g_QuestMng.IsQuestIndexByEtcListEmpty())
+        return;
+
+    if (g_Time.GetTimeCheck(5, 500))
+        m_bButtonBlink = !m_bButtonBlink;
+
+    if (m_bButtonBlink)
     {
-        if (g_Time.GetTimeCheck(5, 500))
-            m_bButtonBlink = !m_bButtonBlink;
-
-        questAlert = m_bButtonBlink
-            && !(g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS_ETC)
-                || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER));
+        if (!(g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS_ETC)
+            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER)))
+            RenderImage(IMAGE_MENU_BTN_CHAINFO, 489 + 30, REFERENCE_HEIGHT - 51, 30, 41, 0.0f, 41.f);
     }
-
-    RenderToolbarButton(m_BtnChaInfo, UI::HUD::Icons::DrawCharacterGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER), questAlert);
 }
 
 void SEASON3B::CNewUIMainFrameWindow::RenderFriendButton()
 {
+    m_BtnFriend.Render();
+
     int iBlinkTemp = g_pFriendMenu->GetBlinkTemp();
     BOOL bIsAlertTime = (iBlinkTemp % 24 < 12);
 
-    bool friendAlert = false;
     if (g_pFriendMenu->IsNewChatAlert() && bIsAlertTime)
     {
-        friendAlert = true;
+        RenderFriendButtonState();
     }
     if (g_pFriendMenu->IsNewMailAlert())
     {
         if (bIsAlertTime)
         {
-            friendAlert = true;
+            RenderFriendButtonState();
 
             if (iBlinkTemp % 24 == 11)
             {
@@ -803,11 +782,8 @@ void SEASON3B::CNewUIMainFrameWindow::RenderFriendButton()
     }
     else if (g_pLetterList->CheckNoReadLetter())
     {
-        friendAlert = true;
+        RenderFriendButtonState();
     }
-
-    RenderToolbarButton(m_BtnFriend, UI::HUD::Icons::DrawFriendsGlyph,
-        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_FRIEND), friendAlert);
 
     g_pFriendMenu->IncreaseBlinkTemp();
 }
