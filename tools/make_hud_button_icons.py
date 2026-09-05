@@ -50,12 +50,38 @@ Two glyphs are not straight Canva imports:
                  is redrawn with a beam and pans thick enough to survive, then
                  pushed through the same grade so the material matches.
 
-The button plate itself (ink rim, bevel, face, lit top row, shaded bottom row,
-rounded corners) is unchanged from v3/v4.
+The plate (v7) -- the shipped potion slot, not a drawn one
+----------------------------------------------------------
+v3..v6 drew the button plate procedurally (ink rim, bevel, flat steel face).
+In game that reads as a smooth opaque grey card next to the potion/consumable
+slots, whose plate is Webzen's engraved, mottled, almost-black metal. So the
+plate is no longer drawn: it is LIFTED from the shipped bar art.
+
+  source     Interface/newui_menu01.OZJ, the "Q" potion slot at (0,0)-(38,41).
+             That art is the whole slot: black gutter, the bar's gold top
+             rule at row 1, the lit rim at row 4, the four corner brackets and
+             the cloudy interior. The baked yellow "Q" in the top-left is
+             erased by mirroring the slot's own right half over it (the plate
+             is left/right symmetric, so the seam is invisible).
+  toolbar    38 -> 30 px wide by DROPPING the middle columns and crossfading
+             over the seam, never by scaling: the brackets and the texture
+             stay at 1:1. The height is already 41, so nothing is resampled
+             vertically. Row for row this now lines up with Webzen's own
+             30x41 toolbar buttons in partCharge1/newui_menu_Bt0*.OZJ --
+             including the gold rule, which the main bar stops supplying at
+             x=488 and which those buttons carry themselves.
+  helper     the same plate below the gold rule (rows 2..40), box-filtered to
+             18x13. There is no gold rule on the Minimap_position bar the
+             helper strip sits on.
+
+The four states are not invented either: measured on the border ring of all
+five partCharge1/newui_menu_Bt0*.OZJ, Webzen's own frames are the SAME plate
+at gain 1.000 / 1.251 / 0.790 / 0.809 (up / over / down / down+over), always
+neutral (R=G=B). Those gains are used verbatim. Frame 3 additionally keeps the
+gold accent the owner already had, as a hue-41.5 tint at the measured gain.
 """
 from __future__ import annotations
 
-import math
 import struct
 import sys
 import zlib
@@ -82,23 +108,28 @@ CANVA = Path(os.environ.get("MU_CANVA_SHEET", str(
 SS = 8      # supersampling factor; the downsample is a plain area average
 WORK = 240  # the Canva renders are 400x400; grading at 240 is plenty and quick
 
-# -- plate palette (unchanged from v3/v4) -----------------------------------
-# Neutral steel ramp. The measurement says this is right for the plate: below
-# luma 102 the Webzen art really is neutral (0.40% saturation). The warmth
-# lives in the light, and the light is on the glyph.
-# Strictly neutral, and deliberately so: the measured Webzen shadow bins sit
-# at 0.40% saturation and both quantised darks (#373737, #2A2A2A) are exactly
-# R=G=B. A "hair warm" ink is also a trap for the metric -- +2 of R-B at
-# value 18 is 11% HSV saturation, and the outline is a fifth of the art.
+# The glyph outline. Strictly neutral, and deliberately so: the measured
+# Webzen shadow bins sit at 0.40% saturation and both quantised darks
+# (#373737, #2A2A2A) are exactly R=G=B. A "hair warm" ink is also a trap for
+# the metric -- +2 of R-B at value 18 is 11% HSV saturation, and the outline
+# is a fifth of the art.
 INK = (0x11, 0x11, 0x11)
-STEEL_D = (0x4A, 0x4A, 0x4A)
 
-FACE_NORMAL = (0x20, 0x20, 0x20)
-FACE_HOVER = (0x3A, 0x3A, 0x3A)
-FACE_PRESSED = (0x14, 0x14, 0x14)
-# attention blink: pulled onto the Webzen hue (41.5 deg) instead of the old
-# orange, but deliberately left above the S(V) curve -- it is an accent.
-FACE_ALERT = (0x4A, 0x3F, 0x34)
+# -- the shipped plate ------------------------------------------------------
+# The "Q" potion slot inside Interface/newui_menu01.OZJ, and the box holding
+# the baked yellow "Q" that gets mirrored away (see the module docstring).
+SLOT_RECT = (0, 0, 38, 41)
+SLOT_LETTER = (0, 2, 17, 16)      # x0, y0, x1, y1
+SLOT_GOLD_RULE = 2                # rows 0..1 are the main bar's gold top rule
+
+# Plate gain per frame, measured on the border ring of all five
+# partCharge1/newui_menu_Bt0*.OZJ: up / over / down / down+over. Identical to
+# three decimals across the five buttons, and neutral in all four frames.
+GAIN_UP, GAIN_OVER, GAIN_DOWN, GAIN_ALERT = 1.000, 1.251, 0.790, 0.809
+# Frame 3 keeps the gold accent the owner already had. Hue 41.5 deg is the
+# Webzen highlight hue webzen_grade.py measured; the channel factors are
+# renormalised so the tint costs no luminance.
+ALERT_SAT = 0.30
 
 STRIP_W, STRIP_FRAME_H, STRIP_FRAMES = 18, 13, 3
 TOOL_W, TOOL_FRAME_H, TOOL_FRAMES = 30, 41, 4
@@ -107,8 +138,8 @@ SND_W, SND_FRAME_H, SND_FRAMES = 20, 17, 2
 
 # Glyph box in final pixels, INCLUDING the ink outline, and the outline width.
 # The strip face is 14x9 and the toolbar face 26x37, so these are what fits.
-STRIP_BOX, STRIP_OUTLINE, STRIP_RADIUS = (13.0, 9.0), 0.7, 1.5
-TOOL_BOX, TOOL_OUTLINE, TOOL_RADIUS = (25.0, 32.0), 0.8, 2.0
+STRIP_BOX, STRIP_OUTLINE = (13.0, 9.0), 0.7
+TOOL_BOX, TOOL_OUTLINE = (25.0, 32.0), 0.8
 # The voice glyphs sit on the light grey native MU button, not on a plate of
 # their own. They are one row short of their frame on purpose: VoiceIcons draws
 # a vertically stacked sheet with GL_LINEAR, so a glyph that touched the frame
@@ -117,80 +148,95 @@ MIC_BOX, MIC_OUTLINE = (16.0, 21.0), 1.0
 SND_BOX, SND_OUTLINE = (20.0, 15.0), 1.0
 
 
-# ---------------------------------------------------------------- raster ---
-class Layer:
-    """RGBA8 buffer, top-down rows -- only the plate is still drawn this way."""
+# ----------------------------------------------------------------- plate ---
+def _ozj(path):
+    """A .OZJ is a JPEG behind a 24-byte header."""
+    import io
 
-    __slots__ = ("w", "h", "buf")
-
-    def __init__(self, w, h, rgba=(0, 0, 0, 0)):
-        self.w = w
-        self.h = h
-        self.buf = bytearray(bytes(rgba)) * (w * h)
-
-    def span(self, y, x0, x1, rgba4):
-        if y < 0 or y >= self.h:
-            return
-        x0 = max(0, x0)
-        x1 = min(self.w, x1)
-        if x1 <= x0:
-            return
-        i = (y * self.w + x0) * 4
-        self.buf[i:i + (x1 - x0) * 4] = rgba4 * (x1 - x0)
-
-    def to_pil(self):
-        return Image.frombytes("RGBA", (self.w, self.h), bytes(self.buf))
+    im = Image.open(io.BytesIO(Path(path).read_bytes()[24:]))
+    im.load()
+    return im.convert("RGB")
 
 
-def _rows(y, h, limit):
-    lo = max(0, int(math.ceil(y - 0.5)))
-    hi = min(limit, int(math.ceil(y + h - 0.5)))
-    return range(lo, hi)
+_plate = None
 
 
-def _cols(x, w):
-    return int(math.ceil(x - 0.5)), int(math.ceil(x + w - 0.5))
+def slot_art():
+    """The empty potion slot, as float RGB rows x cols x 3.
+
+    The shipped slot has a yellow "Q" baked into its top-left corner. The
+    plate is left/right symmetric, so the letter box is overwritten with the
+    slot's own mirrored right half; nothing is invented and nothing is blurred.
+    """
+    global _plate
+    if _plate is not None:
+        return _plate
+    import numpy as np
+
+    x0, y0, x1, y1 = SLOT_RECT
+    bar = np.asarray(_ozj(IFACE / "newui_menu01.OZJ"), dtype=np.float64)
+    q = bar[y0:y1, x0:x1].copy()
+    lx0, ly0, lx1, ly1 = SLOT_LETTER
+    q[ly0:ly1, lx0:lx1] = q[:, ::-1][ly0:ly1, lx0:lx1]
+    _plate = q
+    return q
 
 
-def fill_rect(lay, x, y, w, h, rgba4):
-    x0, x1 = _cols(x, w)
-    for py in _rows(y, h, lay.h):
-        lay.span(py, x0, x1, rgba4)
+def _narrow(a, w):
+    """Take the plate down to w columns by DROPPING middle columns, with a
+    short crossfade over the seam. The interior is a low-frequency cloud, so
+    the join is invisible -- and unlike a resize this keeps both corner
+    brackets and the texture itself at 1:1."""
+    import numpy as np
+
+    big = a.shape[1]
+    if w == big:
+        return a.copy()
+    assert w < big, (w, big)
+    left = w // 2
+    out = np.concatenate([a[:, :left], a[:, big - (w - left):]], axis=1)
+    blend = 6
+    for i in range(blend):
+        t = (i + 0.5) / blend
+        c = left - blend // 2 + i
+        if 0 <= c < w:
+            out[:, c] = a[:, c] * (1.0 - t) + a[:, big - w + c] * t
+    return out
 
 
-def fill_rrect(lay, x, y, w, h, r, rgba4):
-    r = max(0.0, min(r, w / 2.0, h / 2.0))
-    for py in _rows(y, h, lay.h):
-        cy = py + 0.5
-        inset = 0.0
-        if cy < y + r:
-            dy = (y + r) - cy
-            inset = r - math.sqrt(max(0.0, r * r - dy * dy))
-        elif cy > y + h - r:
-            dy = cy - (y + h - r)
-            inset = r - math.sqrt(max(0.0, r * r - dy * dy))
-        x0, x1 = _cols(x + inset, w - 2 * inset)
-        lay.span(py, x0, x1, rgba4)
+def plate_rgb(w, h):
+    """The plate at the frame size, before shading.
+
+    Toolbar (30x41): the slot is already 41 tall, so only the width changes,
+    and it changes by dropping columns rather than by resampling.
+    Helper strip (18x13): the gold rule is dropped -- the Minimap_position bar
+    has none -- and what is left is box-filtered down.
+    """
+    import numpy as np
+
+    a = slot_art()
+    if h == a.shape[0]:
+        return _narrow(a, w)
+    a = a[SLOT_GOLD_RULE:]
+    im = Image.fromarray(np.clip(a, 0, 255).astype("uint8"))
+    return np.asarray(im.resize((w, h), Image.BOX), dtype=np.float64)
 
 
-def make_plate(w, h, face, bevel, radius):
-    """v3 DrawButtonPlate: ink rim, bevel, face, lit top row, shaded bottom
-    row, rounded corners and a faint face gradient."""
-    lay = Layer(w * SS, h * SS)
-    S = float(SS)
-    fill_rrect(lay, 0, 0, w * S, h * S, radius * S, bytes(INK) + b"\xff")
-    fill_rrect(lay, S, S, (w - 2) * S, (h - 2) * S, max(0.0, radius - 0.5) * S,
-               bytes(bevel) + b"\xff")
-    fw = (w - 4) * S
-    steps = h - 4
-    for k in range(steps):
-        f = 1.0 + 0.10 * (1.0 - 2.0 * k / max(1, steps - 1))
-        c = bytes(min(255, int(v * f + 0.5)) for v in face) + b"\xff"
-        fill_rrect(lay, 2 * S, (2 + k) * S, fw, S,
-                   max(0.0, radius - 1.0) * S if k in (0, steps - 1) else 0.0, c)
-    fill_rect(lay, 2 * S, 2 * S, fw, S, bytes(STEEL_D) + b"\xff")
-    fill_rect(lay, 2 * S, (h - 3) * S, fw, S, bytes(INK) + b"\xff")
-    return lay.to_pil()
+def plate_ss(w, h, gain, warm=0.0):
+    """A shaded plate at supersample resolution.
+
+    NEAREST to SS and an area average back down is the identity, so every
+    pixel the glyph does not cover survives byte for byte.
+    """
+    import numpy as np
+
+    a = plate_rgb(w, h) * gain
+    if warm:
+        f = 41.5 / 60.0
+        cf = np.array([1.0, 1.0 - warm * (1.0 - f), 1.0 - warm])
+        a = a * (cf / cf.mean())
+    im = Image.fromarray(np.clip(a, 0, 255).astype("uint8")).convert("RGBA")
+    return im.resize((w * SS, h * SS), Image.NEAREST)
 
 
 # ------------------------------------------------------------ glyph source ---
@@ -207,7 +253,9 @@ def graded(name, **kw):
         path = CANVA / (name + ".png")
     im = Image.open(path).convert("RGB").resize((WORK, WORK), Image.LANCZOS)
     mask = wg.isolate(im, **kw)
-    g = wg.grade(im, mask, seed=abs(hash(name)) & 0xFFFF)
+    # crc32, not hash(): str hashing is salted per process, so hash() made the
+    # 3% grime noise -- and therefore the shipped bytes -- differ on every run.
+    g = wg.grade(im, mask, seed=zlib.crc32(name.encode()) & 0xFFFF)
     g = g.crop(g.getbbox())
     _cache[name] = g
     return g
@@ -337,11 +385,11 @@ def downsample(img_ss, w, h):
     return Image.fromarray((np.clip(res, 0, 1) * 255 + 0.5).astype("uint8"), "RGBA")
 
 
-def frames_on_plate(glyph, w, h, box, outline_px, radius, faces, dy=0.0):
+def frames_on_plate(glyph, w, h, box, outline_px, states, dy=0.0):
     g = outlined(fit(glyph, *box, outline_px=outline_px), outline_px)
     out = []
-    for face, bevel in faces:
-        plate = make_plate(w, h, face, bevel, radius)
+    for gain, warm in states:
+        plate = plate_ss(w, h, gain, warm)
         out.append(downsample(place(plate, g, w, h, dy), w, h))
     return out
 
@@ -438,19 +486,17 @@ for _k in TOOLBAR_SRC:
 GEOM["voice_mic"] = (MIC_W, MIC_FRAME_H, MIC_BOX, MIC_OUTLINE)
 GEOM["voice_sound"] = (SND_W, SND_FRAME_H, SND_BOX, SND_OUTLINE)
 
-STRIP_FACES = ((FACE_NORMAL, STEEL_D), (FACE_HOVER, STEEL_D), (FACE_PRESSED, STEEL_D))
-TOOL_FACES = ((FACE_NORMAL, STEEL_D), (FACE_HOVER, STEEL_D),
-              (FACE_PRESSED, STEEL_D), (FACE_ALERT, STEEL_D))
+# (gain, warm) per frame. The helper strip has no fourth frame.
+STRIP_STATES = ((GAIN_UP, 0.0), (GAIN_OVER, 0.0), (GAIN_DOWN, 0.0))
+TOOL_STATES = ((GAIN_UP, 0.0), (GAIN_OVER, 0.0), (GAIN_DOWN, 0.0),
+               (GAIN_ALERT, ALERT_SAT))
 
 
 def install_reference():
     """Install the Webzen value distribution grade() matches against."""
     import io
 
-    def ozj(p):
-        im = Image.open(io.BytesIO(p.read_bytes()[24:]))
-        im.load()
-        return im.convert("RGB")
+    ozj = _ozj
 
     def ozt(p):
         im = Image.open(io.BytesIO(p.read_bytes()[4:]))
@@ -486,12 +532,10 @@ def build():
     out = {}
     for name in STRIP_SRC:
         out[name] = frames_on_plate(glyphs[name], STRIP_W, STRIP_FRAME_H,
-                                    STRIP_BOX, STRIP_OUTLINE, STRIP_RADIUS,
-                                    STRIP_FACES)
+                                    STRIP_BOX, STRIP_OUTLINE, STRIP_STATES)
     for name in TOOLBAR_SRC:
         out[name] = frames_on_plate(glyphs[name], TOOL_W, TOOL_FRAME_H,
-                                    TOOL_BOX, TOOL_OUTLINE, TOOL_RADIUS,
-                                    TOOL_FACES)
+                                    TOOL_BOX, TOOL_OUTLINE, TOOL_STATES)
     out["voice_mic"] = frames_bare(
         [glyphs["voice_mic"], mute(glyphs["voice_mic"])], MIC_W, MIC_FRAME_H,
         MIC_BOX, MIC_OUTLINE)
