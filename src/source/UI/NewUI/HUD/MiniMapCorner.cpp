@@ -202,10 +202,41 @@ namespace UI::HUD::MiniMap
         const float centerU = std::clamp(static_cast<float>(Hero->PositionY) / 256.f, halfSpan, 1.f - halfSpan);
         const float centerV = std::clamp(static_cast<float>(Hero->PositionX) / 256.f, halfSpan, 1.f - halfSpan);
 
+        // Present the fragment exactly like the TAB map (CNewUIMiniMap::Render),
+        // the owner-validated reference: full minimap texture rotated 45 degrees
+        // with the hero texel at the view center, at TAB's default zoom (800 UI
+        // for the whole 256-tile sheet = the old 0.16 span of the 128 px window).
+        // The old unrotated crop showed the right texels in an orientation nobody
+        // could match to the world, so the corner read as "wrong location".
+        // pivotU/V stop at half a view from the map border, so near an edge the
+        // view freezes and the dots slide (Kanturu 150,239 case).
+        constexpr float kCornerDrawSize = kMapSize / kZoomSpan;
+        const float heroU = static_cast<float>(Hero->PositionY) / 256.f;
+        const float heroV = static_cast<float>(Hero->PositionX) / 256.f;
+        const float viewCenterX = mapX + (kMapSize / 2.f);
+        const float viewCenterY = mapY + (kMapSize / 2.f);
+
         EnableAlphaTest();
         glColor4f(1.f, 1.f, 1.f, 1.f);
-        SEASON3B::RenderImage(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE, mapX, mapY, kMapSize, kMapSize,
+        RenderBitmapRotate(SEASON3B::CNewUIMiniMap::IMAGE_MINIMAP_INTERFACE,
+            viewCenterX, viewCenterY, kCornerDrawSize, kCornerDrawSize, 45.f,
             centerU - halfSpan, centerV - halfSpan, kZoomSpan, kZoomSpan);
+
+        // Project a world UV through the same 45 degree transform the texture
+        // quad above went through (screen space, Y down): +X world points
+        // south-east and +Y world north-east, matching the game camera.
+        auto projectCorner = [viewCenterX, viewCenterY, centerU, centerV](float u, float v) {
+            constexpr float kDiag = 0.70710678f;
+            const float du = (u - centerU) * kCornerDrawSize;
+            const float dv = (v - centerV) * kCornerDrawSize;
+            struct Proj
+            {
+                float x;
+                float y;
+            };
+            return Proj{ viewCenterX + (kDiag * du + kDiag * dv),
+                         viewCenterY + (-kDiag * du + kDiag * dv) };
+        };
 
         if (PartyNumber > 0)
         {
@@ -223,32 +254,22 @@ namespace UI::HUD::MiniMap
 
                 const float memberU = static_cast<float>(member->y) / 256.f;
                 const float memberV = static_cast<float>(member->x) / 256.f;
-                const float dx = (memberU - centerU) / kZoomSpan;
-                const float dy = (memberV - centerV) / kZoomSpan;
-                const float px = mapX + (kMapSize / 2.f) + (dx * kMapSize);
-                const float py = mapY + (kMapSize / 2.f) + (dy * kMapSize);
-                if (px < mapX || py < mapY || px > mapX + kMapSize || py > mapY + kMapSize)
+                auto memberPt = projectCorner(memberU, memberV);
+                if (memberPt.x < mapX || memberPt.y < mapY || memberPt.x > mapX + kMapSize || memberPt.y > mapY + kMapSize)
                     continue;
 
                 glColor4f(0.05f, 0.15f, 0.2f, 1.f);
-                RenderColor(px - 2.5f, py - 2.5f, 5.f, 5.f);
+                RenderColor(memberPt.x - 2.5f, memberPt.y - 2.5f, 5.f, 5.f);
                 glColor4f(0.25f, 0.85f, 1.f, 1.f);
-                RenderColor(px - 2.f, py - 2.f, 4.f, 4.f);
+                RenderColor(memberPt.x - 2.f, memberPt.y - 2.f, 4.f, 4.f);
             }
         }
 
-        // The window stops scrolling once the hero is within half a span of a map
-        // edge (centerU/centerV are clamped above), so the hero is only at the
-        // exact center away from the borders. Project the real position through
-        // the same transform used for party members instead of pinning it.
-        const float heroU = static_cast<float>(Hero->PositionY) / 256.f;
-        const float heroV = static_cast<float>(Hero->PositionX) / 256.f;
-        const float heroPx = mapX + (kMapSize / 2.f) + ((heroU - centerU) / kZoomSpan * kMapSize);
-        const float heroPy = mapY + (kMapSize / 2.f) + ((heroV - centerV) / kZoomSpan * kMapSize);
+        auto heroPt = projectCorner(heroU, heroV);
         glColor4f(0.1f, 0.1f, 0.1f, 1.f);
-        RenderColor(heroPx - 2.5f, heroPy - 2.5f, 5.f, 5.f);
+        RenderColor(heroPt.x - 2.5f, heroPt.y - 2.5f, 5.f, 5.f);
         glColor4f(1.f, 0.9f, 0.2f, 1.f);
-        RenderColor(heroPx - 2.f, heroPy - 2.f, 4.f, 4.f);
+        RenderColor(heroPt.x - 2.f, heroPt.y - 2.f, 4.f, 4.f);
         EndRenderColor();
         DisableScissorTest();
 
