@@ -271,6 +271,12 @@ void CNewUIPartyInfoWindow::RenderMemberStatue(int iIndex, PARTY_t* pMember, boo
     mu_swprintf(szText, L"%d %ls %d", pMember->currHP, I18N::Game::Text2374, pMember->maxHP);
     g_pRenderText->RenderText(iPosX + 88, iPosY + 51, szText, 70, 0, RT3_SORT_RIGHT);
 
+    if (pMember->Level > 0)
+    {
+        mu_swprintf(szText, L"Nv. %d", pMember->Level);
+        g_pRenderText->RenderText(iPosX + 10, iPosY + 51, szText, 70, 0, RT3_SORT_LEFT);
+    }
+
     if (bExitBtnRender)
     {
         m_BtnPartyExit[iIndex].Render();

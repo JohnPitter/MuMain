@@ -7726,6 +7726,7 @@ void ReceivePartyList(const BYTE* ReceiveBuffer)
         p->Map = Data2->Map;
         p->x = Data2->x;
         p->y = Data2->y;
+        p->Level = Data2->Level;
         p->currHP = Data2->currHP;
         p->maxHP = Data2->maxHP;
         p->index = -2;

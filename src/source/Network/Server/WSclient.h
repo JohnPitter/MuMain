@@ -950,12 +950,16 @@ typedef struct {
 } PRECEIVE_PARTY_INFOS, * LPPRECEIVE_PARTY_INFOS;
 
 //receive party list
+// Must match the OpenMU 24-byte PartyMember block. Level rides in the two reserved
+// alignment bytes at offset 14-15, so the block size is unchanged (older servers that
+// don't write it may leave garbage here; server and client are deployed together).
 typedef struct {
     char         ID[MAX_USERNAME_SIZE];
     BYTE         Number;
     BYTE         Map;
     BYTE         x;
     BYTE         y;
+    WORD         Level;
     int          currHP;
     int          maxHP;
 } PRECEIVE_PARTY_LIST, * LPPRECEIVE_PARTY_LIST;

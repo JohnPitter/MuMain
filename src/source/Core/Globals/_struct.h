@@ -553,6 +553,7 @@ typedef struct
     BYTE    Map;
     BYTE    x;
     BYTE    y;
+    WORD    Level;
     int     currHP;
     int     maxHP;
     BYTE    stepHP;
