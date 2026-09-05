@@ -1,130 +1,102 @@
 #include "stdafx.h"
 #include "UI/Voice/VoiceIcons.h"
 
-#include <iterator>
-
 #include "Render/Textures/ZzzOpenglUtil.h"
+#include "Render/Textures/ZzzTexture.h"
+#include "UI/NewUI/NewUICommon.h"
 
-// Voice icons are drawn from filled quads (RenderColor) in MU's steel-and-gold
-// interface palette: a studio microphone in a yoke stand, and a speaker cone
-// with sound waves. A whole-glyph "sticker" outline (the shape re-drawn dark at
-// eight neighbor offsets) keeps them legible on any background. Coordinates are
-// in icon units, origin at the icon center, +y downward (screen space).
+// The voice glyphs used to be built out of ~30 solid RenderColor quads each,
+// with the outline faked by redrawing the whole table at eight neighbour
+// offsets. That is the same technique the ten HUD button faces used before
+// fd08a307, and it has the same two problems: no anti-aliasing (every edge is
+// a hard staircase, and every sub-pixel detail either snaps to a full pixel or
+// disappears) and an outline that smears instead of ringing the silhouette.
+//
+// They are now the same kind of asset as the other ten LuxUI icons: an OZT
+// rasterized 8x oversampled by tools/make_hud_button_icons.py and box-filtered
+// down, so the alpha is fractional and the ink outline is a true dilation of
+// the glyph mask. Frames are stacked vertically, frame 0 active and frame 1
+// muted (dimmed metal plus a slash) — the muted state is baked into the art
+// rather than being the live glyph at half brightness, which at 14 px was the
+// only thing distinguishing "mic on" from "mic off".
+//
+// The four public entry points, their signatures, their centre-of-icon anchor
+// and the meaning of `enabled` are unchanged, so MiniMapCorner's buttons,
+// Chat's bubble marker and VoiceSpeakingIndicator's world overlay keep their
+// existing hitboxes, positions and toggle logic.
 namespace
 {
-    struct Rgb { float r, g, b; };
-    struct Quad { float x, y, w, h; Rgb color; };
+    // Frame sizes must match VOICE_ICONS in tools/make_hud_button_icons.py.
+    constexpr float kMicW = 16.f;
+    constexpr float kMicH = 23.f;
+    constexpr float kSoundW = 20.f;
+    constexpr float kSoundH = 17.f;
+    constexpr int kFrameCount = 2;   // 0 = active, 1 = muted
 
-    constexpr Rgb kInk{ 0.07f, 0.08f, 0.10f };
-    constexpr Rgb kSteelD{ 0.36f, 0.38f, 0.42f };
-    constexpr Rgb kSteelM{ 0.55f, 0.57f, 0.61f };
-    constexpr Rgb kSteelL{ 0.76f, 0.78f, 0.82f };
-    constexpr Rgb kSteelH{ 0.93f, 0.95f, 0.97f };
-    constexpr Rgb kGold{ 0.91f, 0.71f, 0.31f };
-    constexpr Rgb kGoldL{ 0.96f, 0.86f, 0.58f };
+    constexpr float kWorldLift = 12.f;  // float the world icon above the anchor
 
-    constexpr float kOutlineWidth = 1.f;   // icon units
-    constexpr float kDisabledTone = 0.5f;
-    constexpr float kWorldLift = 12.f;      // float the world icon above the anchor
+    bool s_loaded = false;
+    bool s_micOk = false;
+    bool s_soundOk = false;
 
-    // Studio microphone: rounded capsule head, cylinder shading, gold cap ring,
-    // grille slits, and a yoke stand.
-    constexpr Quad kMicrophone[] = {
-        // head capsule (rounded rows)
-        { -3.f, -12.f, 6.f, 1.f, kSteelM }, { -4.f, -11.f, 8.f, 1.f, kSteelM },
-        { -5.f, -10.f, 10.f, 1.f, kSteelM }, { -6.f, -9.f, 12.f, 1.f, kSteelM },
-        { -6.f, -8.f, 12.f, 1.f, kSteelM }, { -6.f, -7.f, 12.f, 1.f, kSteelM },
-        { -6.f, -6.f, 12.f, 1.f, kSteelM }, { -6.f, -5.f, 12.f, 1.f, kSteelM },
-        { -6.f, -4.f, 12.f, 1.f, kSteelM }, { -6.f, -3.f, 12.f, 1.f, kSteelM },
-        { -6.f, -2.f, 12.f, 1.f, kSteelM }, { -6.f, -1.f, 12.f, 1.f, kSteelM },
-        { -5.f, 0.f, 10.f, 1.f, kSteelM }, { -4.f, 1.f, 8.f, 1.f, kSteelM },
-        { -3.f, 2.f, 6.f, 1.f, kSteelM },
-        // cylinder shading
-        { -4.5f, -9.f, 2.4f, 10.f, kSteelH }, { 2.2f, -9.f, 2.6f, 10.f, kSteelD },
-        { -1.6f, -9.f, 1.4f, 10.f, kSteelL },
-        // gold cap ring
-        { -5.f, -10.5f, 10.f, 1.6f, kGold }, { -5.f, -10.5f, 10.f, 0.6f, kGoldL },
-        // grille slits
-        { -4.f, -7.f, 8.f, 0.9f, kInk }, { -4.f, -4.4f, 8.f, 0.9f, kInk },
-        { -4.f, -1.8f, 8.f, 0.9f, kInk },
-        // yoke arms + bottom
-        { -7.f, -2.f, 1.6f, 8.f, kSteelD }, { 5.4f, -2.f, 1.6f, 8.f, kSteelD },
-        { -7.f, 6.f, 12.4f, 1.6f, kSteelM },
-        // stem + base
-        { -1.f, 7.6f, 2.f, 3.f, kSteelM }, { -4.f, 10.4f, 8.f, 1.8f, kSteelD },
-        { -4.f, 10.4f, 8.f, 0.6f, kSteelM },
-    };
-
-    // Speaker cone. The first kSpeakerConeCount quads are the cone; the trailing
-    // quads are the gold sound waves (drawn only when audio is active).
-    constexpr Quad kSpeaker[] = {
-        { -7.f, -2.6f, 3.f, 5.2f, kSteelD },   // magnet box
-        { -4.f, -3.f, 2.f, 6.f, kSteelM }, { -2.f, -4.f, 2.f, 8.f, kSteelM },
-        { 0.f, -5.f, 2.f, 10.f, kSteelL }, { 2.f, -6.f, 1.4f, 12.f, kSteelH },
-        { -3.4f, -1.4f, 5.f, 2.8f, kSteelH },  // cone sheen
-        // sound waves (gold)
-        { 4.2f, -2.f, 1.4f, 4.f, kGold }, { 3.6f, -1.f, 0.9f, 2.f, kGoldL },
-        { 6.2f, -4.f, 1.4f, 8.f, kGold }, { 5.6f, -2.6f, 0.9f, 5.2f, kGoldL },
-    };
-    constexpr int kSpeakerConeCount = 6;
-
-    void Fill(float x, float y, float w, float h, Rgb color, float tone)
+    // One frame of a vertically stacked sheet, centred on (centerX, centerY)
+    // and scaled about that centre — the anchor the old quad tables used.
+    void DrawFrame(GLuint image, float texW, float texH, int frame,
+        float centerX, float centerY, float scale)
     {
-        glColor4f(color.r * tone, color.g * tone, color.b * tone, 1.f);
-        RenderColor(x, y, w, h);
-    }
+        const float w = texW * scale;
+        const float h = texH * scale;
 
-    // Sticker outline: every quad re-drawn dark at eight neighbor offsets, then
-    // covered by the colored fills — leaves a clean 1px exterior edge only.
-    void DrawOutline(const Quad* quads, int count, float ox, float oy, float scale)
-    {
-        const float o = kOutlineWidth * scale;
-        const float offsets[8][2] = {
-            { -o, 0.f }, { o, 0.f }, { 0.f, -o }, { 0.f, o },
-            { -o, -o }, { o, -o }, { -o, o }, { o, o },
-        };
-
-        for (const auto& off : offsets)
-        {
-            for (int i = 0; i < count; ++i)
-            {
-                const Quad& q = quads[i];
-                Fill(ox + (q.x * scale) + off[0], oy + (q.y * scale) + off[1],
-                    q.w * scale, q.h * scale, kInk, 1.f);
-            }
-        }
-    }
-
-    void DrawTable(const Quad* quads, int count, float ox, float oy, float scale, float tone)
-    {
-        DrawOutline(quads, count, ox, oy, scale);
-        for (int i = 0; i < count; ++i)
-        {
-            const Quad& q = quads[i];
-            Fill(ox + (q.x * scale), oy + (q.y * scale), q.w * scale, q.h * scale, q.color, tone);
-        }
+        EnableAlphaTest();
+        SEASON3B::RenderImageStretch(image,
+            centerX - (w * 0.5f), centerY - (h * 0.5f), w, h,
+            0.f, texH * static_cast<float>(frame), texW, texH);
+        EndRenderColor();
     }
 
     void DrawMicrophone(float centerX, float centerY, float scale, bool enabled)
     {
-        EnableAlphaTest();
-        DrawTable(kMicrophone, static_cast<int>(std::size(kMicrophone)),
-            centerX, centerY, scale, enabled ? 1.f : kDisabledTone);
-        EndRenderColor();
+        if (!s_micOk)
+            return;
+        DrawFrame(BITMAP_LUXUI_VOICE_MIC, kMicW, kMicH, enabled ? 0 : 1,
+            centerX, centerY, scale);
     }
 
     void DrawSpeaker(float centerX, float centerY, float scale, bool enabled)
     {
-        // Muted listening drops the sound waves; only the cone remains.
-        const int count = enabled ? static_cast<int>(std::size(kSpeaker)) : kSpeakerConeCount;
-        EnableAlphaTest();
-        DrawTable(kSpeaker, count, centerX, centerY, scale, enabled ? 1.f : kDisabledTone);
-        EndRenderColor();
+        if (!s_soundOk)
+            return;
+        DrawFrame(BITMAP_LUXUI_VOICE_SOUND, kSoundW, kSoundH, enabled ? 0 : 1,
+            centerX, centerY, scale);
     }
 }
 
 namespace UI::Voice
 {
+    void LoadIcons()
+    {
+        if (s_loaded)
+            return;
+        s_loaded = true;
+        s_micOk = LoadBitmap(L"Interface\\LuxUI\\voice_mic.tga",
+            BITMAP_LUXUI_VOICE_MIC, GL_LINEAR, GL_CLAMP_TO_EDGE);
+        s_soundOk = LoadBitmap(L"Interface\\LuxUI\\voice_sound.tga",
+            BITMAP_LUXUI_VOICE_SOUND, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    }
+
+    void UnloadIcons()
+    {
+        if (!s_loaded)
+            return;
+        s_loaded = false;
+        if (s_micOk)
+            DeleteBitmap(BITMAP_LUXUI_VOICE_MIC);
+        if (s_soundOk)
+            DeleteBitmap(BITMAP_LUXUI_VOICE_SOUND);
+        s_micOk = false;
+        s_soundOk = false;
+    }
+
     void DrawMicrophoneIcon(float centerX, float centerY, float scale, bool enabled)
     {
         DrawMicrophone(centerX, centerY - (kWorldLift * scale), scale, enabled);

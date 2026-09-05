@@ -32,6 +32,7 @@
 #include "GameShop/InGameShopSystem.h"
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "UI/HUD/HudToolbar.h"
+#include "UI/Voice/VoiceIcons.h"
 
 namespace
 {
@@ -128,6 +129,9 @@ void SEASON3B::CNewUIMainFrameWindow::LoadImages()
     LoadBitmap(L"Interface\\LuxUI\\toolbar_inventory.tga", IMAGE_MENU_BTN_MYINVEN, GL_LINEAR, GL_CLAMP_TO_EDGE);
     LoadBitmap(L"Interface\\LuxUI\\toolbar_friends.tga", IMAGE_MENU_BTN_FRIEND, GL_LINEAR, GL_CLAMP_TO_EDGE);
     LoadBitmap(L"Interface\\LuxUI\\toolbar_menu.tga", IMAGE_MENU_BTN_WINDOW, GL_LINEAR, GL_CLAMP_TO_EDGE);
+    // The voice glyphs live in the same LuxUI set and are only ever drawn
+    // in-game, so they share this window's texture lifetime.
+    UI::Voice::LoadIcons();
 }
 
 void SEASON3B::CNewUIMainFrameWindow::UnloadImages()
@@ -146,6 +150,7 @@ void SEASON3B::CNewUIMainFrameWindow::UnloadImages()
     DeleteBitmap(IMAGE_MENU_BTN_MYINVEN);
     DeleteBitmap(IMAGE_MENU_BTN_FRIEND);
     DeleteBitmap(IMAGE_MENU_BTN_WINDOW);
+    UI::Voice::UnloadIcons();
 }
 
 bool SEASON3B::CNewUIMainFrameWindow::Create(CNewUIManager* pNewUIMng, CNewUI3DRenderMng* pNewUI3DRenderMng)
