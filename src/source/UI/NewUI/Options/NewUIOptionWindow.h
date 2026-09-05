@@ -81,6 +81,7 @@ namespace SEASON3B
 
         // UpdateMouseEvent helpers
         void HandleCheckboxInputs();
+        void PersistCheckboxChange(bool* target);
         bool HandleVolumeSlider(int& level, int yOffset);
         void OnSoundVolumeChanged();
         void OnMusicVolumeChanged();

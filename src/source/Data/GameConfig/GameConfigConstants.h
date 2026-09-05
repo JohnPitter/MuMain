@@ -10,6 +10,9 @@ namespace CfgSections
     inline constexpr wchar_t CfgSectionConnectionSettings[] = L"CONNECTION SETTINGS";
     inline constexpr wchar_t CfgSectionCamera[] = L"Camera";
     inline constexpr wchar_t CfgSectionRender[] = L"Render";
+    // In-game Options window toggles/sliders that are persisted nowhere else
+    // (volumes live in "Audio", window state in "Window").
+    inline constexpr wchar_t CfgSectionOptions[] = L"Options";
 }
 
 namespace CfgKeys
@@ -43,6 +46,13 @@ namespace CfgKeys
 
     // Camera
     inline constexpr wchar_t CfgKeyZoom[] = L"Zoom";
+
+    // Options (in-game Options window)
+    inline constexpr wchar_t CfgKeyAutoAttack[]       = L"AutoAttack";
+    inline constexpr wchar_t CfgKeyWhisperSound[]     = L"WhisperSound";
+    inline constexpr wchar_t CfgKeySlideHelp[]        = L"SlideHelp";
+    inline constexpr wchar_t CfgKeyRenderLevel[]      = L"RenderLevel";
+    inline constexpr wchar_t CfgKeyRenderAllEffects[] = L"RenderAllEffects";
 
     // Render
     // DXP-08: Core Profile GL context flip. 0 = compatibility (rollback), 1 = core.
@@ -94,4 +104,35 @@ namespace CfgDefaults
 
     // GLP-08: empty = no cap, try the highest core context available.
     inline constexpr wchar_t CfgDefaultMaxGLVersion[] = L"";
+
+    // In-game Options window defaults. These mirror the values the options
+    // window used to hardcode in its constructor before local persistence
+    // existed, so a fresh install behaves exactly as before.
+    inline constexpr bool CfgDefaultAutoAttack       = true;
+    inline constexpr bool CfgDefaultWhisperSound     = false;
+    inline constexpr bool CfgDefaultSlideHelp        = true;
+    // "+Effect limitation" slider: 0..5. Runtime consumers map it to effect
+    // detail (e.g. ZzzObject GetPipeline caps at RenderLevel*2+5).
+    inline constexpr int  CfgDefaultRenderLevel      = 4;
+    inline constexpr bool CfgDefaultRenderAllEffects = true;
+}
+
+namespace CfgLimits
+{
+    // Slider ranges of the Options window. Sliders (volume 0..10, effect
+    // limitation 0..5) and Load()-time sanitizing of config.ini values share
+    // these pure clamps so a hand-edited or truncated ini can never push an
+    // out-of-range level into the renderer or the audio mixer.
+    inline constexpr int MaxVolumeLevel = 10;
+    inline constexpr int MaxRenderLevel = 5;
+
+    inline int ClampVolumeLevel(int level)
+    {
+        return level < 0 ? 0 : (level > MaxVolumeLevel ? MaxVolumeLevel : level);
+    }
+
+    inline int ClampRenderLevel(int level)
+    {
+        return level < 0 ? 0 : (level > MaxRenderLevel ? MaxRenderLevel : level);
+    }
 }

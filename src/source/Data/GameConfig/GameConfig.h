@@ -92,6 +92,28 @@ public:
     int GetZoom() const { return m_zoom; }
     void SetZoom(int zoom);
 
+    // In-game Options window (see CNewUIOptionWindow). These are client-wide
+    // preferences: persisted locally on every change and restored when the
+    // options window is constructed at boot. AutoAttack/WhisperSound/SlideHelp
+    // are additionally synced per-character to the game server via
+    // SaveOptions() (ZzzOpenData.cpp) — the local copy covers the pre-login
+    // state and clients that never receive the server's key-configuration
+    // packet back.
+    bool GetAutoAttack() const { return m_autoAttack; }
+    void SetAutoAttack(bool autoAttack);
+
+    bool GetWhisperSound() const { return m_whisperSound; }
+    void SetWhisperSound(bool whisperSound);
+
+    bool GetSlideHelp() const { return m_slideHelp; }
+    void SetSlideHelp(bool slideHelp);
+
+    int GetRenderLevel() const { return m_renderLevel; }
+    void SetRenderLevel(int level);
+
+    bool GetRenderAllEffects() const { return m_renderAllEffects; }
+    void SetRenderAllEffects(bool renderAllEffects);
+
     // Helpers
     static std::wstring BinaryToHex(const BYTE* data, DWORD size);
     static std::vector<BYTE> HexToBinary(const std::wstring& hex);
@@ -131,6 +153,12 @@ private:
     float m_fixedToolbarScale;
 
     int m_zoom;
+
+    bool m_autoAttack;
+    bool m_whisperSound;
+    bool m_slideHelp;
+    int  m_renderLevel;
+    bool m_renderAllEffects;
 
     int ReadInt(const wchar_t* section, const wchar_t* key, int defaultValue);
     void WriteInt(const wchar_t* section, const wchar_t* key, int value);

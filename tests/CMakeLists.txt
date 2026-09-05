@@ -55,3 +55,5 @@ add_subdirectory(text)
 add_subdirectory(events)
 
 add_subdirectory(editor)
+
+add_subdirectory(options)

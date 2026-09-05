@@ -58,8 +58,10 @@ void GameConfig::Load()
     m_windowHeight = ReadInt(CfgSectionWindow, CfgKeyHeight, CfgDefaultWindowHeight);
     m_windowMode   = ReadBool(CfgSectionWindow, CfgKeyWindowed, CfgDefaultWindowed);
 
-    m_soundVolume  = ReadInt(CfgSectionAudio, CfgKeySoundVolume, CfgDefaultSoundVolume);
-    m_musicVolume  = ReadInt(CfgSectionAudio, CfgKeyMusicVolume, CfgDefaultMusicVolume);
+    m_soundVolume  = CfgLimits::ClampVolumeLevel(
+        ReadInt(CfgSectionAudio, CfgKeySoundVolume, CfgDefaultSoundVolume));
+    m_musicVolume  = CfgLimits::ClampVolumeLevel(
+        ReadInt(CfgSectionAudio, CfgKeyMusicVolume, CfgDefaultMusicVolume));
 
     m_rememberMe        = ReadBool(CfgSectionLogin, CfgKeyRememberMe, CfgDefaultRememberMe);
     m_savePassword      = ReadBool(CfgSectionLogin, CfgKeySavePassword, CfgDefaultSavePassword);
@@ -94,6 +96,13 @@ void GameConfig::Load()
     }
 
     m_zoom = ReadInt(CfgSectionCamera, CfgKeyZoom, CfgDefaultZoom);
+
+    m_autoAttack       = ReadBool(CfgSectionOptions, CfgKeyAutoAttack, CfgDefaultAutoAttack);
+    m_whisperSound     = ReadBool(CfgSectionOptions, CfgKeyWhisperSound, CfgDefaultWhisperSound);
+    m_slideHelp        = ReadBool(CfgSectionOptions, CfgKeySlideHelp, CfgDefaultSlideHelp);
+    m_renderLevel      = CfgLimits::ClampRenderLevel(
+        ReadInt(CfgSectionOptions, CfgKeyRenderLevel, CfgDefaultRenderLevel));
+    m_renderAllEffects = ReadBool(CfgSectionOptions, CfgKeyRenderAllEffects, CfgDefaultRenderAllEffects);
 
     // Strip keys/sections we used to write but no longer use, so user config
     // files don't accumulate orphans. Append one line per retired key — no
@@ -169,6 +178,12 @@ void GameConfig::Save()
     }
 
     WriteInt(CfgSectionCamera, CfgKeyZoom, m_zoom);
+
+    WriteBool(CfgSectionOptions, CfgKeyAutoAttack, m_autoAttack);
+    WriteBool(CfgSectionOptions, CfgKeyWhisperSound, m_whisperSound);
+    WriteBool(CfgSectionOptions, CfgKeySlideHelp, m_slideHelp);
+    WriteInt(CfgSectionOptions, CfgKeyRenderLevel, m_renderLevel);
+    WriteBool(CfgSectionOptions, CfgKeyRenderAllEffects, m_renderAllEffects);
 }
 
 std::vector<std::wstring> GameConfig::ReadStringList(const wchar_t* section, const wchar_t* keyPrefix)
@@ -295,6 +310,31 @@ void GameConfig::SetServerPort(int port)
 void GameConfig::SetZoom(int zoom)
 {
     m_zoom = zoom;
+}
+
+void GameConfig::SetAutoAttack(bool autoAttack)
+{
+    m_autoAttack = autoAttack;
+}
+
+void GameConfig::SetWhisperSound(bool whisperSound)
+{
+    m_whisperSound = whisperSound;
+}
+
+void GameConfig::SetSlideHelp(bool slideHelp)
+{
+    m_slideHelp = slideHelp;
+}
+
+void GameConfig::SetRenderLevel(int level)
+{
+    m_renderLevel = CfgLimits::ClampRenderLevel(level);
+}
+
+void GameConfig::SetRenderAllEffects(bool renderAllEffects)
+{
+    m_renderAllEffects = renderAllEffects;
 }
 
 // Helper function to convert binary data to hex string

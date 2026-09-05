@@ -9,6 +9,7 @@
 #include "Audio/DSPlaySound.h"
 #include "Data/GameConfig/GameConfig.h"
 #include "Audio/AudioPlayer.h"
+#include "Engine/Object/ZzzOpenData.h"
 #include <algorithm>
 #include <cstring>
 #include "I18N/All.h"
@@ -184,13 +185,13 @@ SEASON3B::CNewUIOptionWindow::CNewUIOptionWindow()
     m_Pos.x = 0;
     m_Pos.y = 0;
 
-    m_bAutoAttack = true;
-    m_bWhisperSound = false;
-    m_bSlideHelp = true;
+    m_bAutoAttack = GameConfig::GetInstance().GetAutoAttack();
+    m_bWhisperSound = GameConfig::GetInstance().GetWhisperSound();
+    m_bSlideHelp = GameConfig::GetInstance().GetSlideHelp();
     m_iVolumeLevel = GameConfig::GetInstance().GetSoundVolume();
     m_iMusicLevel = GameConfig::GetInstance().GetMusicVolume();
-    m_iRenderLevel = 4;
-    m_bRenderAllEffects = true;
+    m_iRenderLevel = GameConfig::GetInstance().GetRenderLevel();
+    m_bRenderAllEffects = GameConfig::GetInstance().GetRenderAllEffects();
     m_iResolutionIndex = FindCurrentResolutionIndex();
     m_bWindowedMode = (g_bUseWindowMode == TRUE);
     m_iLanguageIndex = FindCurrentLanguageIndex();
@@ -397,8 +398,50 @@ void SEASON3B::CNewUIOptionWindow::HandleCheckboxInputs()
     for (const auto& cb : boxes)
     {
         if (CheckMouseIn(m_Pos.x + CHECKBOX_X_LOCAL, m_Pos.y + cb.yLocal, CHECKBOX_SIZE, CHECKBOX_SIZE))
+        {
             *cb.target = !*cb.target;
+            PersistCheckboxChange(cb.target);
+        }
     }
+}
+
+// Persist a toggled checkbox. Everything but windowed mode goes to config.ini
+// right away (the same save-on-change pattern the volume sliders, locale and
+// font already use), so closing the client by any path keeps the choice.
+// AutoAttack/WhisperSound/SlideHelp are additionally synced per-character to
+// the game server via SaveOptions() — that call is a safe no-op whenever the
+// server round-trip is unavailable (not logged in / not restored yet).
+// Windowed mode is persisted by ApplyWindowModeToggle after the mode switch
+// reports the size SDL actually adopted.
+void SEASON3B::CNewUIOptionWindow::PersistCheckboxChange(bool* target)
+{
+    GameConfig& config = GameConfig::GetInstance();
+
+    if (target == &m_bAutoAttack)
+    {
+        config.SetAutoAttack(m_bAutoAttack);
+        ::SaveOptions();
+    }
+    else if (target == &m_bWhisperSound)
+    {
+        config.SetWhisperSound(m_bWhisperSound);
+        ::SaveOptions();
+    }
+    else if (target == &m_bSlideHelp)
+    {
+        config.SetSlideHelp(m_bSlideHelp);
+        ::SaveOptions();
+    }
+    else if (target == &m_bRenderAllEffects)
+    {
+        config.SetRenderAllEffects(m_bRenderAllEffects);
+    }
+    else
+    {
+        return;  // windowed mode — handled in ApplyWindowModeToggle
+    }
+
+    config.Save();
 }
 
 // Handles wheel + drag input on a volume slider track.
@@ -474,7 +517,16 @@ void SEASON3B::CNewUIOptionWindow::HandleRenderLevelSlider()
         return;
 
     int x = MouseX - (m_Pos.x + RENDER_SLIDER_X_LOCAL);
-    m_iRenderLevel = (int)((RENDER_LEVEL_MAX * x) / (float)RENDER_SLIDER_WIDTH + 0.5f);
+    const int newLevel = (int)((RENDER_LEVEL_MAX * x) / (float)RENDER_SLIDER_WIDTH + 0.5f);
+
+    if (newLevel != m_iRenderLevel)
+    {
+        m_iRenderLevel = newLevel;
+        // Save-on-change, matching the volume sliders: the effect limitation
+        // has no server-side copy, config.ini is its only persistence.
+        GameConfig::GetInstance().SetRenderLevel(m_iRenderLevel);
+        GameConfig::GetInstance().Save();
+    }
 }
 
 
