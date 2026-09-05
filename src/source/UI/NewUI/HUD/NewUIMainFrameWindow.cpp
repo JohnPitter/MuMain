@@ -32,6 +32,7 @@
 #include "GameShop/InGameShopSystem.h"
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "UI/HUD/HudToolbar.h"
+#include "UI/NewUI/HUD/HudIcons.h"
 
 namespace
 {
@@ -92,6 +93,26 @@ namespace
             SEASON3B::RenderNumber(centerX, y + (lineH - glyphH) * 0.5f, digit, scale);
             y += lineH;
         }
+    }
+
+    // New-style main toolbar button: the neutral steel plate (HudIcons)
+    // replaces the pre-baked art, then the action glyph on top — the same grey
+    // box + icon pattern as the voice mic/som buttons. The button object still
+    // renders its tooltip; rect, hit box and click behavior are untouched.
+    void RenderToolbarButton(SEASON3B::CNewUIButton& button, UI::HUD::Icons::GlyphFn glyph, bool active, bool alert = false)
+    {
+        button.Render();
+
+        const POINT pos = button.GetPos();
+        const POINT size = button.GetSize();
+        const SEASON3B::BUTTON_STATE state = button.GetBTState();
+        UI::HUD::Icons::DrawButtonPlate(static_cast<float>(pos.x), static_cast<float>(pos.y),
+            static_cast<float>(size.x), static_cast<float>(size.y),
+            UI::HUD::Icons::PlateStateFor(state == SEASON3B::BUTTON_STATE_OVER,
+                state == SEASON3B::BUTTON_STATE_DOWN, active, alert));
+        glyph(static_cast<float>(pos.x) + static_cast<float>(size.x) * 0.5f,
+            static_cast<float>(pos.y) + static_cast<float>(size.y) * 0.5f,
+            UI::HUD::Icons::kToolbarGlyphScale, true);
     }
 }
 
@@ -727,51 +748,52 @@ void SEASON3B::CNewUIMainFrameWindow::RenderHotKeyItemCount()
 void SEASON3B::CNewUIMainFrameWindow::RenderButtons()
 {
 #ifdef PBG_ADD_INGAMESHOP_UI_MAINFRAME
-    m_BtnCShop.Render();
+    RenderToolbarButton(m_BtnCShop, UI::HUD::Icons::DrawCashShopGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INGAMESHOP));
 #endif //defined PBG_ADD_INGAMESHOP_UI_MAINFRAME
 
     RenderCharInfoButton();
-    m_BtnMyInven.Render();
+    RenderToolbarButton(m_BtnMyInven, UI::HUD::Icons::DrawInventoryGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_INVENTORY));
 
     RenderFriendButton();
 
-    m_BtnWindow.Render();
+    RenderToolbarButton(m_BtnWindow, UI::HUD::Icons::DrawMenuGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_WINDOW_MENU));
 }
 
 void SEASON3B::CNewUIMainFrameWindow::RenderCharInfoButton()
 {
-    m_BtnChaInfo.Render();
-
-    if (g_QuestMng.IsQuestIndexByEtcListEmpty())
-        return;
-
-    if (g_Time.GetTimeCheck(5, 500))
-        m_bButtonBlink = !m_bButtonBlink;
-
-    if (m_bButtonBlink)
+    bool questAlert = false;
+    if (!g_QuestMng.IsQuestIndexByEtcListEmpty())
     {
-        if (!(g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS_ETC)
-            || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER)))
-            RenderImage(IMAGE_MENU_BTN_CHAINFO, 489 + 30, REFERENCE_HEIGHT - 51, 30, 41, 0.0f, 41.f);
+        if (g_Time.GetTimeCheck(5, 500))
+            m_bButtonBlink = !m_bButtonBlink;
+
+        questAlert = m_bButtonBlink
+            && !(g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_QUEST_PROGRESS_ETC)
+                || g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER));
     }
+
+    RenderToolbarButton(m_BtnChaInfo, UI::HUD::Icons::DrawCharacterGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_CHARACTER), questAlert);
 }
 
 void SEASON3B::CNewUIMainFrameWindow::RenderFriendButton()
 {
-    m_BtnFriend.Render();
-
     int iBlinkTemp = g_pFriendMenu->GetBlinkTemp();
     BOOL bIsAlertTime = (iBlinkTemp % 24 < 12);
 
+    bool friendAlert = false;
     if (g_pFriendMenu->IsNewChatAlert() && bIsAlertTime)
     {
-        RenderFriendButtonState();
+        friendAlert = true;
     }
     if (g_pFriendMenu->IsNewMailAlert())
     {
         if (bIsAlertTime)
         {
-            RenderFriendButtonState();
+            friendAlert = true;
 
             if (iBlinkTemp % 24 == 11)
             {
@@ -781,8 +803,11 @@ void SEASON3B::CNewUIMainFrameWindow::RenderFriendButton()
     }
     else if (g_pLetterList->CheckNoReadLetter())
     {
-        RenderFriendButtonState();
+        friendAlert = true;
     }
+
+    RenderToolbarButton(m_BtnFriend, UI::HUD::Icons::DrawFriendsGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_FRIEND), friendAlert);
 
     g_pFriendMenu->IncreaseBlinkTemp();
 }

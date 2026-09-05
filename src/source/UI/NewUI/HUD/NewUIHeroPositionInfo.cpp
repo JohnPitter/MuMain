@@ -6,6 +6,7 @@
 #include "I18N/All.h"
 
 #include "Audio/DSPlaySound.h"
+#include "UI/NewUI/HUD/HudIcons.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "UI/NewUI/NewUICommon.h"
 #include "World/MapInfra/MapManager.h"
@@ -28,6 +29,26 @@ namespace
     constexpr float kCapBody = kCapNativeW - kCapRound;
     constexpr float kCapBodyDest = kCapBody + kCapExtra;
     constexpr float kCapTotal = kCapBodyDest + kCapRound;
+
+    // New-style strip button: the neutral steel plate (HudIcons) replaces the
+    // pre-baked MacroUI art, then the action glyph on top — the same grey box
+    // + icon pattern as the voice mic/som buttons. Keep the button object for
+    // its tooltip and hit testing; positions and sizes are untouched.
+    void RenderStripButton(SEASON3B::CNewUIButton& button, UI::HUD::Icons::GlyphFn glyph, bool active)
+    {
+        button.Render();
+
+        const POINT pos = button.GetPos();
+        const POINT size = button.GetSize();
+        const SEASON3B::BUTTON_STATE state = button.GetBTState();
+        UI::HUD::Icons::DrawButtonPlate(static_cast<float>(pos.x), static_cast<float>(pos.y),
+            static_cast<float>(size.x), static_cast<float>(size.y),
+            UI::HUD::Icons::PlateStateFor(state == SEASON3B::BUTTON_STATE_OVER,
+                state == SEASON3B::BUTTON_STATE_DOWN, active, false));
+        glyph(static_cast<float>(pos.x) + static_cast<float>(size.x) * 0.5f,
+            static_cast<float>(pos.y) + static_cast<float>(size.y) * 0.5f,
+            UI::HUD::Icons::kStripGlyphScale, true);
+    }
 }
 
 CNewUIHeroPositionInfo::CNewUIHeroPositionInfo()
@@ -271,13 +292,16 @@ bool CNewUIHeroPositionInfo::Render()
         kCapRound,
         kCapH);
     //--
-    m_BtnConfig.Render();
+    RenderStripButton(m_BtnConfig, UI::HUD::Icons::DrawSettingsGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MUHELPER));
     if (MUHelper::g_MuHelper.IsActive())
-        m_BtnStop.Render();
+        RenderStripButton(m_BtnStop, UI::HUD::Icons::DrawStopGlyph, true);
     else
-        m_BtnStart.Render();
-    s_BtnAuto.Render();
-    s_BtnMarket.Render();
+        RenderStripButton(m_BtnStart, UI::HUD::Icons::DrawPlayGlyph, false);
+    RenderStripButton(s_BtnAuto, UI::HUD::Icons::DrawAutoBattleGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_AUTOBATTLER));
+    RenderStripButton(s_BtnMarket, UI::HUD::Icons::DrawMarketplaceGlyph,
+        g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_MARKETPLACE));
 
     // Voice M/S dock to the middle of the right screen edge (MiniMapCorner).
     //--
