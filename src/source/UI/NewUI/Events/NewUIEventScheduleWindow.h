@@ -11,6 +11,8 @@ namespace SEASON3B
     // runs, together with the time until it starts / ends. The server owns the
     // schedule (C2 D6 00); this window only renders it and ticks the countdown
     // locally between refreshes so the numbers move every second.
+    // The "Ajuda" button opens a centered popup explaining each event (what it
+    // is and where to join), scrollable with the mouse wheel.
     class CNewUIEventScheduleWindow : public CNewUIObj
     {
         enum eIMAGE_LIST
@@ -21,6 +23,8 @@ namespace SEASON3B
             IMAGE_EVENTS_RIGHT = CNewUIMyInventory::IMAGE_INVENTORY_BACK_RIGHT,
             IMAGE_EVENTS_BOTTOM = CNewUIMyInventory::IMAGE_INVENTORY_BACK_BOTTOM,
             IMAGE_EVENTS_BTN_EXIT = CNewUIMyInventory::IMAGE_INVENTORY_EXIT_BTN,
+            // Shared empty button texture (message-box manager owns the bitmap).
+            IMAGE_EVENTS_BTN_HELP = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_VERY_SMALL,
         };
 
         enum eWINDOW_SIZE
@@ -52,6 +56,21 @@ namespace SEASON3B
             EXIT_BUTTON_Y = 392,
             EXIT_BUTTON_WIDTH = 36,
             EXIT_BUTTON_HEIGHT = 29,
+            // "Ajuda" button on the bottom-right corner, mirroring the exit
+            // button (13 px inset). Uses the shared message-box empty button
+            // texture (owned by CNewUIMessageBoxMng, never reloaded here).
+            HELP_BUTTON_X = WINDOW_WIDTH - 13 - 54,
+            HELP_BUTTON_Y = 395,
+            HELP_BUTTON_WIDTH = 54,
+            HELP_BUTTON_HEIGHT = 23,
+            // Help popup ("telinha"), centered over this window. Same frame
+            // pieces as the schedule window itself.
+            HELP_WIDTH = 300,
+            HELP_HEIGHT = 380,
+            HELP_CONTENT_LEFT = 22,
+            HELP_CONTENT_TOP = 40,
+            HELP_LINE_HEIGHT = 13,
+            HELP_VISIBLE_LINES = (HELP_HEIGHT - HELP_CONTENT_TOP - FRAME_BOTTOM_HEIGHT - 6) / HELP_LINE_HEIGHT,
         };
 
     public:
@@ -112,11 +131,23 @@ namespace SEASON3B
         void UnloadImages();
         void InitButtons();
         void RenderBaseWindow();
+        // Draws the shared inventory-frame pieces (tiled msgbox_back stone,
+        // 3-slice header with the baked close "X", side strips, bottom strip)
+        // at an arbitrary rect. Used by both this window and the help popup.
+        void RenderWindowFrame(float x, float y, float w, float h);
+        void GetHelpRect(int* x, int* y) const;
+        void RenderHelpWindow();
+        void CloseHelp();
         static const wchar_t* StateText(BYTE state);
 
         CNewUIManager* m_pNewUIMng;
         POINT m_Pos;
         CNewUIButton m_BtnExit;
+        CNewUIButton m_BtnHelp;
+        // Help popup state: opened by the "Ajuda" button, closed by its own
+        // baked "X", a click outside the popup, ESC, or the window closing.
+        bool m_HelpOpen;
+        int m_HelpScroll;
 
         Entry m_Entries[kMaxEntries];
         int m_iEntryCount;
