@@ -55,7 +55,7 @@ bool SEASON3B::CNewUIMiniMap::Create(CNewUIManager* pNewUIMng, int x, int y)
 
     SetPos(x, y);
 
-    ApplyWorldScale(nullptr);
+    InitDrawMetrics();
     m_bSuccess = false;
     // Default CNewUIObj visibility is true. This overlay eats (0,0)-(640,430)
     // in UpdateMouseEvent; leaving it shown from login blocks walk clicks and
@@ -225,19 +225,20 @@ bool SEASON3B::CNewUIMiniMap::Update()
     return true;
 }
 
-void SEASON3B::CNewUIMiniMap::ApplyWorldScale(const wchar_t* worldName)
+void SEASON3B::CNewUIMiniMap::InitDrawMetrics()
 {
-    // Default TAB scale: 800px for the full 256-tile sheet. Stadium's
-    // walkable campus is only ~102x120 of that sheet; 1200px fills the
-    // overlay once unused tiles are transparent (see make_arena_minimap.py).
-    int base = 800;
-    if (worldName && wcsstr(worldName, L"World7"))
-        base = 1200;
-
+    // Every world draws the full 256-tile sheet at the same scale, so a tile is
+    // the same size on TAB whatever map you are on. World7 (Arena/Stadium) used
+    // to get 1200 because its sheet was mostly undesigned filler and the map
+    // read as a small blob in a corner; with the sheet painted and its unbuilt
+    // half transparent, 1200 was just a crop: from the plaza it showed 77% of
+    // the walled campus, against 96.8% at this scale (Lorencia only ever shows
+    // ~43% of its own board from town). The extra zoom is no longer worth the
+    // special case.
     m_MiniPos = 0;
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < ZOOM_STEP_COUNT; ++i)
     {
-        const int size = base + (i * 200);
+        const int size = TAB_SHEET_DRAW_SIZE + (i * ZOOM_STEP_PIXELS);
         m_Lenth[i].x = size;
         m_Lenth[i].y = size;
     }
@@ -245,7 +246,7 @@ void SEASON3B::CNewUIMiniMap::ApplyWorldScale(const wchar_t* worldName)
 
 void SEASON3B::CNewUIMiniMap::LoadImages(const wchar_t* Filename)
 {
-    ApplyWorldScale(Filename);
+    InitDrawMetrics();
 
     wchar_t Fname[300];
     int i = 0;

@@ -36,6 +36,13 @@ namespace SEASON3B
             EVENT_SCROLL_BTN_DOWN,
         };
 
+        // Screen size the full 256-tile mini_map sheet is drawn at on TAB, and
+        // the zoom ladder m_Lenth holds (m_MiniPos picks a rung; only rung 0 is
+        // reachable today). MiniMapCorner reuses whichever rung is active.
+        static constexpr int TAB_SHEET_DRAW_SIZE = 800;
+        static constexpr int ZOOM_STEP_PIXELS = 200;
+        static constexpr int ZOOM_STEP_COUNT = 6;
+
     private:
        std::wstring		m_TooltipText;
         HFONT					m_hToolTipFont;
@@ -45,7 +52,7 @@ namespace SEASON3B
         POINT					m_Pos;
         POINT					m_Width;
         POINT					m_MiniWidth;
-        POINT					m_Lenth[6];
+        POINT					m_Lenth[ZOOM_STEP_COUNT];
         int						m_MiniPos;
         CNewUIButton			m_BtnExit;
         MINI_MAP				m_Mini_Map_Data[MAX_MINI_MAP_DATA];
@@ -80,7 +87,7 @@ namespace SEASON3B
         POINT GetTabDrawMetrics() const { return m_Lenth[m_MiniPos]; }
 
     private:
-        void ApplyWorldScale(const wchar_t* worldName);
+        void InitDrawMetrics();
         void Render_Text();
         void Render_Icon();
         void Render_Scroll();
