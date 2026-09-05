@@ -27,6 +27,23 @@ whole stadium interior TW_SAFEZONE and the design used to add a pad around the
 warp arrival, so mobs and players were unattackable far outside the plaza. The
 mask now strips the bit from the entire sheet and stamps only the plaza.
 
+Round 7 (server update 195) closes the hunting pens. The owner stood inside the
+cage at (27,57) and reported: "you can walk through the bars on the top side,
+you shouldn't - the player has to get in and out only through the main gate."
+He was right, and worse than reported: nine of the thirteen pens had *two* ways
+in. Every pen is fenced by 담장 (Object11.bmd) rails with exactly one gap, and
+that gap is flanked by a pair of 작은기둥 pillars (Object10.bmd) - that pair is
+the main gate, and it is the only opening the artist drew. The LuxView door list
+only lined up with it for four pens (Yeti, Ice, Cyclops, Drakan). For the other
+nine the door had been punched on the *opposite* face, straight through a solid
+rail run, while the real gate stayed open in the authoring - so each of those
+pens had a gate plus a hole through the bars. Reading the placements out of
+EncTerrain7.obj (see tools/arena_cage_gates.py) the old rects sit under 8, 6, 6,
+8, 8, 3, 4, 4 and 4 fence footprints with not one pillar touching them, and the
+new ones sit under no fence at all with four pillar tiles around each. Moving the
+doors onto the gates re-seals 51 tiles: the punch no longer opens them and the
+authoring's TW_NOMOVE stands.
+
 Round 6 (server update 193) fits that stamp to the plaza walls. Round 5 used a
 Chebyshev pad (65,43 r10 -> x 55..75, y 33..53) that was drawn by eye and spilled
 a full four tiles past the masonry into the west corridor - the owner stood at
@@ -76,11 +93,24 @@ MAP_KEY = bytes([0xD1, 0x73, 0x52, 0xF6, 0xD2, 0x9A, 0xCB, 0x27,
 BUX = bytes([0xFC, 0xCF, 0xAB])
 
 # --- LuxView design, mirrored from OpenMU GameLogic/ArenaCageDoors.cs ---------
+# One door per pen, and every one of them is the gate the artist drew: the gap in
+# the 담장 rail run flanked by a pair of 작은기둥 pillars. Provenance and the
+# fence/pillar footprint check live in tools/arena_cage_gates.py. Iron Wheel and
+# Mutant share one long pen (x 42..52, y 69..97) with a single gate, so there are
+# 12 doors for 13 hunting boxes.
 TERRAIN_HOLES = [
-    (16, 37, 16, 39), (16, 55, 16, 57), (16, 73, 16, 75), (16, 89, 18, 92),
-    (23, 37, 24, 39), (23, 55, 24, 57), (23, 71, 24, 74), (23, 88, 24, 91),
-    (41, 37, 41, 39), (41, 55, 41, 58), (41, 69, 41, 72), (41, 79, 41, 82),
-    (60, 73, 64, 75),
+    (16, 37, 16, 39),  # Yeti
+    (16, 55, 16, 57),  # Ice
+    (16, 73, 16, 75),  # Cyclops
+    (16, 86, 16, 87),  # Poison Bull (corner gate; (17,86) is authored open too)
+    (35, 38, 35, 39),  # Gorgon
+    (35, 56, 35, 57),  # Shadow
+    (35, 74, 35, 75),  # Devil
+    (29, 86, 30, 86),  # Death Cow (gate on the north fence)
+    (53, 38, 53, 39),  # Bahamut
+    (53, 56, 53, 57),  # Lizard King
+    (53, 81, 53, 82),  # Iron Wheel + Mutant (one pen, one gate)
+    (60, 73, 64, 75),  # Drakan (hall -> inner door)
 ]
 HUNTING_BOXES = [
     (9, 35, 15, 41), (9, 53, 15, 59), (9, 71, 15, 77), (9, 88, 15, 94),
@@ -214,6 +244,50 @@ def component_from(payload: bytes, seeds) -> set:
     return seen
 
 
+NEIGHBOURS8 = ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1))
+
+
+def pen_of(payload: bytes, box, doors) -> set:
+    """The enclosure around a hunting box, with the door tiles treated as shut.
+
+    Eight-connected on purpose: the client pathfinder expands all 8 directions
+    and never checks the corner (PATH::FindPath in ZzzPath.h), so a diagonal
+    squeeze between two blocked tiles is a real way out.
+    """
+    x1, y1, x2, y2 = box
+    inside = [(x, y) for x in range(x1, x2 + 1) for y in range(y1, y2 + 1)]
+    start = next(p for p in inside if walkable(payload[p[0] + (p[1] << 8)]))
+    seen = {start}
+    q = deque([start])
+    while q:
+        x, y = q.popleft()
+        for dx, dy in NEIGHBOURS8:
+            n = (x + dx, y + dy)
+            if n in seen or n in doors or not (0 <= n[0] < 256 and 0 <= n[1] < 256):
+                continue
+            if walkable(payload[n[0] + (n[1] << 8)]):
+                seen.add(n)
+                q.append(n)
+    return seen
+
+
+def cage_openings(payload: bytes, index: int) -> tuple[set, set]:
+    """Return (pen, openings) for one hunting box: every walkable tile that
+    touches the pen from outside. A sealed pen leaks only through its door."""
+    box = HUNTING_BOXES[index]
+    doors = {(x, y) for x, y in tiles(TERRAIN_HOLES)}
+    pen = pen_of(payload, box, doors)
+    openings = set()
+    for x, y in pen:
+        for dx, dy in NEIGHBOURS8:
+            n = (x + dx, y + dy)
+            if n in pen or not (0 <= n[0] < 256 and 0 <= n[1] < 256):
+                continue
+            if walkable(payload[n[0] + (n[1] << 8)]):
+                openings.add(n)
+    return pen, openings
+
+
 def seal_outside(payload: bytes) -> tuple[bytes, int]:
     """Seal the walkable tiles the authoring left on the map edges.
 
@@ -249,10 +323,19 @@ def report(payload: bytes) -> bool:
         inside = [(x, y) for x in range(x1, x2 + 1) for y in range(y1, y2 + 1)]
         free = sum(1 for p in inside if walkable(payload[p[0] + (p[1] << 8)]))
         hit = sum(1 for p in inside if p in reach)
-        flag = "OK " if hit else "!! "
-        if not hit:
+        pen, openings = cage_openings(payload, i)
+        door = sorted(t for t in tiles(TERRAIN_HOLES) if t in openings)
+        stray = sorted(openings - set(door))
+        sealed_pen = bool(door) and not stray and len(pen) < 400
+        flag = "OK " if hit and sealed_pen else "!! "
+        if not hit or not sealed_pen:
             ok = False
-        print(f"  {flag}cage {i:2d} ({x1},{y1})-({x2},{y2}) walkable {free}/{len(inside)} reachable {hit}")
+        print(f"  {flag}cage {i:2d} ({x1},{y1})-({x2},{y2}) walkable {free}/{len(inside)} "
+              f"reachable {hit} pen {len(pen)} door {door}")
+        if stray:
+            print(f"      !! {len(stray)} way(s) out that are not the door: {stray}")
+        if len(pen) >= 400:
+            print(f"      !! the pen is not closed at all - it spills into {len(pen)} tiles")
     if PLAZA not in reach:
         print("  !! plaza centre unreachable")
         ok = False
