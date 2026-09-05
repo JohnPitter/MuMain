@@ -949,7 +949,11 @@ namespace MUHelper
 
         if (iRemaining <= m_config.iHealThreshold)
         {
-            m_iCurrentTarget = GetNearestTarget();
+            // Target lock: drain the already-locked mob when there is one.
+            if (m_iCurrentTarget == -1)
+            {
+                m_iCurrentTarget = GetNearestTarget();
+            }
             if (m_iCurrentTarget != -1)
             {
                 return SimulateSkill(iDrainLife, true, m_iCurrentTarget);
@@ -1279,12 +1283,9 @@ namespace MUHelper
                     if (m_iCurrentTarget != iTarget)
                         return 0;
 
-                    if (PlanChasePath(iTarget, pTarget, fSkillDistance, "chase-skill") == -1
-                        && !m_bRoamEnabled)
-                    {
-                        BlacklistTarget(iTarget, "no-path");
-                        ReleaseChaseTarget(iTarget, "no-path");
-                    }
+                    // Target lock: a failed plan never releases the locked mob;
+                    // it moves, and the plan is retried on the next ticks.
+                    PlanChasePath(iTarget, pTarget, fSkillDistance, "chase-skill");
                     return 0;
                 }
             }
@@ -1377,12 +1378,9 @@ namespace MUHelper
             if (m_iCurrentTarget != iTarget)
                 return 0;
 
-            if (PlanChasePath(iTarget, pTarget, fRange, "chase-basic") == -1
-                && !m_bRoamEnabled)
-            {
-                BlacklistTarget(iTarget, "no-path");
-                ReleaseChaseTarget(iTarget, "no-path");
-            }
+            // Target lock: a failed plan never releases the locked mob; it
+            // moves, and the plan is retried on the next ticks.
+            PlanChasePath(iTarget, pTarget, fRange, "chase-basic");
             return 0;
         }
 
@@ -1565,26 +1563,11 @@ namespace MUHelper
             return false;
         }
 
-        // Normal Mu Helper retains its blacklist/leash behavior. Auto Battle
-        // commits to the chosen live target and may only select another after
-        // this one dies or disappears from the client object list.
-        if (!m_bRoamEnabled && IsBlacklisted(iTargetId))
-        {
-            ReleaseChaseTarget(iTargetId, "blacklisted");
-            return false;
-        }
-
-        if (!m_bRoamEnabled)
-        {
-            const int iLeash = m_iHuntingDistance + 10;
-            if (ComputeDistanceFromTarget(pTarget) > iLeash)
-            {
-                BlacklistTarget(iTargetId, "out-of-leash");
-                ReleaseChaseTarget(iTargetId, "out-of-leash");
-                return false;
-            }
-        }
-
+        // Target lock (crowded-spot fix): both the Mu Helper and Auto Battle
+        // commit to the chosen live target -- only death, removal from the
+        // client object list or an illegal state releases it. The hero keeps
+        // chasing the locked mob, so the leash/blacklist releases that used to
+        // rotate targets in dense spots are gone.
         return true;
     }
 
@@ -1653,9 +1636,13 @@ namespace MUHelper
             return;
         }
 
-        AbLog("stuck, giving up target id=%d pos=%d,%d", iTargetId, pos.x, pos.y);
-        BlacklistTarget(iTargetId, "stuck");
-        ReleaseChaseTarget(iTargetId, "stuck-timeout");
+        // Target lock: same retry the roam mode already used -- never give up
+        // or blacklist a live locked mob; replan from the committed cell.
+        m_bChaseRepathed = false;
+        m_dwChaseLastProgress = now;
+        Hero->Movement = false;
+        Hero->Path.PathNum = 0;
+        AbLog("stuck, retrying locked target id=%d pos=%d,%d", iTargetId, pos.x, pos.y);
     }
 
     // Per-tick progress tracker for the locked target. Progress is any of:
@@ -1718,8 +1705,14 @@ namespace MUHelper
         if (m_iRecoveryAttempts >= kMaxRecoveryAttempts
             || !FindRecoveryCell(iTargetId, dest))
         {
-            BlacklistTarget(iTargetId, "attack-stalled");
-            ReleaseChaseTarget(iTargetId, "recovery failed/release");
+            // Target lock: recovery exhaustion keeps the locked mob. Reset the
+            // cycle and let the normal chase re-approach on the next ticks.
+            m_iRecoveryAttempts = 0;
+            m_bRecoveryActive = false;
+            m_dwAttackLastProgress = GetTickCount();
+            Hero->Movement = false;
+            Hero->Path.PathNum = 0;
+            AbLog("recovery exhausted, retrying locked target=%d", iTargetId);
             return;
         }
 
@@ -1732,8 +1725,10 @@ namespace MUHelper
 
         if (!PathFinding2(Hero->PositionX, Hero->PositionY, dest.x, dest.y, &Hero->Path, 0.0f))
         {
-            BlacklistTarget(iTargetId, "attack-stalled");
-            ReleaseChaseTarget(iTargetId, "recovery failed/release");
+            // Target lock: a failed recovery path keeps the lock; the chase
+            // re-approaches the mob on the next ticks.
+            m_dwAttackLastProgress = GetTickCount();
+            AbLog("recovery path failed, keeping locked target=%d", iTargetId);
             return;
         }
 
