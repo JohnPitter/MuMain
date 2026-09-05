@@ -139,7 +139,15 @@ SND_W, SND_FRAME_H, SND_FRAMES = 20, 17, 2
 # Glyph box in final pixels, INCLUDING the ink outline, and the outline width.
 # The strip face is 14x9 and the toolbar face 26x37, so these are what fits.
 STRIP_BOX, STRIP_OUTLINE = (13.0, 9.0), 0.7
-TOOL_BOX, TOOL_OUTLINE = (25.0, 32.0), 0.8
+# TOOL_BOX was (25.0, 32.0) through v7: 32/41 = 78% of the frame height, against
+# the plated glyphs which now read as too big for the plate's corner brackets.
+# Measured against Webzen's own reference (union of the non-plate bounding
+# box across all five partCharge1/newui_menu_Bt01..05.OZJ, frame 1 of 4 --
+# median-plate diff per pixel, closed/opened to drop JPEG speckle, largest
+# component kept): x 7..23, y 11..31 in the 30x41 frame, i.e. 17x21, or 21/41
+# = 51% of the frame height -- in line with the ~55% estimate that flagged
+# this in the first place.
+TOOL_BOX, TOOL_OUTLINE = (17.0, 21.0), 0.8
 # The voice glyphs sit on the light grey native MU button, not on a plate of
 # their own. They are one row short of their frame on purpose: VoiceIcons draws
 # a vertically stacked sheet with GL_LINEAR, so a glyph that touched the frame
