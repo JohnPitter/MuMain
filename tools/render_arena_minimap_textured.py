@@ -49,6 +49,8 @@ PTILE_F = FINAL // 256
 
 SHADOW_RGB = (28, 25, 22)   # object shadow tone
 VOID_RGB = (24, 22, 27)     # outside-the-world fill
+GAMMA = 0.72                # midtone lift applied to the terrain render
+SATURATION = 1.18           # colour boost, so sand/grass/stone stay separable
 
 
 def map_decrypt(src: bytes) -> bytes:
@@ -156,6 +158,14 @@ def build_terrain(att_walls: bytes) -> Image.Image:
     k = (0.55 + 0.45 * light) * (0.9 + 0.2 * heights.astype(np.float32) / 255.0)
     k = np.repeat(np.repeat(k, PTILE_R, axis=0), PTILE_R, axis=1)
     nat *= k[..., None]
+
+    # Exposure: the Stadium ground textures are dull sand and the client paints
+    # the sheet over an 85% black underlay, so the raw render reads as brown mud.
+    # A gamma lift plus a light saturation boost brings it to the readability of
+    # the retail hand-painted sheets without inventing colours.
+    nat = 255.0 * np.power(np.clip(nat, 0, 255) / 255.0, GAMMA)
+    grey = nat.mean(axis=2, keepdims=True)
+    nat = grey + (nat - grey) * SATURATION
 
     # Void (outside the world geometry) goes near-black, like the official maps.
     walk = np.frombuffer(att_walls, dtype=np.uint8).reshape(256, 256)
