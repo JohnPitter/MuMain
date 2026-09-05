@@ -117,6 +117,80 @@ Four things were wrong and all four are measurable.
    anti-aliaser, not a blur, and snapping there would only cost subpixel
    placement.
 
+The voice glyphs get the same treatment (v9)
+--------------------------------------------
+Same recipe as v8, on voice_mic and voice_sound. Four of the six things v8 did
+transfer unchanged; two cannot, and it is worth writing down which and why,
+because the reason is structural rather than a matter of taste.
+
+WHAT TRANSFERS
+
+- The focal brass, on the two parts the owner named: the microphone's grille
+  and the speaker's waves, with the handle and the cone left as steel. Both
+  regions are read off the graded alpha rather than eyeballed. voice_mic's
+  bbox is 74x164 and its row-occupancy profile is a ball 46..69 px wide down to
+  row 58 (t = 0.36), a 4..20 px collar to row 88, then a handle that holds
+  14..19 px to the bottom: so band(-0.10, 0.36) is the head and band(0.38,
+  1.10) is the handle. voice_sound's bbox is 158x111 and its column profile
+  ramps 1..109 px over columns 0..90 (the cone, t <= 0.575), drops to exactly
+  zero for columns 91..115, and returns as two arcs over 116..157 (t >= 0.735):
+  so column(-0.10, 0.68) is the cone and column(0.62, 1.10) is the waves, both
+  feathers landing inside the 25 empty columns.
+
+  Both glyphs need cool_down() as well as warm_accent(), which helper_stop did
+  not: microfone_3 and som_2 arrive with the tan on the wrong half (the mic's
+  handle, the speaker's cone) and warming the right half alone would have left
+  two warm areas instead of moving the one. cool_down() therefore takes the
+  region parameter warm_accent() already had. helper_stop passes none and is
+  byte-identical.
+
+- match_highlights() against the toolbar's own p88, the same number in the same
+  run. The voice glyphs came in at 0.639 (mic) and 0.609 (sound) against the
+  toolbar's 0.672 -- a smaller gap than the strip's 0.51..0.62, because these
+  are 11x19 and 20x15 rather than 12x8, but the same gap.
+
+- top_light(), same 0.10.
+
+- The pixel-grid snap. The outline was already one whole final pixel here, but
+  the fit and the paste were not: voice_mic came out 85x168 at SS, i.e. 10.6
+  final pixels wide pasted at x = 2.625, so every vertical edge of a 16 px icon
+  was averaged across two columns. Snapped it is 11 px at x = 2. This matters
+  more here than the geometry suggests: of the three call sites, Chat.cpp and
+  VoiceSpeakingIndicator draw these at scale 1.0, i.e. genuinely 1:1, and only
+  MiniMapCorner's HUD button scales them (0.80, GL_LINEAR) -- and a bilinear
+  resample of a hard edge still beats one of an edge that was pre-blurred.
+
+WHAT DOES NOT, AND WHY
+
+- THE GOLD RULE. Not dropped for the reason v7 dropped the strip's; dropped
+  because there is nothing here to put it on. The voice glyphs are the only two
+  icons in this file that are frames_bare() -- they carry no plate, and the
+  plate they sit on is Interface/newui_btn_empty_very_small.OZT, which the game
+  draws itself. That art measures exactly as neutral as Minimap_positionB did
+  (mean R-B = 0.00 on all 23 rows, 0 warm pixels out of 784) and it carries its
+  own rail at row 1 (flat grey, mean L = 112.5, peak 186) -- so the v8 argument
+  "this is a recolour of a line that is already there" holds. What does not
+  hold is the ability to make it: that OZT is a shipped shared asset, read by
+  the castle, duel, guard, gateman, marketplace, auto-battler and cursed-temple
+  windows among others, so recolouring the rule recolours all of them. Baking
+  one into the voice OZT instead does not work either -- MiniMapCorner draws
+  the frame centred at 0.80, which puts OZT row 0 at button row 2.30 (mic) and
+  4.70 (sound), i.e. a soft second line at a fractional offset a pixel or four
+  BELOW the sharp one that is already there -- and the same frame is drawn in
+  the world by VoiceSpeakingIndicator with no button behind it at all, where a
+  gold line would be a gold line floating over the terrain.
+
+- THE 10% PLATE DROP, for the same reason: no plate of ours to drop. Its
+  purpose -- glyph sitting ON the plate rather than IN it -- is a contrast
+  ratio, and the only lever we own for it is raising the glyph, which is what
+  match_highlights() already does against the same toolbar target.
+
+One thing v8 did not have to think about: MUTE_SLASH. mute() rewrites the body
+to neutral-cold luminance, so the accent's hue is gone from frame 1 by
+construction and "muted is cold" needs no second set of numbers -- except that
+the slash itself was drawn 0xC6B699, a tan bar, and was therefore the only warm
+thing left in either muted frame. It is now neutral at the same luminance.
+
 The four states are not invented either: measured on the border ring of all
 five partCharge1/newui_menu_Bt0*.OZJ, Webzen's own frames are the SAME plate
 at gain 1.000 / 1.251 / 0.790 / 0.809 (up / over / down / down+over), always
@@ -403,6 +477,18 @@ def derive_auto(play_img, gap=0.10):
     return out
 
 
+# The muted slash. Was 0xC6B699 -- a tan bar, i.e. R-B = +45, and on the
+# shipped v8 bytes it was the ONLY warm thing left in either muted frame (28 of
+# voice_mic[1]'s 160 lit pixels and 37 of voice_sound[1]'s 216, since the body
+# loop below rewrites every other pixel to a neutral-cold grey). Warm reads as
+# "go" -- that is the whole argument helper_stop is cooled on -- so a warm bar
+# across an off glyph said the opposite of what it is there to say. It is now
+# neutral at the SAME luminance (0.299R + 0.587G + 0.114B = 183.5 either way,
+# so nothing is lost on the one axis that carries the reading at 14 px) with
+# the same slight blue tilt the body gets.
+MUTE_SLASH = (0xB7, 0xB7, 0xBE)
+
+
 def mute(img, slash=True):
     """Frame 1 of the voice glyphs: cold, dimmed metal plus a slash. Baked art,
     because at 14 px a half-brightness copy of the live glyph was not readable
@@ -424,7 +510,7 @@ def mute(img, slash=True):
         d.line([(w * 0.10, h * 0.08), (w * 0.90, h * 0.92)],
                fill=(0x12, 0x11, 0x10, 255), width=t + max(2, t // 2))
         d.line([(w * 0.10, h * 0.08), (w * 0.90, h * 0.92)],
-               fill=(0xC6, 0xB6, 0x99, 255), width=t)
+               fill=MUTE_SLASH + (255,), width=t)
     return im
 
 
@@ -461,6 +547,21 @@ def band(y0, y1, feather=0.10):
     def f(nx, ny):
         t = (ny + 1.0) * 0.5
         return _smoothstep((t - y0) / feather) * _smoothstep((y1 - t) / feather)
+    return f
+
+
+def column(x0, x1, feather=0.10):
+    """band()'s mirror: weight 1 inside a VERTICAL band of the bounding box
+    (nx 0 = left).
+
+    voice_sound is the one glyph whose two parts separate in x rather than in
+    y -- the speaker cone occupies columns 0..90 of the 158 px bbox and the two
+    wave arcs columns 116..157, with 25 empty columns between them -- so the
+    same smoothstep with the same feather, read off the other axis.
+    """
+    def f(nx, ny):
+        t = (nx + 1.0) * 0.5
+        return _smoothstep((t - x0) / feather) * _smoothstep((x1 - t) / feather)
     return f
 
 
@@ -518,16 +619,30 @@ def warm_accent(glyph, shift=0.26, region=None):
     return _shade(glyph, sat_delta=delta)
 
 
-def cool_down(glyph, amount=0.55):
+def cool_down(glyph, amount=0.55, region=None):
     """The opposite, for helper_stop: pull the warmth back out so it reads as
     clear silver. "Stop" in a warm brass is a mixed message, and stop was in
-    fact the warmest of the five (10.5% mean saturation against play's 5.8)."""
+    fact the warmest of the five (10.5% mean saturation against play's 5.8).
+
+    `region` is warm_accent()'s parameter with warm_accent()'s meaning, and it
+    exists for the same reason the accent needs one. On the helper strip a
+    glyph is either the "go" or it is not, so cooling is whole-glyph and the
+    default None reproduces v8 byte for byte. The two voice glyphs are not like
+    that: each is ONE object with two parts, and the owner's direction puts the
+    brass on one part and steel on the other. Warming the focal part alone is
+    only half of that -- microfone_3 and som_2 arrive from Canva with the
+    warmth already on the WRONG part (the mic's handle is tan and its grille
+    silver; the speaker's cone is tan and its waves silver), so the steel half
+    has to be cooled as explicitly as the brass half is warmed, or the accent
+    just adds a second warm area next to the one that should not be there.
+    """
     import numpy as np
 
     sat_v = np.vectorize(wg._sat_at)
 
     def delta(v, nx, ny):
-        return -amount * sat_v(v) * wg.SAT_TRIM
+        d = -amount * sat_v(v) * wg.SAT_TRIM
+        return d if region is None else d * region(nx, ny)
 
     return _shade(glyph, sat_delta=delta)
 
@@ -774,6 +889,39 @@ STRIP_ACCENT = {
 }
 STRIP_TOP_LIGHT = 0.10
 
+# The same accent for the two voice glyphs, on the two parts the owner named:
+# the brass on the microphone's grille and on the speaker's waves, steel on the
+# handle and on the cone. Both regions are MEASURED off the graded alpha, not
+# guessed -- the row/column occupancy profiles are in the module docstring.
+#
+#   voice_mic     the head is rows 0..58 of the 74x164 bbox, i.e. t 0.00..0.36,
+#                 and it is one solid ball: a band, not an annulus, because
+#                 unlike the gear there is no hub to keep dark. y0 is negative
+#                 so band()'s 0.10 feather finishes ramping BEFORE the crown
+#                 instead of on it -- the top of the ball is the lit part and
+#                 fading it in would put the accent's own edge across the
+#                 highlight. The handle (t >= 0.38, a steady 14..19 px wide) is
+#                 cooled; the collar between them, t 0.36..0.48, is where the
+#                 two feathers cross, which is exactly where the object's own
+#                 silhouette narrows.
+#   voice_sound   the arcs are columns 116..157 of the 158x111 bbox, t >= 0.735,
+#                 and the cone is columns 0..90, t <= 0.575. The 25 empty
+#                 columns between them (t 0.58..0.72) mean both feathers land
+#                 in transparent space: the cone is fully steel and both arcs
+#                 fully brass, with no gradient across either. That gap is why
+#                 this glyph can take a hard split and the mic cannot.
+#
+# Frame 1 needs no entry. mute() rewrites every pixel to its own luminance, so
+# whatever the accent did to the hue is gone by construction -- "muted is cold"
+# is structural here rather than a second set of numbers to keep in step.
+VOICE_ACCENT = {
+    "voice_mic": lambda g: cool_down(
+        warm_accent(g, 0.28, band(-0.10, 0.36)), 0.70, band(0.38, 1.10)),
+    "voice_sound": lambda g: cool_down(
+        warm_accent(g, 0.30, column(0.62, 1.10)), 0.70, column(-0.10, 0.68)),
+}
+VOICE_TOP_LIGHT = 0.10
+
 # name -> (frame w, frame h, glyph box, outline) for the glyph-only renders
 # the comparison tool measures (the plate is not part of the icon art).
 GEOM = {}
@@ -840,6 +988,14 @@ def build():
         glyphs[name] = top_light(
             match_highlights(glyphs[name], GEOM[name], target),
             STRIP_TOP_LIGHT)
+    # The voice glyphs go through the same three steps against the same
+    # measured target. They are normalised to the toolbar rather than to each
+    # other for the same reason the strip is: they are read next to it.
+    for name in VOICE_SRC:
+        glyphs[name] = top_light(
+            match_highlights(VOICE_ACCENT[name](glyphs[name]), GEOM[name],
+                             target),
+            VOICE_TOP_LIGHT)
 
     out = {}
     for name in STRIP_SRC:
@@ -851,10 +1007,10 @@ def build():
                                     TOOL_BOX, TOOL_OUTLINE, TOOL_STATES)
     out["voice_mic"] = frames_bare(
         [glyphs["voice_mic"], mute(glyphs["voice_mic"])], MIC_W, MIC_FRAME_H,
-        MIC_BOX, MIC_OUTLINE)
+        MIC_BOX, MIC_OUTLINE, snap=True)
     out["voice_sound"] = frames_bare(
         [glyphs["voice_sound"], mute(glyphs["voice_sound"])], SND_W,
-        SND_FRAME_H, SND_BOX, SND_OUTLINE)
+        SND_FRAME_H, SND_BOX, SND_OUTLINE, snap=True)
     return out, glyphs
 
 
@@ -866,7 +1022,7 @@ def glyph_only(glyphs):
     for name, g in glyphs.items():
         w, h, box, ol = GEOM[name]
         out[name] = frames_bare([g], w, h, box, ol,
-                                snap=name in STRIP_SRC)[0]
+                                snap=name in STRIP_SRC or name in VOICE_SRC)[0]
     return out
 
 
