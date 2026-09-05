@@ -1,23 +1,41 @@
 """Build Data/Interface/LuxUI/*.OZT button faces for the Mu Helper strip and
 the main toolbar.
 
-Each OZT is a 32bpp BGRA blob with a 22-byte TGA-like header (width at 16..17,
-height at 18..19, depth 32 at 20), rows bottom-up -- exactly what the client's
-OpenTga loader reads when a .tga path is requested (it exchanges the extension
-to .OZT on disk). Every file stacks the button state frames vertically:
-frame 0 = up, 1 = hover, 2 = pressed (and 3 = attention blink on the toolbar).
+File format
+-----------
+Each OZT is what CGlobalBitmap::OpenTga reads (Render/Sprites/GlobalBitmap.cpp):
+a 22-byte header with width at 16..17, height at 18..19 and depth 32 at 20,
+followed by width*height*4 BGRA bytes stored bottom-up. Frames are stacked
+vertically: 0 = up, 1 = hover, 2 = pressed (and 3 = attention blink on the
+toolbar). Sizes are fixed by the call sites and must NOT change:
 
-Art (v3): the owner wants the FIRST procedural generation back -- the
-steel-and-gold glyphs of 3bf058aa (UI/NewUI/HUD/HudIcons.cpp, briefly live
-before 48e000de replaced them with plainer drawings). The quad tables below
-are ported verbatim from that commit and baked onto the button plate, so the
-buttons render the 3bf058aa look through the native CNewUIButton texture flow
-(the same pipeline as the mic/som buttons). Glyphs are authored on a 24-unit
-grid and drawn 1:1 at the exact scales 3bf058aa used at runtime
-(kStripGlyphScale 0.42, kToolbarGlyphScale 1.0) -- nothing is stretched.
+    helper_*.OZT   18 x 39   (3 frames of 18 x 13)  -- NewUIHeroPositionInfo
+    toolbar_*.OZT  30 x 164  (4 frames of 30 x 41)  -- NewUIMainFrameWindow
+
+Art (v4)
+--------
+v3 rasterized the glyphs straight at the final 13..41 px with binary coverage
+and faked the outline by redrawing every quad at eight 1-unit offsets, so the
+icons had jagged edges and the outline smeared into a blob. Everything is now
+rasterized on an SS-times-larger canvas and box-downsampled by area, which
+gives real anti-aliasing and real fractional alpha; the outline is a single
+rolling-max dilation of the *union* glyph mask, so it never bleeds inside the
+shape. Glyphs also get a gentle vertical gradient and a 1 px top highlight for
+the metallic read of the original art.
+
+The palette is sampled from the shipped Webzen interface art rather than
+invented (Data/Interface/newui_menu*.OZJ colour + newui_menu_Bt0*.OZT alpha):
+the frame is a strictly neutral grey ramp (#1F1F1F .. #BCBCBC, saturation 0)
+accented by a warm brass at hue ~40 (#7D663A .. #DCCA9C), plus the bright
+#FCDA17 the main bar uses for its hottest highlight.
+
+The button plate itself (ink rim, bevel, face, lit top row, shaded bottom row)
+is the v3 shape the owner approved; only its corners are now rounded by a
+couple of pixels so the 3x on-screen upscale does not show hard black squares.
 """
 from __future__ import annotations
 
+import math
 import struct
 import zlib
 from pathlib import Path
@@ -25,334 +43,579 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "src" / "bin" / "Data" / "Interface" / "LuxUI"
 
-# -- steel-and-gold palette, verbatim from 3bf058aa HudIcons.cpp -------------
-INK = (0.07, 0.08, 0.10)
-STEEL_D = (0.36, 0.38, 0.42)
-STEEL_M = (0.55, 0.57, 0.61)
-STEEL_L = (0.76, 0.78, 0.82)
-STEEL_H = (0.93, 0.95, 0.97)
-GOLD = (0.91, 0.71, 0.31)
-GOLD_L = (0.96, 0.86, 0.58)
+SS = 8  # supersampling factor; the downsample is a plain area average
 
-FACE_NORMAL = (0.15, 0.16, 0.19)
-FACE_HOVER = (0.27, 0.29, 0.34)
-FACE_PRESSED = (0.10, 0.11, 0.13)
-FACE_ALERT = (0.34, 0.27, 0.13)
+# -- palette sampled from the original Webzen art ---------------------------
+# neutral steel ramp: newui_menu01/02.OZJ body greys (#1F1F1F #323232 #4D4D4D
+# #6B6B6B #787878 #8C8C8C #A1A1A1 #B7B7B7), all at saturation 0.00.
+INK = (0x0A, 0x0A, 0x0A)
+STEEL_XD = (0x24, 0x24, 0x24)
+STEEL_D = (0x4A, 0x4A, 0x4A)
+STEEL_M = (0x78, 0x78, 0x78)
+STEEL_L = (0xA1, 0xA1, 0xA1)
+STEEL_H = (0xC8, 0xC8, 0xC8)
+# warm brass ramp: newui_menu_Bt0*.OZJ under their OZT masks plus the gold
+# trim of newui_menu01/02 (#7D663A #987E4B #B1945C #C0A264 #CAB075 #D5BF8E
+# #DCCA9C), hue 39..43, and the #FCDA17 hot accent of the main bar.
+GOLD_D = (0x7D, 0x66, 0x3A)
+GOLD = (0xC0, 0xA2, 0x64)
+GOLD_L = (0xD9, 0xC7, 0x99)
+GOLD_H = (0xF0, 0xE3, 0xBC)
 
-OUTLINE_W = 1.0  # icon units
+FACE_NORMAL = (0x20, 0x20, 0x20)
+FACE_HOVER = (0x3A, 0x3A, 0x3A)
+FACE_PRESSED = (0x14, 0x14, 0x14)
+FACE_ALERT = (0x4A, 0x3D, 0x22)
+
 STRIP_W, STRIP_FRAME_H, STRIP_FRAMES = 18, 13, 3
 TOOL_W, TOOL_FRAME_H, TOOL_FRAMES = 30, 41, 4
-STRIP_GLYPH_SCALE = 0.42  # kStripGlyphScale
-TOOL_GLYPH_SCALE = 1.0  # kToolbarGlyphScale
 
-# Quads: (x, y, w, h, color) in icon units, origin at the glyph center,
-# +y down -- the tables from 3bf058aa's HudIcons.cpp, unchanged.
+# The strip face is only 14x9 px, so the glyph box (+-10 units) plus its
+# outline has to land inside 9 px: 20 * 0.40 + 2 * 0.6 = 9.2.
+STRIP_GLYPH_SCALE = 0.40  # icon units -> final pixels
+TOOL_GLYPH_SCALE = 1.0
+STRIP_OUTLINE_PX = 0.6
+TOOL_OUTLINE_PX = 1.0
+STRIP_PLATE_RADIUS = 1.5
+TOOL_PLATE_RADIUS = 2.0
 
-SETTINGS = [
-    (-3, -11, 6, 4.5, STEEL_D), (-3, 6.5, 6, 4.5, STEEL_D),
-    (-11, -3, 4.5, 6, STEEL_D), (6.5, -3, 4.5, 6, STEEL_D),
-    (-9.5, -9.5, 5, 5, STEEL_D), (4.5, -9.5, 5, 5, STEEL_D),
-    (-9.5, 4.5, 5, 5, STEEL_D), (4.5, 4.5, 5, 5, STEEL_D),
-    (-8, -6, 16, 12, STEEL_M), (-6, -8, 12, 16, STEEL_M),
-    (-6, -7.5, 12, 3, STEEL_L), (-7.5, -6, 3, 12, STEEL_L),
-    (4.5, -6, 3, 12, STEEL_D), (-6, 4.5, 12, 3, STEEL_D),
-    (-4, -4, 8, 8, INK), (-3, -3, 6, 6, GOLD),
-    (-3, -3, 6, 2, GOLD_L),
+GRADIENT = 0.13  # +/- brightness across the glyph height
+HIGHLIGHT = 0.34  # how far the 1 px top edge is pushed towards white
+
+
+# ---------------------------------------------------------------- raster ---
+class Layer:
+    """RGBA8 buffer, top-down rows. Alpha is binary while rasterizing; the
+    fractional alpha appears when the layer is downsampled."""
+
+    __slots__ = ("w", "h", "buf")
+
+    def __init__(self, w, h, rgba=(0, 0, 0, 0)):
+        self.w = w
+        self.h = h
+        self.buf = bytearray(bytes(rgba)) * (w * h)
+
+    def span(self, y, x0, x1, rgba4):
+        if y < 0 or y >= self.h:
+            return
+        if x0 < 0:
+            x0 = 0
+        if x1 > self.w:
+            x1 = self.w
+        if x1 <= x0:
+            return
+        i = (y * self.w + x0) * 4
+        self.buf[i:i + (x1 - x0) * 4] = rgba4 * (x1 - x0)
+
+
+def _rows(y, h, limit):
+    """Pixel rows whose centre falls inside [y, y+h)."""
+    lo = max(0, int(math.ceil(y - 0.5)))
+    hi = min(limit, int(math.ceil(y + h - 0.5)))
+    return range(lo, hi)
+
+
+def _cols(x, w):
+    return int(math.ceil(x - 0.5)), int(math.ceil(x + w - 0.5))
+
+
+def fill_rect(lay, x, y, w, h, rgba4):
+    x0, x1 = _cols(x, w)
+    for py in _rows(y, h, lay.h):
+        lay.span(py, x0, x1, rgba4)
+
+
+def fill_rrect(lay, x, y, w, h, r, rgba4):
+    r = max(0.0, min(r, w / 2.0, h / 2.0))
+    for py in _rows(y, h, lay.h):
+        cy = py + 0.5
+        inset = 0.0
+        if cy < y + r:
+            dy = (y + r) - cy
+            inset = r - math.sqrt(max(0.0, r * r - dy * dy))
+        elif cy > y + h - r:
+            dy = cy - (y + h - r)
+            inset = r - math.sqrt(max(0.0, r * r - dy * dy))
+        x0, x1 = _cols(x + inset, w - 2 * inset)
+        lay.span(py, x0, x1, rgba4)
+
+
+def fill_ellipse(lay, cx, cy, rx, ry, rgba4):
+    for py in _rows(cy - ry, 2 * ry, lay.h):
+        dy = (py + 0.5) - cy
+        t = 1.0 - (dy * dy) / (ry * ry)
+        if t <= 0.0:
+            continue
+        dx = rx * math.sqrt(t)
+        x0, x1 = _cols(cx - dx, 2 * dx)
+        lay.span(py, x0, x1, rgba4)
+
+
+def fill_poly(lay, pts, rgba4):
+    ys = [p[1] for p in pts]
+    lo = max(0, int(math.ceil(min(ys) - 0.5)))
+    hi = min(lay.h, int(math.ceil(max(ys) - 0.5)))
+    n = len(pts)
+    for py in range(lo, hi):
+        cy = py + 0.5
+        xs = []
+        for i in range(n):
+            x0, y0 = pts[i]
+            x1, y1 = pts[(i + 1) % n]
+            if (y0 <= cy < y1) or (y1 <= cy < y0):
+                xs.append(x0 + (cy - y0) * (x1 - x0) / (y1 - y0))
+        xs.sort()
+        for i in range(0, len(xs) - 1, 2):
+            a, b = _cols(xs[i], xs[i + 1] - xs[i])
+            lay.span(py, a, b, rgba4)
+
+
+# ------------------------------------------------------------- glyph DSL ---
+# Shapes are authored on a 24-unit grid, origin at the glyph centre, +y down.
+# A colour of None erases (punches a hole in the glyph layer), which is how the
+# gear teeth, the helmet visor and the bag handle are cut.
+#   ("rect",  x, y, w, h, colour)
+#   ("rrect", x, y, w, h, radius, colour)
+#   ("ell",   cx, cy, rx, ry, colour)
+#   ("circ",  cx, cy, r, colour)
+#   ("poly",  [(x, y), ...], colour)
+
+def _rot_rect(cx, cy, w, h, ang):
+    ca, sa = math.cos(ang), math.sin(ang)
+    return [(cx + px * ca - py * sa, cy + px * sa + py * ca)
+            for px, py in ((-w / 2, -h / 2), (w / 2, -h / 2),
+                           (w / 2, h / 2), (-w / 2, h / 2))]
+
+
+def _gear_teeth(radius, tw, th, n=6):
+    out = []
+    for k in range(n):
+        a = (k + 0.5) * 2.0 * math.pi / n
+        out.append(("poly", _rot_rect(radius * math.cos(a), radius * math.sin(a),
+                                      tw, th, a), None))
+    return out
+
+
+def _tri(x0, x1, half):
+    return [(x0, -half), (x1, 0.0), (x0, half)]
+
+
+def _bust(cx, head_cy, head_r, top, bottom, half_w, colour, grow=0.0, flat=0.62):
+    """Head + shoulders: a circle over a body with a flattened round top."""
+    r = half_w + grow
+    ry = r * flat
+    return [
+        ("circ", cx, head_cy, head_r + grow, colour),
+        ("ell", cx, top - grow + ry, r, ry, colour),
+        ("rect", cx - r, top - grow + ry, 2 * r, (bottom + grow) - (top - grow + ry), colour),
+    ]
+
+
+# --- helper strip (18x13 plate, glyph box x +-15, y +-10) ------------------
+SETTINGS = [("circ", 0, 0, 9.6, STEEL_L)] + _gear_teeth(10.4, 4.8, 5.4) + [
+    ("circ", 0, 0, 4.3, INK),
+    ("circ", 0, 0, 3.0, GOLD),
 ]
 
 PLAY = [
-    (-7, -9, 1.8, 2, STEEL_H), (-7, -7, 5.3, 2, STEEL_H),
-    (-7, -5, 8.9, 2, STEEL_H), (-7, -3, 12.4, 2, STEEL_L),
-    (-7, -1, 16, 2, STEEL_L), (-7, 1, 12.4, 2, STEEL_L),
-    (-7, 3, 8.9, 2, STEEL_M), (-7, 5, 5.3, 2, STEEL_M),
-    (-7, 7, 1.8, 2, STEEL_M),
-    (-7, -7.6, 1.6, 15.2, GOLD),
+    ("poly", _tri(-6.5, 10.5, 9.8), GOLD),
 ]
 
 STOP = [
-    (-6, -9, 12, 1, STEEL_L), (-7, -8, 14, 1, STEEL_L),
-    (-8, -7, 16, 14, STEEL_M),
-    (-7, 7, 14, 1, STEEL_D), (-6, 8, 12, 1, STEEL_D),
-    (-8, -7, 16, 2.5, STEEL_L), (-8, -7, 2.5, 14, STEEL_L),
-    (5.5, -7, 2.5, 14, STEEL_D), (-8, 4.5, 16, 2.5, STEEL_D),
-    (-4, -4, 8, 8, INK),
-    (-3, -3, 6, 6, GOLD), (-3, -3, 6, 2, GOLD_L),
+    ("rrect", -8.5, -8.5, 17.0, 17.0, 3.0, STEEL_L),
 ]
 
-AUTO_BATTLE = [
-    (5.4, 5.4, 3.2, 3.2, STEEL_D), (3.4, 3.4, 3.2, 3.2, STEEL_D),
-    (1.4, 1.4, 3.2, 3.2, STEEL_D), (-0.6, -0.6, 3.2, 3.2, STEEL_D),
-    (-2.6, -2.6, 3.2, 3.2, STEEL_D), (-4.6, -4.6, 3.2, 3.2, STEEL_D),
-    (-6.6, -6.6, 3.2, 3.2, STEEL_D), (-8.6, -8.6, 3.2, 3.2, STEEL_M),
-    (-8.6, 5.4, 3.2, 3.2, STEEL_M), (-6.6, 3.4, 3.2, 3.2, STEEL_L),
-    (-4.6, 1.4, 3.2, 3.2, STEEL_L), (-2.6, -0.6, 3.2, 3.2, STEEL_L),
-    (-0.6, -2.6, 3.2, 3.2, STEEL_L), (1.4, -4.6, 3.2, 3.2, STEEL_L),
-    (3.4, -6.6, 3.2, 3.2, STEEL_L), (5.4, -8.6, 3.2, 3.2, STEEL_H),
-    (-11, 6.2, 5.5, 3.4, GOLD), (-11, 6.2, 5.5, 1.2, GOLD_L),
-    (5.5, 6.2, 5.5, 3.4, GOLD), (5.5, 6.2, 5.5, 1.2, GOLD_L),
+AUTO_BATTLE = [  # fast-forward: two triangles kept apart by an ink seam
+    ("poly", _tri(-13.0, -3.0, 9.8), STEEL_L),
+    ("poly", _tri(-1.8, 8.6, 9.8), GOLD),
+    ("rect", -3.4, -10.0, 1.6, 20.0, INK),
 ]
 
-MARKETPLACE = [
-    (-2, -8, 4, 14, STEEL_M), (-2, -8, 1.5, 14, STEEL_L),
-    (-5.5, 6, 11, 3, STEEL_D), (-5.5, 6, 11, 1.2, STEEL_M),
-    (-11, -8, 22, 3, STEEL_L), (-11, -8, 22, 1.2, STEEL_H),
-    (-3, -11.5, 6, 3.5, GOLD), (-3, -11.5, 6, 1.4, GOLD_L),
-    (-8.4, -5, 1.8, 2.5, STEEL_D), (6.6, -5, 1.8, 2.5, STEEL_D),
-    (-11, -2.5, 7, 2.5, STEEL_M), (-10, 0, 5, 2.5, STEEL_D),
-    (4, -2.5, 7, 2.5, STEEL_M), (5, 0, 5, 2.5, STEEL_D),
+MARKETPLACE = [  # stack of coins
+    ("ell", 0, 4.4, 11.0, 5.2, GOLD),
+    ("ell", 0, -4.4, 11.0, 5.2, GOLD_L),
+    ("ell", 0, 0.0, 10.4, 1.7, GOLD_D),
 ]
 
-CASH_SHOP = [
-    (-5.5, -11.5, 2.5, 5.5, STEEL_L), (3, -11.5, 2.5, 5.5, STEEL_L),
-    (-5.5, -11.5, 11, 2.5, STEEL_L),
-    (-9.5, -6.5, 19, 17.5, STEEL_M),
-    (-9.5, -6.5, 19, 3, STEEL_D),
-    (-9.5, -3.5, 3, 14.5, STEEL_L),
-    (6.5, -3.5, 3, 14.5, STEEL_D),
-    (-9.5, 9, 19, 2, STEEL_D),
-    (-4, -0.5, 8, 8, INK),
-    (-3, 0.5, 6, 6, GOLD), (-3, 0.5, 6, 2, GOLD_L),
-    (-1, 2, 2, 3, INK),
+# --- main toolbar (30x41 plate, glyph box x +-12.5, y -17..14) -------------
+CASH_SHOP = [  # cut jewel -- the only glyph with a pointed bottom
+    ("poly", [(-12, -5), (-7, -12.5), (7, -12.5), (12, -5)], GOLD_L),
+    ("poly", [(-12, -5), (12, -5), (0, 13.5)], GOLD),
+    ("poly", [(3.5, -5), (12, -5), (0, 13.5)], GOLD_D),
+    ("rect", -12, -5.8, 24.0, 1.5, INK),
 ]
 
-CHARACTER = [
-    (-5, -12, 10, 2, STEEL_L),
-    (-7, -10, 14, 2, STEEL_L),
-    (-8.5, -8, 17, 3, STEEL_M),
-    (-9, -5, 18, 12, STEEL_M),
-    (-9, -5, 3, 12, STEEL_L),
-    (6, -5, 3, 12, STEEL_D),
-    (-7, 7, 14, 2, STEEL_D),
-    (-5, 9, 10, 2, STEEL_D),
-    (-7, -2.5, 14, 3, INK),
-    (-5, 3, 2.5, 3, INK), (-1.25, 3, 2.5, 3, INK),
-    (2.5, 3, 2.5, 3, INK),
-    (-1.5, -13.5, 3, 9, GOLD), (-1.5, -13.5, 1.2, 9, GOLD_L),
+CHARACTER = [  # great helm: wide at the top, narrow at the jaw (the exact
+               # inverse of the inventory pouch) with a T visor cut through it
+    ("circ", 0, -3.0, 11.0, STEEL_M),
+    ("poly", [(-11, -3.0), (11, -3.0), (6.5, 12.5), (-6.5, 12.5)], STEEL_M),
+    ("rect", -11, -6.2, 22.0, 2.4, GOLD),
+    ("rect", -8.6, -3.4, 17.2, 4.6, None),
+    ("rect", -1.9, -3.4, 3.8, 13.5, None),
+    ("rrect", -2.0, -17.5, 4.0, 6.0, 1.2, GOLD),
 ]
 
-INVENTORY = [
-    (-2.5, -12.5, 5, 3.5, STEEL_D),
-    (-11, -5, 2.5, 9, STEEL_D), (8.5, -5, 2.5, 9, STEEL_D),
-    (-9.5, -6, 19, 17, STEEL_M),
-    (-9.5, -6, 3, 17, STEEL_L), (6.5, -6, 3, 17, STEEL_D),
-    (-9.5, 9, 19, 2, STEEL_D),
-    (-6.5, -10.5, 13, 1.5, STEEL_L), (-8.5, -9, 17, 1.5, STEEL_L),
-    (-9.5, -7.5, 19, 5.5, STEEL_L),
-    (-6.5, -10.5, 13, 1.5, STEEL_H), (-8.5, -9, 17, 1, STEEL_H),
-    (-9.5, -2, 19, 1.5, INK),
-    (-6, 2.5, 12, 7, STEEL_D), (-6, 2.5, 12, 1.5, STEEL_M),
-    (-2.5, -4, 5, 5, GOLD), (-2.5, -4, 5, 1.5, GOLD_L),
+INVENTORY = [  # pouch with a carry handle
+    ("circ", 0, -6.0, 8.0, STEEL_D),
+    ("circ", 0, -6.0, 5.0, None),
+    ("rect", -9.0, -6.0, 18.0, 10.0, None),
+    ("poly", [(-8.5, -7.0), (8.5, -7.0), (12, 13.5), (-12, 13.5)], STEEL_M),
+    ("poly", [(-9.0, -7.5), (9.0, -7.5), (10.8, -0.5), (-10.8, -0.5)], STEEL_L),
+    ("rect", -10.8, -0.9, 21.6, 1.4, STEEL_XD),
+    ("rrect", -3.2, -2.0, 6.4, 5.5, 1.2, GOLD),
 ]
 
-FRIENDS = [
-    (2.75, -8.5, 3.5, 1, STEEL_D), (1.5, -7.5, 6, 1.5, STEEL_D),
-    (0.5, -6, 8, 3.5, STEEL_D), (1.5, -2.5, 6, 1.5, STEEL_D),
-    (0.5, 0, 8, 2, STEEL_D), (-0.5, 2, 10, 2, STEEL_D),
-    (-1, 4, 11, 6, STEEL_D),
-    (-7.5, -11.5, 6, 3, INK), (-9, -10.5, 9, 3.5, INK),
-    (-10, -9, 11, 6, INK), (-9, -5, 9, 3.5, INK),
-    (-7.5, -3.5, 6, 3, INK), (-9.5, -1.5, 10, 4, INK),
-    (-11.5, 0.5, 14, 4, INK), (-12.5, 2.5, 16, 8.5, INK),
-    (-6.5, -10.5, 4, 1, STEEL_L), (-8, -9.5, 7, 1.5, STEEL_L),
-    (-9, -8, 9, 3.5, STEEL_L), (-8, -4, 7, 1.5, STEEL_M),
-    (-6.5, -2.5, 4, 1, STEEL_M), (-8.5, -0.5, 8, 2, STEEL_M),
-    (-10.5, 1.5, 12, 2, STEEL_M), (-11.5, 3.5, 14, 6.5, STEEL_M),
-    (-11.5, 3.5, 3, 6.5, STEEL_L),
-    (-8.5, 1.5, 8, 2, GOLD),
-]
+FRIENDS = (  # two busts, the front one haloed in ink so they stay separate
+    _bust(5.6, -8.5, 4.6, -3.4, 13.5, 6.4, GOLD_D)
+    + _bust(-3.0, -4.2, 5.8, 0.8, 14.0, 7.8, INK, grow=1.1)
+    + _bust(-3.0, -4.2, 5.8, 0.8, 14.0, 7.8, STEEL_L)
+)
 
-MENU = [
-    (-11, -11, 22, 22, GOLD),
-    (-11, -11, 22, 2, GOLD_L),
-    (-9.5, -9.5, 19, 19, INK),
-    (-7, -7, 14, 3.5, STEEL_L), (-7, -7, 14, 1.2, STEEL_H),
-    (-7, -1.75, 14, 3.5, STEEL_L), (-7, -1.75, 14, 1.2, STEEL_H),
-    (-7, 3.5, 14, 3.5, STEEL_L), (-7, 3.5, 14, 1.2, STEEL_H),
+MENU = [  # gold frame over three bars
+    ("rrect", -12, -12, 24.0, 24.0, 3.5, GOLD),
+    ("rrect", -9.8, -9.8, 19.6, 19.6, 2.4, STEEL_XD),
+    ("rrect", -6.8, -7.2, 13.6, 3.8, 1.4, STEEL_L),
+    ("rrect", -6.8, -1.9, 13.6, 3.8, 1.4, STEEL_L),
+    ("rrect", -6.8, 3.4, 13.6, 3.8, 1.4, STEEL_L),
 ]
 
 
-def rgb255(color):
-    return tuple(round(v * 255) for v in color)
+def draw_glyph_shapes(lay, table, ox, oy, s):
+    """Rasterize a glyph table into `lay` (already in supersampled space)."""
+    for sh in table:
+        kind, col = sh[0], sh[-1]
+        rgba = bytes((0, 0, 0, 0)) if col is None else bytes(col) + b"\xff"
+        if kind == "rect":
+            _, x, y, w, h, _c = sh
+            fill_rect(lay, ox + x * s, oy + y * s, w * s, h * s, rgba)
+        elif kind == "rrect":
+            _, x, y, w, h, r, _c = sh
+            fill_rrect(lay, ox + x * s, oy + y * s, w * s, h * s, r * s, rgba)
+        elif kind == "ell":
+            _, cx, cy, rx, ry, _c = sh
+            fill_ellipse(lay, ox + cx * s, oy + cy * s, rx * s, ry * s, rgba)
+        elif kind == "circ":
+            _, cx, cy, r, _c = sh
+            fill_ellipse(lay, ox + cx * s, oy + cy * s, r * s, r * s, rgba)
+        elif kind == "poly":
+            _, pts, _c = sh
+            fill_poly(lay, [(ox + px * s, oy + py * s) for px, py in pts], rgba)
+        else:
+            raise ValueError(kind)
 
 
-class Canvas:
-    """RGBA pixels, top-down rows."""
+# ------------------------------------------------------------ post passes ---
+def alpha_mask(lay):
+    return bytearray(lay.buf[3::4])
 
-    def __init__(self, w, h):
-        self.w = w
-        self.h = h
-        self.px = [[(0, 0, 0, 255) for _ in range(w)] for _ in range(h)]
 
-    def fill_rect(self, x, y, w, h, rgba):
-        """Float rect, pixel-center coverage -- the GL quad rasterization rule."""
-        for py in range(max(0, int(y + 0.5) - 1), min(self.h, int(y + h + 0.5) + 1)):
-            cy = py + 0.5
-            if not (y <= cy < y + h):
+def dilate(mask, w, h, r):
+    """Chebyshev dilation of a binary mask via row/column prefix sums."""
+    if r <= 0:
+        return bytearray(mask)
+    tmp = bytearray(w * h)
+    for y in range(h):
+        base = y * w
+        pre = [0] * (w + 1)
+        for x in range(w):
+            pre[x + 1] = pre[x] + (1 if mask[base + x] else 0)
+        for x in range(w):
+            a = x - r
+            if a < 0:
+                a = 0
+            b = x + r + 1
+            if b > w:
+                b = w
+            if pre[b] - pre[a]:
+                tmp[base + x] = 1
+    out = bytearray(w * h)
+    for x in range(w):
+        pre = [0] * (h + 1)
+        for y in range(h):
+            pre[y + 1] = pre[y] + (1 if tmp[y * w + x] else 0)
+        for y in range(h):
+            a = y - r
+            if a < 0:
+                a = 0
+            b = y + r + 1
+            if b > h:
+                b = h
+            if pre[b] - pre[a]:
+                out[y * w + x] = 1
+    return out
+
+
+def shade_glyph(lay):
+    """Vertical gradient + a 1 px lit top edge -- the metallic read of the
+    original art. Near-black pixels (the ink halo) are left alone."""
+    w, h, buf = lay.w, lay.h, lay.buf
+    ys = [y for y in range(h) if any(buf[(y * w + x) * 4 + 3] for x in range(w))]
+    if not ys:
+        return
+    y0, y1 = ys[0], ys[-1]
+    span = max(1, y1 - y0)
+    for y in range(y0, y1 + 1):
+        f = 1.0 + GRADIENT * (1.0 - 2.0 * (y - y0) / span)
+        base = y * w * 4
+        for x in range(w):
+            i = base + x * 4
+            if not buf[i + 3]:
                 continue
-            row = self.px[py]
-            for px in range(max(0, int(x + 0.5) - 1), min(self.w, int(x + w + 0.5) + 1)):
-                cx = px + 0.5
-                if x <= cx < x + w:
-                    row[px] = rgba
+            if buf[i] + buf[i + 1] + buf[i + 2] < 120:  # keep the ink ink
+                continue
+            for k in range(3):
+                v = int(buf[i + k] * f + 0.5)
+                buf[i + k] = 255 if v > 255 else v
 
-    def fill_rects(self, rects, rgba):
-        for (x, y, w, h) in rects:
-            self.fill_rect(x, y, w, h, rgba)
-
-
-def draw_plate(cv, face, bevel):
-    """3bf058aa DrawButtonPlate: 1px ink rim, 1px bevel, face, lit/shaded edges."""
-    w, h = cv.w, cv.h
-    inset = 2
-    cv.fill_rects([(0, 0, w, h)], rgb255(INK) + (255,))
-    cv.fill_rects([(1, 1, w - 2, h - 2)], rgb255(bevel) + (255,))
-    fw, fh = w - inset * 2, h - inset * 2
-    cv.fill_rects([(inset, inset, fw, fh)], rgb255(face) + (255,))
-    cv.fill_rects([(inset, inset, fw, 1)], rgb255(STEEL_D) + (255,))
-    cv.fill_rects([(inset, inset + fh - 1, fw, 1)], rgb255(INK) + (255,))
-
-
-def draw_glyph(cv, table, cx, cy, scale):
-    """Sticker outline (every quad re-drawn ink at 8 offsets) + colored fills."""
-    o = OUTLINE_W * scale
-    offsets = [(-o, 0), (o, 0), (0, -o), (0, o), (-o, -o), (o, -o), (-o, o), (o, o)]
-    outline = [
-        (cx + (x * scale) + dx, cy + (y * scale) + dy, w * scale, h * scale)
-        for (x, y, w, h, _c) in table
-        for (dx, dy) in offsets
-    ]
-    cv.fill_rects(outline, rgb255(INK) + (255,))
-    for (x, y, w, h, c) in table:
-        cv.fill_rect(cx + x * scale, cy + y * scale, w * scale, h * scale, rgb255(c) + (255,))
+    hl = SS  # exactly one final pixel
+    for x in range(w):
+        for y in range(h):
+            i = (y * w + x) * 4
+            if not buf[i + 3]:
+                continue
+            if buf[i] + buf[i + 1] + buf[i + 2] >= 120:
+                for yy in range(y, min(h, y + hl)):
+                    j = (yy * w + x) * 4
+                    if not buf[j + 3]:
+                        break
+                    for k in range(3):
+                        v = buf[j + k]
+                        buf[j + k] = int(v + (255 - v) * HIGHLIGHT + 0.5)
+            break
 
 
-def make_frame(w, h, face, bevel, table, cx, cy, glyph_scale):
-    cv = Canvas(w, h)
-    draw_plate(cv, face, bevel)
-    draw_glyph(cv, table, cx, cy, glyph_scale)
-    return cv
+def compose(plate, glyph, d):
+    """Ink-outline the glyph silhouette, then paint the glyph over the plate.
+    `d` is the pre-computed dilated silhouette mask."""
+    w, h = plate.w, plate.h
+    pb, gb = plate.buf, glyph.buf
+    ink = bytes(INK) + b"\xff"
+    for i in range(w * h):
+        j = i * 4
+        if gb[j + 3]:
+            pb[j:j + 4] = gb[j:j + 4]
+        elif d[i]:
+            pb[j:j + 4] = ink
+    return plate
+
+
+def downsample(lay, w, h):
+    out = Layer(w, h)
+    src, ob, sw = lay.buf, out.buf, lay.w
+    n = SS * SS
+    half = n // 2
+    for oy in range(h):
+        ybase = oy * SS
+        for ox in range(w):
+            sr = sg = sb = sa = 0
+            for dy in range(SS):
+                i = ((ybase + dy) * sw + ox * SS) * 4
+                for _ in range(SS):
+                    if src[i + 3]:
+                        sr += src[i]
+                        sg += src[i + 1]
+                        sb += src[i + 2]
+                        sa += 1
+                    i += 4
+            j = (oy * w + ox) * 4
+            if sa:
+                ob[j] = (sr + sa // 2) // sa
+                ob[j + 1] = (sg + sa // 2) // sa
+                ob[j + 2] = (sb + sa // 2) // sa
+                ob[j + 3] = (sa * 255 + half) // n
+    return out
+
+
+# ----------------------------------------------------------------- frames ---
+def make_plate(w, h, face, bevel, radius):
+    """v3 DrawButtonPlate: ink rim, bevel, face, lit top row, shaded bottom
+    row -- now with rounded corners and a faint face gradient."""
+    lay = Layer(w * SS, h * SS)
+    S = float(SS)
+    fill_rrect(lay, 0, 0, w * S, h * S, radius * S, bytes(INK) + b"\xff")
+    fill_rrect(lay, S, S, (w - 2) * S, (h - 2) * S, max(0.0, radius - 0.5) * S,
+               bytes(bevel) + b"\xff")
+    fw, fh = (w - 4) * S, (h - 4) * S
+    steps = h - 4
+    for k in range(steps):
+        f = 1.0 + 0.10 * (1.0 - 2.0 * k / max(1, steps - 1))
+        c = bytes(min(255, int(v * f + 0.5)) for v in face) + b"\xff"
+        fill_rrect(lay, 2 * S, (2 + k) * S, fw, S,
+                   max(0.0, radius - 1.0) * S if k == 0 or k == steps - 1 else 0.0, c)
+    fill_rect(lay, 2 * S, 2 * S, fw, S, bytes(STEEL_D) + b"\xff")
+    fill_rect(lay, 2 * S, (h - 3) * S, fw, S, bytes(INK) + b"\xff")
+    return lay
+
+
+def make_glyph_layer(w, h, table, scale, outline_px):
+    """The glyph is identical across the frames of one button, so it is
+    rasterized, shaded and outline-dilated exactly once."""
+    lay = Layer(w * SS, h * SS)
+    draw_glyph_shapes(lay, table, w * SS / 2.0, h * SS / 2.0, scale * SS)
+    shade_glyph(lay)
+    d = dilate(alpha_mask(lay), lay.w, lay.h, int(round(outline_px * SS)))
+    return lay, d
 
 
 def make_strip(table):
+    glyph, d = make_glyph_layer(STRIP_W, STRIP_FRAME_H, table,
+                                STRIP_GLYPH_SCALE, STRIP_OUTLINE_PX)
     frames = []
     for face in (FACE_NORMAL, FACE_HOVER, FACE_PRESSED):
-        frames.append(make_frame(STRIP_W, STRIP_FRAME_H, face, STEEL_D, table,
-                                 STRIP_W / 2, STRIP_FRAME_H / 2, STRIP_GLYPH_SCALE))
+        plate = make_plate(STRIP_W, STRIP_FRAME_H, face, STEEL_D, STRIP_PLATE_RADIUS)
+        frames.append(downsample(compose(plate, glyph, d), STRIP_W, STRIP_FRAME_H))
     return frames
 
 
 def make_toolbar(table):
+    glyph, d = make_glyph_layer(TOOL_W, TOOL_FRAME_H, table,
+                                TOOL_GLYPH_SCALE, TOOL_OUTLINE_PX)
     frames = []
-    states = ((FACE_NORMAL, STEEL_D), (FACE_HOVER, STEEL_D),
-              (FACE_PRESSED, STEEL_D), (FACE_ALERT, GOLD_L))
-    for face, bevel in states:
-        frames.append(make_frame(TOOL_W, TOOL_FRAME_H, face, bevel, table,
-                                 TOOL_W / 2, TOOL_FRAME_H / 2, TOOL_GLYPH_SCALE))
+    for face, bevel in ((FACE_NORMAL, STEEL_D), (FACE_HOVER, STEEL_D),
+                        (FACE_PRESSED, STEEL_D), (FACE_ALERT, GOLD_L)):
+        plate = make_plate(TOOL_W, TOOL_FRAME_H, face, bevel, TOOL_PLATE_RADIUS)
+        frames.append(downsample(compose(plate, glyph, d), TOOL_W, TOOL_FRAME_H))
     return frames
 
 
+# ------------------------------------------------------------------- I/O ---
 def write_ozt(path, frames):
-    """frames: list of Canvas (visual top-down). File rows are bottom-up."""
+    """frames: list of Layer (visual top-down). File rows are bottom-up."""
     w = frames[0].w
-    frame_h = frames[0].h
-    total_h = frame_h * len(frames)
-    all_rows = []
-    for cv in frames:
-        all_rows.extend(cv.px)
-    all_rows.reverse()
-
+    total_h = frames[0].h * len(frames)
     blob = bytearray(22)
     blob[2] = 2
     blob[16:18] = struct.pack("<H", w)
     blob[18:20] = struct.pack("<H", total_h)
     blob[20] = 32
     blob[21] = 8
-    for row in all_rows:
-        for (r, g, b, a) in row:
-            blob += bytes((b, g, r, a))
+
+    rows = []
+    for lay in frames:
+        for y in range(lay.h):
+            rows.append(lay.buf[(y * w) * 4:(y * w + w) * 4])
+    rows.reverse()
+    for row in rows:
+        for x in range(w):
+            i = x * 4
+            blob += bytes((row[i + 2], row[i + 1], row[i], row[i + 3]))
     blob += b"\x00" * 26
     path.write_bytes(blob)
     print(path.name, w, "x", total_h, len(blob), "bytes")
 
 
-def write_preview(strip_frames, tool_frames):
+def read_ozt(path):
+    """Decode an OZT written by this script (or by the client's art) back into
+    (w, h, rows of RGBA tuples). Used by the before/after comparison tool."""
+    d = path.read_bytes()
+    w = struct.unpack_from("<H", d, 16)[0]
+    h = struct.unpack_from("<H", d, 18)[0]
+    off = 22
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            i = off + (y * w + x) * 4
+            row.append((d[i + 2], d[i + 1], d[i], d[i + 3]))
+        rows.append(row)
+    rows.reverse()
+    return w, h, rows
+
+
+def write_png(path, w, h, rows):
+    """rows: list of h lists of (r, g, b, a)."""
     def chunk(t, d):
         c = t + d
         return struct.pack(">I", len(d)) + c + struct.pack(">I", zlib.crc32(c) & 0xFFFFFFFF)
 
-    scale = 4
-    gap = 2 * scale
-    strip_col = 3 * (STRIP_W + 1) * scale  # one key: its frames side by side
-    tool_col = (TOOL_W + 1) * scale
-    n_strip, n_tool = len(strip_frames), len(tool_frames)
-    strip_w = n_strip * (strip_col + gap)
-    tool_w = n_tool * (tool_col + gap)
-    sheet_w = gap + max(strip_w, tool_w) + gap
-    strip_col_h = STRIP_FRAMES * (STRIP_FRAME_H + 1) * scale
-    tool_col_h = TOOL_FRAMES * (TOOL_FRAME_H + 1) * scale
-    sheet_h = gap + strip_col_h + gap + tool_col_h + gap
-    bg = (24, 26, 30)
+    raw = bytearray()
+    for row in rows:
+        raw.append(0)
+        for px in row:
+            raw += bytes(px)
+    png = b"\x89PNG\r\n\x1a\n"
+    png += chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 6, 0, 0, 0))
+    png += chunk(b"IDAT", zlib.compress(bytes(raw), 9))
+    png += chunk(b"IEND", b"")
+    Path(path).write_bytes(png)
+
+
+def write_preview(strip_frames, tool_frames):
+    """Contact sheet: every frame at 1x and at 4x over a HUD-dark ground."""
+    bg = (0x14, 0x16, 0x1A, 255)
+    pad, gap = 8, 6
+    zoom = 4
+    cell_w = STRIP_W + gap + STRIP_W * zoom
+    tcell_w = TOOL_W + gap + TOOL_W * zoom
+    strip_h = STRIP_FRAMES * STRIP_FRAME_H * zoom
+    tool_h = TOOL_FRAMES * TOOL_FRAME_H * zoom
+    cols = max(len(strip_frames), len(tool_frames))
+    sheet_w = pad + cols * (max(cell_w, tcell_w) + gap * 3) + pad
+    sheet_h = pad + strip_h + gap * 4 + tool_h + pad
     sheet = [[bg for _ in range(sheet_w)] for _ in range(sheet_h)]
 
-    def put(x, y, color):
-        if 0 <= x < sheet_w and 0 <= y < sheet_h:
-            sheet[y][x] = color
-
-    def blit(cv, ox, oy):
-        for y in range(cv.h):
-            for x in range(cv.w):
-                r, g, b, a = cv.px[y][x]
-                if a == 0:
+    def blit(lay, ox, oy, z):
+        for y in range(lay.h):
+            for x in range(lay.w):
+                i = (y * lay.w + x) * 4
+                r, g, b, a = lay.buf[i], lay.buf[i + 1], lay.buf[i + 2], lay.buf[i + 3]
+                if not a:
                     continue
-                for sy in range(scale):
-                    for sx in range(scale):
-                        put(ox + x * scale + sx, oy + y * scale + sy, (r, g, b))
+                for sy in range(z):
+                    yy = oy + y * z + sy
+                    if not (0 <= yy < sheet_h):
+                        continue
+                    row = sheet[yy]
+                    for sx in range(z):
+                        xx = ox + x * z + sx
+                        if 0 <= xx < sheet_w:
+                            br, bg_, bb, _ = row[xx]
+                            row[xx] = ((r * a + br * (255 - a)) // 255,
+                                       (g * a + bg_ * (255 - a)) // 255,
+                                       (b * a + bb * (255 - a)) // 255, 255)
 
-    ox = gap
-    for frames in strip_frames.values():
-        for fi, cv in enumerate(frames):
-            blit(cv, ox + fi * (STRIP_W + 1) * scale, gap)
-        ox += strip_col + gap
-    ox = gap
-    for frames in tool_frames.values():
-        for fi, cv in enumerate(frames):
-            blit(cv, ox + fi * (TOOL_W + 1) * scale, gap + strip_col_h + gap)
-        ox += tool_col + gap
+    step = max(cell_w, tcell_w) + gap * 3
+    for ci, frames in enumerate(strip_frames.values()):
+        ox = pad + ci * step
+        for fi, lay in enumerate(frames):
+            blit(lay, ox, pad + fi * STRIP_FRAME_H * zoom, 1)
+            blit(lay, ox + STRIP_W + gap, pad + fi * STRIP_FRAME_H * zoom, zoom)
+    top = pad + strip_h + gap * 4
+    for ci, frames in enumerate(tool_frames.values()):
+        ox = pad + ci * step
+        for fi, lay in enumerate(frames):
+            blit(lay, ox, top + fi * TOOL_FRAME_H * zoom, 1)
+            blit(lay, ox + TOOL_W + gap, top + fi * TOOL_FRAME_H * zoom, zoom)
 
-    rows = []
-    for y in range(sheet_h):
-        row = bytearray()
-        for x in range(sheet_w):
-            r, g, b = sheet[y][x]
-            row += bytes((r, g, b, 255))
-        rows.append(bytes(row))
-    raw = b"".join(b"\x00" + r for r in rows)
-    png = b"\x89PNG\r\n\x1a\n"
-    png += chunk(b"IHDR", struct.pack(">IIBBBBB", sheet_w, sheet_h, 8, 6, 0, 0, 0))
-    png += chunk(b"IDAT", zlib.compress(raw))
-    png += chunk(b"IEND", b"")
-    (OUT / "_preview.png").write_bytes(png)
-    print("preview:", (OUT / "_preview.png"))
+    write_png(OUT / "_preview.png", sheet_w, sheet_h, sheet)
+    print("preview:", OUT / "_preview.png")
+
+
+STRIP_ICONS = {
+    "helper_settings": SETTINGS,
+    "helper_play": PLAY,
+    "helper_stop": STOP,
+    "helper_auto": AUTO_BATTLE,
+    "helper_market": MARKETPLACE,
+}
+TOOLBAR_ICONS = {
+    "toolbar_cashshop": CASH_SHOP,
+    "toolbar_character": CHARACTER,
+    "toolbar_inventory": INVENTORY,
+    "toolbar_friends": FRIENDS,
+    "toolbar_menu": MENU,
+}
+
+
+def build():
+    strip_frames = {k: make_strip(t) for k, t in STRIP_ICONS.items()}
+    tool_frames = {k: make_toolbar(t) for k, t in TOOLBAR_ICONS.items()}
+    return strip_frames, tool_frames
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    strip = {
-        "helper_settings": SETTINGS,
-        "helper_play": PLAY,
-        "helper_stop": STOP,
-        "helper_auto": AUTO_BATTLE,
-        "helper_market": MARKETPLACE,
-    }
-    toolbar = {
-        "toolbar_cashshop": CASH_SHOP,
-        "toolbar_character": CHARACTER,
-        "toolbar_inventory": INVENTORY,
-        "toolbar_friends": FRIENDS,
-        "toolbar_menu": MENU,
-    }
-    strip_frames = {k: make_strip(t) for k, t in strip.items()}
-    tool_frames = {k: make_toolbar(t) for k, t in toolbar.items()}
+    strip_frames, tool_frames = build()
     for key, frames in strip_frames.items():
         write_ozt(OUT / (key + ".OZT"), frames)
     for key, frames in tool_frames.items():
