@@ -25,6 +25,7 @@
 #include "MuHelper.h"
 #include "MuHelperPacing.h"
 #include "MuHelperApproach.h"
+#include "MuHelperPotionThreshold.h"
 
 // The candidate generator carries its own copy of the terrain bits so it can be
 // unit tested without the game headers. Keep the two definitions welded.
@@ -991,23 +992,10 @@ namespace MUHelper
 
     int CMuHelper::ConsumePotion()
     {
-        int64_t iLife = CharacterAttribute->Life;
-        int64_t iLifeMax = CharacterAttribute->LifeMax;
-
-        if (!m_config.bUseHealPotion || iLifeMax <= 0 || iLife <= 0)
-        {
-            return 1;
-        }
-
-        const int64_t iRemaining = (iLife * 100 + iLifeMax - 1) / iLifeMax;
-        if (iRemaining > m_config.iPotionThreshold)
-        {
-            return 1;
-        }
-
-        // One request per potion cooldown. The life bar only catches up after
-        // the server answers, so an ungated check re-sent the same use request
-        // on every 250 ms tick until it did.
+        // One item-use request per potion cooldown, shared between the HP and
+        // MP checks below. The life/mana bars only catch up after the server
+        // answers, so an ungated check would re-send the same use request on
+        // every 250 ms tick until they did.
         const DWORD now = GetTickCount();
         if (m_dwNextPotionRequest != 0
             && static_cast<int>(m_dwNextPotionRequest - now) > 0)
@@ -1015,16 +1003,66 @@ namespace MUHelper
             return 1;
         }
 
+        // HP takes priority: a critical HP dip must never be delayed behind a
+        // mana refill. If HP did not need (or just sent) a potion, MP gets
+        // its turn on this same check — but the two never both fire in one
+        // tick, since that would double the request rate the cooldown above
+        // is meant to cap.
+        if (TryUseHealthPotion(now))
+        {
+            return 1;
+        }
+
+        TryUseManaPotion(now);
+
+        return 1;
+    }
+
+    bool CMuHelper::TryUseHealthPotion(DWORD now)
+    {
+        const int64_t iLife = CharacterAttribute->Life;
+        const int64_t iLifeMax = CharacterAttribute->LifeMax;
+
+        if (!MUHelper::Potion::ShouldUsePotion(m_config.bUseHealPotion, iLife, iLifeMax, m_config.iPotionThreshold))
+        {
+            return false;
+        }
+
         const int iPotionIndex = g_pMyInventory->FindHealingItemIndex();
         if (iPotionIndex == -1)
         {
-            return 1;
+            return false;
         }
 
         SendRequestUse(iPotionIndex, 0);
         m_dwNextPotionRequest = now + kPotionRequestIntervalMs;
 
-        return 1;
+        return true;
+    }
+
+    bool CMuHelper::TryUseManaPotion(DWORD now)
+    {
+        // Gated by the same "Poção Automática" enable checkbox as HP — the
+        // window has one enable toggle for the whole group, no separate MP
+        // on/off (see ConfigData::iManaPotionThreshold in MuHelperData.h).
+        const int64_t iMana = CharacterAttribute->Mana;
+        const int64_t iManaMax = CharacterAttribute->ManaMax;
+
+        if (!MUHelper::Potion::ShouldUsePotion(m_config.bUseHealPotion, iMana, iManaMax, m_config.iManaPotionThreshold))
+        {
+            return false;
+        }
+
+        const int iPotionIndex = g_pMyInventory->FindManaItemIndex();
+        if (iPotionIndex == -1)
+        {
+            return false;
+        }
+
+        SendRequestUse(iPotionIndex, 0);
+        m_dwNextPotionRequest = now + kPotionRequestIntervalMs;
+
+        return true;
     }
 
     int CMuHelper::RecoverHealth()

@@ -3717,7 +3717,10 @@ typedef struct
     BYTE bAutoAcceptParty : 1;               // Index: 33 (bit 4)
     BYTE : 3;                                // Unused bits of Index 33
 
-    BYTE _UnusedPadding[35];                 // Index: 34 (35 bytes remaining)
+    BYTE MPStatusAutoPotion : 4;             // Index: 34 (value * 10 = MP% threshold)
+    BYTE : 4;                                // Unused bits of Index 34
+
+    BYTE _UnusedPadding[34];                 // Index: 35 (34 bytes remaining)
     char ExtraItems[12][15];                 // Index: 69
 } PRECEIVE_MUHELPER_DATA, * LPRECEIVE_MUHELPER_DATA;
 #pragma pack(pop)

@@ -90,6 +90,8 @@ namespace MUHelper
 		int HealSelf(ActionSkillType iHealingSkill);
 		int DrainLife();
 		int ConsumePotion();
+		bool TryUseHealthPotion(DWORD now);
+		bool TryUseManaPotion(DWORD now);
 		int Attack();
 		int RepairEquipments();
 		int Regroup();

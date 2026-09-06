@@ -21,3 +21,9 @@ mu_add_test(
     SOURCES
         test_muhelper_settings.cpp
 )
+
+mu_add_test(
+    NAME test_muhelper_potion_threshold
+    SOURCES
+        test_muhelper_potion_threshold.cpp
+)

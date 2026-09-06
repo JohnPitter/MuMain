@@ -78,6 +78,10 @@ namespace MUHelper
 
 		bool bUseHealPotion = false;
 		int iPotionThreshold = 0;
+		// Mana potion threshold (% MP). Gated by the same bUseHealPotion toggle
+		// as the HP potion above ("Poção Automática" has one enable checkbox
+		// for the whole group); there is no separate MP enable flag.
+		int iManaPotionThreshold = 0;
 
 		bool bUseDrainLife = false;
 		bool bUseDarkRaven = false;

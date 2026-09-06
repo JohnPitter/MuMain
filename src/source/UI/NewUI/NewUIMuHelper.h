@@ -393,6 +393,7 @@ namespace SEASON3B
         int m_iCurrentHealThreshold;
         int m_iCurrentPartyHealThreshold;
         int m_iCurrentPotionThreshold;
+        int m_iCurrentManaPotionThreshold;
     };
 
 }
