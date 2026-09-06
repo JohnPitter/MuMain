@@ -12005,14 +12005,6 @@
     <value>Ajudante oficial do MU</value>
     <comment>legacy_id=3536</comment>
   </data>
-  <data name="Used Extension function" xml:space="preserve">
-    <value>Função de extensão usada</value>
-    <comment>legacy_id=3537</comment>
-  </data>
-  <data name="No Extension Function Being Used" xml:space="preserve">
-    <value>Nenhuma função de extensão sendo usada</value>
-    <comment>legacy_id=3538</comment>
-  </data>
   <data name="Preference of Party Heal" xml:space="preserve">
     <value>Preferência de Party Heal</value>
     <comment>legacy_id=3539</comment>

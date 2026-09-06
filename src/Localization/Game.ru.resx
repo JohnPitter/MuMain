@@ -11981,14 +11981,6 @@
     <value>Официальный помощник MU</value>
     <comment>legacy_id=3536</comment>
   </data>
-  <data name="Used Extension function" xml:space="preserve">
-    <value>Используемая функция расширения</value>
-    <comment>legacy_id=3537</comment>
-  </data>
-  <data name="No Extension Function Being Used" xml:space="preserve">
-    <value>Функция расширения не используется</value>
-    <comment>legacy_id=3538</comment>
-  </data>
   <data name="Preference of Party Heal" xml:space="preserve">
     <value>Предпочтение группового исцеления</value>
     <comment>legacy_id=3539</comment>

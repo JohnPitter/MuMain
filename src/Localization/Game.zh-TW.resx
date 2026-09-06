@@ -11981,14 +11981,6 @@
     <value>官方MU助手</value>
     <comment>legacy_id=3536</comment>
   </data>
-  <data name="Used Extension function" xml:space="preserve">
-    <value>使用的擴充功能</value>
-    <comment>legacy_id=3537</comment>
-  </data>
-  <data name="No Extension Function Being Used" xml:space="preserve">
-    <value>未使用擴充功能</value>
-    <comment>legacy_id=3538</comment>
-  </data>
   <data name="Preference of Party Heal" xml:space="preserve">
     <value>派對治療的偏好</value>
     <comment>legacy_id=3539</comment>

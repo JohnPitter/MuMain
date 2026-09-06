@@ -11981,14 +11981,6 @@
     <value>Pembantu MU Resmi</value>
     <comment>legacy_id=3536</comment>
   </data>
-  <data name="Used Extension function" xml:space="preserve">
-    <value>Fungsi Ekstensi yang digunakan</value>
-    <comment>legacy_id=3537</comment>
-  </data>
-  <data name="No Extension Function Being Used" xml:space="preserve">
-    <value>Tidak Ada Fungsi Ekstensi yang Digunakan</value>
-    <comment>legacy_id=3538</comment>
-  </data>
   <data name="Preference of Party Heal" xml:space="preserve">
     <value>Preferensi Penyembuhan Pesta</value>
     <comment>legacy_id=3539</comment>

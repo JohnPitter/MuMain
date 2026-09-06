@@ -11981,14 +11981,6 @@
     <value>Oficjalny pomocnik MU</value>
     <comment>legacy_id=3536</comment>
   </data>
-  <data name="Used Extension function" xml:space="preserve">
-    <value>Używana funkcja rozszerzenia</value>
-    <comment>legacy_id=3537</comment>
-  </data>
-  <data name="No Extension Function Being Used" xml:space="preserve">
-    <value>Żadna funkcja rozszerzenia nie jest używana</value>
-    <comment>legacy_id=3538</comment>
-  </data>
   <data name="Preference of Party Heal" xml:space="preserve">
     <value>Preferowane leczenie grupowe</value>
     <comment>legacy_id=3539</comment>

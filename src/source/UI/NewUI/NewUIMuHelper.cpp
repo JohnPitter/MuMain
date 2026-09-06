@@ -1230,17 +1230,11 @@ bool CNewUIMuHelper::Render()
 
     g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 13, I18N::Game::OfficialMUHelper, 190, 0, RT3_SORT_CENTER);
 
-    if (m_iCurrentOpenTab != 0)
-    {
-        RenderBack(m_Pos.x + 12, m_Pos.y + 340, 165, 46);
-
-        g_pRenderText->SetFont(g_hFont);
-        g_pRenderText->RenderText(m_Pos.x + 20, m_Pos.y + 347, I18N::Game::UsedExtensionFunction, 0, 0, RT3_SORT_CENTER);
-
-        g_pRenderText->SetTextColor(0xFF00B4FF);
-        g_pRenderText->RenderText(m_Pos.x + 20, m_Pos.y + 365, I18N::Game::NoExtensionFunctionBeingUsed, 0, 0, RT3_SORT_CENTER);
-    }
-
+    // The official "Used Extension function / No Extension Function Being
+    // Used" box (leftover MU Helper Plus paid-extension slot, tabs 1/2 only)
+    // was removed here. Its 165x46 footprint at y+340..386 is now folded
+    // into each tab's bottom-most content frame below, which all extend to
+    // y+386 (2px above the y+388 button row, matching the box's old gap).
     g_pRenderText->SetTextColor(TextColor);
 
     m_TabBtn.Render();
@@ -1250,7 +1244,9 @@ bool CNewUIMuHelper::Render()
         RenderBack(m_Pos.x + 12, m_Pos.y + 73, 68, 50);
         RenderBack(m_Pos.x + 75, m_Pos.y + 73, 102, 50);
         RenderBack(m_Pos.x + 12, m_Pos.y + 120, 165, 30);
-        RenderBack(m_Pos.x + 12, m_Pos.y + 147, 165, 195);
+        // Extended from height 195 (bottom edge y+342) to 239 (y+386) to
+        // absorb the space freed by the removed "extension function" box.
+        RenderBack(m_Pos.x + 12, m_Pos.y + 147, 165, 239);
         RenderBack(m_Pos.x + 16, m_Pos.y + 235, 158, 75);
 
         RenderImage(BITMAP_DISTANCE_BEGIN + _TempConfig.iObtainingRange, m_Pos.x + 29, m_Pos.y + 92, 15, 19, 0.f, 0.f, 15.f / 16.f, 19.f / 32.f);
@@ -1263,9 +1259,11 @@ bool CNewUIMuHelper::Render()
         // grown by one 17px row versus the original 2-item box so "Aceitar
         // party" (added below guild) no longer sits under group 2's top
         // border. Group 2 shifts down by the same 17px (120->137, height
-        // 222->205) so its bottom edge stays at y+342, unchanged.
+        // 222->205), and its height was further extended from 205 to 249 to
+        // absorb the space freed by the removed "extension function" box, so
+        // its bottom edge now sits at y+386 (was y+342).
         RenderBack(m_Pos.x + 12, m_Pos.y + 73, 165, 67);
-        RenderBack(m_Pos.x + 12, m_Pos.y + 137, 165, 205);
+        RenderBack(m_Pos.x + 12, m_Pos.y + 137, 165, 249);
     }
     else
     {
@@ -1273,7 +1271,10 @@ bool CNewUIMuHelper::Render()
         RenderBack(m_Pos.x + 75, m_Pos.y + 73, 102, 50);
         RenderBack(m_Pos.x + 12, m_Pos.y + 120, 165, 39);
         RenderBack(m_Pos.x + 12, m_Pos.y + 156, 165, 135);
-        RenderBack(m_Pos.x + 12, m_Pos.y + 288, 165, 69);
+        // Extended from height 69 (bottom edge y+357) to 98 (y+386) so this
+        // tab's bottom frame lines up with the other two tabs now that the
+        // "extension function" box (which never rendered on this tab) is gone.
+        RenderBack(m_Pos.x + 12, m_Pos.y + 288, 165, 98);
 
         RenderImage(BITMAP_DISTANCE_BEGIN + _TempConfig.iHuntingRange, m_Pos.x + 29, m_Pos.y + 92, 15, 19, 0.f, 0.f, 15.f / 16.f, 19.f / 32.f);
     }

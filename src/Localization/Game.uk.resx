@@ -11981,14 +11981,6 @@
     <value>Офіційний помічник MU</value>
     <comment>legacy_id=3536</comment>
   </data>
-  <data name="Used Extension function" xml:space="preserve">
-    <value>Використана функція розширення</value>
-    <comment>legacy_id=3537</comment>
-  </data>
-  <data name="No Extension Function Being Used" xml:space="preserve">
-    <value>Функція розширення не використовується</value>
-    <comment>legacy_id=3538</comment>
-  </data>
   <data name="Preference of Party Heal" xml:space="preserve">
     <value>Перевага Party Heal</value>
     <comment>legacy_id=3539</comment>
