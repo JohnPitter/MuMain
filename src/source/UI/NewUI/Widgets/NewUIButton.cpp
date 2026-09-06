@@ -1296,16 +1296,11 @@ void SEASON3B::CNewUICheckBox::Render()
     EnableAlphaTest();
     glColor4f(1.f, 1.f, 1.f, 1.f);
 
-    RenderImage(s_ImgIndex, m_Pos.x, m_Pos.y, m_Size.x, m_Size.y, 0.0, (State) ? 0.0 : m_Size.y);
-
-    if (State)
-    {
-        RenderImage(s_ImgIndex, m_Pos.x, m_Pos.y, m_Size.x, m_Size.y, 0, 0);
-    }
-    else
-    {
-        RenderImage(s_ImgIndex, m_Pos.x, m_Pos.y, m_Size.x, m_Size.y, 0, m_Size.y);
-    }
+    // UV-normalized crop: frame 0 (top half of the texture) is checked, frame
+    // 1 (bottom half) is unchecked. Fractions instead of source pixel offsets
+    // keep the on-screen box a fixed 15x15 logical size regardless of the
+    // source texture's resolution (checkbox art ships at 4x, 60x60/frame).
+    RenderImage(s_ImgIndex, m_Pos.x, m_Pos.y, m_Size.x, m_Size.y, 0.0f, State ? 0.0f : 0.5f, 1.0f, 0.5f);
 
     g_pRenderText->SetFont(m_hTextFont);
     g_pRenderText->SetTextColor(m_NameColor);

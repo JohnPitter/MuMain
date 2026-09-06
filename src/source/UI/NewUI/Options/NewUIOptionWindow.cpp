@@ -719,31 +719,36 @@ void SEASON3B::CNewUIOptionWindow::RenderButtons()
 {
     m_BtnClose.Render();
 
+    // UV-normalized crop (su, sv, uw, vh as texture fractions, not source
+    // pixel offsets): frame 0 (top half of the texture) is checked, frame 1
+    // (bottom half) is unchecked. Keeps the on-screen box a fixed 15x15
+    // logical size regardless of the source texture's resolution (checkbox
+    // art ships at 4x, 60x60/frame).
     if (m_bAutoAttack)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 43, 15, 15, 0, 0);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 43, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 43, 15, 15, 0, 15.f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 43, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     if (m_bWhisperSound)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 65, 15, 15, 0, 0);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 65, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 65, 15, 15, 0, 15.f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 65, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     if (m_bSlideHelp)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 155, 15, 15, 0, 0);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 155, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 155, 15, 15, 0, 15.f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 155, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     RenderImage(IMAGE_OPTION_VOLUME_BACK, m_Pos.x + 33, m_Pos.y + 104, 124.f, 16.f);
@@ -774,20 +779,20 @@ void SEASON3B::CNewUIOptionWindow::RenderButtons()
 
     if (m_bRenderAllEffects)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 217, 15, 15, 0, 0);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 217, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 217, 15, 15, 0, 15.f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 217, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     if (m_bWindowedMode)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 356, 15, 15, 0, 0);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 356, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 356, 15, 15, 0, 15.f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 356, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     // Combo boxes drawn last so their expanded dropdowns sit on top of
