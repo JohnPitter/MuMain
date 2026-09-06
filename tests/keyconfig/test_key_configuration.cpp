@@ -12,6 +12,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <initializer_list>
 
 #include "Network/Server/KeyConfiguration.h"
 
@@ -166,4 +167,96 @@ TEST_CASE("the server default binds Q and W and leaves E and R unbound")
     CHECK(KeyConfiguration::ReadPotionSlot(configuration, 1).ItemIndex == 4);
     CHECK(KeyConfiguration::ReadPotionSlot(configuration, 2).ItemIndex == -1);
     CHECK(KeyConfiguration::ReadPotionSlot(configuration, 3).ItemIndex == -1);
+}
+
+namespace
+{
+    // Game-option bit flags, mirrored from Core/Globals/_define.h (not
+    // included directly: it needs the Win32 BYTE typedef that only comes in
+    // through the engine's precompiled header). The values themselves are
+    // plain, stable #defines, so duplicating them here - same as the
+    // kLargeHealingPotion-style constants above - keeps this test standalone
+    // without pulling <windows.h> into a doctest binary.
+    constexpr std::uint8_t AUTOATTACK_ON = 0x01;
+    constexpr std::uint8_t AUTOATTACK_OFF = 0x02;
+    constexpr std::uint8_t WHISPER_SOUND_ON = 0x04;
+    constexpr std::uint8_t WHISPER_SOUND_OFF = 0x08;
+    constexpr std::uint8_t SLIDE_HELP_OFF = 0x10;
+
+    // Offset of the game-option flags byte: after the 20 skill-hotkey bytes,
+    // before the Q/W/E potion slots (21, 22, 23) - see KeyConfiguration.h's
+    // own offset comment and PRECEIVE_OPTION in WSclient.h.
+    constexpr std::size_t GameOptionOffset = 20;
+
+    struct OptionFlags
+    {
+        bool autoAttack;
+        bool whisperSound;
+        bool slideHelp;
+    };
+
+    // Mirrors the encode side, SaveOptions() (Engine/Object/ZzzOpenData.cpp):
+    // one OR'd byte, AutoAttack/WhisperSound each with an explicit ON and OFF
+    // bit, SlideHelp only carrying an OFF bit (absent = help stays on).
+    void WriteGameOption(std::uint8_t* configuration, OptionFlags flags)
+    {
+        std::uint8_t byte = 0;
+        byte |= flags.autoAttack ? AUTOATTACK_ON : AUTOATTACK_OFF;
+        byte |= flags.whisperSound ? WHISPER_SOUND_ON : WHISPER_SOUND_OFF;
+        if (!flags.slideHelp)
+        {
+            byte |= SLIDE_HELP_OFF;
+        }
+        configuration[GameOptionOffset] = byte;
+    }
+
+    // Mirrors the decode side, ReceiveOption() (Network/Server/WSclient.cpp).
+    OptionFlags ReadGameOption(const std::uint8_t* configuration)
+    {
+        const std::uint8_t byte = configuration[GameOptionOffset];
+        OptionFlags flags{};
+        flags.autoAttack = (byte & AUTOATTACK_ON) == AUTOATTACK_ON;
+        flags.whisperSound = (byte & WHISPER_SOUND_ON) == WHISPER_SOUND_ON;
+        flags.slideHelp = (byte & SLIDE_HELP_OFF) != SLIDE_HELP_OFF;
+        return flags;
+    }
+}
+
+TEST_CASE("AutoAttack/WhisperSound/SlideHelp round-trip through the game-option byte")
+{
+    // All eight combinations of the three Options-window checkboxes that sync
+    // to the server (Ataque Automatico, Som de bipe, Ajuda do slide) must
+    // survive one encode/decode cycle - the same byte the client sends via
+    // SaveOptions() and reads back via ReceiveOption() on the next login.
+    for (bool autoAttack : { false, true })
+    {
+        for (bool whisperSound : { false, true })
+        {
+            for (bool slideHelp : { false, true })
+            {
+                std::uint8_t configuration[KeyConfiguration::Size]{};
+                WriteGameOption(configuration, { autoAttack, whisperSound, slideHelp });
+
+                const OptionFlags roundTripped = ReadGameOption(configuration);
+                CHECK(roundTripped.autoAttack == autoAttack);
+                CHECK(roundTripped.whisperSound == whisperSound);
+                CHECK(roundTripped.slideHelp == slideHelp);
+            }
+        }
+    }
+}
+
+TEST_CASE("production evidence: byte 0x09 decodes to AutoAttack on, Whisper off, SlideHelp on")
+{
+    // KeyConfiguration read (read-only) from the live database for character
+    // "SeuAntonio" on 2026-09-06 matched exactly what the Options window
+    // screenshot showed: Ataque Automatico checked, Som de bipe unchecked,
+    // Ajuda do slide checked. This locks that decoding in.
+    std::uint8_t configuration[KeyConfiguration::Size]{};
+    configuration[GameOptionOffset] = 0x09;
+
+    const OptionFlags flags = ReadGameOption(configuration);
+    CHECK(flags.autoAttack == true);
+    CHECK(flags.whisperSound == false);
+    CHECK(flags.slideHelp == true);
 }

@@ -173,6 +173,20 @@ namespace
     constexpr int FONT_COMBO_WIDTH   = 148;
     constexpr int FONT_COMBO_HEIGHT  = 16;
     constexpr int FONT_COMBO_MAX_VISIBLE = 5;
+
+    // Checkbox row Y offsets (relative to m_Pos.y). Both the hit test
+    // (HandleCheckboxInputs) and the checkmark draw (RenderButtons) read these,
+    // so a checkbox can never be rendered at one row and clicked at another -
+    // that mismatch (RenderAllEffects hit-tested at a stray 238 while its
+    // checkmark rendered at 217, 21px above) made the "Renderizar todos os
+    // efeitos" box silently untoggleable: clicking the checkbox the player saw
+    // did nothing, because the actual hit region sat in the empty gap between
+    // that row and the Font combo below it.
+    constexpr int CHECKBOX_Y_AUTO_ATTACK        = 43;
+    constexpr int CHECKBOX_Y_WHISPER_SOUND      = 65;
+    constexpr int CHECKBOX_Y_SLIDE_HELP         = 155;
+    constexpr int CHECKBOX_Y_RENDER_ALL_EFFECTS = 217;
+    constexpr int CHECKBOX_Y_WINDOWED_MODE      = 356;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -382,11 +396,11 @@ void SEASON3B::CNewUIOptionWindow::HandleCheckboxInputs()
 {
     struct Checkbox { int yLocal; bool* target; };
     const Checkbox boxes[] = {
-        {  43, &m_bAutoAttack        },
-        {  65, &m_bWhisperSound      },
-        { 155, &m_bSlideHelp         },
-        { 238, &m_bRenderAllEffects  },
-        { 356, &m_bWindowedMode      },
+        { CHECKBOX_Y_AUTO_ATTACK,        &m_bAutoAttack        },
+        { CHECKBOX_Y_WHISPER_SOUND,      &m_bWhisperSound      },
+        { CHECKBOX_Y_SLIDE_HELP,         &m_bSlideHelp         },
+        { CHECKBOX_Y_RENDER_ALL_EFFECTS, &m_bRenderAllEffects  },
+        { CHECKBOX_Y_WINDOWED_MODE,      &m_bWindowedMode      },
     };
 
     constexpr int CHECKBOX_X_LOCAL = 150;
@@ -726,29 +740,29 @@ void SEASON3B::CNewUIOptionWindow::RenderButtons()
     // art ships at 4x, 60x60/frame).
     if (m_bAutoAttack)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 43, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_AUTO_ATTACK, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 43, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_AUTO_ATTACK, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     if (m_bWhisperSound)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 65, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_WHISPER_SOUND, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 65, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_WHISPER_SOUND, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     if (m_bSlideHelp)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 155, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_SLIDE_HELP, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 155, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_SLIDE_HELP, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     RenderImage(IMAGE_OPTION_VOLUME_BACK, m_Pos.x + 33, m_Pos.y + 104, 124.f, 16.f);
@@ -779,20 +793,20 @@ void SEASON3B::CNewUIOptionWindow::RenderButtons()
 
     if (m_bRenderAllEffects)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 217, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_RENDER_ALL_EFFECTS, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 217, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_RENDER_ALL_EFFECTS, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     if (m_bWindowedMode)
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 356, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_WINDOWED_MODE, 15, 15, 0.0f, 0.0f, 1.0f, 0.5f);
     }
     else
     {
-        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + 356, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
+        RenderImage(IMAGE_OPTION_BTN_CHECK, m_Pos.x + 150, m_Pos.y + CHECKBOX_Y_WINDOWED_MODE, 15, 15, 0.0f, 0.5f, 1.0f, 0.5f);
     }
 
     // Combo boxes drawn last so their expanded dropdowns sit on top of
