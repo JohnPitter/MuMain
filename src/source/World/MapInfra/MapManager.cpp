@@ -1094,6 +1094,18 @@ void CMapManager::Load() // OK
         for (i = 0; i < 3; i++)
             gLoadData.AccessModel(MODEL_BEER01 + i, L"Data\\Object1\\", L"Beer", i + 1);
 
+        // Lorencia PvP arena base (replaces the central fountain): slot 49 is unused by
+        // this world's named model list (gap between MODEL_TOMB03=46 and
+        // MODEL_FIRE_LIGHT01=50) and by EncTerrain1.obj before tools/lorencia_arena.py
+        // adds its one record there. Model is a byte-identical copy of the wolf-free
+        // Crywolf altar base (Data/Object35/Object57.bmd, "cr_stonewolf_ba1") -- see
+        // MuMain/tools/lorencia_arena.py for the full rationale. This world does not use
+        // the generic per-world "ObjectNN.bmd" loader every other town uses (see the
+        // `else` branch below), so a new model here needs one AccessModel call; the
+        // shared MODEL_WORLD_OBJECT..MAX_WORLD_OBJECTS texture loop right below already
+        // covers it.
+        gLoadData.AccessModel(49, L"Data\\Object1\\", L"ArenaAltar", -1);
+
         for (i = MODEL_WORLD_OBJECT; i < MAX_WORLD_OBJECTS; i++)
             gLoadData.OpenTexture(i, L"Object1\\");
     }
