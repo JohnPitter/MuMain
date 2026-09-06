@@ -252,6 +252,17 @@ bool SEASON3B::CNewUIHotKey::UpdateKeyEvent()
         PlayBuffer(SOUND_CLICK01);
         return false;
     }
+    else if (SEASON3B::IsPress('H') && g_pChatInputBox->HaveFocus() == false)
+    {
+        // Master Skill Tree (owner request: hotkey moved from the tooltip's old "A" hint)
+        if (gCharacterManager.IsMasterLevel(Hero->Class) && Hero->Class != CLASS_TEMPLENIGHT)
+        {
+            g_pNewUISystem->Toggle(SEASON3B::INTERFACE_MASTER_LEVEL);
+            PlayBuffer(SOUND_CLICK01);
+        }
+
+        return false;
+    }
     else if (SEASON3B::IsPress('U'))
     {
         g_pNewUISystem->Toggle(SEASON3B::INTERFACE_WINDOW_MENU);
