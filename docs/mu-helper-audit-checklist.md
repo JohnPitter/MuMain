@@ -25,3 +25,38 @@ Reproduce with a character in a non-safe-zone map and inspect the saved helper p
 - Normal next-level progress is `(Experience - levelBase) / (NextExperience - levelBase)`, where `levelBase` is cumulative EXP at the prior level and is zero at level 1. Master progress uses the same interval rule with the native master lower bound. Both formulas clamp to `[0, 1]` and return zero for an empty interval.
 - Total EXP accumulates absolute-counter deltas and credits the old-level remainder plus new-level progress when the normal/master channel changes. Level resets, reconnects and character changes rebase counters instead of creating fake gains.
 - Profit is the signed delta of the real Zen wallet, so pickups add and repairs/purchases subtract. Hourly rates are `total * 3600 / elapsedSeconds` and use pt-BR thousands grouping.
+
+## Chasing a target around an obstacle
+
+These are the rules the bot follows once it has locked a monster; they matter
+most when a wall, a fence, a cage or a hole sits between the hero and the mob.
+
+- An **approach cell** is a walkable cell inside the real attack range of the
+  target with a clear line to it. The line matters for ranged classes too: the
+  client refuses an attack through a wall, so a bow standing behind a fence
+  would fire nothing. Walkability is judged exactly as the client pathfinder
+  judges it, so `TW_NOMOVE`, `TW_NOGROUND`, water, no-attack zones and cells
+  another character occupies are all rejected; `TW_SAFEZONE` is rejected too,
+  because entering a safe zone auto-stops the helper.
+- A **staging cell** is a walkable cell one to three rings beyond attack range.
+  It is not an attack position: it exists so the hero can leave a blocked
+  corridor and re-plan from the other side of the obstacle.
+- Candidates are ordered by distance from the hero, with staging cells and
+  cells without a clear line penalised. Up to six of them are confirmed with
+  the pathfinder before anything is sent, and a path is only accepted when it
+  really ends on the cell asked for -- the client pathfinder otherwise answers
+  a blocked destination with a partial path that walks into the obstacle and
+  stops there.
+- On a stall (about 2.5 s with no progress, or an attack refused because of a
+  wall) the bot performs at most **four reposition steps** per stall cycle. Each
+  step is a single walk request to a different validated cell, alternating
+  sides around the target and widening the ring, and the walk is allowed to
+  finish (up to 2.5 s) before the next evaluation. A reposition is never an
+  attack, so the attack-speed cadence is untouched.
+- Only movement that actually **shortens** the distance to the target counts as
+  progress. Sidestepping around a mob that can never be reached does not reset
+  the budget, which is what lets the give-up rule below fire at all.
+- When the reposition steps are spent, the helper pauses its attacks with an
+  exponential backoff (1 s, 2 s, 4 s, then 8 s). After three exhausted cycles,
+  or 20 s of uninterrupted stalling, the target is dropped and blacklisted for
+  30 s and the bot picks another one.

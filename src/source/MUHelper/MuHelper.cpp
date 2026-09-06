@@ -24,6 +24,17 @@
 
 #include "MuHelper.h"
 #include "MuHelperPacing.h"
+#include "MuHelperApproach.h"
+
+// The candidate generator carries its own copy of the terrain bits so it can be
+// unit tested without the game headers. Keep the two definitions welded.
+static_assert(MUHelper::Approach::kTwSafeZone == TW_SAFEZONE, "TW_SAFEZONE drift");
+static_assert(MUHelper::Approach::kTwCharacter == TW_CHARACTER, "TW_CHARACTER drift");
+static_assert(MUHelper::Approach::kTwNoMove == TW_NOMOVE, "TW_NOMOVE drift");
+static_assert(MUHelper::Approach::kTwNoGround == TW_NOGROUND, "TW_NOGROUND drift");
+static_assert(MUHelper::Approach::kTwAction == TW_ACTION, "TW_ACTION drift");
+static_assert(MUHelper::Approach::kTwHeight == TW_HEIGHT, "TW_HEIGHT drift");
+static_assert(MUHelper::Approach::kTwCameraUp == TW_CAMERA_UP, "TW_CAMERA_UP drift");
 
 constexpr int MAX_ACTIONABLE_DISTANCE = 10;
 constexpr int DEFAULT_DURABILITY_THRESHOLD = 50;
@@ -57,20 +68,24 @@ namespace MUHelper
         // before the target is classified attack-stalled and a recovery step
         // is issued (one SendMove, consumed entirely by MoveHero).
         constexpr DWORD kAttackStallMs = 2500;
-        constexpr int kMaxRecoveryAttempts = 3;
+        // A reposition step walks a real detour around the obstacle, which
+        // takes several ticks. Until the walk ends (or this grace expires) the
+        // stall handler and the chase planner keep their hands off the path;
+        // without it the 250 ms tick cancelled and re-issued the very move it
+        // had just sent, and the hero jittered in place against the wall.
+        constexpr DWORD kRepositionGraceMs = 2500;
         // Once a swing was issued inside range the attack check keeps this
         // tolerance, so a mob nudge at the range boundary does not flip the
         // hero between walking and stopping every helper tick (250 ms).
         constexpr float kRangeHysteresis = 0.4f;
-        // Give-up rule for a locked target that stays unreachable. One stall
-        // cycle is kAttackStallMs of no progress plus up to kMaxRecoveryAttempts
-        // sidesteps, so it already spans several seconds of honest retrying --
-        // far more than the "couple of seconds" 3feaaad6 was written against.
+        // The give-up rule itself (Approach::ShouldGiveUpTarget, with
+        // kMaxStallCycles / kUnreachableGiveUpMs) lives in MuHelperApproach.h
+        // so it can be unit tested. One stall cycle is kAttackStallMs of no
+        // progress plus up to Approach::kMaxRepositionAttempts detours around
+        // the obstacle, so it already spans several seconds of honest retrying.
         // Three exhausted cycles, or 20 s of continuous stalling, mean the mob
         // is not merely body-blocked in a crowded spot: it cannot be reached at
         // all, and holding the lock only produces packets.
-        constexpr int kMaxStallCycles = 3;
-        constexpr DWORD kUnreachableGiveUpMs = 20000;
         // Cooldown for a target given up as unreachable. The ordinary 5 s
         // blacklist would let the helper re-lock the same mob immediately.
         constexpr DWORD kUnreachableBlacklistMs = 30000;
@@ -82,6 +97,43 @@ namespace MUHelper
         // Healing potions: the server-side item cooldown is around a second, so
         // anything faster is pure packet spam while the life bar catches up.
         constexpr DWORD kPotionRequestIntervalMs = 1000;
+
+        // Live terrain for the candidate generator. Kept behind the ITerrain
+        // interface so MuHelperApproach.h stays free of game state and the
+        // geometry can be unit tested against synthetic maps.
+        class LiveTerrain final : public Approach::ITerrain
+        {
+        public:
+            unsigned int Attribute(int x, int y) const override
+            {
+                return static_cast<unsigned int>(TerrainWall[TERRAIN_INDEX_REPEAT(x, y)]);
+            }
+
+            bool HasLineOfSight(int ax, int ay, int bx, int by) const override
+            {
+                return CheckWall(ax, ay, bx, by);
+            }
+        };
+
+        // True when a freshly computed path really reaches `dest`.
+        // PathFinding2 retries with bErrorCheck=false when the proper A* pass
+        // fails, and that retry returns a *partial* greedy path that simply
+        // ends wherever the search stalled -- usually right against the
+        // obstacle. Accepting it is what made the bot walk into a wall and stop
+        // there. A path counts as reaching the cell only when it ends on it, or
+        // when it was truncated at MAX_PATH_FIND (the client walks at most 15
+        // steps per request, so a longer legitimate route is cut short).
+        bool PathReaches(const PATH_t& path, POINT dest)
+        {
+            if (path.PathNum <= 1)
+                return false;
+
+            const int iLast = std::min<int>(path.PathNum, MAX_PATH_FIND) - 1;
+            if (path.PathX[iLast] == dest.x && path.PathY[iLast] == dest.y)
+                return true;
+
+            return path.PathNum >= MAX_PATH_FIND;
+        }
     }
 
     void CALLBACK CMuHelper::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
@@ -172,8 +224,8 @@ namespace MUHelper
         m_posAttackHeroLast = { 0, 0 };
         m_posAttackTargetLast = { 0, 0 };
         m_iAttackTargetActionLast = -1;
-        m_iRecoveryAttempts = 0;
-        m_bRecoveryActive = false;
+        m_iChaseBestDistance = -1;
+        ResetRepositionState();
         m_posChasePlanTarget = { 0, 0 };
         m_bAttackEngaged = false;
         m_dwRoamReachedTick = 0;
@@ -228,8 +280,8 @@ namespace MUHelper
         m_posAttackHeroLast = { 0, 0 };
         m_posAttackTargetLast = { 0, 0 };
         m_iAttackTargetActionLast = -1;
-        m_iRecoveryAttempts = 0;
-        m_bRecoveryActive = false;
+        m_iChaseBestDistance = -1;
+        ResetRepositionState();
         m_posChasePlanTarget = { 0, 0 };
         m_bAttackEngaged = false;
         m_iComboState = 0;
@@ -1463,19 +1515,33 @@ namespace MUHelper
                 TargetX = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
                 TargetY = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
 
+                if (bAttackRequest)
+                {
+                    // Remembered for the stall handler, which also runs from
+                    // the tick watchdog and has no skill in hand there.
+                    m_fEngageRange = fSkillDistance;
+                }
+
                 const bool bTargetNear = CheckTile(Hero, &Hero->Object,
                     fSkillDistance + (m_bAttackEngaged ? kRangeHysteresis : 0.0f));
                 if (bTargetNear)
                 {
                     // In skill range: attack. A wall between hero and target
                     // means the skill cannot land — instead of stalling (or
-                    // blacklisting outright), step aside and re-approach.
+                    // blacklisting outright), walk around it and re-approach.
                     if (!CheckWall(Hero->PositionX, Hero->PositionY, TargetX, TargetY))
                     {
                         HandleAttackStall(iTarget, "wall-between");
                         return 0;
                     }
                     m_bAttackEngaged = true;
+                    if (bAttackRequest)
+                    {
+                        // A legal swing from here means the mob is reachable:
+                        // drop the reposition budget and the stall counters.
+                        ResetRepositionState();
+                        ResetStallState();
+                    }
                 }
                 else
                 {
@@ -1571,20 +1637,25 @@ namespace MUHelper
         Hero->Object.Angle[2] = CreateAngle2D(Hero->Object.Position, Hero->TargetPosition);
         TargetX = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
         TargetY = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
+        m_fEngageRange = fRange;
 
         const bool bTargetNear = CheckTile(Hero, &Hero->Object,
             fRange + (m_bAttackEngaged ? kRangeHysteresis : 0.0f));
         if (bTargetNear)
         {
             // In melee/ranged-basic range: attack. A wall between hero and
-            // target means the attack cannot land — step aside and re-approach
-            // instead of retrying the blocked swing forever.
+            // target means the attack cannot land — walk around it and
+            // re-approach instead of retrying the blocked swing forever.
             if (!CheckWall(Hero->PositionX, Hero->PositionY, TargetX, TargetY))
             {
                 HandleAttackStall(iTarget, "wall-between");
                 return 0;
             }
             m_bAttackEngaged = true;
+            // A legal swing from here means the mob is reachable: drop the
+            // reposition budget and the stall counters.
+            ResetRepositionState();
+            ResetStallState();
         }
         else
         {
@@ -1757,8 +1828,8 @@ namespace MUHelper
         m_posAttackHeroLast = { 0, 0 };
         m_posAttackTargetLast = { 0, 0 };
         m_iAttackTargetActionLast = -1;
-        m_iRecoveryAttempts = 0;
-        m_bRecoveryActive = false;
+        m_iChaseBestDistance = -1;
+        ResetRepositionState();
         m_posChasePlanTarget = { 0, 0 };
         m_bAttackEngaged = false;
         ResetStallState();
@@ -1793,7 +1864,7 @@ namespace MUHelper
         m_dwAttackBackoffUntil = now + dwBackoffMs;
 
         const DWORD dwStalledMs = now - m_dwStallSince;
-        if (m_iStallCycles < kMaxStallCycles && dwStalledMs < kUnreachableGiveUpMs)
+        if (!Approach::ShouldGiveUpTarget(m_iStallCycles, dwStalledMs))
         {
             AbLog("target unreachable, backing off %lums cycle=%d id=%d",
                 dwBackoffMs, m_iStallCycles, iTargetId);
@@ -1862,8 +1933,8 @@ namespace MUHelper
             m_dwAttackLastProgress = m_dwChaseLastProgress;
             m_posAttackHeroLast = { Hero->PositionX, Hero->PositionY };
             m_iAttackTargetActionLast = -1;
-            m_iRecoveryAttempts = 0;
-            m_bRecoveryActive = false;
+            m_iChaseBestDistance = -1;
+            ResetRepositionState();
             m_bAttackEngaged = false;
             ResetStallState();
             AbLog("target acquired id=%d pos=%d,%d", iTargetId, Hero->PositionX, Hero->PositionY);
@@ -1916,11 +1987,16 @@ namespace MUHelper
         AbLog("stuck, retrying locked target id=%d pos=%d,%d", iTargetId, pos.x, pos.y);
     }
 
-    // Per-tick progress tracker for the locked target. Progress is any of:
-    // hero moved, target moved, target hit/act animation changed, or target
-    // died. ~2.5 s of attack attempts without progress classifies as
-    // attack-stalled and triggers a recovery step (never an instant release
-    // of a live target).
+    // Per-tick progress tracker for the locked target.
+    //
+    // Two grades of progress, and the difference is what keeps the give-up rule
+    // honest. *Motion* (hero, target or target animation moved) only refreshes
+    // the ~2.5 s stall watchdog, so an ongoing walk or an ongoing fight never
+    // trips it. *Approach* (the hero got closer to the target than it has ever
+    // been on this lock, or the target died) additionally clears the reposition
+    // budget and the unreachable backoff. A reposition step always produces
+    // motion, so if bare motion reset the budget the bot would sidestep around
+    // an unreachable mob forever instead of eventually dropping it.
     void CMuHelper::TrackTargetProgress(int iTargetId)
     {
         if (iTargetId == -1 || Hero == nullptr || CharactersClient == nullptr)
@@ -1935,29 +2011,44 @@ namespace MUHelper
         const POINT posHero = { Hero->PositionX, Hero->PositionY };
         const POINT posTarget = { pTarget->PositionX, pTarget->PositionY };
         const int iAction = pTarget->Object.CurrentAction;
+        const int iDistance = ComputeDistanceBetween(posHero, posTarget);
 
         const bool heroMoved =
             posHero.x != m_posAttackHeroLast.x || posHero.y != m_posAttackHeroLast.y;
         const bool targetMoved =
             posTarget.x != m_posAttackTargetLast.x || posTarget.y != m_posAttackTargetLast.y;
         const bool actChanged = iAction != m_iAttackTargetActionLast;
+        const bool anyMotion = heroMoved || targetMoved || actChanged;
 
-        if (heroMoved || targetMoved || actChanged || pTarget->Dead > 0)
+        const Approach::ProgressKind progress = Approach::ClassifyProgress(
+            iDistance, m_iChaseBestDistance, anyMotion, pTarget->Dead > 0);
+
+        if (progress != Approach::ProgressKind::None)
         {
-            if (m_bRecoveryActive && heroMoved)
-            {
-                // The recovery SendMove was consumed by MoveHero: back on a
-                // valid cell, the normal chase replans from here.
-                m_bRecoveryActive = false;
-                AbLog("recovery complete target=%d pos=%d,%d", iTargetId, posHero.x, posHero.y);
-            }
             m_dwAttackLastProgress = now;
-            // Real progress means the mob is reachable after all: the stall
-            // budget and the backoff start from scratch.
+        }
+
+        if (progress == Approach::ProgressKind::Approach)
+        {
+            if (m_iChaseBestDistance < 0 || iDistance < m_iChaseBestDistance)
+            {
+                m_iChaseBestDistance = iDistance;
+            }
+
+            // Really closing in: the mob is reachable after all, so the
+            // reposition budget, the stall counter and the backoff start over.
+            ResetRepositionState();
             if (m_iStallCycles != 0 || m_dwAttackBackoffUntil != 0)
             {
                 ResetStallState();
             }
+        }
+        else if (m_bRecoveryActive && !IsRepositioning())
+        {
+            // The detour finished and the hero is no closer than before: let
+            // the next stall evaluation try another side.
+            m_bRecoveryActive = false;
+            AbLog("reposition complete target=%d pos=%d,%d", iTargetId, posHero.x, posHero.y);
         }
 
         m_posAttackHeroLast = posHero;
@@ -1970,59 +2061,159 @@ namespace MUHelper
         HandleAttackStall(iTargetId, "no-progress");
     }
 
-    // Attack-stalled recovery: one SendMove to a validated cell 2-4 tiles off
-    // the target (never a Position write). After kMaxRecoveryAttempts the
-    // target is blacklisted and released — even in roam sessions — so the
-    // bot can never loop forever on an unhittable target.
+    // Attack-stalled recovery. The hero is locked on a target it cannot hit --
+    // typically standing against a wall, a fence or a cage with the mob on the
+    // other side. Before anything is given up the helper tries to *walk around*
+    // the obstacle: one bounded reposition step per stall evaluation, each one
+    // aimed at a different validated cell (alternating sides, then wider
+    // rings), each one verified with the client pathfinder before a single
+    // packet leaves. Only when Approach::kMaxRepositionAttempts steps produced
+    // nothing, or no cell is reachable at all, does the exponential backoff /
+    // give-up path from 02a75577 take over.
     void CMuHelper::HandleAttackStall(int iTargetId, const char* szWhy)
     {
-        AbLog("attack stalled target=%d reason=%s", iTargetId, szWhy ? szWhy : "unknown");
+        if (Hero == nullptr)
+            return;
 
-        POINT dest;
-        if (m_iRecoveryAttempts >= kMaxRecoveryAttempts
-            || !FindRecoveryCell(iTargetId, dest))
+        // A detour already in flight owns the path. Without this guard the
+        // 250 ms tick cancelled and re-issued the very move it had just sent
+        // (HandleAttackStall clears Hero->Path on entry), so the hero jittered
+        // in place against the obstacle and burned every attempt in one second.
+        if (IsRepositioning())
+            return;
+
+        AbLog("attack stalled target=%d reason=%s attempt=%d",
+            iTargetId, szWhy ? szWhy : "unknown", m_iRecoveryAttempts);
+
+        if (Approach::DecideStallAction(m_iRecoveryAttempts, true)
+                == Approach::StallAction::Reposition
+            && TryReposition(iTargetId, m_fEngageRange, szWhy))
         {
-            // Recovery exhausted. The lock is kept for the first cycles, but
-            // the helper stops attacking for an exponentially growing pause and
-            // gives the mob up entirely once the cycle/time budget is spent.
-            m_iRecoveryAttempts = 0;
-            m_bRecoveryActive = false;
-            m_dwAttackLastProgress = GetTickCount();
-            Hero->Movement = false;
-            Hero->Path.PathNum = 0;
-            AbLog("recovery exhausted on locked target=%d", iTargetId);
-            EnterStallBackoff(iTargetId);
             return;
         }
 
-        ++m_iRecoveryAttempts;
+        // Repositioning is spent, or nothing walkable around the target is
+        // reachable at all: stop attacking for an exponentially growing pause
+        // and eventually drop the lock.
+        ResetRepositionState();
+        m_dwAttackLastProgress = GetTickCount();
         Hero->Movement = false;
         Hero->Path.PathNum = 0;
-        Hero->MovementType = MOVEMENT_MOVE;
-        TargetX = dest.x;
-        TargetY = dest.y;
+        AbLog("recovery exhausted on locked target=%d", iTargetId);
+        EnterStallBackoff(iTargetId);
+    }
 
-        if (!PathFinding2(Hero->PositionX, Hero->PositionY, dest.x, dest.y, &Hero->Path, 0.0f))
+    // True while a reposition walk is still under way: either the hero is
+    // actually consuming the detour path, or the grace window has not expired
+    // yet (the server may still be acknowledging the move).
+    bool CMuHelper::IsRepositioning() const
+    {
+        if (!m_bRecoveryActive)
+            return false;
+        if (IsWalkingPath())
+            return true;
+        return static_cast<int>(m_dwRepositionUntil - GetTickCount()) > 0;
+    }
+
+    void CMuHelper::ResetRepositionState()
+    {
+        m_iRecoveryAttempts = 0;
+        m_bRecoveryActive = false;
+        m_dwRepositionUntil = 0;
+        m_iTriedCells = 0;
+    }
+
+    // Remembers a cell just walked to, so the next attempt on the same stall
+    // picks a different one instead of retrying the side that did not work.
+    void CMuHelper::NoteRepositionTried(POINT cell)
+    {
+        const Approach::Cell entry{ static_cast<int>(cell.x), static_cast<int>(cell.y) };
+        if (m_iTriedCells < Approach::kMaxRepositionAttempts)
         {
-            // Target lock: a failed recovery path keeps the lock; the chase
-            // re-approaches the mob on the next ticks.
-            m_dwAttackLastProgress = GetTickCount();
-            AbLog("recovery path failed, keeping locked target=%d", iTargetId);
+            m_aTriedCells[m_iTriedCells++] = entry;
             return;
         }
 
-        SendMove(Hero, &Hero->Object);
-        m_bRecoveryActive = true;
-        m_dwAttackLastProgress = GetTickCount();
-        AbLog("recovery step target=%d dest=%d,%d attempt=%d",
-            iTargetId, dest.x, dest.y, m_iRecoveryAttempts);
+        for (int i = 1; i < Approach::kMaxRepositionAttempts; ++i)
+        {
+            m_aTriedCells[i - 1] = m_aTriedCells[i];
+        }
+        m_aTriedCells[Approach::kMaxRepositionAttempts - 1] = entry;
     }
 
-    // Walkable recovery cell 2-4 tiles away from the target (chebyshev ring),
-    // outside occupied/walled/safe-zone cells, with a wall-free straight line
-    // from the hero so the short hop cannot cross a wall, and inside the hunt
-    // leash so a recovery never drags the hero out of the spot.
-    bool CMuHelper::FindRecoveryCell(int iTargetId, POINT& out)
+    // Copies a probed path into the hero and asks the server to walk it. Only
+    // the path is written; the hero position is never touched.
+    bool CMuHelper::CommitPathAndMove(PATH_t& path, POINT dest, const char* szReason)
+    {
+        if (Hero == nullptr || path.PathNum <= 1)
+            return false;
+
+        Hero->Path.Lock.lock();
+        const int pathNum = std::min<int>(path.PathNum, MAX_PATH_FIND - 1);
+        for (int i = 0; i < pathNum; i++)
+        {
+            Hero->Path.PathX[i] = path.PathX[i];
+            Hero->Path.PathY[i] = path.PathY[i];
+        }
+        Hero->Path.PathNum = pathNum;
+        Hero->Path.CurrentPath = 0;
+        Hero->Path.CurrentPathFloat = 0;
+        Hero->Path.Lock.unlock();
+
+        SendMove(Hero, &Hero->Object);
+        AbLog("path issued steps=%d reason=%s dest=%d,%d",
+            pathNum, szReason ? szReason : "chase", dest.x, dest.y);
+        return true;
+    }
+
+    // Walks the ordered candidate list (MuHelperApproach.h) and returns the
+    // first cell the client pathfinder genuinely reaches, together with the
+    // path to it. Probing is what makes the difference against an obstacle: the
+    // old code committed to a single geometrically-closest cell and, when
+    // PathFinding2 refused it, did nothing at all.
+    bool CMuHelper::ProbeApproach(const Approach::Request& req, POINT& out, PATH_t& outPath)
+    {
+        if (Hero == nullptr)
+            return false;
+
+        const LiveTerrain terrain;
+        std::vector<Approach::Candidate> candidates;
+        Approach::BuildCandidates(req, terrain, candidates);
+
+        Approach::Cell failed[Approach::kMaxPathProbes] = {};
+        int failedCount = 0;
+        int probes = 0;
+
+        for (const Approach::Candidate& candidate : candidates)
+        {
+            if (probes >= Approach::kMaxPathProbes)
+                break;
+
+            // Neighbours of a cell that already failed fail for the same
+            // obstacle; spend the budget on genuinely different directions.
+            if (Approach::IsNearAny(candidate.cell, failed, failedCount, Approach::kProbeSpread))
+                continue;
+
+            ++probes;
+            const POINT dest = { candidate.cell.x, candidate.cell.y };
+            if (PathFinding2(Hero->PositionX, Hero->PositionY, dest.x, dest.y, &outPath, 0.0f)
+                && PathReaches(outPath, dest))
+            {
+                out = dest;
+                return true;
+            }
+
+            failed[failedCount++] = candidate.cell;
+        }
+
+        return false;
+    }
+
+    // One reposition step: pick a validated cell the hero can actually reach,
+    // walk there, and let the walk finish before the next evaluation. At most
+    // one move request leaves per call, and no attack packet is produced -- the
+    // attack cadence and the unreachable backoff from 02a75577 are untouched.
+    bool CMuHelper::TryReposition(int iTargetId, float fRange, const char* szWhy)
     {
         if (Hero == nullptr || CharactersClient == nullptr)
             return false;
@@ -2032,115 +2223,68 @@ namespace MUHelper
             return false;
 
         CHARACTER* pTarget = &CharactersClient[iCharIndex];
-        const int tx = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
-        const int ty = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
-        const POINT heroPos = { Hero->PositionX, Hero->PositionY };
-        const int iLeash = m_iHuntingDistance + 10;
 
-        bool found = false;
-        int bestTravel = 0;
-        for (int ring = 2; ring <= 4; ++ring)
+        Approach::Request req;
+        req.hero = { Hero->PositionX, Hero->PositionY };
+        req.target = {
+            static_cast<int>(pTarget->Object.Position[0] / TERRAIN_SCALE),
+            static_cast<int>(pTarget->Object.Position[1] / TERRAIN_SCALE) };
+        req.range = fRange;
+        // Attempt 0 is the plain approach done by the chase planner; every
+        // reposition attempt alternates the preferred side and makes staging
+        // cells (outside attack range, used purely to get around the obstacle)
+        // progressively cheaper.
+        req.attempt = m_iRecoveryAttempts + 1;
+        req.maxTravel = m_bIgnoreHuntRange ? 0 : (m_iHuntingDistance + 10);
+        req.requireLos = true;
+        req.avoid = m_aTriedCells;
+        req.avoidCount = m_iTriedCells;
+
+        POINT dest = { 0, 0 };
+        PATH_t path;
+        if (!ProbeApproach(req, dest, path))
         {
-            for (int dy = -ring; dy <= ring; ++dy)
-            {
-                for (int dx = -ring; dx <= ring; ++dx)
-                {
-                    if (abs(dx) != ring && abs(dy) != ring)
-                        continue; // ring cells only
-
-                    const int x = tx + dx;
-                    const int y = ty + dy;
-                    if (x < 1 || y < 1 || x > 254 || y > 254)
-                        continue;
-
-                    const WORD wall = TerrainWall[TERRAIN_INDEX_REPEAT(x, y)];
-                    if ((wall & TW_NOMOVE) == TW_NOMOVE
-                        || (wall & TW_SAFEZONE) == TW_SAFEZONE)
-                        continue;
-
-                    if (!CheckWall(heroPos.x, heroPos.y, x, y))
-                        continue;
-
-                    const int travel = ComputeDistanceBetween(heroPos, { x, y });
-                    if (travel > iLeash)
-                        continue;
-
-                    // Outer rings first (more separation), then short hops.
-                    const int score = travel + (ring - 2) * 8;
-                    if (!found || score < bestTravel)
-                    {
-                        found = true;
-                        bestTravel = score;
-                        out = { x, y };
-                    }
-                }
-            }
+            AbLog("reposition found no reachable cell target=%d reason=%s",
+                iTargetId, szWhy ? szWhy : "unknown");
+            return false;
         }
-        return found;
-    }
 
-    // Walkable cell within real attack range of the target cell with a clear
-    // line to it — the approach path ends where the first swing is valid
-    // instead of anywhere inside a wide pathfinding disk.
-    bool CMuHelper::FindApproachCell(int tx, int ty, float fRange, POINT& out)
-    {
-        if (Hero == nullptr)
-            return false;
+        Hero->Movement = false;
+        Hero->Path.PathNum = 0;
+        Hero->MovementType = MOVEMENT_MOVE;
+        TargetX = dest.x;
+        TargetY = dest.y;
 
-        const int searchR = (int)ceil(fRange);
-        if (searchR < 1)
-            return false;
-
-        const POINT heroPos = { Hero->PositionX, Hero->PositionY };
-        bool found = false;
-        int bestTravel = 0;
-        for (int dy = -searchR; dy <= searchR; ++dy)
+        if (!CommitPathAndMove(path, dest, "reposition"))
         {
-            for (int dx = -searchR; dx <= searchR; ++dx)
-            {
-                if (dx == 0 && dy == 0)
-                    continue; // the target cell itself is never walkable
-
-                const float fdx = (float)dx;
-                const float fdy = (float)dy;
-                if (sqrtf(fdx * fdx + fdy * fdy) > fRange - 0.35f)
-                    continue; // must end inside real attack range
-
-                const int x = tx + dx;
-                const int y = ty + dy;
-                if (x < 1 || y < 1 || x > 254 || y > 254)
-                    continue;
-
-                const WORD wall = TerrainWall[TERRAIN_INDEX_REPEAT(x, y)];
-                if ((wall & TW_NOMOVE) == TW_NOMOVE
-                    || (wall & TW_SAFEZONE) == TW_SAFEZONE)
-                    continue;
-
-                if (!CheckWall(x, y, tx, ty))
-                    continue; // LOS from the approach cell to the target
-
-                const int travel = ComputeDistanceBetween(heroPos, { x, y });
-                if (!found || travel < bestTravel)
-                {
-                    found = true;
-                    bestTravel = travel;
-                    out = { x, y };
-                }
-            }
+            return false;
         }
-        return found;
+
+        ++m_iRecoveryAttempts;
+        NoteRepositionTried(dest);
+        m_bRecoveryActive = true;
+        m_dwRepositionUntil = GetTickCount() + kRepositionGraceMs;
+        m_dwAttackLastProgress = GetTickCount();
+        AbLog("reposition step target=%d dest=%d,%d attempt=%d",
+            iTargetId, dest.x, dest.y, m_iRecoveryAttempts);
+        return true;
     }
 
     // Chase movement for the locked target. While the hero walks a committed
     // path it is consumed untouched (native run momentum, like a long manual
     // click) — a replan only happens when the target drifts more than a tile
-    // from the position the path was planned for. New paths aim at a
-    // validated approach cell inside attack range with LOS; the path is long
-    // enough that the hero runs smoothly instead of walk-stop micro segments.
+    // from the position the path was planned for. New paths aim at a validated
+    // approach cell inside attack range with LOS, chosen from an ordered
+    // candidate list and confirmed with the pathfinder, so an approach cell the
+    // hero cannot actually walk to no longer ends the tick doing nothing.
     int CMuHelper::PlanChasePath(int iTargetId, CHARACTER* pTarget, float fRange, const char* szReason)
     {
         if (Hero == nullptr || pTarget == nullptr)
             return -1;
+
+        // A reposition detour owns the path until it completes.
+        if (IsRepositioning())
+            return 0;
 
         const int tx = (int)(pTarget->Object.Position[0] / TERRAIN_SCALE);
         const int ty = (int)(pTarget->Object.Position[1] / TERRAIN_SCALE);
@@ -2156,56 +2300,40 @@ namespace MUHelper
             Hero->Path.PathNum = 0;
         }
 
-        POINT approach = { tx, ty };
-        if (FindApproachCell(tx, ty, fRange, approach))
-        {
-            PATH_t tempPath;
-            if (PathFinding2(Hero->PositionX, Hero->PositionY, approach.x, approach.y, &tempPath, 0.0f))
-            {
-                Hero->Path.Lock.lock();
-                const int pathNum = std::min<int>(tempPath.PathNum, MAX_PATH_FIND - 1);
-                for (int i = 0; i < pathNum; i++)
-                {
-                    Hero->Path.PathX[i] = tempPath.PathX[i];
-                    Hero->Path.PathY[i] = tempPath.PathY[i];
-                }
-                Hero->Path.PathNum = pathNum;
-                Hero->Path.CurrentPath = 0;
-                Hero->Path.CurrentPathFloat = 0;
-                Hero->Path.Lock.unlock();
+        Approach::Request req;
+        req.hero = { Hero->PositionX, Hero->PositionY };
+        req.target = { tx, ty };
+        req.range = fRange;
+        req.attempt = 0; // plain approach; the stall handler owns the retries
+        req.maxTravel = m_bIgnoreHuntRange ? 0 : (m_iHuntingDistance + 10);
+        req.requireLos = true;
 
-                SendMove(Hero, &Hero->Object);
-                m_posChasePlanTarget = { tx, ty };
-                AbLog("path issued steps=%d reason=%s dest=%d,%d",
-                    pathNum, szReason ? szReason : "chase", approach.x, approach.y);
-                return 0;
-            }
+        POINT approach = { 0, 0 };
+        PATH_t approachPath;
+        if (ProbeApproach(req, approach, approachPath)
+            && CommitPathAndMove(approachPath, approach, szReason))
+        {
+            m_posChasePlanTarget = { tx, ty };
+            return 0;
         }
 
         // Fallback: native disk pathing around the target cell (old behavior)
         // when no exact approach cell/path is available.
         PATH_t tempPath;
         const float pathLimit = m_bIgnoreHuntRange ? 64.f : (m_iHuntingDistance + fRange);
-        if (!PathFinding2(Hero->PositionX, Hero->PositionY, tx, ty, &tempPath, pathLimit))
-            return -1;
-
-        Hero->Path.Lock.lock();
-        const int pathNum = std::min<int>(tempPath.PathNum, MAX_PATH_FIND - 1);
-        for (int i = 0; i < pathNum; i++)
+        if (PathFinding2(Hero->PositionX, Hero->PositionY, tx, ty, &tempPath, pathLimit)
+            && CommitPathAndMove(tempPath, { tx, ty }, szReason))
         {
-            Hero->Path.PathX[i] = tempPath.PathX[i];
-            Hero->Path.PathY[i] = tempPath.PathY[i];
+            m_posChasePlanTarget = { tx, ty };
+            return 0;
         }
-        Hero->Path.PathNum = pathNum;
-        Hero->Path.CurrentPath = 0;
-        Hero->Path.CurrentPathFloat = 0;
-        Hero->Path.Lock.unlock();
 
-        SendMove(Hero, &Hero->Object);
-        m_posChasePlanTarget = { tx, ty };
-        AbLog("path issued steps=%d reason=%s dest=%d,%d",
-            pathNum, szReason ? szReason : "chase", tx, ty);
-        return 0;
+        // Nothing that leads to the target is walkable from here: an obstacle
+        // is in the way. Standing still is exactly the reported bug, so hand it
+        // to the stall handler, which walks around the obstacle (and only gives
+        // the target up once its attempts are spent).
+        HandleAttackStall(iTargetId, "no-path");
+        return -1;
     }
 
     int CMuHelper::SelectNextRoamWaypoint(POINT here, DWORD now)

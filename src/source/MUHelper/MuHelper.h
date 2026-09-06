@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "MuHelperData.h"
+#include "MuHelperApproach.h"
 
 namespace MUHelper
 {
@@ -113,8 +114,17 @@ namespace MUHelper
 		void UpdateChase(int iTargetId);
 		void TrackTargetProgress(int iTargetId);
 		void HandleAttackStall(int iTargetId, const char* szWhy);
-		bool FindRecoveryCell(int iTargetId, POINT& out);
-		bool FindApproachCell(int tx, int ty, float fRange, POINT& out);
+		// Repositioning around an obstacle. ProbeApproach walks the ordered
+		// candidate list from MuHelperApproach.h and returns the first cell the
+		// client pathfinder genuinely reaches; TryReposition turns that into a
+		// single walk request. IsRepositioning guards every caller so an
+		// in-flight detour is never cancelled by the next 250 ms tick.
+		bool ProbeApproach(const Approach::Request& req, POINT& out, PATH_t& outPath);
+		bool CommitPathAndMove(PATH_t& path, POINT dest, const char* szReason);
+		bool TryReposition(int iTargetId, float fRange, const char* szWhy);
+		bool IsRepositioning() const;
+		void ResetRepositionState();
+		void NoteRepositionTried(POINT cell);
 		int PlanChasePath(int iTargetId, CHARACTER* pTarget, float fRange, const char* szReason);
 		void AbLog(const char* szFormat, ...);
 		int ObtainItem();
@@ -179,6 +189,21 @@ namespace MUHelper
 		int m_iAttackTargetActionLast = -1;
 		int m_iRecoveryAttempts = 0;
 		bool m_bRecoveryActive = false;
+		// Reposition bookkeeping. A recovery step now walks a real detour
+		// instead of a straight-line sidestep, so it needs a grace window (the
+		// walk must be allowed to finish before the next stall evaluation), the
+		// cells already tried on this stall (so consecutive attempts pick a
+		// different side instead of the same blocked one) and the best
+		// hero->target distance seen since the lock, which is what separates
+		// "the hero moved" from "the hero got closer".
+		DWORD m_dwRepositionUntil = 0;
+		Approach::Cell m_aTriedCells[Approach::kMaxRepositionAttempts] = {};
+		int m_iTriedCells = 0;
+		int m_iChaseBestDistance = -1;
+		// Attack range of the action currently being attempted, remembered so
+		// the stall handler (which runs from the tick watchdog too) knows how
+		// far from the target an approach cell may sit.
+		float m_fEngageRange = 1.8f;
 		// Target cell at the moment the current chase path was planned; the
 		// path is only abandoned when the target drifts beyond this.
 		POINT m_posChasePlanTarget = { 0, 0 };
