@@ -12952,7 +12952,7 @@
     <value>Templates</value>
   </data>
   <data name="ChatCommandsNoTemplates" xml:space="preserve">
-    <value>No templates saved yet.</value>
+    <value>No templates saved yet. Tap a command in the list to see how to use it, then save it here.</value>
   </data>
   <data name="ChatCommandsSaveTemplate" xml:space="preserve">
     <value>Save as template</value>

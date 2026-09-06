@@ -13150,7 +13150,7 @@
     <value>Preencha primeiro os valores obrigatórios.</value>
   </data>
   <data name="ChatCommandsNoTemplates" xml:space="preserve">
-    <value>Nenhum modelo salvo ainda.</value>
+    <value>Nenhum modelo salvo ainda. Toque em um comando na lista para ver como usá-lo e salve-o aqui.</value>
   </data>
   <data name="ChatCommandsNotSupported" xml:space="preserve">
     <value>Este servidor não oferece uma lista de comandos.</value>

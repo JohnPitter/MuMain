@@ -13018,7 +13018,7 @@
     <value>Introduce primero los valores obligatorios.</value>
   </data>
   <data name="ChatCommandsNoTemplates" xml:space="preserve">
-    <value>Aún no hay plantillas guardadas.</value>
+    <value>Aún no hay plantillas guardadas. Toca un comando en la lista para ver cómo usarlo y guárdalo aquí.</value>
   </data>
   <data name="ChatCommandsNotSupported" xml:space="preserve">
     <value>Este servidor no ofrece una lista de comandos.</value>
