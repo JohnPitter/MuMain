@@ -270,8 +270,10 @@ void CNewUIMuHelper::InitCheckBox()
 
     //--
     InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 80, 15, 15, 0, &I18N::Game::MuHelperAutoAcceptFriend, CHECKBOX_ID_AUTO_ACCEPT_FRIEND, 2);
-    InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 131, 15, 15, 0, &I18N::Game::MuHelperPvpCounterattack, CHECKBOX_ID_AUTO_DEFEND, 2);
+    // Moved down 17px (131->148) to follow group 2's frame shift above, keeping the same 11px top padding it had before.
+    InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 148, 15, 15, 0, &I18N::Game::MuHelperPvpCounterattack, CHECKBOX_ID_AUTO_DEFEND, 2);
     InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 97, 15, 15, 0, &I18N::Game::MuHelperAutoAcceptGuild, CHECKBOX_ID_AUTO_ACCEPT_GUILD, 2);
+    // Already sits at guild's spacing (+17) below guild -- the fix here is group 1's frame growing to include it, not moving this checkbox.
     InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 114, 15, 15, 0, &I18N::Game::MuHelperAutoAcceptParty, CHECKBOX_ID_AUTO_ACCEPT_PARTY, 2);
 
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_POTION);
@@ -1257,8 +1259,13 @@ bool CNewUIMuHelper::Render()
     }
     else if (m_iCurrentOpenTab == 2)
     {
-        RenderBack(m_Pos.x + 12, m_Pos.y + 73, 165, 50);
-        RenderBack(m_Pos.x + 12, m_Pos.y + 120, 165, 222);
+        // Group 1 wraps all three "accept" checkboxes (friend/guild/party);
+        // grown by one 17px row versus the original 2-item box so "Aceitar
+        // party" (added below guild) no longer sits under group 2's top
+        // border. Group 2 shifts down by the same 17px (120->137, height
+        // 222->205) so its bottom edge stays at y+342, unchanged.
+        RenderBack(m_Pos.x + 12, m_Pos.y + 73, 165, 67);
+        RenderBack(m_Pos.x + 12, m_Pos.y + 137, 165, 205);
     }
     else
     {
