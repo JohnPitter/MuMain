@@ -238,6 +238,7 @@ namespace MUHelper
         m_mapRepairAttempts.clear();
         m_dwNextRepairSweep = 0;
         m_dwNextPotionRequest = 0;
+        Manual::Reset(m_manual);
 
         RecalculateDistances();
 
@@ -294,8 +295,14 @@ namespace MUHelper
         m_mapRepairAttempts.clear();
         m_dwNextRepairSweep = 0;
         m_dwNextPotionRequest = 0;
-        // Cancel any walk in progress so the hero stops on the spot.
-        if (Hero != nullptr)
+        // Cancel any walk in progress so the hero stops on the spot -- unless
+        // the walk belongs to the player. Stopping on a map change or a safe
+        // zone must not yank the path out from under a manual click, and the
+        // hero must never be left with Movement set and no path (MoveHero()
+        // would then slide it across the map with nothing to walk).
+        const bool bPlayerOwnsWalk = Manual::IsSuppressed(m_manual, GetTickCount());
+        Manual::Reset(m_manual);
+        if (Hero != nullptr && !bPlayerOwnsWalk)
         {
             Hero->Movement = false;
             Hero->Path.PathNum = 0;
@@ -374,9 +381,45 @@ namespace MUHelper
             m_posLastStuck = { Hero->PositionX, Hero->PositionY };
     }
 
+    // The player took the hero over: the helper stops emitting anything, stops
+    // touching Hero->Path and the action state, and lets the walk the player
+    // started run to its end. Called from the client input path (MoveHero).
+    void CMuHelper::NotifyManualInput()
+    {
+        if (!m_bActive)
+            return;
+
+        const DWORD now = GetTickCount();
+        const bool bAlreadyHeld = Manual::IsSuppressed(m_manual, now);
+        Manual::Claim(m_manual, now);
+        if (bAlreadyHeld)
+            return;
+
+        AbLog("manual control taken pos=%d,%d", Hero != nullptr ? Hero->PositionX : -1,
+            Hero != nullptr ? Hero->PositionY : -1);
+
+        // The path in flight is now the player's, not a chase the helper owns:
+        // forget the plan behind it and the detour budget, so the next tick
+        // after the player lets go replans from scratch instead of cancelling
+        // or resuming a path it never issued.
+        m_posChasePlanTarget = { 0, 0 };
+        ResetRepositionState();
+        m_bAttackEngaged = false;
+    }
+
+    bool CMuHelper::IsManualOverrideActive() const
+    {
+        return m_bActive && Manual::IsSuppressed(m_manual, GetTickCount());
+    }
+
     bool CMuHelper::FaceAttackTarget()
     {
         if (!m_bActive || m_iCurrentTarget == -1 || Hero == nullptr || CharactersClient == nullptr)
+            return false;
+
+        // Manual control wins: the player's mouse-look and facing stay theirs
+        // for as long as they are driving, exactly as when the helper is off.
+        if (IsManualOverrideActive())
             return false;
 
         const int iCharIndex = FindCharacterIndex(m_iCurrentTarget);
@@ -433,6 +476,13 @@ namespace MUHelper
             return;
         }
 
+        // Manual control has priority over the bot for the whole walk the
+        // player started, plus a short grace period.
+        if (YieldToManualControl(GetTickCount()))
+        {
+            return;
+        }
+
         Work();
 
         if (m_iLoopCounter++ == 4)
@@ -450,6 +500,28 @@ namespace MUHelper
 
             m_iLoopCounter = 0;
         }
+    }
+
+    // True when the player owns the hero and this tick must do nothing at all.
+    // The watchdog clocks are rearmed while yielding so the player's walk is
+    // never mistaken for the bot failing to reach its target: without this the
+    // stall detector would spend its recovery budget, and the roam watchdog its
+    // stuck counter, on time the helper was not even driving.
+    bool CMuHelper::YieldToManualControl(DWORD now)
+    {
+        Manual::Update(m_manual, Hero->Movement, now);
+        if (!Manual::IsSuppressed(m_manual, now))
+        {
+            return false;
+        }
+
+        m_dwAttackLastProgress = now;
+        m_dwChaseLastProgress = now;
+        m_posAttackHeroLast = { Hero->PositionX, Hero->PositionY };
+        m_posLastStuck = { Hero->PositionX, Hero->PositionY };
+        m_iStuckTicks = 0;
+        m_bPrevMovement = Hero->Movement;
+        return true;
     }
 
     void CMuHelper::Work()

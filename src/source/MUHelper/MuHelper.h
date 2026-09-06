@@ -11,6 +11,7 @@
 
 #include "MuHelperData.h"
 #include "MuHelperApproach.h"
+#include "MuHelperManualControl.h"
 
 namespace MUHelper
 {
@@ -48,6 +49,14 @@ namespace MUHelper
 		void SetAutoStopHandler(std::function<void(const char*)> handler);
 		void AutoStop(const char* szReason);
 		void Toggle();
+		// Manual-input arbitration. NotifyManualInput() is called by the client
+		// input path (MoveHero) whenever the player personally orders the hero
+		// around; the helper then stops emitting anything and stops touching
+		// Hero->Path / the action state until the walk that order started ends
+		// plus a short grace period. IsManualOverrideActive() reports that state
+		// to the per-frame hooks (FaceAttackTarget).
+		void NotifyManualInput();
+		bool IsManualOverrideActive() const;
 		void TriggerStart();
 		void TriggerStop();
 		bool IsActive() { return m_bActive; }
@@ -64,6 +73,7 @@ namespace MUHelper
 
 	private:
 		void WorkLoop(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+		bool YieldToManualControl(DWORD now);
 		void Work();
 		int ActivatePet();
 		int Buff();
@@ -243,6 +253,8 @@ namespace MUHelper
 		std::function<void(const char*)> m_AutoStopHandler;
 		// Previous-tick Movement flag for the "path completed" transition log.
 		bool m_bPrevMovement = false;
+		// Who owns the hero: the player or the bot. See MuHelperManualControl.h.
+		Manual::State m_manual;
 		int m_iTotalCost;
 	};
 

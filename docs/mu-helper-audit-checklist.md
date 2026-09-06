@@ -60,3 +60,34 @@ most when a wall, a fence, a cage or a hole sits between the hero and the mob.
   exponential backoff (1 s, 2 s, 4 s, then 8 s). After three exhausted cycles,
   or 20 s of uninterrupted stalling, the target is dropped and blacklisted for
   30 s and the bot picks another one.
+
+## Manual control and stopping
+
+The player always outranks the bot. These rules apply to the native MU Helper
+and to the Auto Battler alike -- both drive the same hunting loop.
+
+- A real click on the world (walk, attack, pick up, talk, follow) **claims the
+  hero**. While the claim holds the helper sends nothing, does not touch the
+  hero's path, and does not steer the body: mouse-look behaves exactly as it
+  does with the helper off.
+- The claim lasts for the whole walk the click started, plus a grace period of
+  **1.5 s** after it ends, so a chain of short clicks is not chopped up by the
+  bot between them. Every new click restarts the claim. A claim never lasts
+  longer than **20 s**, so a movement flag left behind by a desync cannot
+  disable the helper for the rest of the session.
+- Nothing is counted against the bot while the player is driving: the stall
+  detector, the reposition budget and the roam stuck counter are all rearmed,
+  so a long manual walk never makes the helper give a target up.
+- Before this rule existed the bot cancelled the player's walk within 250 ms
+  and replaced it with a chase of its own, or stopped it mid-step to attack.
+  The client then restarted the walk from a different cell than the one the
+  server was walking the character to, which showed up in game as the hero
+  gliding or rubberbanding ("floating").
+- A **map change stops the helper**: `/move`, the warp window, a gate, the town
+  return after death. The stop is local and immediate -- it does not wait for
+  the server to confirm the session is over -- and it also ends the Auto Battler
+  session and clears the HUD toggle. Restarting on the new map requires an
+  explicit start, exactly like the safe-zone and death stops.
+- The hero can never be left walking with no path. If the movement flag is set
+  and the path is empty or already consumed, the client stops the hero on the
+  spot instead of sliding it forward frame after frame with nothing to walk.

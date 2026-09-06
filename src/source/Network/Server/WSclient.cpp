@@ -2645,6 +2645,16 @@ BOOL ReceiveTeleport(const BYTE* ReceiveBuffer, BOOL bEncrypted)
     }
 
     MUHelper::g_MuHelper.TriggerStop();
+    // Warp / map change (the /move chat command, the warp window, a gate, the
+    // town return after death): the MU Helper and the Auto Battler both stop
+    // here, locally and now. TriggerStop() above only *asks* the server to end
+    // the session; the local bot used to keep hunting until a status reply came
+    // back, and a client-driven session (the Auto Battler, or a character the
+    // server has no helper session for) is never answered -- so the bot went on
+    // hunting on the new map. AutoStop() runs the full teardown exactly once
+    // (chase, path, targets, roam, Auto Battler session, HUD toggle state) and
+    // is a no-op when the helper is already off.
+    MUHelper::g_MuHelper.AutoStop("map-change");
 
     Hero->Movement = false;
     SetPlayerStop(Hero);

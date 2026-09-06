@@ -2935,6 +2935,19 @@ namespace
         }
         return true;
     }
+
+    // CHARACTER::Movement and CHARACTER::Path are written by many places (the
+    // mouse handler, the skill code, the pose/sit branch, the MU Helper) and
+    // nothing guarantees the two stay in step. A movement flag with an empty or
+    // already-consumed path is the broken combination: MovePath() returns false
+    // for it on every frame, so the caller would keep sliding the hero forward
+    // with MoveCharacterPosition() and never reach an end.
+    bool IsHeroWalkWithoutPath(const CHARACTER* c)
+    {
+        constexpr int kMinWalkablePathSteps = 2;
+        return c->Path.PathNum < kMinWalkablePathSteps
+            || c->Path.CurrentPath >= c->Path.PathNum;
+    }
 }
 
 void MoveHero()
@@ -3103,6 +3116,20 @@ void MoveHero()
                     else
                         Action(c, o, false);
             }
+            else if (IsHeroWalkWithoutPath(c))
+            {
+                // The walk flag is set but there is no path left to walk. That
+                // is a desync, not a walk: MovePath() can never finish a path
+                // that isn't there, so MoveCharacterPosition() below would slide
+                // the hero along its facing angle every frame, forever, without
+                // a single packet leaving the client -- the character "floats"
+                // away while the server keeps it where it stands. Stop instead;
+                // the server already has the hero on this cell.
+                c->Movement = false;
+                SetPlayerStop(c);
+                HeroAngle = (int)c->Object.Angle[2];
+                StandTime = 0;
+            }
             else
             {
                 g_CharacterUnRegisterBuff((&Hero->Object), eBuff_CrywolfHeroContracted);
@@ -3150,6 +3177,11 @@ void MoveHero()
     if (!MouseOnWindow && false == g_pNewUISystem->CheckMouseUse())
     {
         bool Success = false;
+        // Only a real button press counts as manual input. The auto-attack
+        // branch below also raises Success, but it fires off the MU Helper's
+        // own Attacking/SelectedCharacter state and must not be mistaken for
+        // the player taking over.
+        bool bManualClick = false;
         if (MouseUpdateTime >= MouseUpdateTimeMax && !s_bIgnoreHeldClickAfterNpcTalk)
         {
             if (!EnableFastInput)
@@ -3158,10 +3190,12 @@ void MoveHero()
                 {
                     MouseLButtonPush = false;
                     Success = true;
+                    bManualClick = true;
                 }
                 if (MouseLButton)
                 {
                     Success = true;
+                    bManualClick = true;
                 }
 
                 if ((
@@ -3193,6 +3227,16 @@ void MoveHero()
                 }
             }
         }
+        // Manual input wins over the MU Helper. A click by the player claims the
+        // hero for the walk it starts plus a short grace period, so the bot
+        // never cancels the player's path, never replaces it with a chase of
+        // its own, and never overrides the action state mid-walk -- the
+        // "floating"/rubberband desync those collisions produced.
+        if (bManualClick)
+        {
+            MUHelper::g_MuHelper.NotifyManualInput();
+        }
+
         if (g_iFollowCharacter >= 0 && g_iFollowCharacter < MAX_CHARACTERS_CLIENT)
         {
             CHARACTER* followCharacter = &CharactersClient[g_iFollowCharacter];
@@ -3202,7 +3246,9 @@ void MoveHero()
             }
             else
             {
-                //
+                // Following another player is a manual order too: it repaths
+                // every frame and must not be fought by the bot either.
+                MUHelper::g_MuHelper.NotifyManualInput();
                 c->MovementType = MOVEMENT_MOVE;
                 ActionTarget = g_iFollowCharacter;
                 TargetX = (int)(followCharacter->Object.Position[0] / TERRAIN_SCALE);

@@ -9,3 +9,9 @@ mu_add_test(
     SOURCES
         test_muhelper_approach.cpp
 )
+
+mu_add_test(
+    NAME test_muhelper_manual
+    SOURCES
+        test_muhelper_manual.cpp
+)
