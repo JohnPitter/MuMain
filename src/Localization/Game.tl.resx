@@ -11870,7 +11870,7 @@
     <comment>legacy_id=3503</comment>
   </data>
   <data name="Initialization" xml:space="preserve">
-    <value>Pagsisimula</value>
+    <value>Reset</value>
     <comment>legacy_id=3504,3542</comment>
   </data>
   <data name="Add" xml:space="preserve">

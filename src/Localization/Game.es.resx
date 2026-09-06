@@ -11870,7 +11870,7 @@
     <comment>legacy_id=3503</comment>
   </data>
   <data name="Initialization" xml:space="preserve">
-    <value>Inicialización</value>
+    <value>Restablecer</value>
     <comment>legacy_id=3504,3542</comment>
   </data>
   <data name="Add" xml:space="preserve">
@@ -12016,6 +12016,9 @@
   <data name="HP Status" xml:space="preserve">
     <value>Estado de HP</value>
     <comment>legacy_id=3547</comment>
+  </data>
+  <data name="MP Status" xml:space="preserve">
+    <value>Estado del MP</value>
   </data>
   <data name="Heal Support" xml:space="preserve">
     <value>Soporte de curación</value>

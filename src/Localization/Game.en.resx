@@ -11894,7 +11894,7 @@
     <comment>legacy_id=3503</comment>
   </data>
   <data name="Initialization" xml:space="preserve">
-    <value>Initialization</value>
+    <value>Reset</value>
     <comment>legacy_id=3504,3542</comment>
   </data>
   <data name="Add" xml:space="preserve">
@@ -12040,6 +12040,9 @@
   <data name="HP Status" xml:space="preserve">
     <value>HP Status</value>
     <comment>legacy_id=3547</comment>
+  </data>
+  <data name="MP Status" xml:space="preserve">
+    <value>MP Status</value>
   </data>
   <data name="Heal Support" xml:space="preserve">
     <value>Heal Support</value>
