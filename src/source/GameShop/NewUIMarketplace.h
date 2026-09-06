@@ -43,6 +43,10 @@ namespace SEASON3B
         static constexpr int kTabCount = 3;
         static constexpr int kSortCount = 3;
         static constexpr int kFeaturedMax = 8;
+        // How long we wait for a 0xC1 D3 00 list response before assuming it
+        // was lost and allowing a new query to be sent anyway (safety net for
+        // the single-flight guard in SendListRequest()/ReceiveList()).
+        static constexpr DWORD kListRequestTimeoutMs = 5000;
 
         enum LISTBOX_TAB
         {
@@ -198,6 +202,15 @@ namespace SEASON3B
         BYTE m_InvOptionType[64];
         BYTE m_InvLuck[64];
         BYTE m_InvSkill[64];
+
+        // Single-flight guard for the list query (see SendListRequest()):
+        // tab/page/category/sort switches race against an async server-side
+        // DB lookup that does not always resolve in send order, so at most
+        // one query is ever in flight and a response is only trusted when
+        // nothing changed after it was sent.
+        bool m_bListRequestPending;
+        bool m_bListRequestDirty;
+        DWORD m_dwListRequestSentTick;
 
         bool m_bShowDialog;
         bool m_bUiReady;

@@ -370,6 +370,9 @@ CNewUIMarketplace::CNewUIMarketplace()
     m_iInvPage = 0;
     m_iInvCount = 0;
     m_iSelectedInv = -1;
+    m_bListRequestPending = false;
+    m_bListRequestDirty = false;
+    m_dwListRequestSentTick = 0;
     m_bShowDialog = false;
     m_bUiReady = false;
     m_iDialogCategory = 0;
@@ -573,6 +576,11 @@ void CNewUIMarketplace::OpeningProcess()
     CollectInventory();
     m_bDemoMode = false;
     m_bUiReady = true;
+    // Reopening the window starts a fresh query cycle -- don't let a pending
+    // flag left over from before it was closed (its response may never have
+    // arrived) block this SendListRequest() below.
+    m_bListRequestPending = false;
+    m_bListRequestDirty = false;
     Enable(true);
     SendListRequest();
     if (SocketClient != nullptr && SocketClient->ToGameServer() != nullptr)
@@ -601,8 +609,28 @@ void CNewUIMarketplace::SendListRequest()
     if (SocketClient == nullptr)
         return;
 
+    // Keep at most one list query in flight. The server resolves 0xC1 D3 00
+    // asynchronously (a DB lookup per MarketplaceService.QueryAsync), so two
+    // outstanding queries (e.g. History then a quick switch to My Sales) are
+    // not guaranteed to resolve in the order they were sent -- a late
+    // response for the older query would otherwise overwrite the newer,
+    // already-correct grid with stale data (already-sold items reappearing
+    // in My Sales). If a query is already awaiting its response, just mark
+    // the current filters as changed and resend once that response lands
+    // (see ReceiveList()) instead of sending a second one now.
+    const DWORD now = GetTickCount();
+    if (m_bListRequestPending && (now - m_dwListRequestSentTick) < kListRequestTimeoutMs)
+    {
+        m_bListRequestDirty = true;
+        return;
+    }
+
     BYTE packet[8] = { 0xC1, 8, kGroup, 0x00, static_cast<BYTE>(m_iPage), static_cast<BYTE>(m_iCategory), static_cast<BYTE>(m_iTab), SortPacketValue() };
     SocketClient->Send(packet, 8);
+
+    m_bListRequestPending = true;
+    m_bListRequestDirty = false;
+    m_dwListRequestSentTick = now;
 }
 
 void CNewUIMarketplace::SendBuy(int listingId)
@@ -677,6 +705,26 @@ void CNewUIMarketplace::ReceiveList(const BYTE* buffer)
 {
     if (buffer == nullptr)
         return;
+
+    // A query changed after this response's request was sent (tab/page/
+    // category/sort) means the request that produced this data is already
+    // stale even if the server happened to answer it -- don't trust its
+    // contents at all, just fire the up-to-date query once more below.
+    const bool requestSupersededByLaterChange = m_bListRequestDirty;
+    m_bListRequestPending = false;
+    m_bListRequestDirty = false;
+
+    // The server also echoes back the page (byte 4, MarketplaceViewPlugIn.
+    // ShowListAsync span[4]) and tab (byte 7, span[7]) it queried for. Belt
+    // and suspenders on top of the single-flight guard above: discard a
+    // response that doesn't match what's currently selected.
+    const bool tabOrPageStale = buffer[4] != static_cast<BYTE>(m_iPage) || buffer[7] != static_cast<BYTE>(m_iTab);
+    if (requestSupersededByLaterChange || tabOrPageStale)
+    {
+        if (requestSupersededByLaterChange)
+            SendListRequest();
+        return;
+    }
 
     m_iPage = buffer[4];
     m_iTotalPages = buffer[5] == 0 ? 1 : buffer[5];
