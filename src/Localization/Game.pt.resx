@@ -732,7 +732,7 @@
     <comment>legacy_id=179</comment>
   </data>
   <data name="Guild" xml:space="preserve">
-    <value>Habilidade específica de cavaleiro</value>
+    <value>Guilda</value>
     <comment>legacy_id=180,946</comment>
   </data>
   <data name="Do you wish to be the guild master?" xml:space="preserve">
