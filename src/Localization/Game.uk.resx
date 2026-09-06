@@ -13335,4 +13335,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>Щоб отримувати досвід майстра, вбивайте сильніших монстрів.</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Титул</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Автоматично</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Приховати титул</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Показати титул</value></data>
 </root>

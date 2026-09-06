@@ -13335,4 +13335,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>Kamu harus membunuh monster yang lebih kuat untuk mendapat master EXP.</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Gelar</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Otomatis</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Sembunyikan gelar</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Tampilkan gelar</value></data>
 </root>

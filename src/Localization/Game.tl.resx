@@ -1822,7 +1822,7 @@
     <comment>legacy_id=487</comment>
   </data>
   <data name="Commoner" xml:space="preserve">
-    <value>Commoner</value>
+    <value>Karaniwang Tao</value>
     <comment>legacy_id=488</comment>
   </data>
   <data name="Outlaw Warning" xml:space="preserve">
@@ -10838,7 +10838,7 @@
     <comment>legacy_id=3103</comment>
   </data>
   <data name="GrandDukeDukeMarquisCountViscount" xml:space="preserve">
-    <value>Grand Duke#Duke#Marquis#Count#Viscount#Baron#Knight Commander#Superior Knight#Knight#Guard Prefect#Opisyal#Lieutenant#Sarhento#Pribado</value>
+    <value>Dakilang Duke#Duke#Markés#Konde#Bise-Konde#Baron#Kumander ng mga Kabalyero#Nakatataas na Kabalyero#Kabalyero#Punong Bantay#Opisyal#Tenyente#Sarhento#Pribado</value>
     <comment>legacy_id=3104</comment>
   </data>
   <data name="Can enter the Monday - Saturday map." xml:space="preserve">
@@ -13335,4 +13335,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>Kailangan mong pumatay ng mas malalakas na monster para sa master EXP.</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Titulo</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Awtomatiko</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Itago ang titulo</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Ipakita ang titulo</value></data>
 </root>

@@ -11757,4 +11757,8 @@
   <data name="ﾇﾘﾁｦ" xml:space="preserve">
     <value>ﾇﾘﾁｦ</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>称号</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>自動</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>称号を隠す</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>称号を表示</value></data>
 </root>

@@ -134,6 +134,34 @@ namespace
     {
         return id == AutoId || id == HiddenId || g_owned.count(id) != 0;
     }
+
+    // EnsureCatalog() snapshots I18N::Game::* pointers into g_catalog /
+    // g_gensNames exactly once (guarded by g_catalogReady). Those pointers
+    // are only valid for whichever locale was active at that first call;
+    // I18N::SetLocale() repoints the extern symbols afterwards but never
+    // touches our snapshot, so every catalog-derived label (all Y-window
+    // rows besides the AutoId row's hero-state suffix, which reads
+    // I18N::Game::Hero/Commoner live via FromHeroState, and every nameplate
+    // drawn for an equipped cosmetic id via NameForId) freezes in whatever
+    // language was active at boot and never follows a later /Idioma switch.
+    // Drop the cache on every locale change so the next Catalog()/Visible()/
+    // NameForId() call rebuilds it from the now-current locale pointers.
+    void OnLocaleChanged(void* /*ctx*/) noexcept
+    {
+        g_catalogReady = false;
+        g_catalog.clear();
+        g_visible.clear();
+    }
+
+    struct LocaleObserverRegistrar
+    {
+        LocaleObserverRegistrar() noexcept
+        {
+            I18N::RegisterLocaleObserver(&OnLocaleChanged, nullptr);
+        }
+    };
+
+    const LocaleObserverRegistrar g_localeObserverRegistrar;
 }
 
 const std::vector<Rank>& Catalog()

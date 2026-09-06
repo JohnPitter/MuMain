@@ -13335,4 +13335,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>需要擊殺更強的怪物才能獲得大師經驗。</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>稱號</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>自動</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>隱藏稱號</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>顯示稱號</value></data>
 </root>

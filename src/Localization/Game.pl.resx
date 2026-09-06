@@ -13335,4 +13335,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>Musisz zabijać silniejsze potwory, aby zdobywać mistrzowskie EXP.</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Tytuł</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Automatyczny</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Ukryj tytuł</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Pokaż tytuł</value></data>
 </root>

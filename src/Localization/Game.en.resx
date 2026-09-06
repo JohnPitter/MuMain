@@ -13167,4 +13167,8 @@
   <data name="HuntAnalyzerProfitPerHour" xml:space="preserve"><value>PROFIT/H</value></data>
   <data name="HuntAnalyzerHint" xml:space="preserve"><value>Track EXP, profit and your hunt performance.</value></data>
   <data name="HuntAnalyzerVip" xml:space="preserve"><value>Subscribe VIP</value></data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Title</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Automatic</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Hide title</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Show title</value></data>
 </root>

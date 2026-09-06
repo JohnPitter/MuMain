@@ -1818,7 +1818,7 @@
     <comment>legacy_id=486</comment>
   </data>
   <data name="Hero" xml:space="preserve">
-    <value>Hero</value>
+    <value>Held</value>
     <comment>legacy_id=487</comment>
   </data>
   <data name="Commoner" xml:space="preserve">
@@ -13336,4 +13336,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>Du musst stärkere Monster töten, um Meister-EXP zu erhalten.</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Titel</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Automatisch</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Titel ausblenden</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Titel anzeigen</value></data>
 </root>

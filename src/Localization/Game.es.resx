@@ -13308,4 +13308,8 @@
   <data name="YouNeedToKillStrongerMonstersToGainMasterExperience" xml:space="preserve">
     <value>Necesitas matar monstruos más fuertes para ganar experiencia máster.</value>
   </data>
+  <data name="TitleWindowTitle" xml:space="preserve"><value>Título</value></data>
+  <data name="TitleAutomaticLabel" xml:space="preserve"><value>Automático</value></data>
+  <data name="TitleHideButton" xml:space="preserve"><value>Ocultar título</value></data>
+  <data name="TitleShowButton" xml:space="preserve"><value>Mostrar título</value></data>
 </root>
