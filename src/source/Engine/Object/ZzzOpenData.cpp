@@ -29,6 +29,7 @@
 #include "Camera/CameraMove.h"
 #include "GameLogic/Quests/QuestMng.h"
 #include "Network/Server/ServerListManager.h"
+#include "Network/Server/KeyConfiguration.h"
 #include "GameLogic/Social/MonkSystem.h"
 #include "Data/DataHandler/SkillData/SkillDataHandler.h"
 
@@ -5136,7 +5137,8 @@ void SaveOptions()
         return;
 
     // 0 ~ 19 skill hotkey
-    BYTE options[30]{};
+    BYTE options[KeyConfiguration::Size]{};
+    static_assert(sizeof(options) == KeyConfiguration::Size, "key configuration size mismatch");
 
     int iSkillType = -1;
     for (int i = 0; i < 10; ++i)
@@ -5179,21 +5181,33 @@ void SaveOptions()
         options[20] |= SLIDE_HELP_OFF;
     }
 
-    options[21] = static_cast<BYTE>((g_pMainFrame->GetItemHotKey(SEASON3B::HOTKEY_Q) - ITEM_POTION) & 0xFF);
-    options[22] = static_cast<BYTE>((g_pMainFrame->GetItemHotKey(SEASON3B::HOTKEY_W) - ITEM_POTION) & 0xFF);
-    options[23] = static_cast<BYTE>((g_pMainFrame->GetItemHotKey(SEASON3B::HOTKEY_E) - ITEM_POTION) & 0xFF);
-
     BYTE wChatListBoxSize = g_pChatListBox->GetNumberOfLines(g_pChatListBox->GetCurrentMsgType()) / 3;
     if (g_bUseChatListBox == FALSE)
         wChatListBoxSize = 0;
     BYTE wChatListBoxBackAlpha = g_pChatListBox->GetBackAlpha() * 10;
     options[24] = (((wChatListBoxSize << 4) & 0xF0) | (wChatListBoxBackAlpha & 0x0F)) & 0xFF;
-    options[25] = static_cast<BYTE>((g_pMainFrame->GetItemHotKey(SEASON3B::HOTKEY_R) - ITEM_POTION) & 0xFF);
 
-    options[26] = g_pMainFrame->GetItemHotKeyLevel(SEASON3B::HOTKEY_Q);
-    options[27] = g_pMainFrame->GetItemHotKeyLevel(SEASON3B::HOTKEY_W);
-    options[28] = g_pMainFrame->GetItemHotKeyLevel(SEASON3B::HOTKEY_E);
-    options[29] = g_pMainFrame->GetItemHotKeyLevel(SEASON3B::HOTKEY_R);
+    // Q, W, E, R item slots plus their item levels, through the same layout the
+    // receive side reads (Network/Server/KeyConfiguration.h). An unbound slot
+    // holds -1 and is written as 0xFF; a level outside 0..15 cannot belong to a
+    // real item, so it is normalized away instead of being persisted again.
+    static const int hotKeySlots[KeyConfiguration::SlotCount] =
+    {
+        SEASON3B::HOTKEY_Q, SEASON3B::HOTKEY_W, SEASON3B::HOTKEY_E, SEASON3B::HOTKEY_R
+    };
+
+    for (std::size_t slot = 0; slot < KeyConfiguration::SlotCount; ++slot)
+    {
+        const int itemType = g_pMainFrame->GetItemHotKey(hotKeySlots[slot]);
+        KeyConfiguration::PotionSlot potion{ -1, 0 };
+        if (itemType >= ITEM_POTION)
+        {
+            potion.ItemIndex = itemType - ITEM_POTION;
+            potion.ItemLevel = g_pMainFrame->GetItemHotKeyLevel(hotKeySlots[slot]);
+        }
+
+        KeyConfiguration::WritePotionSlot(options, slot, potion);
+    }
 
     SocketClient->ToGameServer()->SendSaveKeyConfiguration(options, sizeof options);
     s_skillBarDirty = false;

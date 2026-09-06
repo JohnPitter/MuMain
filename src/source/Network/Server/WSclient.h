@@ -1218,7 +1218,11 @@ typedef struct
     BYTE         KeyQWE[3];
     BYTE		 ChatLogBox;
     BYTE		 KeyR;
-    int			 QWERLevel;
+    // Q, W, E, R item levels, one byte each, in the same order SaveOptions()
+    // writes them. This used to be an `int` that was unpacked big-endian while
+    // it was read little-endian, which swapped the Q/R and W/E levels on every
+    // login; see Network/Server/KeyConfiguration.h.
+    BYTE		 QWERLevel[4];
 } PRECEIVE_OPTION, * LPPRECEIVE_OPTION;
 #pragma pack(pop)
 

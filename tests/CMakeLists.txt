@@ -59,3 +59,5 @@ add_subdirectory(editor)
 add_subdirectory(options)
 
 add_subdirectory(muhelper)
+
+add_subdirectory(keyconfig)

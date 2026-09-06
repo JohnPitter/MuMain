@@ -39,6 +39,7 @@
 #include "GameLogic/Pets/GIPetManager.h"
 #include "GameLogic/Pets/w_PetProcess.h"
 #include "Network/Server/CSMapServer.h"
+#include "Network/Server/KeyConfiguration.h"
 #include "GameLogic/NPCs/npcGateSwitch.h"
 #include "GameLogic/Items/CComGem.h"
 #include "GameLogic/Items/InventoryUtils.h"
@@ -10350,9 +10351,23 @@ void ReceiveChatRoomInviteResult(const BYTE* ReceiveBuffer)
     };
 }
 
-void ReceiveOption(const BYTE* ReceiveBuffer)
+void ReceiveOption(const BYTE* ReceiveBuffer, int Size)
 {
+    // The blob is variable length on the wire. A short one (an old row in the
+    // database, a truncated write) must not be read past its end: the four
+    // potion levels live in the last four bytes, so reading them out of the
+    // stale part of the receive buffer is what seeded the garbage levels that
+    // are still stored on live characters.
+    const int headerSize = sizeof(PBMSG_HEADER) + 1;
+    if (Size < headerSize + static_cast<int>(KeyConfiguration::Size))
+    {
+        g_ConsoleDebug->Write(MCD_RECEIVE, L"Recv [0xF3][0x30] ignored: %d bytes, expected %d",
+            Size, headerSize + static_cast<int>(KeyConfiguration::Size));
+        return;
+    }
+
     auto Data = (LPPRECEIVE_OPTION)ReceiveBuffer;
+    const std::uint8_t* configuration = ReceiveBuffer + headerSize;
 
     g_pMainFrame->ResetSkillHotKey();
 
@@ -10402,20 +10417,28 @@ void ReceiveOption(const BYTE* ReceiveBuffer)
         g_pOption->SetSlideHelp(true);
     }
 
-    BYTE byQLevel, byWLevel, byELevel, byRLevel;
-    byQLevel = (Data->QWERLevel & 0xFF000000) >> 24;
-    byWLevel = (Data->QWERLevel & 0x00FF0000) >> 16;
-    byELevel = (Data->QWERLevel & 0x0000FF00) >> 8;
-    byRLevel = Data->QWERLevel & 0x000000FF;
+    // Slot order is Q, W, E, R - the same order SaveOptions() writes, and the
+    // levels come from the byte the writer used, not from a reinterpreted int.
+    static const int hotKeySlots[KeyConfiguration::SlotCount] =
+    {
+        SEASON3B::HOTKEY_Q, SEASON3B::HOTKEY_W, SEASON3B::HOTKEY_E, SEASON3B::HOTKEY_R
+    };
 
-    g_pMainFrame->SetItemHotKey(SEASON3B::HOTKEY_Q, Data->KeyQWE[0] + ITEM_POTION, byQLevel);
-    g_pMainFrame->SetItemHotKey(SEASON3B::HOTKEY_W, Data->KeyQWE[1] + ITEM_POTION, byWLevel);
-    g_pMainFrame->SetItemHotKey(SEASON3B::HOTKEY_E, Data->KeyQWE[2] + ITEM_POTION, byELevel);
+    for (std::size_t slot = 0; slot < KeyConfiguration::SlotCount; ++slot)
+    {
+        const KeyConfiguration::PotionSlot potion = KeyConfiguration::ReadPotionSlot(configuration, slot);
+        if (potion.ItemIndex < 0)
+        {
+            // Unbound: SetItemHotKey() clears the slot for a type it cannot register.
+            g_pMainFrame->SetItemHotKey(hotKeySlots[slot], -1, 0);
+            continue;
+        }
+
+        g_pMainFrame->SetItemHotKey(hotKeySlots[slot], potion.ItemIndex + ITEM_POTION, potion.ItemLevel);
+    }
 
     BYTE wChatListBoxSize = (Data->ChatLogBox >> 4) * 3;
     BYTE wChatListBoxBackAlpha = Data->ChatLogBox & 0x0F;
-
-    g_pMainFrame->SetItemHotKey(SEASON3B::HOTKEY_R, Data->KeyR + ITEM_POTION, byRLevel);
 
     OnSkillBarRestoredFromServer();
 }
@@ -13975,7 +13998,7 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             ReceiveSoccerScore(ReceiveBuffer);
             break;
         case 0x30:
-            ReceiveOption(ReceiveBuffer);
+            ReceiveOption(ReceiveBuffer, Size);
             break;
         case 0x32:
             ReceiveSetPointsExtended(ReceiveBuffer);
