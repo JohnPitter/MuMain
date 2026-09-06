@@ -13,6 +13,18 @@
 
 namespace MUHelper
 {
+	// One pending self-repair request. The server answers a refused repair
+	// (pet slot without an opened NPC, not enough money) with nothing but a
+	// log line, so the client cannot tell success from refusal by the reply:
+	// the retry has to be driven by the durability actually changing, or by a
+	// backoff. Without this the helper resent the same rejected slot on every
+	// 250 ms tick.
+	struct RepairAttempt
+	{
+		int   iSentDurability = 0;
+		DWORD dwRetryAt = 0;
+	};
+
 	class CMuHelper
 	{
 	public:
@@ -56,6 +68,13 @@ namespace MUHelper
 		int Buff();
 		int BuffTarget(CHARACTER* pTargetChar, ActionSkillType iBuffSkill);
 		int RecoverHealth();
+		DWORD ComputeAttackIntervalMs() const;
+		bool IsAttackCadenceReady() const;
+		void NoteAttackRequestSent();
+		bool IsAttackBackoffActive() const;
+		void EnterStallBackoff(int iTargetId);
+		void ResetStallState();
+		void RepairEquipmentSlot(int iSlot, DWORD now);
 		int Heal();
 		int HealSelf(ActionSkillType iHealingSkill);
 		int DrainLife();
@@ -66,7 +85,11 @@ namespace MUHelper
 		void CollectNearbyMonsters();
 		ActionSkillType SelectAttackSkill();
 		int SimulateAttack(ActionSkillType iSkill);
-		int SimulateSkill(ActionSkillType iSkill, bool bTargetRequired, int iTarget);
+		// bAttackRequest marks the casts the server counts as attacks (damage
+		// skills, Drain Life). Only those obey the attack-cadence timer; buffs
+		// and heals keep the plain swing gate, exactly as before, because the
+		// server excludes Buff/Regeneration skills from its own rate check.
+		int SimulateSkill(ActionSkillType iSkill, bool bTargetRequired, int iTarget, bool bAttackRequest = false);
 		int SimulateBasicAttack(int iTarget);
 		int SimulateComboAttack();
 		int GetNearestTarget();
@@ -83,7 +106,7 @@ namespace MUHelper
 		bool IsWalkingPath() const;
 		void TrackHuntMotion();
 		bool IsBlacklisted(int iTargetId);
-		void BlacklistTarget(int iTargetId, const char* szReason);
+		void BlacklistTarget(int iTargetId, const char* szReason, DWORD dwCooldownMs = 0);
 		void PurgeBlacklist();
 		void ReleaseChaseTarget(int iTargetId, const char* szReason);
 		bool ValidateChaseTarget(int iTargetId);
@@ -159,6 +182,32 @@ namespace MUHelper
 		// Target cell at the moment the current chase path was planned; the
 		// path is only abandoned when the target drifts beyond this.
 		POINT m_posChasePlanTarget = { 0, 0 };
+		// Attack cadence. The swing-animation gate alone is not a rate limit:
+		// a hit, a stun or any server-driven action change pulls the hero out
+		// of the swing enum early, and every attack request that never starts
+		// a swing (blocked cast, refused hit) leaves no animation at all. Both
+		// cases let the fixed 250 ms helper tick become the only pacing, which
+		// is faster than the character's real attack speed. m_dwLastAttackSent
+		// is the wall clock of the last attack/skill request actually issued;
+		// m_iLastSwingAction is the last swing animation observed, whose
+		// PlaySpeed carries AttackSpeed/MagicSpeed (see MuHelperPacing.h).
+		DWORD m_dwLastAttackSent = 0;
+		int m_iLastSwingAction = -1;
+		// Unreachable-target backoff. The target lock never releases on its
+		// own (3feaaad6), so a mob that cannot be reached at all -- behind a
+		// wall the server disagrees about, inside a closed cage -- used to
+		// loop through recovery and chase forever. Each exhausted recovery
+		// cycle now costs an exponential pause, and after kMaxStallCycles or
+		// kUnreachableGiveUpMs the lock is finally dropped.
+		int m_iStallCycles = 0;
+		DWORD m_dwStallSince = 0;
+		DWORD m_dwAttackBackoffUntil = 0;
+		// Auto-repair pacing, keyed by equipment slot.
+		std::map<int, RepairAttempt> m_mapRepairAttempts;
+		DWORD m_dwNextRepairSweep = 0;
+		// Healing-potion pacing: one request per potion cooldown, not one per
+		// helper tick while the life bar stays under the threshold.
+		DWORD m_dwNextPotionRequest = 0;
 		// Range hysteresis: once a swing was issued inside range, the attack
 		// condition keeps a small tolerance so the hero does not oscillate
 		// between walking and stopping on the range boundary.

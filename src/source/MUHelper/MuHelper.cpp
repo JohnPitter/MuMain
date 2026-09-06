@@ -23,6 +23,7 @@
 #include "Network/Server/ServerListManager.h"
 
 #include "MuHelper.h"
+#include "MuHelperPacing.h"
 
 constexpr int MAX_ACTIONABLE_DISTANCE = 10;
 constexpr int DEFAULT_DURABILITY_THRESHOLD = 50;
@@ -61,6 +62,26 @@ namespace MUHelper
         // tolerance, so a mob nudge at the range boundary does not flip the
         // hero between walking and stopping every helper tick (250 ms).
         constexpr float kRangeHysteresis = 0.4f;
+        // Give-up rule for a locked target that stays unreachable. One stall
+        // cycle is kAttackStallMs of no progress plus up to kMaxRecoveryAttempts
+        // sidesteps, so it already spans several seconds of honest retrying --
+        // far more than the "couple of seconds" 3feaaad6 was written against.
+        // Three exhausted cycles, or 20 s of continuous stalling, mean the mob
+        // is not merely body-blocked in a crowded spot: it cannot be reached at
+        // all, and holding the lock only produces packets.
+        constexpr int kMaxStallCycles = 3;
+        constexpr DWORD kUnreachableGiveUpMs = 20000;
+        // Cooldown for a target given up as unreachable. The ordinary 5 s
+        // blacklist would let the helper re-lock the same mob immediately.
+        constexpr DWORD kUnreachableBlacklistMs = 30000;
+        // Auto-repair. The sweep itself is cheap but pointless four times a
+        // second; a refused or ignored repair waits a full backoff before it is
+        // sent again, and is retried at once when the durability changes.
+        constexpr DWORD kRepairSweepIntervalMs = 1000;
+        constexpr DWORD kRepairRetryMs = 30000;
+        // Healing potions: the server-side item cooldown is around a second, so
+        // anything faster is pure packet spam while the life bar catches up.
+        constexpr DWORD kPotionRequestIntervalMs = 1000;
     }
 
     void CALLBACK CMuHelper::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
@@ -157,6 +178,14 @@ namespace MUHelper
         m_bAttackEngaged = false;
         m_dwRoamReachedTick = 0;
         m_dwRoamIdleLogTick = 0;
+        m_dwLastAttackSent = 0;
+        m_iLastSwingAction = -1;
+        m_iStallCycles = 0;
+        m_dwStallSince = 0;
+        m_dwAttackBackoffUntil = 0;
+        m_mapRepairAttempts.clear();
+        m_dwNextRepairSweep = 0;
+        m_dwNextPotionRequest = 0;
 
         RecalculateDistances();
 
@@ -205,6 +234,14 @@ namespace MUHelper
         m_bAttackEngaged = false;
         m_iComboState = 0;
         m_iCurrentItem = MAX_ITEMS;
+        m_dwLastAttackSent = 0;
+        m_iLastSwingAction = -1;
+        m_iStallCycles = 0;
+        m_dwStallSince = 0;
+        m_dwAttackBackoffUntil = 0;
+        m_mapRepairAttempts.clear();
+        m_dwNextRepairSweep = 0;
+        m_dwNextPotionRequest = 0;
         // Cancel any walk in progress so the hero stops on the spot.
         if (Hero != nullptr)
         {
@@ -833,18 +870,35 @@ namespace MUHelper
         int64_t iLife = CharacterAttribute->Life;
         int64_t iLifeMax = CharacterAttribute->LifeMax;
 
-        if (m_config.bUseHealPotion && iLifeMax > 0 && iLife > 0)
+        if (!m_config.bUseHealPotion || iLifeMax <= 0 || iLife <= 0)
         {
-            int64_t iRemaining = (iLife * 100 + iLifeMax - 1) / iLifeMax;
-            if (iRemaining <= m_config.iPotionThreshold)
-            {
-                int iPotionIndex = g_pMyInventory->FindHealingItemIndex();
-                if (iPotionIndex != -1)
-                {
-                    SendRequestUse(iPotionIndex, 0);
-                }
-            }
+            return 1;
         }
+
+        const int64_t iRemaining = (iLife * 100 + iLifeMax - 1) / iLifeMax;
+        if (iRemaining > m_config.iPotionThreshold)
+        {
+            return 1;
+        }
+
+        // One request per potion cooldown. The life bar only catches up after
+        // the server answers, so an ungated check re-sent the same use request
+        // on every 250 ms tick until it did.
+        const DWORD now = GetTickCount();
+        if (m_dwNextPotionRequest != 0
+            && static_cast<int>(m_dwNextPotionRequest - now) > 0)
+        {
+            return 1;
+        }
+
+        const int iPotionIndex = g_pMyInventory->FindHealingItemIndex();
+        if (iPotionIndex == -1)
+        {
+            return 1;
+        }
+
+        SendRequestUse(iPotionIndex, 0);
+        m_dwNextPotionRequest = now + kPotionRequestIntervalMs;
 
         return 1;
     }
@@ -956,46 +1010,102 @@ namespace MUHelper
             }
             if (m_iCurrentTarget != -1)
             {
-                return SimulateSkill(iDrainLife, true, m_iCurrentTarget);
+                // Drain Life damages the mob, so the server counts it as an
+                // attack: it shares the attack cadence with the swing loop.
+                return SimulateSkill(iDrainLife, true, m_iCurrentTarget, true);
             }
         }
 
         return 1;
     }
 
+    // Self-repair of one worn equipment slot, at most once per kRepairRetryMs
+    // unless the durability moved in the meantime. The server answers a repair
+    // it refuses with nothing at all -- it only logs a cheater warning for the
+    // pet slot and drops insufficient-money requests after a blue message -- so
+    // "did it work?" can only be read off the durability, and a retry that is
+    // not driven by that reading has to be driven by a backoff.
+    void CMuHelper::RepairEquipmentSlot(int iSlot, DWORD now)
+    {
+        // The pet slot is repaired by the pet trainer NPC, never by self-repair:
+        // ItemRepairAction (server) logs "tried to repair pet slot, without
+        // opened NPC" and returns, so the durability never moves and an
+        // ungated helper resent this exact slot four times a second.
+        if (iSlot == EQUIPMENT_HELPER)
+        {
+            return;
+        }
+
+        ITEM* pItem = &CharacterMachine->Equipment[iSlot];
+        if (!pItem || pItem->Type == -1)
+        {
+            return;
+        }
+
+        ITEM_ATTRIBUTE* pAttr = &ItemAttribute[pItem->Type];
+        if (!pAttr)
+        {
+            return;
+        }
+
+        const int iDurability = pItem->Durability;
+        const int iMaxDurability = CalcMaxDurability(pItem, pAttr, pItem->Level);
+        if (iMaxDurability <= 0)
+        {
+            return;
+        }
+
+        const int64_t iHealth = (iDurability * 100 + iMaxDurability - 1) / iMaxDurability;
+        if (iHealth > DEFAULT_DURABILITY_THRESHOLD)
+        {
+            m_mapRepairAttempts.erase(iSlot);
+            return;
+        }
+
+        const auto attempt = m_mapRepairAttempts.find(iSlot);
+        if (attempt != m_mapRepairAttempts.end())
+        {
+            // Durability unchanged since the last request: the server either
+            // refused it or has not answered yet. Wait out the backoff.
+            if (attempt->second.iSentDurability == iDurability
+                && static_cast<int>(attempt->second.dwRetryAt - now) > 0)
+            {
+                return;
+            }
+        }
+
+        const int64_t iGoldCost = CalcSelfRepairCost(
+            ItemValue(pItem, 2), iDurability, iMaxDurability, pItem->Type);
+        if (iGoldCost > CharacterMachine->Gold)
+        {
+            // Not a refusal to retry around: re-check when the gold changes,
+            // but do not send anything until then.
+            m_mapRepairAttempts[iSlot] = { iDurability, now + kRepairRetryMs };
+            return;
+        }
+
+        SocketClient->ToGameServer()->SendRepairItemRequest(iSlot, 1);
+        m_mapRepairAttempts[iSlot] = { iDurability, now + kRepairRetryMs };
+    }
+
     int CMuHelper::RepairEquipments()
     {
-        if (m_config.bRepairItem)
+        if (!m_config.bRepairItem)
         {
-            for (int i = 0; i < MAX_EQUIPMENT; i++)
-            {
-                ITEM* pItem = &CharacterMachine->Equipment[i];
-                if (!pItem || pItem->Type == -1)
-                {
-                    continue;
-                }
+            return 1;
+        }
 
-                ITEM_ATTRIBUTE* pAttr = &ItemAttribute[pItem->Type];
-                if (!pAttr)
-                {
-                    continue;
-                }
+        const DWORD now = GetTickCount();
+        if (m_dwNextRepairSweep != 0
+            && static_cast<int>(m_dwNextRepairSweep - now) > 0)
+        {
+            return 1;
+        }
+        m_dwNextRepairSweep = now + kRepairSweepIntervalMs;
 
-                int iLevel = pItem->Level;
-                int iDurability = pItem->Durability;
-                int iMaxDurability = CalcMaxDurability(pItem, pAttr, iLevel);
-
-                int64_t iHealth = (iDurability * 100 + iMaxDurability - 1) / iMaxDurability;
-
-                if (iHealth <= DEFAULT_DURABILITY_THRESHOLD)
-                {
-                    int64_t iGoldCost = CalcSelfRepairCost(ItemValue(pItem, 2), iDurability, iMaxDurability, pItem->Type);
-                    if (iGoldCost <= CharacterMachine->Gold)
-                    {
-                        SocketClient->ToGameServer()->SendRepairItemRequest(i, 1);
-                    }
-                }
-            }
+        for (int i = 0; i < MAX_EQUIPMENT; i++)
+        {
+            RepairEquipmentSlot(i, now);
         }
 
         return 1;
@@ -1035,9 +1145,28 @@ namespace MUHelper
             }
         }
 
+        // Unreachable-target backoff: stop producing attack and chase packets
+        // for this target until the pause expires. The lock, the target list
+        // and every non-combat action are untouched, and returning 1 keeps the
+        // roam watchdog from treating the pause as "nothing to hunt".
+        if (IsAttackBackoffActive())
+        {
+            return 1;
+        }
+
+        if (m_dwAttackBackoffUntil != 0)
+        {
+            // The pause just ended. Give the target a fresh stall window so the
+            // watchdog measures the next honest retry, not the pause itself.
+            m_dwAttackBackoffUntil = 0;
+            m_dwAttackLastProgress = GetTickCount();
+            m_posAttackHeroLast = { Hero->PositionX, Hero->PositionY };
+        }
+
         // Attack-stall watchdog: run once per helper tick while a target is
         // locked. A stall (no target/hit/hero progress for ~2.5 s) issues a
-        // recovery step or, after the attempt limit, releases the target.
+        // recovery step or, once the recovery attempts are spent, enters the
+        // backoff above and eventually releases the target.
         if (m_iCurrentTarget != -1)
         {
             TrackTargetProgress(m_iCurrentTarget);
@@ -1045,6 +1174,12 @@ namespace MUHelper
             {
                 m_iComboState = 0;
                 return 0;
+            }
+
+            // TrackTargetProgress may have opened a fresh backoff.
+            if (IsAttackBackoffActive())
+            {
+                return 1;
             }
         }
 
@@ -1145,16 +1280,19 @@ namespace MUHelper
         return 1;
     }
 
-    // True while the hero is mid swing; gating helper actions on it makes the
-    // bot's cadence follow AttackSpeed instead of the fixed helper timer, the
-    // same way the manual click path gates in MoveHero (ZzzInterface.cpp).
-    static bool IsHeroSwingInProgress()
+    // The swing animation the hero is currently playing, or -1 when it is not
+    // swinging. Gating helper actions on it makes the bot wait out the swing,
+    // the same way the manual click path gates in MoveHero (ZzzInterface.cpp).
+    // The returned action also names the animation whose PlaySpeed carries the
+    // character's AttackSpeed/MagicSpeed, which is what the cadence timer below
+    // is derived from.
+    static int GetHeroSwingAction()
     {
         const int iAction = Hero->Object.CurrentAction;
 
         // Outside the swing enum range entirely -> not a swing.
         if (!Engine::Object::IsAttackAction(iAction))
-            return false;
+            return -1;
 
         // Several non-swing *stance* animations (mounted idle/walk/run, two-hand-
         // sword stance, ride-horse, rage-fenrir) share the [PLAYER_ATTACK_FIST ..
@@ -1169,24 +1307,90 @@ namespace MUHelper
             || (iAction >= PLAYER_DARKLORD_STAND && iAction <= PLAYER_RUN_RIDE_HORSE)
             || (iAction >= PLAYER_FENRIR_RUN && iAction <= PLAYER_FENRIR_WALK_ONE_LEFT)
             || (iAction >= PLAYER_RAGE_FENRIR_WALK && iAction <= PLAYER_RAGE_FENRIR_STAND_ONE_LEFT))
-            return false;
+            return -1;
 
         // Genuine attack/skill swing -> Fenrir attack/skill actions sit below
         // PLAYER_FENRIR_RUN, so they stay gated and cadence still tracks
         // AttackSpeed when mounted.
-        return true;
+        return iAction;
+    }
+
+    static bool IsHeroSwingInProgress()
+    {
+        return GetHeroSwingAction() != -1;
+    }
+
+    // Minimum wall time between two attack requests for this character, read
+    // off the last swing animation actually observed. SetAttackSpeed()
+    // (ZzzCharacter.cpp) rescales that action's PlaySpeed from
+    // CharacterAttribute->AttackSpeed / MagicSpeed, so the animation length is
+    // the character's real attack cadence -- exactly the timing the manual
+    // attack path obeys, reused here instead of the fixed 250 ms helper tick.
+    DWORD CMuHelper::ComputeAttackIntervalMs() const
+    {
+        if (m_iLastSwingAction < 0 || Models == nullptr)
+        {
+            return Pacing::kDefaultAttackIntervalMs;
+        }
+
+        const BMD* pModel = &Models[MODEL_PLAYER];
+        if (pModel->Actions == nullptr || m_iLastSwingAction >= pModel->NumActions)
+        {
+            return Pacing::kDefaultAttackIntervalMs;
+        }
+
+        const Action_t& action = pModel->Actions[m_iLastSwingAction];
+        return Pacing::AttackIntervalMs(action.PlaySpeed, action.NumAnimationKeys);
+    }
+
+    bool CMuHelper::IsAttackCadenceReady() const
+    {
+        if (m_dwLastAttackSent == 0)
+        {
+            return true;
+        }
+        return GetTickCount() - m_dwLastAttackSent >= ComputeAttackIntervalMs();
+    }
+
+    void CMuHelper::NoteAttackRequestSent()
+    {
+        m_dwLastAttackSent = GetTickCount();
+    }
+
+    // True while the helper owes a locked-but-unreachable target a pause. It
+    // suppresses the attack pipeline only: the target lock, the chase state and
+    // every non-combat action stay untouched.
+    bool CMuHelper::IsAttackBackoffActive() const
+    {
+        if (m_dwAttackBackoffUntil == 0)
+        {
+            return false;
+        }
+        return static_cast<int>(m_dwAttackBackoffUntil - GetTickCount()) > 0;
     }
 
     int CMuHelper::SimulateAttack(ActionSkillType iSkill)
     {
-        return SimulateSkill(iSkill, true, m_iCurrentTarget);
+        return SimulateSkill(iSkill, true, m_iCurrentTarget, true);
     }
 
-    int CMuHelper::SimulateSkill(ActionSkillType iSkill, bool bTargetRequired, int iTarget)
+    int CMuHelper::SimulateSkill(ActionSkillType iSkill, bool bTargetRequired, int iTarget, bool bAttackRequest)
     {
         // Let the current swing finish before issuing another action, so the
         // cadence tracks AttackSpeed instead of the fixed helper timer.
-        if (IsHeroSwingInProgress())
+        const int iSwingAction = GetHeroSwingAction();
+        if (iSwingAction != -1)
+        {
+            // The swing action's PlaySpeed carries this character's
+            // AttackSpeed/MagicSpeed; remember it for the cadence timer.
+            m_iLastSwingAction = iSwingAction;
+            return 0;
+        }
+
+        // ... and honor that same cadence even when no swing is playing. A hit,
+        // a stun or a refused cast pulls the hero out of the swing enum early,
+        // and then the swing gate above lets every 250 ms tick through.
+        if (bAttackRequest && !IsAttackCadenceReady())
         {
             return 0;
         }
@@ -1296,6 +1500,11 @@ namespace MUHelper
             TargetY = Hero->PositionY;
         }
 
+        // From here the request leaves the client (ExecuteSkill either casts or
+        // walks toward the target), so the cadence clock starts here, not on
+        // the reply -- a refused cast never answers.
+        NoteAttackRequestSent();
+
         int iSkillResult = GameLogic::Combat::ExecuteSkill(Hero, iSkill, fSkillDistance);
         if (iSkillResult == -1 && iTarget != -1)
         {
@@ -1312,9 +1521,18 @@ namespace MUHelper
             return 0;
         }
 
-        // Let the current swing finish before attacking again, so the cadence
-        // tracks AttackSpeed instead of the fixed helper timer.
-        if (IsHeroSwingInProgress())
+        // Let the current swing finish before attacking again, and then still
+        // respect the swing's own length as a minimum interval -- the swing
+        // gate alone opens early whenever a hit or a refused swing takes the
+        // hero out of the attack animation.
+        const int iSwingAction = GetHeroSwingAction();
+        if (iSwingAction != -1)
+        {
+            m_iLastSwingAction = iSwingAction;
+            return 0;
+        }
+
+        if (!IsAttackCadenceReady())
         {
             return 0;
         }
@@ -1389,6 +1607,7 @@ namespace MUHelper
             return 0;
         }
 
+        NoteAttackRequestSent();
         Hero->MovementType = MOVEMENT_ATTACK;
         ActionTarget = iCharIndex;
         Attacking = 1;
@@ -1509,12 +1728,15 @@ namespace MUHelper
         return m_mapBlacklist.find(iTargetId) != m_mapBlacklist.end();
     }
 
-    void CMuHelper::BlacklistTarget(int iTargetId, const char* szReason)
+    void CMuHelper::BlacklistTarget(int iTargetId, const char* szReason, DWORD dwCooldownMs)
     {
         // Short cooldown so a temporarily unreachable target is not retried
         // every tick, but becomes eligible again after the cooldown elapses.
+        // Callers that know the target is hopeless (never reachable, not merely
+        // crowded out) pass a longer one.
         constexpr DWORD kBlacklistCooldownMs = 5000;
-        m_mapBlacklist[iTargetId] = GetTickCount() + kBlacklistCooldownMs;
+        const DWORD dwCooldown = dwCooldownMs != 0 ? dwCooldownMs : kBlacklistCooldownMs;
+        m_mapBlacklist[iTargetId] = GetTickCount() + dwCooldown;
         AbLog("target blacklisted id=%d reason=%s", iTargetId, szReason != nullptr ? szReason : "unknown");
     }
 
@@ -1539,6 +1761,54 @@ namespace MUHelper
         m_bRecoveryActive = false;
         m_posChasePlanTarget = { 0, 0 };
         m_bAttackEngaged = false;
+        ResetStallState();
+    }
+
+    void CMuHelper::ResetStallState()
+    {
+        m_iStallCycles = 0;
+        m_dwStallSince = 0;
+        m_dwAttackBackoffUntil = 0;
+    }
+
+    // One exhausted recovery cycle on the locked target. The lock survives the
+    // first cycles -- that is exactly what 3feaaad6 bought, and a mob merely
+    // body-blocked in a crowded spot frees itself well inside them -- but every
+    // cycle now costs an exponentially longer pause during which the helper
+    // sends no attack at all, and after kMaxStallCycles cycles or
+    // kUnreachableGiveUpMs of uninterrupted stalling the mob is declared
+    // unreachable and the lock is dropped. Without this the lock turned a mob
+    // the hero can never touch (behind a wall the server disagrees about, on
+    // the far side of a closed cage) into an unbounded retry loop.
+    void CMuHelper::EnterStallBackoff(int iTargetId)
+    {
+        const DWORD now = GetTickCount();
+        if (m_dwStallSince == 0)
+        {
+            m_dwStallSince = now;
+        }
+
+        ++m_iStallCycles;
+        const DWORD dwBackoffMs = Pacing::StallBackoffMs(m_iStallCycles);
+        m_dwAttackBackoffUntil = now + dwBackoffMs;
+
+        const DWORD dwStalledMs = now - m_dwStallSince;
+        if (m_iStallCycles < kMaxStallCycles && dwStalledMs < kUnreachableGiveUpMs)
+        {
+            AbLog("target unreachable, backing off %lums cycle=%d id=%d",
+                dwBackoffMs, m_iStallCycles, iTargetId);
+            return;
+        }
+
+        AbLog("target unreachable, releasing id=%d cycles=%d stalled=%lums",
+            iTargetId, m_iStallCycles, dwStalledMs);
+        BlacklistTarget(iTargetId, "unreachable", kUnreachableBlacklistMs);
+        ReleaseChaseTarget(iTargetId, "unreachable");
+        if (m_iCurrentTarget == iTargetId)
+        {
+            m_iCurrentTarget = -1;
+            m_iComboState = 0;
+        }
     }
 
     // Validates the locked target before any action: live monster, same view,
@@ -1595,6 +1865,7 @@ namespace MUHelper
             m_iRecoveryAttempts = 0;
             m_bRecoveryActive = false;
             m_bAttackEngaged = false;
+            ResetStallState();
             AbLog("target acquired id=%d pos=%d,%d", iTargetId, Hero->PositionX, Hero->PositionY);
         }
 
@@ -1681,6 +1952,12 @@ namespace MUHelper
                 AbLog("recovery complete target=%d pos=%d,%d", iTargetId, posHero.x, posHero.y);
             }
             m_dwAttackLastProgress = now;
+            // Real progress means the mob is reachable after all: the stall
+            // budget and the backoff start from scratch.
+            if (m_iStallCycles != 0 || m_dwAttackBackoffUntil != 0)
+            {
+                ResetStallState();
+            }
         }
 
         m_posAttackHeroLast = posHero;
@@ -1705,14 +1982,16 @@ namespace MUHelper
         if (m_iRecoveryAttempts >= kMaxRecoveryAttempts
             || !FindRecoveryCell(iTargetId, dest))
         {
-            // Target lock: recovery exhaustion keeps the locked mob. Reset the
-            // cycle and let the normal chase re-approach on the next ticks.
+            // Recovery exhausted. The lock is kept for the first cycles, but
+            // the helper stops attacking for an exponentially growing pause and
+            // gives the mob up entirely once the cycle/time budget is spent.
             m_iRecoveryAttempts = 0;
             m_bRecoveryActive = false;
             m_dwAttackLastProgress = GetTickCount();
             Hero->Movement = false;
             Hero->Path.PathNum = 0;
-            AbLog("recovery exhausted, retrying locked target=%d", iTargetId);
+            AbLog("recovery exhausted on locked target=%d", iTargetId);
+            EnterStallBackoff(iTargetId);
             return;
         }
 

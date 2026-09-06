@@ -57,3 +57,5 @@ add_subdirectory(events)
 add_subdirectory(editor)
 
 add_subdirectory(options)
+
+add_subdirectory(muhelper)
