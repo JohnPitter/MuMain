@@ -53,14 +53,20 @@ namespace SEASON3B
             COL_TIME_X = 178,
             COL_TIME_W = CONTENT_WIDTH - COL_TIME_X,
             EXIT_BUTTON_X = 13,
-            EXIT_BUTTON_Y = 392,
+            // Raised from 392/395: the client's fixed bottom toolbar overlaps
+            // the window's lowest ~30 px (through the 384..429 ornament strip
+            // band) and buried both footer buttons underneath it. They now sit
+            // just above the frame's bottom strip (384) — left corner = close,
+            // right corner = help, same sizes and hitboxes, only Y moved.
+            EXIT_BUTTON_Y = 352,
             EXIT_BUTTON_WIDTH = 36,
             EXIT_BUTTON_HEIGHT = 29,
             // "Ajuda" button on the bottom-right corner, mirroring the exit
-            // button (13 px inset). Uses the shared message-box empty button
-            // texture (owned by CNewUIMessageBoxMng, never reloaded here).
+            // button (13 px inset, centers aligned at y 366.5). Uses the
+            // shared message-box empty button texture (owned by
+            // CNewUIMessageBoxMng, never reloaded here).
             HELP_BUTTON_X = WINDOW_WIDTH - 13 - 54,
-            HELP_BUTTON_Y = 395,
+            HELP_BUTTON_Y = 355,
             HELP_BUTTON_WIDTH = 54,
             HELP_BUTTON_HEIGHT = 23,
             // Help popup ("telinha"), centered over this window. Same frame
@@ -130,6 +136,9 @@ namespace SEASON3B
         void LoadImages();
         void UnloadImages();
         void InitButtons();
+        // Draws both footer buttons with their contrast sockets (see
+        // RenderFooterButtonSocket in the .cpp), then the buttons themselves.
+        void RenderFooterButtons();
         void RenderBaseWindow();
         // Draws the shared inventory-frame pieces (tiled msgbox_back stone,
         // 3-slice header with the baked close "X", side strips, bottom strip)

@@ -188,6 +188,37 @@ namespace
     };
 
     constexpr int kHelpLineCount = sizeof(kHelpLines) / sizeof(kHelpLines[0]);
+
+    // Footer button contrast socket. Both footer textures are dark stone
+    // plates (newui_exit_00's gold-X button and the shared
+    // newui_btn_empty_very_small) authored for light window frames; on this
+    // window's near-black msgbox_back tile they all but vanish. Socket each
+    // one: a translucent black well plus a 1 px ring in the window's title
+    // gold — the same hue as the exit glyph's X and the "Eventos" heading —
+    // brightening while the cursor is over the button. Purely visual: drawn
+    // every frame just before CNewUIButton::Render, positions, hitboxes and
+    // click behavior are the buttons' own and stay untouched.
+    void RenderFooterButtonSocket(CNewUIButton& button)
+    {
+        const POINT pos = button.GetPos();
+        const POINT size = button.GetSize();
+        const bool hot = button.GetBTState() != BUTTON_STATE_UP;
+
+        const float x = static_cast<float>(pos.x);
+        const float y = static_cast<float>(pos.y);
+        const float w = static_cast<float>(size.x);
+        const float h = static_cast<float>(size.y);
+
+        EnableAlphaTest();
+        glColor4f(0.f, 0.f, 0.f, hot ? 0.55f : 0.35f);
+        RenderColor(x + 2.f, y + 2.f, w - 4.f, h - 4.f);
+        glColor4f(1.f, 220.f / 255.f, 120.f / 255.f, hot ? 1.f : 0.8f);
+        RenderColor(x, y, w, 1.f);
+        RenderColor(x, y + h - 1.f, w, 1.f);
+        RenderColor(x, y + 1.f, 1.f, h - 2.f);
+        RenderColor(x + w - 1.f, y + 1.f, 1.f, h - 2.f);
+        EndRenderColor();
+    }
 }
 
 CNewUIEventScheduleWindow::CNewUIEventScheduleWindow()
@@ -258,6 +289,17 @@ void CNewUIEventScheduleWindow::InitButtons()
     m_BtnHelp.ChangeButtonImgState(true, IMAGE_EVENTS_BTN_HELP, true);
     m_BtnHelp.SetFont(g_hFontBold);
     m_BtnHelp.ChangeText(L"Ajuda");
+}
+
+// Socket first, then the button art on top — the ring and well frame both
+// footer buttons against the dark stone tile; every Render path draws the
+// pair through here so the order never diverges.
+void CNewUIEventScheduleWindow::RenderFooterButtons()
+{
+    RenderFooterButtonSocket(m_BtnExit);
+    m_BtnExit.Render();
+    RenderFooterButtonSocket(m_BtnHelp);
+    m_BtnHelp.Render();
 }
 
 float CNewUIEventScheduleWindow::GetLayerDepth()
@@ -658,8 +700,7 @@ bool CNewUIEventScheduleWindow::Render()
             ROW_HEIGHT,
             RT3_SORT_CENTER);
 
-        m_BtnExit.Render();
-        m_BtnHelp.Render();
+        RenderFooterButtons();
         if (m_HelpOpen)
         {
             RenderHelpWindow();
@@ -748,8 +789,7 @@ bool CNewUIEventScheduleWindow::Render()
         g_pRenderText->RenderText(contentX + COL_TIME_X, y, timeText, COL_TIME_W, ROW_HEIGHT, RT3_SORT_LEFT_CLIP);
     }
 
-    m_BtnExit.Render();
-    m_BtnHelp.Render();
+    RenderFooterButtons();
     if (m_HelpOpen)
     {
         RenderHelpWindow();
