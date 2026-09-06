@@ -1301,8 +1301,15 @@ void CNewUIMarketplace::RefreshListBox()
             item.m_iStorageItemSeq = index;
             m_ItemListBox.AddText(item);
         }
+        // Rows are added back-to-front (index = last-1 downto start) via AddText(),
+        // which push_front()s each entry, so the line number for a given absolute
+        // inventory index is (index - start + 1) -- matching the cart/purchased tabs
+        // below, which use (i - 0 + 1). The previous "last - m_iSelectedInv" formula
+        // was mirrored (selected line N+1-L instead of L), so after any rebuild the
+        // highlighted/reported row silently jumped to a different item on the same
+        // page (see LuxView Marketplace bug: "Vender abre item errado no modal").
         if (m_iSelectedInv >= start && m_iSelectedInv < last)
-            m_ItemListBox.SLSetSelectLine(last - m_iSelectedInv);
+            m_ItemListBox.SLSetSelectLine(m_iSelectedInv - start + 1);
         UpdateActionButton();
         return;
     }
@@ -1535,7 +1542,9 @@ bool CNewUIMarketplace::BtnProcess()
                 ShowOffer(i);
             return true;
         }
-        if (m_BuyButton[i].UpdateMouseEvent())
+        // Guard mirrors the Render() gate above: History (tab 2) must never reach
+        // AddToCart()/SendBuy() for an already-sold/closed listing.
+        if ((m_iTab == 0 || m_iTab == 1) && m_BuyButton[i].UpdateMouseEvent())
         {
             if (m_iTab == 1)
                 SendCancel(m_Listings[i].Id);
@@ -1722,7 +1731,11 @@ void CNewUIMarketplace::RenderButtons()
     {
         if (m_iTab == 0 || m_iTab == 1)
             m_ViewButton[i].Render();
-        m_BuyButton[i].Render();
+        // History (tab 2) is read-only: it lists already-sold/closed listings, so
+        // the Cart/Cancel action button must not be shown there (bug: "No histórico
+        // está sendo possível comprar um item").
+        if (m_iTab == 0 || m_iTab == 1)
+            m_BuyButton[i].Render();
     }
     m_CashChargeButton.Render();
     m_RefreshButton.Render();
