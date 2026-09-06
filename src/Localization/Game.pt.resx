@@ -12989,6 +12989,9 @@
   <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
     <value>Aceitar guilda</value>
   </data>
+  <data name="MuHelperAutoAcceptParty" xml:space="preserve">
+    <value>Aceitar party</value>
+  </data>
   <data name="MuHelperPotion" xml:space="preserve">
     <value>Poção</value>
   </data>

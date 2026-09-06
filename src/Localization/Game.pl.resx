@@ -13286,6 +13286,9 @@
   <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
     <value>Akceptuj gildię</value>
   </data>
+  <data name="MuHelperAutoAcceptParty" xml:space="preserve">
+    <value>Akceptuj drużynę</value>
+  </data>
   <data name="MuHelperBasicAttackFallback" xml:space="preserve">
     <value>Atak podstawowy</value>
   </data>

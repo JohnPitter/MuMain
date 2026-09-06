@@ -7695,6 +7695,12 @@ void ReceiveParty(const BYTE* ReceiveBuffer)
     auto Data = (LPPHEADER_DEFAULT_KEY)ReceiveBuffer;
     PartyKey = ((int)(Data->KeyH) << 8) + Data->KeyL;
 
+    // MU Helper "Accept party" (byte 33 bit 4 -- see MuHelperData.h) is
+    // enforced server-side (OpenMU's PartyRequestHandler.TryAutoAcceptPartyRequestAsync),
+    // exactly like "Accept friend"/"Accept guild" already are: when the flag
+    // is on, the server answers the invite before ever emitting this packet,
+    // so 0x40 (Party request) only reaches the client when auto-accept did
+    // not apply. No client-side interception needed or added here.
     SEASON3B::CreateMessageBox(MSGBOX_LAYOUT_CLASS(SEASON3B::CPartyMsgBoxLayout));
 }
 

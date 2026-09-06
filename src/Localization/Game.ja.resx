@@ -11364,6 +11364,9 @@
   <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
     <value>ギルド承認</value>
   </data>
+  <data name="MuHelperAutoAcceptParty" xml:space="preserve">
+    <value>パーティ承認</value>
+  </data>
   <data name="MuHelperBasicAttackFallback" xml:space="preserve">
     <value>基本攻撃</value>
   </data>

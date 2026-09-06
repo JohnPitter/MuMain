@@ -43,6 +43,7 @@ enum ECheckBoxId: uint16_t
     CHECKBOX_ID_AUTO_ACCEPT_FRIEND,
     CHECKBOX_ID_AUTO_DEFEND,
     CHECKBOX_ID_AUTO_ACCEPT_GUILD,
+    CHECKBOX_ID_AUTO_ACCEPT_PARTY,
     CHECKBOX_ID_DR_ATTACK_CEASE,
     CHECKBOX_ID_DR_ATTACK_AUTO,
     CHECKBOX_ID_DR_ATTACK_TOGETHER,
@@ -269,8 +270,9 @@ void CNewUIMuHelper::InitCheckBox()
 
     //--
     InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 80, 15, 15, 0, &I18N::Game::MuHelperAutoAcceptFriend, CHECKBOX_ID_AUTO_ACCEPT_FRIEND, 2);
-    InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 125, 15, 15, 0, &I18N::Game::MuHelperPvpCounterattack, CHECKBOX_ID_AUTO_DEFEND, 2);
+    InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 131, 15, 15, 0, &I18N::Game::MuHelperPvpCounterattack, CHECKBOX_ID_AUTO_DEFEND, 2);
     InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 97, 15, 15, 0, &I18N::Game::MuHelperAutoAcceptGuild, CHECKBOX_ID_AUTO_ACCEPT_GUILD, 2);
+    InsertCheckBox(IMAGE_CHECKBOX_BTN, m_Pos.x + 18, m_Pos.y + 114, 15, 15, 0, &I18N::Game::MuHelperAutoAcceptParty, CHECKBOX_ID_AUTO_ACCEPT_PARTY, 2);
 
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_POTION);
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_LONG_DISTANCE);
@@ -289,6 +291,7 @@ void CNewUIMuHelper::InitCheckBox()
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_AUTO_ACCEPT_FRIEND);
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_AUTO_DEFEND);
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_AUTO_ACCEPT_GUILD);
+    RegisterBoxCharacter(0xFF, CHECKBOX_ID_AUTO_ACCEPT_PARTY);
     RegisterBoxCharacter(0xFF, CHECKBOX_ID_FALLBACK_BASIC_ATTACK);
 
     RegisterBoxCharacter(Dark_Knight, CHECKBOX_ID_SKILL3_DELAY);
@@ -900,6 +903,10 @@ void CNewUIMuHelper::ApplyConfigFromCheckbox(int iCheckboxId, bool bState)
         _TempConfig.bAutoAcceptGuild = bState;
         break;
 
+    case CHECKBOX_ID_AUTO_ACCEPT_PARTY:
+        _TempConfig.bAutoAcceptParty = bState;
+        break;
+
     case CHECKBOX_ID_AUTO_DEFEND:
         _TempConfig.bUseSelfDefense = bState;
         break;
@@ -1051,6 +1058,7 @@ void CNewUIMuHelper::Reset()
     _TempConfig.bAutoAcceptFriend = false;
     _TempConfig.bAutoAcceptGuild = false;
     _TempConfig.bFallbackBasicAttack = true;
+    _TempConfig.bAutoAcceptParty = false;
 
     ApplyConfig();
 }
@@ -1122,6 +1130,7 @@ void CNewUIMuHelper::ApplyConfig()
 
     m_CheckBoxList[CHECKBOX_ID_AUTO_ACCEPT_FRIEND].box->RegisterBoxState(_TempConfig.bAutoAcceptFriend);
     m_CheckBoxList[CHECKBOX_ID_AUTO_ACCEPT_GUILD].box->RegisterBoxState(_TempConfig.bAutoAcceptGuild);
+    m_CheckBoxList[CHECKBOX_ID_AUTO_ACCEPT_PARTY].box->RegisterBoxState(_TempConfig.bAutoAcceptParty);
     m_CheckBoxList[CHECKBOX_ID_AUTO_DEFEND].box->RegisterBoxState(_TempConfig.bUseSelfDefense);
     m_CheckBoxList[CHECKBOX_ID_FALLBACK_BASIC_ATTACK].box->RegisterBoxState(_TempConfig.bFallbackBasicAttack);
 

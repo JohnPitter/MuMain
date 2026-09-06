@@ -13040,6 +13040,9 @@
   <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
     <value>Accept guild</value>
   </data>
+  <data name="MuHelperAutoAcceptParty" xml:space="preserve">
+    <value>Accept party</value>
+  </data>
   <data name="MuHelperPotion" xml:space="preserve">
     <value>Potion</value>
   </data>

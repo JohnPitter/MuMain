@@ -13286,6 +13286,9 @@
   <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
     <value>Terima guild</value>
   </data>
+  <data name="MuHelperAutoAcceptParty" xml:space="preserve">
+    <value>Terima party</value>
+  </data>
   <data name="MuHelperBasicAttackFallback" xml:space="preserve">
     <value>Serangan dasar</value>
   </data>

@@ -13286,6 +13286,9 @@
   <data name="MuHelperAutoAcceptGuild" xml:space="preserve">
     <value>Принимать гильдию</value>
   </data>
+  <data name="MuHelperAutoAcceptParty" xml:space="preserve">
+    <value>Принимать группу</value>
+  </data>
   <data name="MuHelperBasicAttackFallback" xml:space="preserve">
     <value>Базовая атака</value>
   </data>
