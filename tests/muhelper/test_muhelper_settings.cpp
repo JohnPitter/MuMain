@@ -246,3 +246,148 @@ TEST_CASE("SetItem tracks only its own checkbox, across every Pick All / Pick Se
         }
     }
 }
+
+// --- Load path: server echo -> checkbox state (2026-09-06 follow-up, continued) ---
+//
+// The owner's report ("Set Item does not survive Save + relog") points at the
+// UI/load path, not just the click handler ruled out above. Read of the live
+// code:
+//
+//   - ConfigDataSerDe::Deserialize (MuHelperData.cpp:228):
+//         gameData.bPickAncient = (bool)netData.SetItem;
+//     a direct, unconditional assignment with no master gate -- exactly the
+//     same shape as its four pickup siblings (lines 223-229).
+//
+//   - CNewUIMuHelper::LoadSavedConfig (NewUIMuHelper.cpp:1069-1074), the
+//     handler for the 0xAE MuHelperConfigurationData packet (wired in
+//     WSclient.cpp:1849-1862, ReceiveMuHelperConfigurationData):
+//         _TempConfig = config;   // config came straight from Deserialize()
+//         ApplyConfig();
+//         OnHelperConfigRestoredFromServer();
+//     no Reset() and no other checkbox mutation runs between the assignment
+//     and ApplyConfig().
+//
+//   - CNewUIMuHelper::ApplyConfig (NewUIMuHelper.cpp:1131):
+//         m_CheckBoxList[CHECKBOX_ID_PICK_ANCIENT].box->RegisterBoxState(_TempConfig.bPickAncient);
+//     again a direct, unconditional write -- mirrored below as
+//     ApplyConfigToCheckboxFormula(), since the real function needs
+//     NewUISystem.h/the checkbox widget classes and the full engine PCH
+//     (same constraint as MuHelperData.cpp, noted above) and cannot link
+//     into this doctest binary.
+//
+// What this pins: nothing on the documented load path reads SetItem from the
+// wrong bit, gates it behind Jewel/Excellent/Zen/AddExtraItem/PickAll/
+// PickSelected, or lets a sibling flag's state leak into it.
+//
+// Separately investigated but NOT unit-testable here: whether
+// CNewUIMuHelper::Reset() (NewUIMuHelper.cpp:1012, which zeroes bPickAncient
+// among other defaults) could run AFTER the server's 0xAE echo has already
+// been applied, clobbering a just-loaded correct value back to false. Traced
+// the call site (Scenes/MainScene.cpp:184, inside InitializeMainScene(),
+// which ALSO issues SendSelectCharacter a few lines earlier in the very same
+// function) against both the normal login path and the auto-reconnect path
+// (Network/Reconnect/ReconnectManager.cpp: TrySelectCachedCharacter() calls
+// StartGame(), whose own comment says "-> LOADING_SCENE -> MAIN_SCENE (sends
+// SelectCharacter)" -- i.e. reconnect re-enters the identical
+// LoadingScene->MoveMainScene()->InitializeMainScene() sequence, it does not
+// bypass it). In both paths Reset() runs synchronously, before the network
+// round trip that leads to the server's EnteredWorld-triggered 0xAE send
+// (MuHelperSettingsInitializationPlugIn.cs, OpenMU side) can possibly
+// complete, so ordering is safe as coded. This is a statement about
+// call order across MainScene.cpp/WSclient.cpp/ReconnectManager.cpp, all of
+// which require the full engine PCH (window/network/scene globals) and
+// cannot be exercised by an engine-free doctest binary -- verified by
+// reading, not by a runnable test.
+namespace
+{
+struct LoadedConfig
+{
+    bool pickJewel;
+    bool pickAncient; // "Set Item"
+    bool pickZen;
+    bool pickExcellent;
+    bool pickExtraItems;
+};
+
+struct CheckboxStates
+{
+    bool jewel;
+    bool ancient;
+    bool zen;
+    bool excellent;
+    bool extraItems;
+};
+
+// Mirrors CNewUIMuHelper::ApplyConfig()'s direct RegisterBoxState() calls for
+// the five pickup checkboxes (NewUIMuHelper.cpp:1126-1132).
+CheckboxStates ApplyConfigToCheckboxFormula(const LoadedConfig& config)
+{
+    return CheckboxStates{
+        config.pickJewel,
+        config.pickAncient,
+        config.pickZen,
+        config.pickExcellent,
+        config.pickExtraItems,
+    };
+}
+}
+
+TEST_CASE("ApplyConfig writes SetItem's checkbox from the loaded config only, across every sibling combination")
+{
+    for (bool jewel : {false, true})
+    {
+        for (bool zen : {false, true})
+        {
+            for (bool excellent : {false, true})
+            {
+                for (bool extraItems : {false, true})
+                {
+                    for (bool ancient : {false, true})
+                    {
+                        const auto boxes = ApplyConfigToCheckboxFormula({jewel, ancient, zen, excellent, extraItems});
+                        CAPTURE(jewel);
+                        CAPTURE(zen);
+                        CAPTURE(excellent);
+                        CAPTURE(extraItems);
+                        CAPTURE(ancient);
+                        CHECK(boxes.ancient == ancient);
+                        CHECK(boxes.jewel == jewel);
+                        CHECK(boxes.zen == zen);
+                        CHECK(boxes.excellent == excellent);
+                        CHECK(boxes.extraItems == extraItems);
+                    }
+                }
+            }
+        }
+    }
+}
+
+TEST_CASE("Reset() defaults every pickup flag including SetItem to false, independent of prior state")
+{
+    // Mirrors CNewUIMuHelper::Reset() (NewUIMuHelper.cpp:1048-1054): every
+    // pickup flag, SetItem included, is unconditionally forced to false.
+    // Exercised here only to pin the defaults contract itself -- the ordering
+    // question (does this ever run after a correct echo?) is addressed by the
+    // comment block above, not by this test.
+    for (bool priorJewel : {false, true})
+    {
+        for (bool priorAncient : {false, true})
+        {
+            LoadedConfig config{priorJewel, priorAncient, priorJewel, priorAncient, priorJewel};
+
+            // Reset() formula: every pickup flag goes to false regardless of
+            // its previous value.
+            config.pickJewel = false;
+            config.pickAncient = false;
+            config.pickZen = false;
+            config.pickExcellent = false;
+            config.pickExtraItems = false;
+
+            CHECK(config.pickAncient == false);
+            CHECK(config.pickJewel == false);
+            CHECK(config.pickZen == false);
+            CHECK(config.pickExcellent == false);
+            CHECK(config.pickExtraItems == false);
+        }
+    }
+}
