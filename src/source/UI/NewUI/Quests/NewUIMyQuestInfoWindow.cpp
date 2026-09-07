@@ -326,12 +326,10 @@ void SEASON3B::CNewUIMyQuestInfoWindow::RenderCastleInfo()
     g_pRenderText->SetTextColor(255, 255, 255, 255);
     g_pRenderText->SetBgColor(0, 0, 0, 0);
 
-    wchar_t strText[256];
-    mu_swprintf(strText, I18N::Game::EntranceIsAllowedForDTimes, g_csQuest.GetEventCount(2));
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 125, strText, 190, 0, RT3_SORT_CENTER);
-
-    mu_swprintf(strText, I18N::Game::YouMayEnterOnlyDTimesPerDay, 6);
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 145, strText, 190, 0, RT3_SORT_CENTER);
+    // LuxView: the server has no daily entry limit for Blood Castle and never sends the
+    // official entry-count packet (C1 9F), so the vanilla "allowed 0 times / only 6 per day"
+    // lines were misleading. Show the real rule instead.
+    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 125, I18N::Game::EntranceUnlimitedOnThisServer, 190, 0, RT3_SORT_CENTER);
 }
 
 void SEASON3B::CNewUIMyQuestInfoWindow::RenderTempleInfo()
@@ -346,12 +344,8 @@ void SEASON3B::CNewUIMyQuestInfoWindow::RenderTempleInfo()
     g_pRenderText->SetTextColor(255, 255, 255, 255);
     g_pRenderText->SetBgColor(0, 0, 0, 0);
 
-    wchar_t strText[256];
-    mu_swprintf(strText, I18N::Game::EntranceIsAllowedForDTimes, g_csQuest.GetEventCount(3));
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 305, strText, 190, 0, RT3_SORT_CENTER);
-
-    mu_swprintf(strText, I18N::Game::YouMayEnterOnlyDTimesPerDay, 6);
-    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 325, strText, 190, 0, RT3_SORT_CENTER);
+    // LuxView: same as Blood Castle above - no daily limit, no entry-count packet.
+    g_pRenderText->RenderText(m_Pos.x, m_Pos.y + 305, I18N::Game::EntranceUnlimitedOnThisServer, 190, 0, RT3_SORT_CENTER);
 }
 
 void SEASON3B::CNewUIMyQuestInfoWindow::OpenningProcess()

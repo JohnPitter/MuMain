@@ -13171,4 +13171,7 @@
   <data name="TitleAutomaticLabel" xml:space="preserve"><value>Automatic</value></data>
   <data name="TitleHideButton" xml:space="preserve"><value>Hide title</value></data>
   <data name="TitleShowButton" xml:space="preserve"><value>Show title</value></data>
+  <data name="EntranceUnlimitedOnThisServer" xml:space="preserve">
+    <value>No daily entry limit on this server.</value>
+  </data>
 </root>
