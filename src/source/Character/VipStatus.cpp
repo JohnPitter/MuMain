@@ -27,7 +27,11 @@ namespace VipStatus
         const bool isVip = buffer[6 + header] != 0;
 
         const int index = FindCharacterIndex(key);
-        if (index >= MAX_CHARACTERS_CLIENT)
+        // FindCharacterIndex returns MAX_CHARACTERS_CLIENT when no live
+        // character owns the key (never a negative value), but keep the full
+        // bounds check so the slot write below can never index out of range
+        // even if the lookup contract changes (crash hotfix 2026-09-07).
+        if (index < 0 || index >= MAX_CHARACTERS_CLIENT)
         {
             return;
         }

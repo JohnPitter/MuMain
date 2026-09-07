@@ -3,6 +3,7 @@
 #include "UI/Chat/VipBadge.h"
 
 #include "Core/Globals/_TextureIndex.h"
+#include "Render/Sprites/GlobalBitmap.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
 
 namespace UI::Vip::Badge
@@ -22,6 +23,14 @@ namespace UI::Vip::Badge
 
     void Render(float rightEdgeX, float topY, float bottomY)
     {
+        // The badge texture loads late (OpenBasicData, during the load scene).
+        // A nameplate can render before that in the LoadWorld window -- skip
+        // the badge instead of drawing with an unloaded bitmap.
+        if (Bitmaps.FindTexture(BITMAP_VIP_MARK) == nullptr)
+        {
+            return;
+        }
+
         const float renderY = (bottomY - topY - kBadgeHeight) / 2.0f + topY;
         RenderBitmap(BITMAP_VIP_MARK, rightEdgeX, renderY, kBadgeWidth, kBadgeHeight);
     }
