@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MuHelperData.h"
+#include "MuHelperExtraItemCodec.h"
 
 namespace MUHelper
 {
@@ -134,11 +135,19 @@ namespace MUHelper
 				break;
 			}
 
-			size_t n = wcstombs(netData.ExtraItems[iItemIndex], wsItem.c_str(), 15);
-			if (n == (size_t)-1 || n == 15)
-			{
-				memset(netData.ExtraItems[iItemIndex], 0, 15);
-			}
+			// Each wire slot is 15 bytes (14 usable + null terminator, see
+			// PRECEIVE_MUHELPER_DATA::ExtraItems in WSclient.h / OpenMU's
+			// MuHelperSettingsSerializer). wcstombs() encoded with the current
+			// C locale (not UTF-8) and, on truncation, this used to wipe the
+			// whole slot to zero instead of keeping a shortened name -- so any
+			// real item name of 15+ bytes (most multi-word MU item names)
+			// silently vanished on save and never came back after relogging.
+			// EncodeUtf8Truncated() encodes as UTF-8 (matching Deserialize()'s
+			// CMultiLanguage::ConvertFromUtf8 below, and the same encoding
+			// ItemStructs.h/SkillStructs.h use for item/skill names) and
+			// truncates safely at a code-point boundary with a null
+			// terminator instead of discarding the whole string.
+			MUHelper::ItemFilter::EncodeUtf8Truncated(netData.ExtraItems[iItemIndex], 15, wsItem.c_str());
 			iItemIndex++;
 		}
 

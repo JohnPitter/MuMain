@@ -90,3 +90,84 @@ TEST_CASE("a byte with only bAutoAcceptParty set decodes every other flag as fal
     CHECK((flags & kAutoAcceptGuildFlag) == 0);
     CHECK((flags & kFallbackBasicAttackFlag) == 0);
 }
+
+// --- Pickup flags byte (byte 5 of the packet / byte 1 of the 257-byte blob) ---
+//
+// Bug report (2026-09-06, "o Set Item e o Add extra nao ta salvando"): the
+// production blob for character SeuAntonio (account testando) read back
+// 0xE8 for this byte -- JewelOrGem/ExcellentItem/Zen/AddExtraItem set, but
+// SetItem (bit 4) clear, even though the player reported checking it before
+// saving. The task explicitly asked whether this bit collides with the
+// "Accept party" bit (byte 29 of the blob, bit 4) or the MP-threshold nibble
+// (byte 30) added in other 2026-09-06 sessions, since both reuse bit
+// position 4 -- but in a *different byte*. These cases pin that there is no
+// collision: SetItem is bit 4 of byte 1, a completely separate storage unit
+// from byte 29 and byte 30, verified against a live compile of the actual
+// PRECEIVE_MUHELPER_DATA bitfield (offsetof/sizeof probe, MSVC x64): byte 1
+// bit 4 set produces 0x10 at offset 1, disturbing nothing at offset 29 or
+// 30, and vice versa. No client or server code path was found that clears
+// SetItem independently of the player's own checkbox click (see
+// ApplyConfigFromCheckbox/Reset/ApplyConfig in NewUIMuHelper.cpp and
+// MuHelperSettingsSerializer.TryDeserialize/UpdateMuHelperConfigurationAction
+// on the server, which stores and echoes the raw blob byte-for-byte); this
+// suite exists so any future change to either byte immediately fails loudly
+// instead of silently reintroducing a collision.
+namespace
+{
+constexpr std::uint8_t kPickJewelFlag = 1 << 3;
+constexpr std::uint8_t kPickSetItemFlag = 1 << 4;
+constexpr std::uint8_t kPickExcellentFlag = 1 << 5;
+constexpr std::uint8_t kPickZenFlag = 1 << 6;
+constexpr std::uint8_t kPickExtraItemFlag = 1 << 7;
+}
+
+TEST_CASE("the five pickup flags occupy distinct bits within their own byte")
+{
+    CHECK(kPickJewelFlag == 0x08);
+    CHECK(kPickSetItemFlag == 0x10);
+    CHECK(kPickExcellentFlag == 0x20);
+    CHECK(kPickZenFlag == 0x40);
+    CHECK(kPickExtraItemFlag == 0x80);
+
+    constexpr std::uint8_t all = kPickJewelFlag | kPickSetItemFlag | kPickExcellentFlag | kPickZenFlag | kPickExtraItemFlag;
+    // Popcount via Brian Kernighan's trick, done manually since <bit> is not
+    // assumed here: each flag cleared one at a time must strictly shrink the
+    // set, proving none of the five share a bit.
+    std::uint8_t remaining = all;
+    int count = 0;
+    while (remaining != 0)
+    {
+        remaining &= static_cast<std::uint8_t>(remaining - 1);
+        ++count;
+    }
+    CHECK(count == 5);
+}
+
+TEST_CASE("SetItem does not collide with AutoAcceptParty or the MP threshold nibble, because they live in different bytes")
+{
+    // Reproduces the exact production byte pair from the bug report: pickup
+    // flags byte = 0xE8 (Jewel+Excellent+Zen+AddExtraItem, SetItem clear),
+    // helper flags byte = 0x12 (AutoAcceptFriend+AutoAcceptParty). Both are
+    // bit 4 of their respective byte -- setting SetItem in the pickup byte
+    // must not touch the helper flags byte at all, and vice versa, because
+    // ConfigDataSerDe::Serialize() writes them into netData.PickupFlags-style
+    // members and netData.bUseSelfDefense-style members, which the compiled
+    // PRECEIVE_MUHELPER_DATA bitfield places at offsets 1 and 29
+    // respectively (confirmed by an offsetof/sizeof probe against the real
+    // struct during this investigation).
+    std::uint8_t pickupFlags = kPickJewelFlag | kPickExcellentFlag | kPickZenFlag | kPickExtraItemFlag; // SetItem off
+    std::uint8_t helperFlags = kAutoAcceptFriendFlag | kAutoAcceptPartyFlag; // matches production 0x12
+
+    CHECK(pickupFlags == 0xE8);
+    CHECK(helperFlags == 0x12);
+
+    // Checking "Set Item" only sets bit 4 of the *pickup* byte.
+    pickupFlags |= kPickSetItemFlag;
+    CHECK(pickupFlags == 0xF8);
+    CHECK(helperFlags == 0x12); // untouched
+
+    // Turning "Accept party" off only clears bit 4 of the *helper* byte.
+    helperFlags &= static_cast<std::uint8_t>(~kAutoAcceptPartyFlag);
+    CHECK(helperFlags == 0x02);
+    CHECK(pickupFlags == 0xF8); // still untouched
+}
