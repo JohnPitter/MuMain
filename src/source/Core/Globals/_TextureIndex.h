@@ -315,6 +315,10 @@ enum
     BITMAP_LUXUI_VOICE_MIC,
     BITMAP_LUXUI_VOICE_SOUND,
 
+    // VIP badge shown to the right of a name (Interface\Vip_mark.OZT). Same
+    // append-before-END placement as the entries above.
+    BITMAP_VIP_MARK,
+
     BITMAP_INTERFACE_TEXTURE_END = 32000,
     BITMAP_EFFECT_TEXTURE_BEGIN = 32001,
 

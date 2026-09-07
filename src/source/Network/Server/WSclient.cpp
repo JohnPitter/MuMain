@@ -27,6 +27,7 @@
 #include "App/AutoLaunch.h"
 #include "I18N/All.h"
 #include "Character/CharacterTitle.h"
+#include "Character/VipStatus.h"
 
 #include "Audio/DSPlaySound.h"
 #include "Audio/VoiceChat.h"
@@ -13929,6 +13930,9 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             break;
         case 0xEB:
             CharacterTitle::ReceiveAppearance(ReceiveBuffer, Size);
+            break;
+        case 0xEC:
+            VipStatus::ReceiveStatus(ReceiveBuffer, Size);
             break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer, Size);

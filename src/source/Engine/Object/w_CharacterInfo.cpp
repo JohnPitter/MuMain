@@ -48,6 +48,7 @@ void CHARACTER::Initialize()
     m_byGensInfluence = 0;
     PK = 0;
     CosmeticTitleId = 0;
+    IsVip = false;
     AttackFlag = 0;
     AttackTime = 0;
     LastAttackEffectTime = -1;

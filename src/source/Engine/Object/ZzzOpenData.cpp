@@ -5699,6 +5699,9 @@ void OpenBasicData(HDC hDC)
     ::LoadBitmap(L"Interface\\Gens_mark_V_new.tga", BITMAP_GENS_MARK_BARNERT);
 #endif	// ASG_ADD_GENS_MARK
 
+    // LuxView-only: VIP badge shown to the right of a name (UI::Vip::Badge::Render).
+    ::LoadBitmap(L"Interface\\Vip_mark.tga", BITMAP_VIP_MARK);
+
     LoadBitmap(L"Monster\\serufanarm_R.jpg", BITMAP_SERUFAN_ARM_R, GL_LINEAR, GL_CLAMP_TO_EDGE);
     LoadBitmap(L"Monster\\serufanwand_R.jpg", BITMAP_SERUFAN_WAND_R, GL_LINEAR, GL_CLAMP_TO_EDGE);
 

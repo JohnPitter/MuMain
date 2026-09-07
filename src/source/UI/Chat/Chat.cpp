@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Core/Text/TextLineWrap.h"
 #include "UI/Chat/Chat.h"
+#include "UI/Chat/VipBadge.h"
 #include "Character/CharacterManager.h" // gCharacterManager
 #include "Camera/CameraProjection.h" // CameraProjection
 
@@ -153,6 +154,10 @@ void SetPlayerColor(BYTE PK)
 	// ※
 
 const int ciSystemColor = 240;
+
+// Gap between the end of the name text and the VIP badge (mirrors the 1px
+// gap RanderMark leaves on the gens mark's left side).
+const int kVipBadgeMarginPx = 4;
 
 void RenderBoolean(int x, int y, CHAT* c)
 {
@@ -320,18 +325,22 @@ void RenderBoolean(int x, int y, CHAT* c)
         g_pRenderText->SetTextColor(Temp);
     }
 
+    // Captured so the VIP badge (drawn further below) can sit right after the
+    // name text instead of the widest line in the whole nameplate block.
+    SIZE nameSize = { 0, 0 };
+
     if (c->ID[0] != L'\0')
     {
         if (bGmMode)
         {
             g_pRenderText->SetFont(g_hFontBold);
-            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
+            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT, &nameSize);
             RenderPos.y += iLineHeight;
             g_pRenderText->SetFont(g_hFont);
         }
         else
         {
-            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT);
+            g_pRenderText->RenderText(RenderPos.x, RenderPos.y, c->ID, RenderBoxSize.cx, iLineHeight, RT3_SORT_LEFT, &nameSize);
             RenderPos.y += iLineHeight;
         }
     }
@@ -391,6 +400,14 @@ void RenderBoolean(int x, int y, CHAT* c)
             g_pNewUIGensRanking->RanderMark(x, y, (SEASON3B::CNewUIGensRanking::GENS_TYPE)c->Owner->m_byGensInfluence, c->Owner->GensRanking, SEASON3B::CNewUIGensRanking::MARK_BOOLEAN, (float)RenderPos.y);
         else if (2 == c->Owner->m_byGensInfluence)
             g_pNewUIGensRanking->RanderMark(x, y, (SEASON3B::CNewUIGensRanking::GENS_TYPE)c->Owner->m_byGensInfluence, c->Owner->GensRanking, SEASON3B::CNewUIGensRanking::MARK_BOOLEAN, (float)RenderPos.y);
+
+        // Off by default (see CHARACTER::Initialize / VipStatus::ReceiveStatus):
+        // a server that never sends the C1 F3 EC packet never draws this.
+        if (c->Owner->IsVip)
+        {
+            const float badgeX = static_cast<float>(x + nameSize.cx + kVipBadgeMarginPx);
+            UI::Vip::Badge::Render(badgeX, static_cast<float>(y), static_cast<float>(RenderPos.y));
+        }
     }
 
     if (c->LifeTime[0] > 0)

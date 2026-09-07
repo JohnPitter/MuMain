@@ -146,6 +146,9 @@ public:
 #endif	// ASG_ADD_GENS_SYSTEM
     BYTE        PK;
     BYTE        CosmeticTitleId;
+    // Account VIP flag (C1 F3 EC — see VipStatus.h). Defaults to false so a
+    // fresh slot (or a server that never sends the packet) never shows the badge.
+    bool        IsVip;
 #ifdef LJH_ADD_MORE_ZEN_FOR_ONE_HAVING_A_PARTY_WITH_MURDERER
     char		PKPartyLevel;
 #endif //LJH_ADD_MORE_ZEN_FOR_ONE_HAVING_A_PARTY_WITH_MURDERER
