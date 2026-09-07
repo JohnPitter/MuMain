@@ -1,6 +1,7 @@
 #include "doctest.h"
 
 #include <cstdint>
+#include <initializer_list> // range-for over {false, true} needs std::initializer_list declared (MSVC)
 
 // Pins the wire layout of MU Helper's client-local flag byte (byte 33 of the
 // packet in Network/Server/WSclient.h -- PRECEIVE_MUHELPER_DATA, byte 29 of
@@ -170,4 +171,78 @@ TEST_CASE("SetItem does not collide with AutoAcceptParty or the MP threshold nib
     helperFlags &= static_cast<std::uint8_t>(~kAutoAcceptPartyFlag);
     CHECK(helperFlags == 0x02);
     CHECK(pickupFlags == 0xF8); // still untouched
+}
+
+// --- Ruling out a master-gate on SetItem (2026-09-06 follow-up investigation) ---
+//
+// The owner reported the "Set Item" checkbox itself not surviving save+relog
+// (distinct from the "Add extra" item-name bug fixed in the same session).
+// Read of the live code (NewUIMuHelper.cpp, ApplyConfigFromCheckbox/Reset/
+// ApplyConfig; MuHelperData.cpp, ConfigDataSerDe::Serialize) found: the
+// CHECKBOX_ID_PICK_ANCIENT case is a direct, unconditional assignment
+// (_TempConfig.bPickAncient = bState;) with no gating on "Pick all"/"Pick
+// selected", no reset triggered by any other checkbox, and exactly four
+// write sites to bPickAncient in the whole client tree (struct default,
+// Deserialize from the server's echoed blob, this click handler, and
+// Reset()) -- grepped directly, not inferred. Serialize() writes
+// netData.SetItem = gameData.bPickAncient unconditionally, on the same line
+// pattern as JewelOrGem/Zen/ExcellentItem/AddExtraItem, all independent of
+// PickAllNearItems/PickSelectedItems. This mirrors that formula (the real
+// function lives in MuHelperData.cpp, which drags in the full engine PCH
+// via WSclient.h and cannot link into this doctest binary -- same
+// constraint noted in the pickup-flags block above) to pin, mechanically,
+// that no combination of the "Pick all" / "Pick selected" / "Excellent"
+// inputs can flip SetItem's output.
+namespace
+{
+struct PickupInputs
+{
+    bool pickAllItems;
+    bool pickSelectItems;
+    bool pickAncient; // "Set Item" checkbox
+    bool pickExcellent;
+};
+
+struct PickupOutputs
+{
+    bool pickAllNearItems;
+    bool pickSelectedItems;
+    bool setItem;
+    bool excellentItem;
+};
+
+// Mirrors ConfigDataSerDe::Serialize()'s pickup-byte formula (MuHelperData.cpp).
+PickupOutputs SerializePickupFormula(const PickupInputs& in)
+{
+    const bool bPickAllItems = in.pickAllItems;
+    const bool bPickSelectedItems = in.pickSelectItems && !bPickAllItems;
+    return PickupOutputs{
+        bPickAllItems,
+        bPickSelectedItems,
+        in.pickAncient,
+        in.pickExcellent,
+    };
+}
+}
+
+TEST_CASE("SetItem tracks only its own checkbox, across every Pick All / Pick Selected / Excellent combination")
+{
+    for (bool pickAll : {false, true})
+    {
+        for (bool pickSelected : {false, true})
+        {
+            for (bool excellent : {false, true})
+            {
+                for (bool setItem : {false, true})
+                {
+                    const auto out = SerializePickupFormula({pickAll, pickSelected, setItem, excellent});
+                    CAPTURE(pickAll);
+                    CAPTURE(pickSelected);
+                    CAPTURE(excellent);
+                    CAPTURE(setItem);
+                    CHECK(out.setItem == setItem);
+                }
+            }
+        }
+    }
 }
