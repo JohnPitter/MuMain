@@ -100,7 +100,7 @@ namespace
     constexpr int kDlgH = 210;
     constexpr BYTE kGroup = 0xD3;
 
-    constexpr wchar_t kRechargeUrl[] = L"http://127.0.0.1:3000/cashpoints.html?login=%ls";
+    constexpr wchar_t kRechargeUrl[] = L"https://web.luxview.cloud/produtos/games/mu/portal?login=%ls#vip";
 
     static float s_PreProj[16];
     static float s_PreView[16];
