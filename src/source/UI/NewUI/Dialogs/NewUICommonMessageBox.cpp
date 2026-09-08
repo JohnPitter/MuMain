@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "UI/NewUI/Dialogs/NewUICommonMessageBox.h"
 #include "UI/NewUI/Dialogs/NewUICustomMessageBox.h"
+#include "UI/NewUI/Wedding/WeddingRequestLayout.h"
 #include "Guild/NewUIGuildMakeWindow.h"
 #include "Guild/NewUIGuildInfoWindow.h"
 #include "UI/NewUI/Inventory/NewUIMyInventory.h"
@@ -1379,6 +1380,66 @@ CALLBACK_RESULT SEASON3B::CPartyMsgBoxLayout::OkBtnDown(class CNewUIMessageBoxBa
 CALLBACK_RESULT SEASON3B::CPartyMsgBoxLayout::CancelBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam)
 {
     SocketClient->ToGameServer()->SendPartyInviteResponse(false, PartyKey);
+    PlayBuffer(SOUND_CLICK01);
+    g_MessageBox->SendEvent(pOwner, MSGBOX_EVENT_DESTROY);
+
+    return CALLBACK_BREAK;
+}
+
+namespace
+{
+// Pending wedding proposal (C1 F3 EE), kept apart from the party invite state in PartyKey so the
+// two dialogs never leak into each other. The key is echoed in the party invite response packet;
+// the server ignores it and routes the answer by the WeddingRequest player state.
+int g_WeddingKey = 0;
+wchar_t g_WeddingProposerName[wedding_request::kNameBytes + 1] = L"";
+}
+
+void ReceiveWeddingRequest(const BYTE* buffer, int size)
+{
+    wedding_request::ParsedRequest request = {};
+    if (!wedding_request::parse_request(reinterpret_cast<const std::uint8_t*>(buffer), size, &request))
+    {
+        g_ConsoleDebug->Write(MCD_ERROR, L"Recv [0xF3][0xEE] broken wedding request packet (size %d)", size);
+        return;
+    }
+
+    g_WeddingKey = request.ProponentId;
+    mu_swprintf(g_WeddingProposerName, L"%ls", request.Name);
+    SEASON3B::CreateMessageBox(MSGBOX_LAYOUT_CLASS(SEASON3B::CWeddingMsgBoxLayout));
+}
+
+bool SEASON3B::CWeddingMsgBoxLayout::SetLayout()
+{
+    CNewUICommonMessageBox* pMsgBox = GetMsgBox();
+    if (0 == pMsgBox)
+        return false;
+    if (false == pMsgBox->Create(MSGBOX_COMMON_TYPE_OKCANCEL))
+        return false;
+
+    wchar_t strText[128];
+    mu_swprintf(strText, I18N::Game::WeddingProposalRequest, g_WeddingProposerName);
+    pMsgBox->AddMsg(strText, 0xFF49B0FF, MSGBOX_FONT_BOLD);
+    pMsgBox->AddCallbackFunc(CWeddingMsgBoxLayout::OkBtnDown, MSGBOX_EVENT_USER_COMMON_OK);
+    pMsgBox->AddCallbackFunc(CWeddingMsgBoxLayout::CancelBtnDown, MSGBOX_EVENT_USER_COMMON_CANCEL);
+    pMsgBox->AddCallbackFunc(CWeddingMsgBoxLayout::OkBtnDown, MSGBOX_EVENT_PRESSKEY_RETURN);
+    pMsgBox->AddCallbackFunc(CWeddingMsgBoxLayout::CancelBtnDown, MSGBOX_EVENT_PRESSKEY_ESC);
+    return true;
+}
+
+CALLBACK_RESULT SEASON3B::CWeddingMsgBoxLayout::OkBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam)
+{
+    // The "yes" keeps the exact party-response flow: the server's WeddingRequest state interprets it.
+    SocketClient->ToGameServer()->SendPartyInviteResponse(true, g_WeddingKey);
+    PlayBuffer(SOUND_CLICK01);
+    g_MessageBox->SendEvent(pOwner, MSGBOX_EVENT_DESTROY);
+
+    return CALLBACK_BREAK;
+}
+
+CALLBACK_RESULT SEASON3B::CWeddingMsgBoxLayout::CancelBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam)
+{
+    SocketClient->ToGameServer()->SendPartyInviteResponse(false, g_WeddingKey);
     PlayBuffer(SOUND_CLICK01);
     g_MessageBox->SendEvent(pOwner, MSGBOX_EVENT_DESTROY);
 

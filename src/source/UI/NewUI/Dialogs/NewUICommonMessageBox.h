@@ -789,6 +789,24 @@ namespace SEASON3B
         static CALLBACK_RESULT OkBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam);
         static CALLBACK_RESULT CancelBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam);
     };
+
+    // LuxView wedding proposal: the same native Yes/No dialog as the party invite, but fed by the
+    // dedicated wedding request packet (C1 F3 EE) and with wedding wording. The Yes/No answer is
+    // sent as the usual party invite response packet, which the server routes by the
+    // WeddingRequest player state.
+    class CWeddingMsgBoxLayout : public TMsgBoxLayout<CNewUICommonMessageBox>
+    {
+    public:
+        bool SetLayout();
+        static CALLBACK_RESULT OkBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam);
+        static CALLBACK_RESULT CancelBtnDown(class CNewUIMessageBoxBase* pOwner, const leaf::xstreambuf& xParam);
+    };
 }
+
+// Glue called by WSclient.cpp on the C1 F3 EE wedding request push: parses the
+// packet (UI/NewUI/Wedding/WeddingRequestLayout.h) and opens the
+// CWeddingMsgBoxLayout dialog. Declared here so the WSclient dispatch sees it
+// together with the msgbox class.
+void ReceiveWeddingRequest(const BYTE* buffer, int size);
 
 #endif // !defined(AFX_NEWUICOMMONMESSAGEBOX_H__AA370602_D171_41DC_9A79_345D75F678D4__INCLUDED_)
