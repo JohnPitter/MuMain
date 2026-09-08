@@ -13939,6 +13939,13 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             // newest entries; the same sub-code answers a "show all" request.
             ReceiveChangelog(ReceiveBuffer, Size);
             break;
+        case 0xEE:
+            // LuxView wedding proposal: dedicated packet (carries the proponent's
+            // name) so the Yes/No dialog shows wedding wording instead of the
+            // party invite text. The answer still goes out as the party invite
+            // response; the server routes it by the WeddingRequest state.
+            ReceiveWeddingRequest(ReceiveBuffer, Size);
+            break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer, Size);
             break;
