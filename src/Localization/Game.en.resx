@@ -13174,4 +13174,8 @@
   <data name="EntranceUnlimitedOnThisServer" xml:space="preserve">
     <value>No daily entry limit on this server.</value>
   </data>
+  <data name="ChangelogTitle" xml:space="preserve"><value>What's New</value></data>
+  <data name="ChangelogShowAll" xml:space="preserve"><value>Show all</value></data>
+  <data name="ChangelogNoNews" xml:space="preserve"><value>No news yet.</value></data>
+  <data name="ChangelogScrollHint" xml:space="preserve"><value>Scroll with the mouse to see more</value></data>
 </root>
