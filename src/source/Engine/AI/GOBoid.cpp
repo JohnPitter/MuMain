@@ -640,7 +640,7 @@ bool MoveMount(OBJECT* o, bool bForceRender)
             vec3_t Direction;
             VectorRotate(o->Direction, o->Matrix, Direction);
             VectorAddScaled(o->Position, Direction, o->Position, FPS_ANIMATION_FACTOR);
-            o->Position[2] += (float)(rand() % 16 - 8);
+            o->Position[2] += (float)(rand() % 16 - 8) * FPS_ANIMATION_FACTOR;
             if (rand_fps_check(32))
             {
                 float Speed = 0;
@@ -655,8 +655,20 @@ bool MoveMount(OBJECT* o, bool bForceRender)
                 o->Direction[1] = Speed;
                 o->Direction[2] = (float)(rand() % 64 - 32) * 0.1f;
             }
-            if (o->Position[2] < o->Owner->Position[2] + 100.f) o->Direction[2] += 1.5f;
-            if (o->Position[2] > o->Owner->Position[2] + 200.f) o->Direction[2] -= 1.5f;
+            if (o->Position[2] < o->Owner->Position[2] + 100.f) o->Direction[2] += 1.5f * FPS_ANIMATION_FACTOR;
+            if (o->Position[2] > o->Owner->Position[2] + 200.f) o->Direction[2] -= 1.5f * FPS_ANIMATION_FACTOR;
+
+            // The owner-relative hover band above assumes the owner's own Z tracks the
+            // ground under their feet, which is not guaranteed on uneven/bridged terrain
+            // (e.g. dungeons): the pet's own X/Y can drift up to FlyRange units away from
+            // the owner and end up over a lower or higher floor. Clamp against the actual
+            // terrain height under the pet so it never renders inside the floor.
+            float PetFloorHeight = RequestTerrainHeight(o->Position[0], o->Position[1]) + 100.f;
+            if (o->Position[2] < PetFloorHeight)
+            {
+                o->Position[2] = PetFloorHeight;
+                if (o->Direction[2] < 0.f) o->Direction[2] = 0.f;
+            }
         }
     }
     return TRUE;
