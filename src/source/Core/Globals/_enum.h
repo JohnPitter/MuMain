@@ -4923,7 +4923,42 @@ enum EMonsterType : int
     MONSTER_CAPTURED_STONE_STATUE_9 = 667,
     MONSTER_CAPTURED_STONE_STATUE_10 = 668,
 
-    MONSTER_END = 668
+    MONSTER_END = 668,
+
+    // "Big X" event minibosses (2026-09-08 owner request): dedicated client types so the miniboss
+    // clone renders larger than its base monster instead of visually identical to it. Free block
+    // 669-1023 (MAX_MONSTER = 1024); does not change MONSTER_END, which nothing but its own
+    // declaration reads (checked: MODEL_MONSTER_END / SOUND_MONSTER_END are unrelated enums).
+    // Server-side allocation table: OpenMU src/GameLogic/Minibosses/MinibossCatalog.cs.
+    MONSTER_BIG_GIANT = 700,               // Lorencia - base MONSTER_GIANT (7)
+    MONSTER_BIG_SKELETON = 701,            // Dungeon - base MONSTER_ELITE_SKELETON (16)
+    MONSTER_BIG_YETI = 702,                // Devias - base MONSTER_YETI (19)
+    MONSTER_BIG_GOBLIN = 703,              // Noria - base MONSTER_GOBLIN (26)
+    MONSTER_BIG_BALROG = 704,              // Lost Tower - base MONSTER_BALROG (38)
+    MONSTER_BIG_GREAT_BAHAMUT = 705,       // Atlans - base MONSTER_GREAT_BAHAMUT (51)
+    MONSTER_BIG_ZAIKAN = 706,              // Tarkan - base MONSTER_ZAIKAN (59)
+    MONSTER_BIG_PHOENIX = 707,             // Icarus - base MONSTER_DARK_PHOENIX (77)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_1 = 708, // Kalima 1 - base MONSTER_ILLUSION_OF_KUNDUN_1 (161)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_2 = 709, // Kalima 2 - base MONSTER_ILLUSION_OF_KUNDUN_2 (181)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_3 = 710, // Kalima 3 - base MONSTER_ILLUSION_OF_KUNDUN_3 (189)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_4 = 711, // Kalima 4 - base MONSTER_ILLUSION_OF_KUNDUN_4 (197)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_5 = 712, // Kalima 5 - base MONSTER_ILLUSION_OF_KUNDUN_5 (267)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_6 = 713, // Kalima 6 - base MONSTER_ILLUSION_OF_KUNDUN_6 (338)
+    // 714 (Valley of Loren) intentionally unused client-side: the map has no monsters at all
+    // (server HuntingMapCatalog.IsHuntingMap excludes it), so this number is never sent by the
+    // server - reserved only for the server-side allocation table's numbering to stay contiguous.
+    MONSTER_BIG_EROHIM = 715,              // Land of Trials - base MONSTER_EROHIM (295)
+    MONSTER_BIG_HELL_MAINE = 716,          // Aida - base MONSTER_HELL_MAINE (309)
+    MONSTER_BIG_SORAM = 717,               // Crywolf Fortress - base MONSTER_SOLAM/MONSTER_SORAM (317)
+    MONSTER_BIG_ILLUSION_OF_KUNDUN_7 = 718, // Kalima 7 - base MONSTER_ILLUSION_OF_KUNDUN_7 (275)
+    MONSTER_BIG_KENTAUROS = 719,           // Kanturu Ruins - base MONSTER_KENTAUROS (355)
+    MONSTER_BIG_DREADFEAR = 720,           // Kanturu Relics - base MONSTER_DREADFEAR (360)
+    MONSTER_BIG_CAPTAIN_GRIZZLY = 721,     // Elvenland - base MONSTER_CAPTAIN_GRIZZLY (425)
+    MONSTER_BIG_SAPI_QUEEN = 722,          // Swamp of Calmness - base MONSTER_SAPI_QUEEN (557)
+    MONSTER_BIG_ICE_WALKER = 723,          // Raklion - base MONSTER_ICE_WALKER (454)
+    MONSTER_BIG_RUTHLESS_LAVA_GIANT = 724, // Vulcanus - base MONSTER_RUTHLESS_LAVA_GIANT (491)
+    MONSTER_BIG_ORCUS = 725,               // Karutan 1 - base MONSTER_ORCUS (571)
+    MONSTER_BIG_NARCONDRA = 726            // Karutan 2 - base MONSTER_NARCONDRA (576)
 };
 
 enum

@@ -394,6 +394,13 @@ CHARACTER* GMSwampOfQuiet::CreateSwampOfQuietMonster(int iType, int PosX, int Po
         pCharacter->Weapon[0].Type = -1;
         pCharacter->Weapon[1].Type = -1;
         break;
+    case MONSTER_BIG_SAPI_QUEEN: // "Big X" event: same model as MONSTER_SAPI_QUEEN, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_SAPI_QUEEN);
+        pCharacter = CreateCharacter(Key, MODEL_SAPI_QUEEN, PosX, PosY);
+        pCharacter->Object.Scale = 1.5f * 1.35f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+        break;
     case MONSTER_ICE_NAPIN:
         OpenMonsterModel(MONSTER_MODEL_ICE_NAPIN);
         pCharacter = CreateCharacter(Key, MODEL_ICE_NAPIN, PosX, PosY);

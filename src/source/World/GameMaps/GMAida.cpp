@@ -421,6 +421,23 @@ CHARACTER* M33Aida::CreateAidaMonster(int iType, int PosX, int PosY, int Key)
         //			BoneManager::RegisterBone(pCharacter, L"Monster105_Footsteps", 1);
     }
     break;
+    case MONSTER_BIG_HELL_MAINE: // "Big X" event: same model as MONSTER_HELL_MAINE, larger scale.
+    {
+        OpenMonsterModel(MONSTER_MODEL_HELL_MAINE);
+        pCharacter = CreateCharacter(Key, MODEL_HELL_MAINE, PosX, PosY);
+        pCharacter->Object.Scale = 1.8f * 1.35f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+
+        BoneManager::RegisterBone(pCharacter, L"Monster105_R_Eye", 9);
+        BoneManager::RegisterBone(pCharacter, L"Monster105_L_Eye", 10);
+        BoneManager::RegisterBone(pCharacter, L"Monster105_L_Arm00", 33);
+        BoneManager::RegisterBone(pCharacter, L"Monster105_L_Arm01", 34);
+        BoneManager::RegisterBone(pCharacter, L"Monster105_L_Arm02", 35);
+        BoneManager::RegisterBone(pCharacter, L"Monster105_L_Hand", 20);
+        BoneManager::RegisterBone(pCharacter, L"Monster105_R_Hand", 39);
+    }
+    break;
     case MONSTER_BLOODY_ORC:
     {
         OpenMonsterModel(MONSTER_MODEL_BLOODY_ORC);

@@ -103,6 +103,25 @@ CHARACTER* M38Kanturu2nd::Create_Kanturu2nd_Monster(int iType, int PosX, int Pos
         BoneManager::RegisterBone(pCharacter, L"Dreadfear_Eye54", 10);
     }
     break;
+    case MONSTER_BIG_DREADFEAR: // "Big X" event: same model as MONSTER_DREADFEAR, larger scale.
+    {
+        OpenMonsterModel(MONSTER_MODEL_DREADFEAR);
+        pCharacter = CreateCharacter(Key, MODEL_DREADFEAR, PosX, PosY);
+        pCharacter->Object.Scale = 1.3f * 1.35f;
+        pCharacter->Object.Angle[0] = 0.0f;
+        pCharacter->Object.Gravity = 0.0f;
+        pCharacter->Object.Distance = (float)(rand() % 20) / 10.0f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+
+        BoneManager::RegisterBone(pCharacter, L"Dreadfear_Wing32", 71);
+        BoneManager::RegisterBone(pCharacter, L"Dreadfear_Wing34", 68);
+        BoneManager::RegisterBone(pCharacter, L"Dreadfear_Wing51", 50);
+        BoneManager::RegisterBone(pCharacter, L"Dreadfear_Wing53", 47);
+        BoneManager::RegisterBone(pCharacter, L"Dreadfear_Eye52", 9);
+        BoneManager::RegisterBone(pCharacter, L"Dreadfear_Eye54", 10);
+    }
+    break;
     case MONSTER_GATEWAY_MACHINE:
     {
         OpenNpc(MODEL_KANTURU2ND_ENTER_NPC);

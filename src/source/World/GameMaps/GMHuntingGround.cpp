@@ -276,6 +276,21 @@ CHARACTER* M31HuntingGround::CreateHuntingGroundMonster(int iType, int PosX, int
         PlayBuffer(SOUND_BC_EROHIM_ENTER);
     }
     break;
+    case MONSTER_BIG_EROHIM: // "Big X" event: same model as MONSTER_EROHIM, larger scale.
+    {
+        OpenMonsterModel(MONSTER_MODEL_EROHIM);
+        pCharacter = CreateCharacter(Key, MODEL_EROHIM, PosX, PosY);
+        pCharacter->Object.Scale = 2.f * 1.35f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+
+        BoneManager::RegisterBone(pCharacter, L"Monster87_LeftEye", 8);
+        BoneManager::RegisterBone(pCharacter, L"Monster87_RightEye", 9);
+        BoneManager::RegisterBone(pCharacter, L"Monster87_LeftHand", 16);
+
+        PlayBuffer(SOUND_BC_EROHIM_ENTER);
+    }
+    break;
     case MONSTER_PK_DARK_KNIGHT:
     {
         pCharacter = CreateCharacter(Key, MODEL_PLAYER, PosX, PosY);

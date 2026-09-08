@@ -518,6 +518,29 @@ CHARACTER* M37Kanturu1st::CreateKanturu1stMonster(int iType, int PosX, int PosY,
         BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_SPAIN_3", 6);
     }
     break;
+    case MONSTER_BIG_KENTAUROS: // "Big X" event: same model as MONSTER_KENTAUROS, larger scale.
+    {
+        OpenMonsterModel(MONSTER_MODEL_KENTAUROS);
+        pCharacter = CreateCharacter(Key, MODEL_KENTAUROS, PosX, PosY);
+        pCharacter->Object.Scale = 1.1f * 1.35f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_23", 27);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_24", 28);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_25", 29);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_26", 30);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_18", 34);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_19", 35);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_20", 36);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_21", 37);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_TAIL", 81);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_TAIL_1", 82);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_TAIL_2", 83);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_SPAIN_1", 4);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_SPAIN_2", 5);
+        BoneManager::RegisterBone(pCharacter, L"KENTAUROS_BIP_SPAIN_3", 6);
+    }
+    break;
     case MONSTER_BERSERKER_WARRIOR:
     {
         OpenMonsterModel(MONSTER_MODEL_BERSERKER_WARRIOR);

@@ -3664,6 +3664,7 @@ void ReceiveAttackDamageCastle(CHARACTER* c, OBJECT* o, const bool success, cons
         else
         {
             if (c->MonsterIndex != MONSTER_ILLUSION_OF_KUNDUN_7
+                && c->MonsterIndex != MONSTER_BIG_ILLUSION_OF_KUNDUN_7 // "Big X" event: same no-flinch behavior as the base Kundun.
                 && rand_fps_check(2))
             {
                 SetPlayerShock(c, damage);
@@ -3742,6 +3743,7 @@ void ReceiveAttackDamage(CHARACTER* c, OBJECT* o, const bool success, const int 
         else
         {
             if (c->MonsterIndex != MONSTER_ILLUSION_OF_KUNDUN_7
+                && c->MonsterIndex != MONSTER_BIG_ILLUSION_OF_KUNDUN_7 // "Big X" event: same no-flinch behavior as the base Kundun.
                 && rand_fps_check(2))
             {
                 SetPlayerShock(c, damage);
@@ -4631,7 +4633,8 @@ BOOL ReceiveMagic(const BYTE* ReceiveBuffer, int Size, BOOL bEncrypted)
 #ifdef ADD_ELF_SUMMON
     case AT_SKILL_SUMMON + 7:
 #endif // ADD_ELF_SUMMON
-        if (sc->MonsterIndex != MONSTER_DARK_PHOENIX)
+        if (sc->MonsterIndex != MONSTER_DARK_PHOENIX
+            && sc->MonsterIndex != MONSTER_BIG_PHOENIX) // "Big X" event: same silent-summon behavior as the base Dark Phoenix.
         {
             PlayBuffer(SOUND_SKILL_DEFENSE);
         }

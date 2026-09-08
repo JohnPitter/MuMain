@@ -13767,6 +13767,16 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         Models[MODEL_DARK_PHEONIX_SHIELD].StreamMesh = 0;
     }
     break;
+    case MONSTER_BIG_PHOENIX: // "Big X" event: same model as MONSTER_DARK_PHOENIX, larger scale.
+    {
+        OpenMonsterModel(MONSTER_MODEL_DARK_PHOENIX_SHIELD);
+        OpenMonsterModel(MONSTER_MODEL_DARK_PHOENIX);
+        c = CreateCharacter(Key, MODEL_DARK_PHEONIX_SHIELD, PositionX, PositionY);
+        c->NotRotateOnMagicHit = true;
+        c->Object.Scale = 1.0f * 1.35f;
+        Models[MODEL_DARK_PHEONIX_SHIELD].StreamMesh = 0;
+    }
+    break;
     case MONSTER_ORC_ARCHER:
         OpenMonsterModel(MONSTER_MODEL_ORC_ARCHER);
         c = CreateCharacter(Key, MODEL_ORC_ARCHER, PositionX, PositionY);
@@ -13876,6 +13886,18 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         CreateJoint(BITMAP_JOINT_ENERGY, o->Position, o->Position, o->Angle, 2, o, 30.f);
         CreateJoint(BITMAP_JOINT_ENERGY, o->Position, o->Position, o->Angle, 3, o, 30.f);
         break;
+    case MONSTER_BIG_ZAIKAN: // "Big X" event: same model as MONSTER_ZAIKAN, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_TANTALLOS);
+        c = CreateCharacter(Key, MODEL_TANTALLOS, PositionX, PositionY);
+        c->Object.BlendMesh = 2;
+        c->Object.BlendMeshLight = 1.f;
+        o = &c->Object;
+        c->Object.Scale = 2.1f * 1.35f;
+        o->SubType = 1;
+        c->Weapon[0].Type = MODEL_STAFF_OF_DESTRUCTION;
+        CreateJoint(BITMAP_JOINT_ENERGY, o->Position, o->Position, o->Angle, 2, o, 30.f);
+        CreateJoint(BITMAP_JOINT_ENERGY, o->Position, o->Position, o->Angle, 3, o, 30.f);
+        break;
     case MONSTER_IRON_WHEEL:
         OpenMonsterModel(MONSTER_MODEL_GOLDEN_WHEEL);
         c = CreateCharacter(Key, MODEL_GOLDEN_WHEEL, PositionX, PositionY);
@@ -13896,6 +13918,12 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         OpenMonsterModel(MONSTER_MODEL_BAHAMUT);
         c = CreateCharacter(Key, MODEL_BAHAMUT, PositionX, PositionY);
         c->Object.Scale = 1.f;
+        c->Level = 1;
+        break;
+    case MONSTER_BIG_GREAT_BAHAMUT: // "Big X" event: same model as MONSTER_GREAT_BAHAMUT, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_BAHAMUT);
+        c = CreateCharacter(Key, MODEL_BAHAMUT, PositionX, PositionY);
+        c->Object.Scale = 1.f * 1.35f;
         c->Level = 1;
         break;
     case MONSTER_SEA_WORM:
@@ -13993,6 +14021,14 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         c->Weapon[0].Type = MODEL_BILL_OF_BALROG;
         c->Weapon[0].Level = 9;
         c->Object.Scale = 1.6f;
+        break;
+    case MONSTER_BIG_BALROG: // "Big X" event: same model as MONSTER_BALROG, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_BALROG);
+        c = CreateCharacter(Key, MODEL_BALROG, PositionX, PositionY);
+        wcscpy(c->ID, L"발록");
+        c->Weapon[0].Type = MODEL_BILL_OF_BALROG;
+        c->Weapon[0].Level = 9;
+        c->Object.Scale = 1.6f * 1.35f;
         break;
     case MONSTER_DEVIL:
         OpenMonsterModel(MONSTER_MODEL_DEVIL);
@@ -14114,6 +14150,13 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         c->Object.Scale = 0.8f;
         wcscpy(c->ID, L"고블린");
         break;
+    case MONSTER_BIG_GOBLIN: // "Big X" event: same model as MONSTER_GOBLIN, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_GOBLIN);
+        c = CreateCharacter(Key, MODEL_GOBLIN, PositionX, PositionY);
+        c->Weapon[0].Type = MODEL_AXE;
+        c->Object.Scale = 0.8f * 1.35f;
+        wcscpy(c->ID, L"고블린");
+        break;
     case MONSTER_ICE_QUEEN:
         OpenMonsterModel(MONSTER_MODEL_ICE_QUEEN);
         c = CreateCharacter(Key, MODEL_ICE_QUEEN, PositionX, PositionY);
@@ -14162,6 +14205,12 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         c = CreateCharacter(Key, MODEL_YETI, PositionX, PositionY);
         wcscpy(c->ID, L"설인");
         c->Object.Scale = 1.1f;
+        break;
+    case MONSTER_BIG_YETI: // "Big X" event: same model as MONSTER_YETI, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_YETI);
+        c = CreateCharacter(Key, MODEL_YETI, PositionX, PositionY);
+        wcscpy(c->ID, L"설인");
+        c->Object.Scale = 1.1f * 1.35f;
         break;
     case MONSTER_GORGON:
         OpenMonsterModel(MONSTER_MODEL_GORGON);
@@ -14300,6 +14349,14 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         c->Weapon[1].Type = MODEL_DOUBLE_AXE;
         c->Object.Scale = 1.6f;
         break;
+    case MONSTER_BIG_GIANT: // "Big X" event (2026-09-08): same model as MONSTER_GIANT, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_GIANT);
+        c = CreateCharacter(Key, MODEL_GIANT, PositionX, PositionY);
+        wcscpy(c->ID, L"자이언트");
+        c->Weapon[0].Type = MODEL_DOUBLE_AXE;
+        c->Weapon[1].Type = MODEL_DOUBLE_AXE;
+        c->Object.Scale = 1.6f * 1.35f;
+        break;
 
     case MONSTER_SKELETON_WARRIOR:
     case MONSTER_DEATH_KING:
@@ -14339,6 +14396,16 @@ CHARACTER* CreateMonster(EMonsterType Type, int PositionX, int PositionY, int Ke
         c = CreateCharacter(Key, MODEL_PLAYER, PositionX, PositionY);
         wcscpy(c->ID, L"해골전사 대장");
         c->Object.Scale = 1.2f;
+        c->Weapon[0].Type = MODEL_TOMAHAWK;
+        c->Weapon[1].Type = MODEL_SKULL_SHIELD;
+        c->Object.SubType = MODEL_SKELETON3;
+        c->Level = 1;
+        c->Blood = true;
+        break;
+    case MONSTER_BIG_SKELETON: // "Big X" event: same model as MONSTER_ELITE_SKELETON, larger scale.
+        c = CreateCharacter(Key, MODEL_PLAYER, PositionX, PositionY);
+        wcscpy(c->ID, L"해골전사 대장");
+        c->Object.Scale = 1.2f * 1.35f;
         c->Weapon[0].Type = MODEL_TOMAHAWK;
         c->Weapon[1].Type = MODEL_SKULL_SHIELD;
         c->Object.SubType = MODEL_SKELETON3;

@@ -99,6 +99,13 @@ CHARACTER* CGM_Raklion::CreateMonster(int iType, int PosX, int PosY, int Key)
         pCharacter->Weapon[0].Type = -1;
         pCharacter->Weapon[1].Type = -1;
         break;
+    case MONSTER_BIG_ICE_WALKER: // "Big X" event: same model as MONSTER_ICE_WALKER, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_ICE_WALKER);
+        pCharacter = CreateCharacter(Key, MODEL_ICE_WALKER, PosX, PosY);
+        pCharacter->Object.Scale = 1.2f * 1.35f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+        break;
 
     case MONSTER_GIANT_MAMMOTH:
         OpenMonsterModel(MONSTER_MODEL_GIANT_MAMMOTH);
