@@ -13178,4 +13178,5 @@
   <data name="ChangelogShowAll" xml:space="preserve"><value>Show all</value></data>
   <data name="ChangelogNoNews" xml:space="preserve"><value>No news yet.</value></data>
   <data name="ChangelogScrollHint" xml:space="preserve"><value>Scroll with the mouse to see more</value></data>
+  <data name="WeddingProposalRequest" xml:space="preserve"><value>%ls proposed marriage to you. Accept?</value></data>
 </root>
