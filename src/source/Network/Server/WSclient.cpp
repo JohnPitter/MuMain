@@ -3664,7 +3664,6 @@ void ReceiveAttackDamageCastle(CHARACTER* c, OBJECT* o, const bool success, cons
         else
         {
             if (c->MonsterIndex != MONSTER_ILLUSION_OF_KUNDUN_7
-                && c->MonsterIndex != MONSTER_BIG_ILLUSION_OF_KUNDUN_7 // "Big X" event: same no-flinch behavior as the base Kundun.
                 && rand_fps_check(2))
             {
                 SetPlayerShock(c, damage);
@@ -3743,7 +3742,6 @@ void ReceiveAttackDamage(CHARACTER* c, OBJECT* o, const bool success, const int 
         else
         {
             if (c->MonsterIndex != MONSTER_ILLUSION_OF_KUNDUN_7
-                && c->MonsterIndex != MONSTER_BIG_ILLUSION_OF_KUNDUN_7 // "Big X" event: same no-flinch behavior as the base Kundun.
                 && rand_fps_check(2))
             {
                 SetPlayerShock(c, damage);

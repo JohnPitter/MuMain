@@ -894,6 +894,30 @@ CHARACTER* CreateHellasMonster(EMonsterType Type, int PositionX, int PositionY, 
         o = &c->Object;
         wcscpy(c->ID, L"쿤둔후보");
         break;
+
+    // "Big X" event (2026-09-08 correction): Kalima 1-7's miniboss clones the map's own
+    // strongest REGULAR spawn (Schriker N) instead of Illusion of Kundun - that IS the real
+    // boss of each Kalima level, so cloning it duplicated/confused the map's own boss (see
+    // OpenMU src/GameLogic/Minibosses/MinibossCatalog.cs remarks for the full audit). Same
+    // model/weapon/id as MONSTER_SCHRIKER_1..7 above, 1.35x scale.
+    case MONSTER_BIG_SCHRIKER_1:
+    case MONSTER_BIG_SCHRIKER_2:
+    case MONSTER_BIG_SCHRIKER_3:
+    case MONSTER_BIG_SCHRIKER_4:
+    case MONSTER_BIG_SCHRIKER_5:
+    case MONSTER_BIG_SCHRIKER_6:
+    case MONSTER_BIG_SCHRIKER_7:
+        OpenMonsterModel(MONSTER_MODEL_SHRIKER);
+        c = CreateCharacter(Key, MODEL_SHRIKER, PositionX, PositionY);
+        c->Weapon[0].Type = MODEL_DOUBLE_BLADE;
+        c->Weapon[0].Level = 0;
+        c->Weapon[1].Type = MODEL_DOUBLE_BLADE;
+        c->Weapon[1].Level = 0;
+        c->Object.Scale = 1.2f * 1.35f;
+        o = &c->Object;
+        wcscpy(c->ID, L"쿤둔후보");
+        break;
+
     case MONSTER_ILLUSION_OF_KUNDUN_1:
     case MONSTER_ILLUSION_OF_KUNDUN_2:
     case MONSTER_ILLUSION_OF_KUNDUN_3:
@@ -912,25 +936,6 @@ CHARACTER* CreateHellasMonster(EMonsterType Type, int PositionX, int PositionY, 
         wcscpy(c->ID, L"쿤둔후보");
         break;
 
-    // "Big X" event (2026-09-08): same models as MONSTER_ILLUSION_OF_KUNDUN_1..7, larger scale.
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_1:
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_2:
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_3:
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_4:
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_5:
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_6:
-        OpenMonsterModel(MONSTER_MODEL_SHRIKER);
-        c = CreateCharacter(Key, MODEL_SHRIKER, PositionX, PositionY);
-        c->Weapon[0].Type = MODEL_DOUBLE_BLADE;
-        c->Weapon[0].Level = 0;
-        c->Weapon[1].Type = MODEL_DOUBLE_BLADE;
-        c->Weapon[1].Level = 0;
-        o = &c->Object;
-        o->SubType = 9;
-        o->Scale = 1.5f * 1.35f;
-        wcscpy(c->ID, L"쿤둔후보");
-        break;
-
     case MONSTER_ILLUSION_OF_KUNDUN_7:
         OpenMonsterModel(MONSTER_MODEL_ILLUSION_OF_KUNDUN);
         c = CreateCharacter(Key, MODEL_ILLUSION_OF_KUNDUN, PositionX, PositionY);
@@ -938,17 +943,6 @@ CHARACTER* CreateHellasMonster(EMonsterType Type, int PositionX, int PositionY, 
         c->Weapon[1].Level = 0;
         c->Object.Scale = 2.0f;
         //		c->Object.Scale = 1.9f;
-        o = &c->Object;
-        wcscpy(c->ID, L"진짜쿤둔");
-        o->LifeTime = 100;
-        break;
-
-    case MONSTER_BIG_ILLUSION_OF_KUNDUN_7: // "Big X" event: same model as MONSTER_ILLUSION_OF_KUNDUN_7, larger scale.
-        OpenMonsterModel(MONSTER_MODEL_ILLUSION_OF_KUNDUN);
-        c = CreateCharacter(Key, MODEL_ILLUSION_OF_KUNDUN, PositionX, PositionY);
-        c->Weapon[1].Type = MODEL_STAFF_OF_KUNDUN;
-        c->Weapon[1].Level = 0;
-        c->Object.Scale = 2.0f * 1.35f;
         o = &c->Object;
         wcscpy(c->ID, L"진짜쿤둔");
         o->LifeTime = 100;

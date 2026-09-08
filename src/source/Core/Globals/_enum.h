@@ -4938,19 +4938,23 @@ enum EMonsterType : int
     MONSTER_BIG_GREAT_BAHAMUT = 705,       // Atlans - base MONSTER_GREAT_BAHAMUT (51)
     MONSTER_BIG_ZAIKAN = 706,              // Tarkan - base MONSTER_ZAIKAN (59)
     MONSTER_BIG_PHOENIX = 707,             // Icarus - base MONSTER_DARK_PHOENIX (77)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_1 = 708, // Kalima 1 - base MONSTER_ILLUSION_OF_KUNDUN_1 (161)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_2 = 709, // Kalima 2 - base MONSTER_ILLUSION_OF_KUNDUN_2 (181)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_3 = 710, // Kalima 3 - base MONSTER_ILLUSION_OF_KUNDUN_3 (189)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_4 = 711, // Kalima 4 - base MONSTER_ILLUSION_OF_KUNDUN_4 (197)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_5 = 712, // Kalima 5 - base MONSTER_ILLUSION_OF_KUNDUN_5 (267)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_6 = 713, // Kalima 6 - base MONSTER_ILLUSION_OF_KUNDUN_6 (338)
+    // Kalima 1-7 (2026-09-08 correction): Illusion of Kundun IS the real boss of each Kalima
+    // level, so cloning it as a "Big" miniboss duplicated/confused the map's own boss. Every
+    // Kalima level's own Schriker N is the strongest regular (non-Kundun) spawn on that level -
+    // see OpenMU src/GameLogic/Minibosses/MinibossCatalog.cs remarks for the full audit.
+    MONSTER_BIG_SCHRIKER_1 = 708,           // Kalima 1 - base MONSTER_SCHRIKER_1 (160)
+    MONSTER_BIG_SCHRIKER_2 = 709,           // Kalima 2 - base MONSTER_SCHRIKER_2 (180)
+    MONSTER_BIG_SCHRIKER_3 = 710,           // Kalima 3 - base MONSTER_SCHRIKER_3 (188)
+    MONSTER_BIG_SCHRIKER_4 = 711,           // Kalima 4 - base MONSTER_SCHRIKER_4 (196)
+    MONSTER_BIG_SCHRIKER_5 = 712,           // Kalima 5 - base MONSTER_SCHRIKER_5 (266)
+    MONSTER_BIG_SCHRIKER_6 = 713,           // Kalima 6 - base MONSTER_SCHRIKER_6 (274)
     // 714 (Valley of Loren) intentionally unused client-side: the map has no monsters at all
     // (server HuntingMapCatalog.IsHuntingMap excludes it), so this number is never sent by the
     // server - reserved only for the server-side allocation table's numbering to stay contiguous.
     MONSTER_BIG_EROHIM = 715,              // Land of Trials - base MONSTER_EROHIM (295)
     MONSTER_BIG_HELL_MAINE = 716,          // Aida - base MONSTER_HELL_MAINE (309)
     MONSTER_BIG_SORAM = 717,               // Crywolf Fortress - base MONSTER_SOLAM/MONSTER_SORAM (317)
-    MONSTER_BIG_ILLUSION_OF_KUNDUN_7 = 718, // Kalima 7 - base MONSTER_ILLUSION_OF_KUNDUN_7 (275)
+    MONSTER_BIG_SCHRIKER_7 = 718,           // Kalima 7 - base MONSTER_SCHRIKER_7 (337)
     MONSTER_BIG_KENTAUROS = 719,           // Kanturu Ruins - base MONSTER_KENTAUROS (355)
     MONSTER_BIG_DREADFEAR = 720,           // Kanturu Relics - base MONSTER_DREADFEAR (360)
     MONSTER_BIG_CAPTAIN_GRIZZLY = 721,     // Elvenland - base MONSTER_CAPTAIN_GRIZZLY (425)
