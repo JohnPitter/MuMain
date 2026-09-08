@@ -24,8 +24,11 @@ namespace SEASON3B
             IMAGE_CHANGELOG_RIGHT = CNewUIMyInventory::IMAGE_INVENTORY_BACK_RIGHT,
             IMAGE_CHANGELOG_BOTTOM = CNewUIMyInventory::IMAGE_INVENTORY_BACK_BOTTOM,
             IMAGE_CHANGELOG_BTN_EXIT = CNewUIMyInventory::IMAGE_INVENTORY_EXIT_BTN,
-            // Shared empty button texture (message-box manager owns the bitmap).
-            IMAGE_CHANGELOG_BTN_SHOW_ALL = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_VERY_SMALL,
+            // Shared empty button texture for labeled wide buttons — the same
+            // native plate the Gold Bowman / Lucky Coin exchange windows use
+            // (message-box manager owns the bitmap; frames are 108x29 stacked
+            // vertically: up / hover / press).
+            IMAGE_CHANGELOG_BTN_SHOW_ALL = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY,
         };
 
         enum eWINDOW_SIZE
@@ -54,10 +57,15 @@ namespace SEASON3B
             EXIT_BUTTON_WIDTH = 36,
             EXIT_BUTTON_HEIGHT = 29,
             EXIT_BUTTON_Y = WINDOW_HEIGHT - FRAME_BOTTOM_HEIGHT - 32,
-            SHOW_ALL_BUTTON_WIDTH = 100,
-            SHOW_ALL_BUTTON_HEIGHT = 23,
+            // Native plate of newui_btn_empty.tga (108x87, 3 frames of 108x29):
+            // the button must match the texture frame exactly — CNewUIButton
+            // samples the texture at the button's own pixel size, so a wider
+            // button than the frame clamps the edge column into a smear (the
+            // raw-looking footer of the first build). Same row as the exit X.
+            SHOW_ALL_BUTTON_WIDTH = 108,
+            SHOW_ALL_BUTTON_HEIGHT = 29,
             SHOW_ALL_BUTTON_X = WINDOW_WIDTH - 13 - SHOW_ALL_BUTTON_WIDTH,
-            SHOW_ALL_BUTTON_Y = WINDOW_HEIGHT - FRAME_BOTTOM_HEIGHT - 29,
+            SHOW_ALL_BUTTON_Y = EXIT_BUTTON_Y,
             SCROLL_HINT_Y_OFFSET = 14,
         };
 

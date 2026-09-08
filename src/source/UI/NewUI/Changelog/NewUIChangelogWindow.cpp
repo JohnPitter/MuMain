@@ -128,6 +128,10 @@ void CNewUIChangelogWindow::InitButtons()
     m_BtnExit.ChangeButtonImgState(true, IMAGE_CHANGELOG_BTN_EXIT);
     m_BtnExit.ChangeToolTipText(closeText, true);
 
+    // "Mostrar tudo" opens the full list. Same shared 108x29 empty-button
+    // plate the other labeled windows use (owned by the message-box manager —
+    // no extra LoadBitmap here); overflg maps up/hover/press to the texture's
+    // three stacked frames, exactly like the events window's "Ajuda" button.
     m_BtnShowAll.ChangeButtonImgState(true, IMAGE_CHANGELOG_BTN_SHOW_ALL, true);
     m_BtnShowAll.SetFont(g_hFontBold);
     m_BtnShowAll.ChangeText(I18N::Game::ChangelogShowAll);
