@@ -379,6 +379,11 @@ CHARACTER* CGMKarutan1::CreateMonster(int iType, int PosX, int PosY, int Key)
         pCharacter = CreateCharacter(Key, MODEL_ORCUS, PosX, PosY);
         pCharacter->Object.Scale = 0.64f;
         break;
+    case MONSTER_BIG_ORCUS: // "Big X" event: same model as MONSTER_ORCUS, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_ORCUS);
+        pCharacter = CreateCharacter(Key, MODEL_ORCUS, PosX, PosY);
+        pCharacter->Object.Scale = 0.64f * 1.35f;
+        break;
     case MONSTER_GOLLOCK:
         OpenMonsterModel(MONSTER_MODEL_GOLLOCK);
         pCharacter = CreateCharacter(Key, MODEL_GOLLOCK, PosX, PosY);
@@ -400,6 +405,21 @@ CHARACTER* CGMKarutan1::CreateMonster(int iType, int PosX, int PosY, int Key)
         pCharacter->Object.Scale = 1.45f;
         pCharacter->Object.LifeTime = 100;
         break;
+    case MONSTER_BIG_NARCONDRA: // "Big X" event: same model as MONSTER_NARCONDRA, larger scale.
+                                 // Placed before MONSTER_NARCONDRA's own (unscoped, last) case so its
+                                 // unbraced local declarations stay the last labels in this switch -
+                                 // otherwise this case's jump would cross their initialization.
+    {
+        OpenMonsterModel(MONSTER_MODEL_NACONDRA);
+        pCharacter = CreateCharacter(Key, MODEL_NACONDRA, PosX, PosY);
+        pCharacter->Object.Scale = 1.55f * 1.35f;
+        pCharacter->Object.LifeTime = 100;
+
+        OBJECT* bigO = &pCharacter->Object;
+        vec3_t bigColor = { 1.5f, 0.1f, 0.5f };
+        CreateJoint(BITMAP_JOINT_ENERGY, bigO->Position, bigO->Position, bigO->Angle, 24, bigO, 10.f, -1, 0, 0, -1, bigColor);
+    }
+    break;
     case MONSTER_NARCONDRA:
         OpenMonsterModel(MONSTER_MODEL_NACONDRA);
         pCharacter = CreateCharacter(Key, MODEL_NACONDRA, PosX, PosY);

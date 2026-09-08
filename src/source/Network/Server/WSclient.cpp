@@ -4631,7 +4631,8 @@ BOOL ReceiveMagic(const BYTE* ReceiveBuffer, int Size, BOOL bEncrypted)
 #ifdef ADD_ELF_SUMMON
     case AT_SKILL_SUMMON + 7:
 #endif // ADD_ELF_SUMMON
-        if (sc->MonsterIndex != MONSTER_DARK_PHOENIX)
+        if (sc->MonsterIndex != MONSTER_DARK_PHOENIX
+            && sc->MonsterIndex != MONSTER_BIG_PHOENIX) // "Big X" event: same silent-summon behavior as the base Dark Phoenix.
         {
             PlayBuffer(SOUND_SKILL_DEFENSE);
         }

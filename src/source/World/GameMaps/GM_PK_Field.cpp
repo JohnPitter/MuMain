@@ -31,7 +31,7 @@ namespace
         int lifetime;
     };
 
-    constexpr std::array<MonsterDefinition, 12> kMonsterDefinitions{ {
+    constexpr std::array<MonsterDefinition, 13> kMonsterDefinitions{ {
         {MONSTER_ZOMBIE_FIGHTER, EMonsterModelType::MONSTER_MODEL_ZOMBIE_FIGHTER, MODEL_ZOMBIE_FIGHTER, 1.0f, false, 0},
         {MONSTER_ZOMBIER, EMonsterModelType::MONSTER_MODEL_ZOMBIE_FIGHTER, MODEL_ZOMBIE_FIGHTER, 1.0f, false, 0},
         {MONSTER_GLADIATOR, EMonsterModelType::MONSTER_MODEL_GLADIATOR, MODEL_GLADIATOR, 1.0f, false, 0},
@@ -44,6 +44,8 @@ namespace
         {MONSTER_BURNING_LAVA_GIANT, EMonsterModelType::MONSTER_MODEL_BURNING_LAVA_GIANT, MODEL_BURNING_LAVA_GIANT, 1.0f, false, 0},
         {MONSTER_LAVA_GIANT, EMonsterModelType::MONSTER_MODEL_LAVA_GIANT, MODEL_LAVA_GIANT, 1.0f, false, 0},
         {MONSTER_RUTHLESS_LAVA_GIANT, EMonsterModelType::MONSTER_MODEL_LAVA_GIANT, MODEL_LAVA_GIANT, 1.0f, false, 0},
+        // "Big X" event (2026-09-08): same model as MONSTER_RUTHLESS_LAVA_GIANT, larger scale.
+        {MONSTER_BIG_RUTHLESS_LAVA_GIANT, EMonsterModelType::MONSTER_MODEL_LAVA_GIANT, MODEL_LAVA_GIANT, 1.0f * 1.35f, false, 0},
     } };
 
     const MonsterDefinition* FindMonsterDefinition(int monsterType)

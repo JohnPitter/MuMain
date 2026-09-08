@@ -945,6 +945,13 @@ CHARACTER* GMNewTown::CreateNewTownMonster(int iType, int PosX, int PosY, int Ke
         pCharacter->Weapon[0].Type = -1;
         pCharacter->Weapon[1].Type = -1;
         break;
+    case MONSTER_BIG_CAPTAIN_GRIZZLY: // "Big X" event: same model as MONSTER_CAPTAIN_GRIZZLY, larger scale.
+        OpenMonsterModel(MONSTER_MODEL_CAPTAIN_GRIZZLY);
+        pCharacter = CreateCharacter(Key, MODEL_CAPTAIN_GRIZZLY, PosX, PosY);
+        pCharacter->Object.Scale = 1.3f * 0.95f * 1.35f;
+        pCharacter->Weapon[0].Type = -1;
+        pCharacter->Weapon[1].Type = -1;
+        break;
     }
 
     return pCharacter;

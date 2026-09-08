@@ -894,6 +894,30 @@ CHARACTER* CreateHellasMonster(EMonsterType Type, int PositionX, int PositionY, 
         o = &c->Object;
         wcscpy(c->ID, L"쿤둔후보");
         break;
+
+    // "Big X" event (2026-09-08 correction): Kalima 1-7's miniboss clones the map's own
+    // strongest REGULAR spawn (Schriker N) instead of Illusion of Kundun - that IS the real
+    // boss of each Kalima level, so cloning it duplicated/confused the map's own boss (see
+    // OpenMU src/GameLogic/Minibosses/MinibossCatalog.cs remarks for the full audit). Same
+    // model/weapon/id as MONSTER_SCHRIKER_1..7 above, 1.35x scale.
+    case MONSTER_BIG_SCHRIKER_1:
+    case MONSTER_BIG_SCHRIKER_2:
+    case MONSTER_BIG_SCHRIKER_3:
+    case MONSTER_BIG_SCHRIKER_4:
+    case MONSTER_BIG_SCHRIKER_5:
+    case MONSTER_BIG_SCHRIKER_6:
+    case MONSTER_BIG_SCHRIKER_7:
+        OpenMonsterModel(MONSTER_MODEL_SHRIKER);
+        c = CreateCharacter(Key, MODEL_SHRIKER, PositionX, PositionY);
+        c->Weapon[0].Type = MODEL_DOUBLE_BLADE;
+        c->Weapon[0].Level = 0;
+        c->Weapon[1].Type = MODEL_DOUBLE_BLADE;
+        c->Weapon[1].Level = 0;
+        c->Object.Scale = 1.2f * 1.35f;
+        o = &c->Object;
+        wcscpy(c->ID, L"쿤둔후보");
+        break;
+
     case MONSTER_ILLUSION_OF_KUNDUN_1:
     case MONSTER_ILLUSION_OF_KUNDUN_2:
     case MONSTER_ILLUSION_OF_KUNDUN_3:

@@ -665,6 +665,15 @@ CHARACTER* M34CryWolf1st::CreateCryWolf1stMonster(int iType, int PosX, int PosY,
         c->Weapon[1].Type = -1;
     }
     break;
+    case MONSTER_BIG_SORAM: // "Big X" event: same model as MONSTER_SOLAM (server Soram, 317), larger scale.
+    {
+        OpenMonsterModel(MONSTER_MODEL_SORAM);
+        c = CreateCharacter(Key, MODEL_SORAM, PosX, PosY);
+        c->Object.Scale = 1.3f * 1.35f;
+        c->Weapon[0].Type = -1;
+        c->Weapon[1].Type = -1;
+    }
+    break;
     case MONSTER_BALGASS:
     {
         OpenMonsterModel(MONSTER_MODEL_BALGASS);
