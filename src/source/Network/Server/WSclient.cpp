@@ -13934,6 +13934,11 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         case 0xEC:
             VipStatus::ReceiveStatus(ReceiveBuffer, Size);
             break;
+        case 0xED:
+            // LuxView in-game changelog ("Novidades"): the login push carries the
+            // newest entries; the same sub-code answers a "show all" request.
+            ReceiveChangelog(ReceiveBuffer, Size);
+            break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer, Size);
             break;

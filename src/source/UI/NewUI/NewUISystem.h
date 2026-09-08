@@ -74,6 +74,7 @@
 #include "GameShop/NewUIAutoBattler.h"
 #include "GameShop/NewUIHuntAnalyzer.h"
 #include "UI/NewUI/Events/NewUIEventScheduleWindow.h"
+#include "UI/NewUI/Changelog/NewUIChangelogWindow.h"
 #include "UI/NewUI/Events/NewUIDoppelGangerWindow.h"
 #include "UI/NewUI/Events/NewUIDoppelGangerFrame.h"
 #include "UI/NewUI/Quests/NewUIQuestProgress.h"
@@ -200,6 +201,7 @@ namespace SEASON3B
         CNewUIChatCommandWindow* m_pNewChatCommandWindow;
         CNewUITitleWindow* m_pNewTitleWindow;
         CNewUIEventScheduleWindow* m_pNewEventScheduleWindow;
+        CNewUIChangelogWindow* m_pNewChangelogWindow;
         CNewUIItemExplanationWindow* m_pNewItemExplanationWindow;
         CNewUISetItemExplanation* m_pNewSetItemExplanation;
         CNewUIQuickCommandWindow* m_pNewQuickCommandWindow;
@@ -287,6 +289,7 @@ namespace SEASON3B
         CNewUIChatCommandWindow* GetUI_NewChatCommandWindow() const;
         CNewUITitleWindow* GetUI_NewTitleWindow() const;
         CNewUIEventScheduleWindow* GetUI_NewEventScheduleWindow() const;
+        CNewUIChangelogWindow* GetUI_NewChangelogWindow() const;
         CNewUIItemExplanationWindow* GetUI_NewItemExplanationWindow() const;
         CNewUISetItemExplanation* GetUI_NewSetItemExplanation() const;
         CNewUIQuickCommandWindow* GetUI_NewQuickCommandWindow() const;
@@ -375,6 +378,7 @@ namespace SEASON3B
 #define g_pChatCommandWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewChatCommandWindow()
 #define g_pTitleWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewTitleWindow()
 #define g_pEventScheduleWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewEventScheduleWindow()
+#define g_pChangelogWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewChangelogWindow()
 #define g_pCommandWindow SEASON3B::CNewUISystem::GetInstance()->GetUI_NewCommandWindow()
 #define g_pWindowMenu SEASON3B::CNewUISystem::GetInstance()->GetUI_NewWindowMenu()
 #define g_pOption SEASON3B::CNewUISystem::GetInstance()->GetUI_NewOptionWindow()

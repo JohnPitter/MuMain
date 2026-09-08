@@ -13249,4 +13249,8 @@
   <data name="EntranceUnlimitedOnThisServer" xml:space="preserve">
     <value>Sem limite de entradas por dia neste servidor.</value>
   </data>
+  <data name="ChangelogTitle" xml:space="preserve"><value>Novidades</value></data>
+  <data name="ChangelogShowAll" xml:space="preserve"><value>Mostrar tudo</value></data>
+  <data name="ChangelogNoNews" xml:space="preserve"><value>Nenhuma novidade por enquanto.</value></data>
+  <data name="ChangelogScrollHint" xml:space="preserve"><value>Role com o mouse para ver mais</value></data>
 </root>
