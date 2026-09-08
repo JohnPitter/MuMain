@@ -12171,6 +12171,33 @@ CHARACTER* CreateCharacter(int Key, int Type, unsigned char PositionX, unsigned 
         }
     }
 
+    // Identity-bound flags (CHARACTER::IsVip, the C1 F3 EC VIP badge -- see
+    // VipStatus.h) live on the slot and survive DeleteCharacter (out-of-scope).
+    // Scope churn while hunting deletes and re-creates the same character over
+    // and over, so when the character's previous slot is still free, reuse THAT
+    // slot: taking an arbitrary dead slot hands the badge to the slot lottery
+    // (a recycled slot may hold IsVip from its previous tenant -- ghost badge --
+    // or not -- badge vanishes until the server re-sends the packet).
+    // Server keys never collide with the zero-initialized Key of fresh slots
+    // (ConstantPlayerId = 0x200, generated ids start at 0x201), so Key == 0
+    // never matches below.
+    for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
+    {
+        CHARACTER* c = &CharactersClient[i];
+        OBJECT* o = &c->Object;
+        if (!o->Live && c->Key == Key)
+        {
+            BoneManager::UnregisterBone(c);
+            DeletePet(c);
+            DeleteCloth(c, o);
+            DeleteParts(c);
+            CreateCharacterPointer(c, Type, PositionX, PositionY, Rotation);
+            g_CharacterClearBuff(o);
+            c->Key = Key;
+            return c;
+        }
+    }
+
     for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
     {
         CHARACTER* c = &CharactersClient[i];
