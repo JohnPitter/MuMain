@@ -10,15 +10,16 @@ namespace UI::Vip::Badge
 {
     namespace
     {
-        // Same on-screen footprint as one gens rank badge: CNewUIGensRanking's
-        // GENSMARK_WIDTH/HEIGHT (50x69) scaled by its 0.8 "boolean" nameplate
-        // size, so the VIP badge reads at the same visual weight as the gens
-        // mark next to a name.
-        constexpr float kGensMarkWidth = 50.0f;
-        constexpr float kGensMarkHeight = 69.0f;
-        constexpr float kNameplateScale = 0.8f;
-        constexpr float kBadgeWidth = kGensMarkWidth * kNameplateScale;
-        constexpr float kBadgeHeight = kGensMarkHeight * kNameplateScale;
+        // The owner's screenshot showed the badge rendering much larger than
+        // the gens rank mark it sits next to. Cause: the v4 art fills the whole
+        // render box, while the gens mark's art carries its own padding inside
+        // the 50x69 atlas cell (the painted mark is only ~70% of the cell), so
+        // a badge drawn at the full 50x69*0.8 = 40x55 box reads ~1.4x wider and
+        // taller than the neighbouring gens seal. Render at 30x42 -- a bit
+        // smaller than the gens mark's visual -- still wide enough to read as
+        // a badge at nameplate size.
+        constexpr float kBadgeWidth = 30.0f;
+        constexpr float kBadgeHeight = 42.0f;
     }
 
     void Render(float rightEdgeX, float topY, float bottomY)
