@@ -37,6 +37,7 @@ namespace Audio::Radio
         {
             Off,            // no session
             Connecting,     // request in flight, no audio yet
+            Buffering,      // audible stream stalled: re-priming before resume
             Playing,        // PCM flowing to the mixer
             Reconnecting,   // stream died, next retry scheduled
         };
@@ -46,6 +47,30 @@ namespace Audio::Radio
             State state = State::Off;
             wchar_t nowPlaying[160] = L"";
             wchar_t stationName[64] = L"";
+        };
+
+        // Streaming telemetry, sampled by the worker while it runs (cheap
+        // counters; a monitor can poll GetDiagnostics at any rate). Exposed so
+        // stutter/"parou do nada" reports can be diagnosed from real numbers
+        // instead of guesses: feed cadence (push gaps), network stalls (chunk
+        // times), buffer level, and the state machine's recovery counters.
+        struct Diagnostics
+        {
+            State state = State::Off;
+            int bufferedBytes = 0;          // decoded PCM waiting in the stream (dst format)
+            int prebufferTargetBytes = 0;   // "started" threshold in the same unit
+            int srcBytesPerSecond = 0;      // stream dst-format rate (station rate, F32)
+            int underrunCount = 0;          // times the mixer track drained dry
+            int resumeCount = 0;            // successful re-kicks/re-primes
+            int playFailures = 0;           // MIX_PlayTrack refused
+            int streamRebuilds = 0;         // station changed rate/channels midstream
+            int sessions = 0;               // StreamConnection attempts
+            int chunkReads = 0;             // network chunks pulled from WinHTTP
+            int lastChunkMs = 0;            // blocked time of the last chunk read
+            int maxChunkMs = 0;             // worst chunk read of the current session
+            int lastPushGapMs = 0;          // gap between two PCM push bursts
+            int maxPushGapMs = 0;
+            std::uint32_t generation = 0;   // bumped by Start()/Stop()
         };
 
         static RadioEngine& Instance();
@@ -66,6 +91,7 @@ namespace Audio::Radio
         void SetVolume(int level0to100);
 
         void GetStatus(Snapshot& out) const;
+        void GetDiagnostics(Diagnostics& out) const;
 
     private:
         RadioEngine() = default;
@@ -78,6 +104,12 @@ namespace Audio::Radio
         bool StreamLoop(HINTERNET request, std::uint32_t generation);
         void PublishTitle(const char* data, std::size_t size);
         void PublishState(State state);
+
+        // Closes the in-flight request (if any) so a worker blocked inside a
+        // WinHTTP read wakes immediately. Used by Stop() AND Start() — Start
+        // joins the old worker on the caller (UI) thread, and without the
+        // abort that join could block for a full receive timeout.
+        void AbortActiveRequest();
 
         bool EnsureMixerTrack();
         bool EnsureAudioStream(int channels, int sampleRate);
@@ -114,7 +146,13 @@ namespace Audio::Radio
         int16_t m_pcmBuffer[kMaxSamplesPerFrame * 2] = {};
 
         // Underrun telemetry. Worker-thread only (StreamLoop is the single
-        // writer/reader); surfaced through g_ErrorReport lines.
+        // writer/reader); surfaced through g_ErrorReport lines and
+        // GetDiagnostics (copied under m_stateMutex).
         int m_underrunCount = 0;
+
+        // Worker-written diagnostics copy; GetDiagnostics snapshots it under
+        // m_stateMutex. The worker updates it at chunk boundaries only (a few
+        // times per second), so the lock cost is negligible.
+        Diagnostics m_diag;
     };
 }

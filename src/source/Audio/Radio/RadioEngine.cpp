@@ -55,8 +55,36 @@ namespace
     // format at runtime (SDL_GetAudioStreamAvailable counts destination
     // bytes: F32 stereo 48kHz = 384000 B/s, S16 stereo 44.1kHz = 176400 B/s).
     constexpr float kPrebufferSeconds = 4.f;
-    constexpr int kMaxBufferedBytes = 3 * 1024 * 1024;
+    // Playback backlog cap. MEASURED (harness, 10 min, Bossa Nova Brazil —
+    // before_bossa.csv): real stations deliver in bursts with multi-second
+    // dead gaps; sustained production was measured as low as 0.14x realtime
+    // over 28s windows. The old 3MB cap (~8.5s) threw away exactly the
+    // backlog that bridges those droughts. 12MB ≈ 30s+ at 44.1k stereo F32 —
+    // the buffer only grows this deep while the server bursts, and memory is
+    // cheap next to silence.
+    constexpr int kMaxBufferedBytes = 12 * 1024 * 1024;
     constexpr int kCongestionSleepMs = 30;
+
+    // Underrun recovery (rodada 2): after the mixer track drains dry, resume
+    // once half the prebuffer window has re-accumulated. Round 1 demanded the
+    // FULL window again — on a stream that trickles slower than realtime that
+    // wait can stretch to minutes of silence while the UI still said
+    // "Playing". Half the window is still 2s of slack (the round-1 ping-pong
+    // came from resuming at 1/16th), and the safety timeout below bounds the
+    // wait even when data barely moves.
+    constexpr float kReprimeFraction = 0.5f;
+
+    // Safety valve: if a re-prime hasn't completed after this long but SOME
+    // audio is queued, resume anyway — playing with thin slack beats silence.
+    // Three consecutive timeout-resumes mean the connection feeds slower than
+    // realtime even though the socket is open: drop it and let ThreadMain's
+    // retry open a fresh connection.
+    constexpr int kReprimeTimeoutMs = 5000;
+    constexpr int kMaxTimeoutResumesBeforeReconnect = 3;
+
+    // Same valve for the very first start: don't sit in "Conectando" forever
+    // when the connection landed inside a production drought.
+    constexpr int kStartTimeoutMs = 8000;
 
     // Fallback only: ReachedPrebuffer/KickTrackIfDue run after the audio
     // stream exists, which itself requires a live mixer format. Kept so a
@@ -97,7 +125,11 @@ namespace Audio::Radio
 
         // Bumping the generation fences the previous session: its worker sees
         // the mismatch at the next check and unwinds without touching state.
+        // The abort matters: Start() joins the old worker on the UI thread,
+        // and a worker blocked in a WinHTTP read would only wake at the
+        // receive timeout (~15s UI freeze) without it.
         const std::uint32_t generation = ++m_generation;
+        AbortActiveRequest();
 
         if (m_thread.joinable())
         {
@@ -112,20 +144,23 @@ namespace Audio::Radio
 
         // Closing the request aborts a blocking WinHTTP read immediately, so
         // the join below never waits out the full receive timeout.
-        {
-            std::lock_guard netLock(m_netMutex);
-            if (m_request != nullptr)
-            {
-                WinHttpCloseHandle(m_request);
-                m_request = nullptr;
-            }
-        }
+        AbortActiveRequest();
 
         PublishState(State::Off);
 
         if (m_thread.joinable())
         {
             m_thread.join();
+        }
+    }
+
+    void RadioEngine::AbortActiveRequest()
+    {
+        std::lock_guard netLock(m_netMutex);
+        if (m_request != nullptr)
+        {
+            WinHttpCloseHandle(m_request);
+            m_request = nullptr;
         }
     }
 
@@ -152,6 +187,27 @@ namespace Audio::Radio
         out = m_snapshot;
     }
 
+    void RadioEngine::GetDiagnostics(Diagnostics& out) const
+    {
+        std::lock_guard lock(m_stateMutex);
+        out = m_diag;
+        out.underrunCount = m_underrunCount;
+        out.generation = m_generation.load(std::memory_order_acquire);
+        // Best-effort live buffer level: 0 when no stream exists (idle).
+        out.bufferedBytes = m_stream != nullptr ? SDL_GetAudioStreamAvailable(m_stream) : 0;
+        out.prebufferTargetBytes = PrebufferTargetBytes();
+        if (m_stream != nullptr)
+        {
+            SDL_AudioSpec dst {};
+            SDL_GetAudioStreamFormat(m_stream, nullptr, &dst);
+            out.srcBytesPerSecond = SDL_AUDIO_BYTESIZE(dst.format) * dst.channels * dst.freq;
+        }
+        else
+        {
+            out.srcBytesPerSecond = 0;
+        }
+    }
+
     void RadioEngine::PublishTitle(const char* data, std::size_t size)
     {
         std::string title;
@@ -175,6 +231,7 @@ namespace Audio::Radio
     {
         std::lock_guard lock(m_stateMutex);
         m_snapshot.state = state;
+        m_diag.state = state;
         if (state == State::Off)
         {
             m_snapshot.nowPlaying[0] = L'\0';
@@ -239,6 +296,7 @@ namespace Audio::Radio
             }
             SDL_DestroyAudioStream(m_stream);
             m_stream = nullptr;
+            ++m_diag.streamRebuilds;  // station changed rate/channels midstream
         }
 
         const SDL_AudioSpec srcSpec { SDL_AUDIO_S16LE, channels, sampleRate };
@@ -275,6 +333,25 @@ namespace Audio::Radio
 
     int RadioEngine::PrebufferTargetBytes() const
     {
+        // Measure against the STREAM's destination format, not the mixer's:
+        // SDL_mixer pins the track input stream's output format to F32 at the
+        // STATION's rate/channels (MIX_SetTrackAudioStream rewrites it), so a
+        // 44.1 kHz station buffers 352800 B/s of audio — targetting the
+        // mixer's 384000 B/s made "4 seconds" silently mean 4.35.
+        if (m_stream != nullptr)
+        {
+            SDL_AudioSpec dst {};
+            if (SDL_GetAudioStreamFormat(m_stream, nullptr, &dst))
+            {
+                const int bytesPerSecond =
+                    SDL_AUDIO_BYTESIZE(dst.format) * dst.channels * dst.freq;
+                if (bytesPerSecond > 0)
+                {
+                    return static_cast<int>(static_cast<float>(bytesPerSecond) * kPrebufferSeconds);
+                }
+            }
+        }
+
         const int bytesPerSecond = DestinationBytesPerSecond();
         if (bytesPerSecond <= 0)
         {
@@ -317,6 +394,11 @@ namespace Audio::Radio
 
     void RadioEngine::ThreadMain(std::uint32_t generation)
     {
+        // The renderer hammers the CPU every frame; this thread's cadence IS
+        // the buffer refill, so keep it above the default pool. It idles >99%
+        // of the time (blocked on the socket), so this costs nothing else.
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+
         while (generation == m_generation.load(std::memory_order_acquire))
         {
             {
@@ -354,6 +436,11 @@ namespace Audio::Radio
 
     bool RadioEngine::StreamConnection(std::uint32_t generation)
     {
+        {
+            std::lock_guard lock(m_stateMutex);
+            ++m_diag.sessions;
+        }
+
         std::wstring url;
         {
             std::lock_guard lock(m_stateMutex);
@@ -478,18 +565,59 @@ namespace Audio::Radio
         bool started = false;
         bool awaitingReprime = false;
 
+        // Kick helper: shared by the start path and underrun recovery so a
+        // refused MIX_PlayTrack is counted (a silent refusal here reads as
+        // "the radio stopped out of nowhere" with nothing in the log).
+        auto KickTrack = [this]() -> bool
+        {
+            if (m_track == nullptr)
+            {
+                return false;
+            }
+            if (!MIX_PlayTrack(m_track, 0))
+            {
+                std::lock_guard lock(m_stateMutex);
+                ++m_diag.playFailures;
+                g_ErrorReport.Write(L"[radio] MIX_PlayTrack failed: %hs\r\n", SDL_GetError());
+                return false;
+            }
+            return true;
+        };
+
+        auto lastPush = std::chrono::steady_clock::now();
+        auto underrunSince = std::chrono::steady_clock::now();
+        auto startSince = std::chrono::steady_clock::now();
+        int timeoutResumeStreak = 0;
+
         while (generation == m_generation.load(std::memory_order_acquire))
         {
+            const auto chunkStart = std::chrono::steady_clock::now();
             DWORD available = 0;
             if (!WinHttpQueryDataAvailable(request, &available) || available == 0)
             {
+                g_ErrorReport.Write(L"[radio] read loop end: query avail=%lu err=0x%08X\r\n",
+                    available, GetLastError());
                 break;
             }
             const DWORD toRead = std::min<DWORD>(available, kReadChunkBytes);
             DWORD readBytes = 0;
             if (!WinHttpReadData(request, chunk.data(), toRead, &readBytes) || readBytes == 0)
             {
+                g_ErrorReport.Write(L"[radio] read loop end: read %lu/%lu bytes err=0x%08X\r\n",
+                    readBytes, toRead, GetLastError());
                 break;
+            }
+
+            {
+                const auto chunkMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now() - chunkStart).count();
+                std::lock_guard lock(m_stateMutex);
+                ++m_diag.chunkReads;
+                m_diag.lastChunkMs = static_cast<int>(chunkMs);
+                if (chunkMs > m_diag.maxChunkMs)
+                {
+                    m_diag.maxChunkMs = static_cast<int>(chunkMs);
+                }
             }
 
             if (!headerDone)
@@ -595,20 +723,42 @@ namespace Audio::Radio
             if (decoded > 0)
             {
                 mp3Buffer.erase(mp3Buffer.begin(), mp3Buffer.begin() + decoded);
+
+                const auto now = std::chrono::steady_clock::now();
+                const auto gapMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    now - lastPush).count();
+                lastPush = now;
+                std::lock_guard lock(m_stateMutex);
+                m_diag.lastPushGapMs = static_cast<int>(gapMs);
+                if (gapMs > m_diag.maxPushGapMs)
+                {
+                    m_diag.maxPushGapMs = static_cast<int>(gapMs);
+                }
             }
 
             if (!started)
             {
-                if (ReachedPrebuffer())
+                // Full window OR the drought safety valve: a bursty station
+                // can land the first connection inside a production drought,
+                // and demanding the full 4s there means "Conectando" for
+                // minutes. After 8s with audible audio queued, just start.
+                const auto waitedMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now() - startSince).count();
+                const int floor = PrebufferTargetBytes() / 16;
+                const int bufferedNow = m_stream != nullptr
+                    ? SDL_GetAudioStreamAvailable(m_stream) : 0;
+                if (ReachedPrebuffer()
+                    || (waitedMs >= kStartTimeoutMs && bufferedNow > floor))
                 {
                     started = true;
-                    if (m_track != nullptr)
+                    if (KickTrack())
                     {
-                        MIX_PlayTrack(m_track, 0);
+                        PublishState(State::Playing);
+                        g_ErrorReport.Write(L"[radio] playing (%.1fs prebuffered%s, %d B queued)\r\n",
+                            kPrebufferSeconds,
+                            ReachedPrebuffer() ? L"" : L" — drought start",
+                            bufferedNow);
                     }
-                    PublishState(State::Playing);
-                    g_ErrorReport.Write(L"[radio] playing (%.1fs prebuffered)\r\n",
-                        kPrebufferSeconds);
                 }
             }
             else
@@ -624,34 +774,88 @@ namespace Audio::Radio
                     ? SDL_GetAudioStreamAvailable(m_stream) : 0;
                 if (!MIX_TrackPlaying(m_track) && m_track != nullptr)
                 {
+                    const auto now = std::chrono::steady_clock::now();
                     if (!awaitingReprime)
                     {
                         if (buffered <= PrebufferTargetBytes() / 16)
                         {
                             ++m_underrunCount;
                             awaitingReprime = true;
+                            underrunSince = now;
+                            PublishState(State::Buffering);
                             g_ErrorReport.Write(
-                                L"[radio] underrun #%d (buffered %d B) — re-priming %.0fs before resume\r\n",
-                                m_underrunCount, buffered, kPrebufferSeconds);
+                                L"[radio] underrun #%d (buffered %d B) — re-priming %.1fs before resume\r\n",
+                                m_underrunCount, buffered,
+                                kPrebufferSeconds * kReprimeFraction);
                         }
-                        else
+                        else if (KickTrack())
                         {
-                            MIX_PlayTrack(m_track, 0);
+                            std::lock_guard lock(m_stateMutex);
+                            ++m_diag.resumeCount;
                         }
                     }
-                    else if (ReachedPrebuffer())
+                    else
                     {
-                        awaitingReprime = false;
-                        MIX_PlayTrack(m_track, 0);
-                        g_ErrorReport.Write(L"[radio] resumed after underrun #%d\r\n",
-                            m_underrunCount);
+                        // Re-prime to HALF the start window (still 2s of
+                        // slack) so recovery is quick, with a safety timeout:
+                        // a stream trickling slower than realtime would never
+                        // rebuild a full window — after 5s with SOMETHING
+                        // queued, play rather than stay silent.
+                        const int reprimeTarget =
+                            static_cast<int>(PrebufferTargetBytes() * kReprimeFraction);
+                        const bool primed = buffered >= reprimeTarget;
+                        const auto waitedMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                            now - underrunSince).count();
+                        const bool timedOut = waitedMs >= kReprimeTimeoutMs
+                            && buffered > PrebufferTargetBytes() / 16;
+
+                        if (primed || timedOut)
+                        {
+                            awaitingReprime = false;
+                            if (KickTrack())
+                            {
+                                PublishState(State::Playing);
+                                if (timedOut && !primed)
+                                {
+                                    ++timeoutResumeStreak;
+                                    std::lock_guard lock(m_stateMutex);
+                                    ++m_diag.resumeCount;
+                                    g_ErrorReport.Write(
+                                        L"[radio] resumed after underrun #%d on timeout (%lld ms, %d B) — streak %d\r\n",
+                                        m_underrunCount, static_cast<long long>(waitedMs),
+                                        buffered, timeoutResumeStreak);
+                                }
+                                else
+                                {
+                                    timeoutResumeStreak = 0;
+                                    std::lock_guard lock(m_stateMutex);
+                                    ++m_diag.resumeCount;
+                                    g_ErrorReport.Write(L"[radio] resumed after underrun #%d\r\n",
+                                        m_underrunCount);
+                                }
+                            }
+
+                            // A connection that keeps starving even while open
+                            // is wedged (NAT half-open, throttled server):
+                            // drop it and let the retry open a fresh one.
+                            if (timeoutResumeStreak >= kMaxTimeoutResumesBeforeReconnect)
+                            {
+                                g_ErrorReport.Write(
+                                    L"[radio] %d consecutive timeout resumes — dropping wedged connection\r\n",
+                                    timeoutResumeStreak);
+                                break;
+                            }
+                        }
                     }
                 }
 
                 // Back off while the backlog exceeds the cap: don't read more
-                // from the socket until the mixer drains below it.
+                // from the socket until the mixer drains below it. Bail out
+                // early if the track stopped — the underrun branch above must
+                // get a chance to run instead of sleeping through it.
                 while (m_stream != nullptr
                     && SDL_GetAudioStreamAvailable(m_stream) > kMaxBufferedBytes
+                    && MIX_TrackPlaying(m_track)
                     && generation == m_generation.load(std::memory_order_acquire))
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds(kCongestionSleepMs));
