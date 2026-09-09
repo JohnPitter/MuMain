@@ -82,7 +82,7 @@ namespace SEASON3B
         // UpdateMouseEvent helpers
         void HandleCheckboxInputs();
         void PersistCheckboxChange(bool* target);
-        bool HandleVolumeSlider(int& level, int yOffset);
+        bool HandleVolumeSlider(int& level, int yOffset, bool& dragActive);
         void OnSoundVolumeChanged();
         void OnMusicVolumeChanged();
         void HandleRenderLevelSlider();
@@ -108,6 +108,14 @@ namespace SEASON3B
         // Set when a combo consumes a click; swallows the rest of that mouse-hold
         // so the release can't fall through to the Close button (see UpdateMouseEvent).
         bool m_bSwallowClickHold = false;
+
+        // True while a slider drag that STARTED on that track is in progress.
+        // A held left button whose press began elsewhere (MU walk/attack hold)
+        // must not rewrite the level when its cursor merely crosses a track —
+        // that stolen drag was the volume-decay bug (2026-09).
+        bool m_bSoundSliderDrag = false;
+        bool m_bMusicSliderDrag = false;
+        bool m_bRenderSliderDrag = false;
 
         CNewUIComboBox m_ResolutionCombo;
         CNewUIComboBox m_LanguageCombo;

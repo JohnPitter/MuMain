@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "UI/NewUI/Options/NewUIOptionWindow.h"
 #include "UI/NewUI/NewUISystem.h"
+#include "UI/NewUI/Options/VolumeSliderInput.h"
 #include "Render/Textures/ZzzTexture.h"
 #include "Audio/DSPlaySound.h"
 #include "Data/GameConfig/GameConfig.h"
@@ -376,10 +377,10 @@ bool SEASON3B::CNewUIOptionWindow::UpdateMouseEvent()
     if (m_bWindowedMode != oldWindowedMode)
         ApplyWindowModeToggle();
 
-    if (HandleVolumeSlider(m_iVolumeLevel, 104))
+    if (HandleVolumeSlider(m_iVolumeLevel, 104, m_bSoundSliderDrag))
         OnSoundVolumeChanged();
 
-    if (HandleVolumeSlider(m_iMusicLevel, 132))
+    if (HandleVolumeSlider(m_iMusicLevel, 132, m_bMusicSliderDrag))
         OnMusicVolumeChanged();
 
     HandleRenderLevelSlider();
@@ -460,42 +461,57 @@ void SEASON3B::CNewUIOptionWindow::PersistCheckboxChange(bool* target)
 
 // Handles wheel + drag input on a volume slider track.
 // Returns true if the level changed this frame.
-bool SEASON3B::CNewUIOptionWindow::HandleVolumeSlider(int& level, int yOffset)
+//
+// Drag gating (volume-decay fix): the level may only follow the cursor while a
+// drag that STARTED on this track is in progress.  The old code keyed on
+// IsRepeat(VK_LBUTTON) alone, which is true for ANY held button — including the
+// walk/attack hold MU players keep down during normal play — so a held cursor
+// sweeping across an open Options window silently rewrote the volume (the left
+// third of the track maps to 0 = mute) and persisted it via
+// OnSoundVolumeChanged().  That is the "volume comes back at a fraction of
+// what was set" report; see VolumeSliderInput.h.
+bool SEASON3B::CNewUIOptionWindow::HandleVolumeSlider(int& level, int yOffset, bool& dragActive)
 {
-    if (!CheckMouseIn(m_Pos.x + SLIDER_X_LOCAL - SLIDER_HIT_PADDING,
+    const bool cursorOnTrack = CheckMouseIn(m_Pos.x + SLIDER_X_LOCAL - SLIDER_HIT_PADDING,
                       m_Pos.y + yOffset,
                       SLIDER_WIDTH + SLIDER_HIT_PADDING,
-                      SLIDER_HIT_HEIGHT))
+                      SLIDER_HIT_HEIGHT);
+
+    const bool isPress = SEASON3B::IsPress(VK_LBUTTON);
+    const bool isRepeat = SEASON3B::IsRepeat(VK_LBUTTON);
+    dragActive = VolumeSliderInput::ShouldTrackDrag(cursorOnTrack, isPress, isRepeat, dragActive);
+
+    if (!cursorOnTrack)
     {
         return false;
     }
 
     const int oldValue = level;
+    bool changed = false;
 
     if (MouseWheel > 0)
     {
         MouseWheel = 0;
         level++;
+        changed = true;
     }
     else if (MouseWheel < 0)
     {
         MouseWheel = 0;
         level--;
+        changed = true;
     }
 
-    if (SEASON3B::IsRepeat(VK_LBUTTON))
+    if (dragActive && isRepeat)
     {
-        int x = MouseX - (m_Pos.x + SLIDER_X_LOCAL);
-        if (x < 0)
-            level = 0;
-        else
-            level = (int)(((float)MAX_VOLUME * x) / (float)SLIDER_WIDTH + 0.5f);
+        level = VolumeSliderInput::MapOffsetToLevel(MouseX - (m_Pos.x + SLIDER_X_LOCAL), SLIDER_WIDTH, MAX_VOLUME);
+        changed = true;
     }
 
     // Clamp once after all adjustments
     level = std::clamp(level, 0, MAX_VOLUME);
 
-    return (level != oldValue);
+    return (changed && level != oldValue);
 }
 
 void SEASON3B::CNewUIOptionWindow::OnSoundVolumeChanged()
@@ -523,15 +539,22 @@ void SEASON3B::CNewUIOptionWindow::OnMusicVolumeChanged()
 
 void SEASON3B::CNewUIOptionWindow::HandleRenderLevelSlider()
 {
-    if (!CheckMouseIn(m_Pos.x + RENDER_SLIDER_X_LOCAL, m_Pos.y + RENDER_SLIDER_Y_LOCAL,
-                      RENDER_SLIDER_WIDTH, RENDER_SLIDER_HEIGHT))
+    const bool cursorOnTrack = CheckMouseIn(m_Pos.x + RENDER_SLIDER_X_LOCAL, m_Pos.y + RENDER_SLIDER_Y_LOCAL,
+                      RENDER_SLIDER_WIDTH, RENDER_SLIDER_HEIGHT);
+
+    // Same drag gate as the volume sliders: a held button whose press started
+    // elsewhere must not rewrite the effect-limitation level when the cursor
+    // crosses this track.
+    m_bRenderSliderDrag = VolumeSliderInput::ShouldTrackDrag(
+        cursorOnTrack, SEASON3B::IsPress(VK_LBUTTON), SEASON3B::IsRepeat(VK_LBUTTON), m_bRenderSliderDrag);
+
+    if (!cursorOnTrack || !m_bRenderSliderDrag || !SEASON3B::IsRepeat(VK_LBUTTON))
         return;
 
-    if (!SEASON3B::IsRepeat(VK_LBUTTON))
-        return;
-
-    int x = MouseX - (m_Pos.x + RENDER_SLIDER_X_LOCAL);
-    const int newLevel = (int)((RENDER_LEVEL_MAX * x) / (float)RENDER_SLIDER_WIDTH + 0.5f);
+    const int newLevel = std::clamp(
+        VolumeSliderInput::MapOffsetToLevel(MouseX - (m_Pos.x + RENDER_SLIDER_X_LOCAL), RENDER_SLIDER_WIDTH,
+                                            static_cast<int>(RENDER_LEVEL_MAX)),
+        0, static_cast<int>(RENDER_LEVEL_MAX));
 
     if (newLevel != m_iRenderLevel)
     {
@@ -589,6 +612,9 @@ void SEASON3B::CNewUIOptionWindow::OpenningProcess()
 {
     // Resync state that may have been changed externally while the window was hidden.
     m_bSwallowClickHold = false;   // drop any stale combo click-swallow latch
+    m_bSoundSliderDrag = false;    // drop any slider drag latched when the
+    m_bMusicSliderDrag = false;    // window closed mid-gesture
+    m_bRenderSliderDrag = false;
     m_iResolutionIndex = FindCurrentResolutionIndex();
     m_ResolutionCombo.SetSelectedIndex(m_iResolutionIndex);
     m_ResolutionCombo.Close();
