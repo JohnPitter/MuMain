@@ -186,6 +186,14 @@ def main() -> int:
     art = compose_radio()
     on = finish_frame(art, dim=False)
     off = finish_frame(art, dim=True)
+
+    # Rodada 2 (owner request): the HUD button reads as coming OUT of the left
+    # screen edge, so the glyph is mirrored horizontally — antenna leans left,
+    # grille sits right, dial sits left. Mirroring the finished frames keeps
+    # the ink outline and the off-frame slash consistent with the new facing.
+    on = on.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+    off = off.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     write_ozt(OUT, [on, off])
 
