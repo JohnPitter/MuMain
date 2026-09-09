@@ -11,12 +11,15 @@
 #include "UI/NewUI/NewUICommon.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "UI/NewUI/Widgets/NewUIButton.h"
+#include "UI/Radio/RadioMarquee.h"
+#include "UI/Radio/RadioStatusText.h"
 
 namespace
 {
     // Button: the same native empty plate + size as MiniMapCorner's voice
     // mic/sound buttons, mirrored to the left screen edge, vertically
-    // centered.
+    // centered. Stands alone: the "tocando agora" text moved to the marquee
+    // strip above the bottom functionality bar.
     constexpr float kButtonWidth = 36.f;
     constexpr float kButtonHeight = 23.f;
 
@@ -27,27 +30,38 @@ namespace
     constexpr float kIconDrawSize = 15.f;
     constexpr float kIconScale = kIconDrawSize / kIconFrame;
 
-    // Now-playing label above the button.
-    constexpr float kLabelWidth = 170.f;
-    constexpr float kLabelHeight = 14.f;
-    constexpr float kLabelGap = 3.f;
+    // "Tocando agora" marquee strip: spans the FULL width of the bottom
+    // functionality bar (the potions/skills bar — Q/W/E/R + slots — is drawn
+    // by CNewUIMainFrameWindow::RenderFrame as IMAGE_MENU_1 + IMAGE_MENU_2 +
+    // IMAGE_MENU_3 = 256 + 128 + 256 = REFERENCE_WIDTH wide, kBarHeight tall,
+    // anchored at the bottom edge). The strip sits directly ABOVE the bar,
+    // aligned to it, and the scrolling text is clipped to exactly this
+    // rectangle — it spans the whole screen width, so the GL viewport clips
+    // the slide at both strip edges and the loop never bleeds outside the
+    // bar band.
+    constexpr float kBarHeight = 51.f;
+    constexpr float kStripWidth = static_cast<float>(REFERENCE_WIDTH);  // 640 = full bar width
+    constexpr float kStripHeight = 14.f;
+    constexpr float kStripGap = 1.f;
+    constexpr float kMarqueeSpeedPxPerSec = 64.f;
 
     constexpr BYTE kLabelRed = 220;
     constexpr BYTE kLabelGreen = 200;
     constexpr BYTE kLabelBlue = 140;
 
     const wchar_t* const kRadioTooltip = L"R\u00e1dio: esta\u00e7\u00f5es, volume e liga/desliga";
-    const wchar_t* const kRadioOffLabel = L"R\u00e1dio desligada";
 
     bool s_iconReady = false;
     SEASON3B::CNewUIButton s_BtnRadio;
     bool s_buttonReady = false;
 
-    // Last label text shipped to the renderer; only overwritten when the
-    // radio state actually changes, so a frame with no update does zero work
-    // beyond the copy-free draw.
+    // Snapshot of the status text the marquee is showing. Rebuilt only when
+    // the engine state/wording actually changes, so an ordinary frame does
+    // zero string work and zero allocation — the render step is just an
+    // offset computed from a timestamp plus a cached text width.
     wchar_t s_labelText[160] = L"";
-    bool s_labelInitialized = false;
+    float s_labelWidthPx = 0.f;
+    bool s_labelValid = false;
 
     void ButtonOrigin(float* outX, float* outY)
     {
@@ -57,47 +71,31 @@ namespace
         *outY = REFERENCE_HEIGHT / 2.f;
     }
 
-    void BuildLabelText(const Audio::Radio::RadioEngine::Snapshot& status, wchar_t* out, std::size_t outChars)
+    UI::Radio::RadioStatusKind MapStatusKind(Audio::Radio::RadioEngine::State state)
     {
-        const wchar_t* station = status.stationName[0] != L'\0' ? status.stationName
-            : Audio::Radio::GetStationName(Audio::Radio::GetSelectedStation());
-
-        switch (status.state)
+        switch (state)
         {
         case Audio::Radio::RadioEngine::State::Playing:
-            if (status.nowPlaying[0] != L'\0')
-            {
-                wcsncpy_s(out, outChars, status.nowPlaying, _TRUNCATE);
-                return;
-            }
-            if (station[0] != L'\0')
-            {
-                wcsncpy_s(out, outChars, station, _TRUNCATE);
-                return;
-            }
-            wcsncpy_s(out, outChars, L"Ao vivo", _TRUNCATE);
-            return;
-
+            return UI::Radio::RadioStatusKind::Playing;
         case Audio::Radio::RadioEngine::State::Connecting:
-            wcsncpy_s(out, outChars, L"Conectando...", _TRUNCATE);
-            return;
-
+            return UI::Radio::RadioStatusKind::Connecting;
         case Audio::Radio::RadioEngine::State::Reconnecting:
-            if (station[0] != L'\0')
-            {
-                // "offline" suffix keeps the station visible while the engine
-                // silently retries in the background.
-                swprintf_s(out, outChars, L"%ls (offline)", station);
-                return;
-            }
-            wcsncpy_s(out, outChars, L"Offline", _TRUNCATE);
-            return;
-
+            return UI::Radio::RadioStatusKind::Reconnecting;
         case Audio::Radio::RadioEngine::State::Off:
         default:
-            wcsncpy_s(out, outChars, kRadioOffLabel, _TRUNCATE);
-            return;
+            return UI::Radio::RadioStatusKind::Off;
         }
+    }
+
+    void MeasureLabelWidth()
+    {
+        SIZE size {};
+        const int length = static_cast<int>(wcslen(s_labelText));
+        if (length > 0)
+        {
+            GetTextExtentPoint32(g_pRenderText->GetFontDC(), s_labelText, length, &size);
+        }
+        s_labelWidthPx = static_cast<float>(size.cx) / g_fScreenRate_x;
     }
 
     void UpdateLabel()
@@ -105,35 +103,49 @@ namespace
         Audio::Radio::RadioEngine::Snapshot status;
         Audio::Radio::GetStatus(status);
 
-        wchar_t text[160] = {};
-        BuildLabelText(status, text, std::size(text));
+        const wchar_t* station = status.stationName[0] != L'\0' ? status.stationName
+            : Audio::Radio::GetStationName(Audio::Radio::GetSelectedStation());
 
-        if (!s_labelInitialized || wcsncmp(s_labelText, text, std::size(text)) != 0)
+        wchar_t text[160] = {};
+        UI::Radio::BuildRadioStatusText(MapStatusKind(status.state), station,
+            status.nowPlaying, text, std::size(text));
+
+        if (!s_labelValid || wcsncmp(s_labelText, text, std::size(text)) != 0)
         {
             wcsncpy_s(s_labelText, text, _TRUNCATE);
-            s_labelInitialized = true;
+            MeasureLabelWidth();
+            s_labelValid = true;
         }
     }
 
-    void RenderLabel(float buttonX, float buttonY)
+    void RenderMarquee()
     {
-        float labelX = buttonX + (kButtonWidth - kLabelWidth) * 0.5f;
-        if (labelX < 2.f)
-        {
-            labelX = 2.f;
-        }
-        const float labelY = buttonY - kLabelHeight - kLabelGap;
+        const float stripY = static_cast<float>(REFERENCE_HEIGHT) - kBarHeight
+            - kStripHeight - kStripGap;
 
+        // Translucent band along the whole bar, in the old label's style.
         EnableAlphaTest();
         glColor4f(0.f, 0.f, 0.f, 0.55f);
-        RenderColor(labelX, labelY, kLabelWidth, kLabelHeight);
+        RenderColor(0.f, stripY, kStripWidth, kStripHeight);
         EndRenderColor();
+
+        if (s_labelText[0] == L'\0')
+        {
+            return;
+        }
+
+        // Infinite left-to-right loop: the text enters at the strip's left
+        // edge and slides right until it fully exits at the right edge, then
+        // repeats. The strip spans the entire screen width, so the viewport
+        // clips the text at exactly the bar's rectangle.
+        const float x = UI::Radio::MarqueeOffsetPx(timeGetTime(), s_labelWidthPx,
+            kStripWidth, kMarqueeSpeedPxPerSec);
 
         g_pRenderText->SetFont(g_hFont);
         g_pRenderText->SetBgColor(0);
         g_pRenderText->SetTextColor(kLabelRed, kLabelGreen, kLabelBlue, 255);
-        g_pRenderText->RenderText(static_cast<int>(labelX), static_cast<int>(labelY),
-            s_labelText, static_cast<int>(kLabelWidth), static_cast<int>(kLabelHeight), RT3_SORT_CENTER);
+        g_pRenderText->RenderText(static_cast<int>(x), static_cast<int>(stripY + 1),
+            s_labelText, 0, 0, RT3_SORT_LEFT);
     }
 
     void RenderIcon(float centerX, float centerY, bool enabled)
@@ -219,7 +231,7 @@ namespace UI::Radio
         RenderIcon(pos.x + (kButtonWidth * 0.5f), pos.y + (kButtonHeight * 0.5f), enabled);
 
         UpdateLabel();
-        RenderLabel(static_cast<float>(pos.x), static_cast<float>(pos.y));
+        RenderMarquee();
         EnableAlphaTest();
     }
 }
