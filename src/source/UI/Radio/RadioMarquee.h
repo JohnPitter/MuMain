@@ -14,6 +14,8 @@
 
 #include <cstdint>
 
+#include "UI/Radio/RadioStatusText.h"
+
 namespace UI::Radio
 {
     // Total distance (UI px) the text travels in one loop: the text width plus
@@ -24,4 +26,10 @@ namespace UI::Radio
     // [-textWidth, +trackWidth) and wraps forever.
     float MarqueeOffsetPx(std::uint32_t nowMs, float textWidthPx, float trackWidthPx,
         float speedPxPerSec);
+
+    // Gate for the whole "tocando agora" strip: it exists ONLY while the radio
+    // is enabled AND actually playing (owner request: the band used to show all
+    // the time — desligada/offline a faixa some). Connecting/Reconnecting/
+    // Off all hide it, so a dead station never advertises itself.
+    bool MarqueeVisible(bool radioEnabled, RadioStatusKind statusKind);
 }

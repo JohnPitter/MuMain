@@ -15,6 +15,7 @@ namespace UI::Radio
     {
         Off,
         Connecting,
+        Buffering,      // audible stream stalled: re-priming before resume
         Playing,
         Reconnecting,
     };

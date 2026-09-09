@@ -323,6 +323,11 @@ enum
     // 0 = on, 1 = off). Same append-before-END placement as the entries above.
     BITMAP_LUXUI_RADIO,
 
+    // Radio HUD button plate (Interface\Radio_btn_plate.OZT): the native
+    // 54x69 3-frame empty-button sheet mirrored horizontally, so the bevel
+    // faces the LEFT screen edge (the button reads as coming out of it).
+    BITMAP_LUXUI_RADIO_PLATE,
+
     BITMAP_INTERFACE_TEXTURE_END = 32000,
     BITMAP_EFFECT_TEXTURE_BEGIN = 32001,
 

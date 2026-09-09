@@ -488,6 +488,9 @@ namespace SEASON3B
         case Audio::Radio::RadioEngine::State::Connecting:
             kind = UI::Radio::RadioStatusKind::Connecting;
             break;
+        case Audio::Radio::RadioEngine::State::Buffering:
+            kind = UI::Radio::RadioStatusKind::Buffering;
+            break;
         case Audio::Radio::RadioEngine::State::Reconnecting:
             kind = UI::Radio::RadioStatusKind::Reconnecting;
             break;

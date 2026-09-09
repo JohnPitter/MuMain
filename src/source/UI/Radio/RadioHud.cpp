@@ -79,6 +79,8 @@ namespace
             return UI::Radio::RadioStatusKind::Playing;
         case Audio::Radio::RadioEngine::State::Connecting:
             return UI::Radio::RadioStatusKind::Connecting;
+        case Audio::Radio::RadioEngine::State::Buffering:
+            return UI::Radio::RadioStatusKind::Buffering;
         case Audio::Radio::RadioEngine::State::Reconnecting:
             return UI::Radio::RadioStatusKind::Reconnecting;
         case Audio::Radio::RadioEngine::State::Off:
@@ -98,17 +100,14 @@ namespace
         s_labelWidthPx = static_cast<float>(size.cx) / g_fScreenRate_x;
     }
 
-    void UpdateLabel()
+    void UpdateLabel(const Audio::Radio::RadioEngine::Snapshot& status,
+        UI::Radio::RadioStatusKind kind)
     {
-        Audio::Radio::RadioEngine::Snapshot status;
-        Audio::Radio::GetStatus(status);
-
         const wchar_t* station = status.stationName[0] != L'\0' ? status.stationName
             : Audio::Radio::GetStationName(Audio::Radio::GetSelectedStation());
 
         wchar_t text[160] = {};
-        UI::Radio::BuildRadioStatusText(MapStatusKind(status.state), station,
-            status.nowPlaying, text, std::size(text));
+        UI::Radio::BuildRadioStatusText(kind, station, status.nowPlaying, text, std::size(text));
 
         if (!s_labelValid || wcsncmp(s_labelText, text, std::size(text)) != 0)
         {
@@ -172,8 +171,10 @@ namespace
 
         if (!s_buttonReady)
         {
-            const int nativeBtn = SEASON3B::CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_VERY_SMALL;
-            s_BtnRadio.ChangeButtonImgState(true, nativeBtn, true);
+            // The native empty plate mirrored to face the left screen edge
+            // (BITMAP_LUXUI_RADIO_PLATE): same 54x69 3-frame sheet, flipped,
+            // so the "abertura" reads as coming out of the screen edge.
+            s_BtnRadio.ChangeButtonImgState(true, BITMAP_LUXUI_RADIO_PLATE, true);
             s_BtnRadio.ChangeButtonInfo(static_cast<int>(x), static_cast<int>(y),
                 static_cast<int>(kButtonWidth), static_cast<int>(kButtonHeight));
             s_BtnRadio.ChangeToolTipText(&kRadioTooltip, 0);
@@ -200,6 +201,10 @@ namespace UI::Radio
         }
         s_iconReady = LoadBitmap(L"Interface\\Radio_icon.tga",
             BITMAP_LUXUI_RADIO, GL_LINEAR, GL_CLAMP_TO_EDGE);
+        // Mirrored plate: same 3-frame sheet as the native empty button, but
+        // with the bevel facing the left screen edge (owner request).
+        LoadBitmap(L"Interface\\Radio_btn_plate.tga",
+            BITMAP_LUXUI_RADIO_PLATE, GL_LINEAR, GL_CLAMP_TO_EDGE);
     }
 
     void UnloadIcon()
@@ -209,6 +214,7 @@ namespace UI::Radio
             return;
         }
         DeleteBitmap(BITMAP_LUXUI_RADIO);
+        DeleteBitmap(BITMAP_LUXUI_RADIO_PLATE);
         s_iconReady = false;
     }
 
@@ -230,8 +236,17 @@ namespace UI::Radio
         const POINT pos = s_BtnRadio.GetPos();
         RenderIcon(pos.x + (kButtonWidth * 0.5f), pos.y + (kButtonHeight * 0.5f), enabled);
 
-        UpdateLabel();
-        RenderMarquee();
+        // Marquee gate (owner request): the "tocando agora" strip exists ONLY
+        // while the radio is enabled AND actually playing. Desligada/offline a
+        // faixa some — no band, no text.
+        Audio::Radio::RadioEngine::Snapshot status;
+        Audio::Radio::GetStatus(status);
+        const UI::Radio::RadioStatusKind kind = MapStatusKind(status.state);
+        if (UI::Radio::MarqueeVisible(enabled, kind))
+        {
+            UpdateLabel(status, kind);
+            RenderMarquee();
+        }
         EnableAlphaTest();
     }
 }

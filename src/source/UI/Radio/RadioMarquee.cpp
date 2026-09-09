@@ -5,6 +5,11 @@
 
 namespace UI::Radio
 {
+    bool MarqueeVisible(bool radioEnabled, RadioStatusKind statusKind)
+    {
+        return radioEnabled && statusKind == RadioStatusKind::Playing;
+    }
+
     float MarqueeLoopWidthPx(float textWidthPx, float trackWidthPx)
     {
         if (textWidthPx < 0.f)

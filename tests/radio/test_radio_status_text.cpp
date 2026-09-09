@@ -62,6 +62,23 @@ TEST_CASE("reconnecting states BOTH the failure and the station")
         == L"Offline, reconectando...");
 }
 
+// Rodada 2: while the engine rebuilds slack after an underrun the UI must say
+// so — a silent "Playing" line is exactly what read as "a rádio parou do nada".
+TEST_CASE("buffering names the stabilization instead of lying about playing")
+{
+    const std::wstring text = Build(UI::Radio::RadioStatusKind::Buffering,
+        L"R\u00e1dio Bossa Nova Brazil", L"Old Title");
+    CHECK(text.find(L"R\u00e1dio Bossa Nova Brazil") != std::wstring::npos);
+    CHECK(text.find(L"estabilizando") != std::wstring::npos);
+    // The stale ICY title must NOT survive the stall: it no longer plays.
+    CHECK(text.find(L"Old Title") == std::wstring::npos);
+
+    CHECK(Build(UI::Radio::RadioStatusKind::Buffering, nullptr, nullptr)
+        == L"Estabilizando...");
+    CHECK(Build(UI::Radio::RadioStatusKind::Buffering, L"", L"Song")
+        == L"Estabilizando...");
+}
+
 TEST_CASE("null pointers and empty strings never crash or leak into the text")
 {
     CHECK(Build(UI::Radio::RadioStatusKind::Playing, nullptr, nullptr) == L"Ao vivo");

@@ -44,6 +44,19 @@ namespace UI::Radio
             wcsncpy_s(out, outChars, L"Conectando...", _TRUNCATE);
             return;
 
+        case RadioStatusKind::Buffering:
+            // The stream stalled and the engine is rebuilding slack. Naming
+            // the state beats a frozen "Playing" line while audio is silent —
+            // that mismatch is exactly what read as "a rádio parou do nada".
+            if (hasStation)
+            {
+                _snwprintf_s(out, outChars, _TRUNCATE,
+                    L"%ls (estabilizando...)", station);
+                return;
+            }
+            wcsncpy_s(out, outChars, L"Estabilizando...", _TRUNCATE);
+            return;
+
         case RadioStatusKind::Reconnecting:
             // State AND station in one line: a flaky stream (Rádio Bossa Nova
             // Brazil blips) must read as "this station is offline, the client

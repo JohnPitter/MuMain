@@ -137,3 +137,24 @@ TEST_CASE("marquee speed scales linearly")
     // distance: 2 * (base + textWidth) relation within float noise.
     CHECK(doubled == doctest::Approx(2.f * (base + kTextWidth) - kTextWidth).epsilon(0.01));
 }
+
+// Owner request (rodada 2): the strip is rendered ONLY while the radio is
+// enabled AND actually playing. Desligada/offline a faixa some — and so does
+// it while connecting/reconnecting, so a dead station never advertises itself.
+TEST_CASE("marquee strip is visible only when enabled and playing")
+{
+    using Kind = UI::Radio::RadioStatusKind;
+
+    CHECK(UI::Radio::MarqueeVisible(true, Kind::Playing));
+    CHECK_FALSE(UI::Radio::MarqueeVisible(false, Kind::Playing));
+
+    // Enabled but not (yet/any more) audibly playing: hidden.
+    CHECK_FALSE(UI::Radio::MarqueeVisible(true, Kind::Connecting));
+    CHECK_FALSE(UI::Radio::MarqueeVisible(true, Kind::Reconnecting));
+    CHECK_FALSE(UI::Radio::MarqueeVisible(true, Kind::Off));
+
+    // Disabled regardless of state: hidden.
+    CHECK_FALSE(UI::Radio::MarqueeVisible(false, Kind::Connecting));
+    CHECK_FALSE(UI::Radio::MarqueeVisible(false, Kind::Reconnecting));
+    CHECK_FALSE(UI::Radio::MarqueeVisible(false, Kind::Off));
+}
