@@ -319,6 +319,10 @@ enum
     // append-before-END placement as the entries above.
     BITMAP_VIP_MARK,
 
+    // Internet radio HUD glyph (Interface\Radio_icon.OZT, 2 stacked frames:
+    // 0 = on, 1 = off). Same append-before-END placement as the entries above.
+    BITMAP_LUXUI_RADIO,
+
     BITMAP_INTERFACE_TEXTURE_END = 32000,
     BITMAP_EFFECT_TEXTURE_BEGIN = 32001,
 

@@ -32,6 +32,7 @@
 #include "GameShop/InGameShopSystem.h"
 #endif //PBG_ADD_INGAMESHOP_UI_MAINFRAME
 #include "UI/HUD/HudToolbar.h"
+#include "UI/Radio/RadioHud.h"
 #include "UI/Voice/VoiceIcons.h"
 
 namespace
@@ -132,6 +133,8 @@ void SEASON3B::CNewUIMainFrameWindow::LoadImages()
     // The voice glyphs live in the same LuxUI set and are only ever drawn
     // in-game, so they share this window's texture lifetime.
     UI::Voice::LoadIcons();
+    // Same for the radio HUD glyph (Interface\Radio_icon.OZT).
+    UI::Radio::LoadIcon();
 }
 
 void SEASON3B::CNewUIMainFrameWindow::UnloadImages()
@@ -151,6 +154,7 @@ void SEASON3B::CNewUIMainFrameWindow::UnloadImages()
     DeleteBitmap(IMAGE_MENU_BTN_FRIEND);
     DeleteBitmap(IMAGE_MENU_BTN_WINDOW);
     UI::Voice::UnloadIcons();
+    UI::Radio::UnloadIcon();
 }
 
 bool SEASON3B::CNewUIMainFrameWindow::Create(CNewUIManager* pNewUIMng, CNewUI3DRenderMng* pNewUI3DRenderMng)

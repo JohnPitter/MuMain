@@ -18,6 +18,7 @@
 #include "Camera/CameraProjection.h"
 #include "Camera/CameraState.h"
 #include "UI/NewUI/HUD/MiniMapCorner.h"
+#include "UI/Radio/RadioHud.h"
 #include "UI/Voice/VoiceSpeakingIndicator.h"
 
 // DevEditor forward declarations (must be at global scope)
@@ -166,6 +167,7 @@ bool SEASON3B::CNewUINameWindow::Render()
     DrawPersonalShopTitleImp();
     UI::HUD::MiniMap::Render();
     UI::HUD::MiniMap::RenderCommands();
+    UI::Radio::RenderHud();
     DisableAlphaBlend();
     return true;
 }
