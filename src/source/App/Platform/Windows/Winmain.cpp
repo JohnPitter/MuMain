@@ -145,6 +145,7 @@ BOOL g_bUseFullscreenMode = FALSE;
 bool g_bDisableAnimationTaskPool = true;
 
 #include "Audio/AudioPlayer.h"
+#include "Audio/Radio/RadioPlayer.h"
 
 extern int  LogIn;
 extern wchar_t LogInID[];
@@ -513,6 +514,9 @@ void DestroySound()
 
     FreeDirectSound();
     VoiceChat::Shutdown();
+    // The radio track hangs off the shared SDL mixer, so it must be released
+    // before the mixer itself goes away.
+    Audio::Radio::ShutdownRadio();
     AudioPlayer::Shutdown();
 }
 
@@ -2021,6 +2025,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int nC
 
     // Always initialize audio system so music can be enabled at runtime
     AudioPlayer::Initialize();
+    // Radio: station list + [Radio] config; streams only if Enabled=1 (default off).
+    Audio::Radio::InitializeRadio();
 
     // Always initialize sound so it can be toggled at runtime
     InitDirectSound(g_hWnd);
