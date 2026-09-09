@@ -86,6 +86,7 @@ CNewUISystem::CNewUISystem()
     m_pNewTitleWindow = nullptr;
     m_pNewEventScheduleWindow = nullptr;
     m_pNewChangelogWindow = nullptr;
+    m_pNewRadioWindow = nullptr;
     m_pNewItemExplanationWindow = nullptr;
     m_pNewSetItemExplanation = nullptr;
     m_pNewQuickCommandWindow = nullptr;
@@ -383,6 +384,13 @@ bool CNewUISystem::LoadMainSceneInterface()
         return false;
     }
 
+    m_pNewRadioWindow = new CNewUIRadioWindow;
+    // The radio config is a centered window like the news popup (320 px wide).
+    if (m_pNewRadioWindow->Create(m_pNewUIMng, (640 - CNewUIRadioWindow::kWindowWidth) / 2, (480 - CNewUIRadioWindow::kWindowHeight) / 2) == false)
+    {
+        return false;
+    }
+
     m_pNewHelpWindow = new CNewUIHelpWindow;
     if (m_pNewHelpWindow->Create(m_pNewUIMng, 0, 0) == false)
     {
@@ -577,6 +585,7 @@ void CNewUISystem::UnloadMainSceneInterface()
     SAFE_DELETE(m_pNewTitleWindow);
     SAFE_DELETE(m_pNewEventScheduleWindow);
     SAFE_DELETE(m_pNewChangelogWindow);
+    SAFE_DELETE(m_pNewRadioWindow);
     SAFE_DELETE(m_pNewItemExplanationWindow);
     SAFE_DELETE(m_pNewSetItemExplanation);
     SAFE_DELETE(m_pNewQuickCommandWindow);
@@ -2425,6 +2434,11 @@ CNewUIChatCommandWindow* CNewUISystem::GetUI_NewChatCommandWindow() const
 CNewUIEventScheduleWindow* CNewUISystem::GetUI_NewEventScheduleWindow() const
 {
     return m_pNewEventScheduleWindow;
+}
+
+CNewUIRadioWindow* CNewUISystem::GetUI_NewRadioWindow() const
+{
+    return m_pNewRadioWindow;
 }
 
 CNewUIChangelogWindow* CNewUISystem::GetUI_NewChangelogWindow() const

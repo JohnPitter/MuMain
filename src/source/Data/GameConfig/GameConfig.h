@@ -114,6 +114,16 @@ public:
     bool GetRenderAllEffects() const { return m_renderAllEffects; }
     void SetRenderAllEffects(bool renderAllEffects);
 
+    // Internet radio (100% client; station list in Data/Local/RadioStations.ini)
+    bool GetRadioEnabled() const { return m_radioEnabled; }
+    void SetRadioEnabled(bool enabled);
+
+    int  GetRadioVolume() const { return m_radioVolume; }   // 0..100
+    void SetRadioVolume(int level);
+
+    int  GetRadioStationIndex() const { return m_radioStationIndex; }
+    void SetRadioStationIndex(int index);
+
     // Helpers
     static std::wstring BinaryToHex(const BYTE* data, DWORD size);
     static std::vector<BYTE> HexToBinary(const std::wstring& hex);
@@ -159,6 +169,10 @@ private:
     bool m_slideHelp;
     int  m_renderLevel;
     bool m_renderAllEffects;
+
+    bool m_radioEnabled;
+    int  m_radioVolume;
+    int  m_radioStationIndex;
 
     int ReadInt(const wchar_t* section, const wchar_t* key, int defaultValue);
     void WriteInt(const wchar_t* section, const wchar_t* key, int value);

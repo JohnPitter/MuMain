@@ -5,6 +5,8 @@
 #include <imagehlp.h>
 #endif
 
+#include <algorithm>
+
 #include "GameConfigConstants.h"
 #include "Core/Platform/WinCompat.h"
 #include "Core/Platform/WinIni.h"  // private-profile (.ini) API
@@ -104,6 +106,12 @@ void GameConfig::Load()
         ReadInt(CfgSectionOptions, CfgKeyRenderLevel, CfgDefaultRenderLevel));
     m_renderAllEffects = ReadBool(CfgSectionOptions, CfgKeyRenderAllEffects, CfgDefaultRenderAllEffects);
 
+    m_radioEnabled = ReadBool(CfgSectionRadio, CfgKeyRadioEnabled, CfgDefaultRadioEnabled);
+    m_radioVolume = CfgLimits::ClampRadioVolume(
+        ReadInt(CfgSectionRadio, CfgKeyRadioVolume, CfgDefaultRadioVolume));
+    m_radioStationIndex = std::max(0,
+        ReadInt(CfgSectionRadio, CfgKeyRadioStationIndex, CfgDefaultRadioStationIndex));
+
     // Strip keys/sections we used to write but no longer use, so user config
     // files don't accumulate orphans. Append one line per retired key — no
     // central registry of valid keys to keep in sync.
@@ -184,6 +192,10 @@ void GameConfig::Save()
     WriteBool(CfgSectionOptions, CfgKeySlideHelp, m_slideHelp);
     WriteInt(CfgSectionOptions, CfgKeyRenderLevel, m_renderLevel);
     WriteBool(CfgSectionOptions, CfgKeyRenderAllEffects, m_renderAllEffects);
+
+    WriteBool(CfgSectionRadio, CfgKeyRadioEnabled, m_radioEnabled);
+    WriteInt(CfgSectionRadio, CfgKeyRadioVolume, m_radioVolume);
+    WriteInt(CfgSectionRadio, CfgKeyRadioStationIndex, m_radioStationIndex);
 }
 
 std::vector<std::wstring> GameConfig::ReadStringList(const wchar_t* section, const wchar_t* keyPrefix)
@@ -325,6 +337,21 @@ void GameConfig::SetWhisperSound(bool whisperSound)
 void GameConfig::SetSlideHelp(bool slideHelp)
 {
     m_slideHelp = slideHelp;
+}
+
+void GameConfig::SetRadioEnabled(bool enabled)
+{
+    m_radioEnabled = enabled;
+}
+
+void GameConfig::SetRadioVolume(int level)
+{
+    m_radioVolume = CfgLimits::ClampRadioVolume(level);
+}
+
+void GameConfig::SetRadioStationIndex(int index)
+{
+    m_radioStationIndex = std::max(0, index);
 }
 
 void GameConfig::SetRenderLevel(int level)

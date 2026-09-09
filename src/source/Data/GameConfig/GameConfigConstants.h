@@ -13,6 +13,8 @@ namespace CfgSections
     // In-game Options window toggles/sliders that are persisted nowhere else
     // (volumes live in "Audio", window state in "Window").
     inline constexpr wchar_t CfgSectionOptions[] = L"Options";
+    // Client-side internet radio (station, volume, on/off — 100% client).
+    inline constexpr wchar_t CfgSectionRadio[] = L"Radio";
 }
 
 namespace CfgKeys
@@ -46,6 +48,11 @@ namespace CfgKeys
 
     // Camera
     inline constexpr wchar_t CfgKeyZoom[] = L"Zoom";
+
+    // Radio
+    inline constexpr wchar_t CfgKeyRadioEnabled[]      = L"Enabled";
+    inline constexpr wchar_t CfgKeyRadioVolume[]       = L"Volume";
+    inline constexpr wchar_t CfgKeyRadioStationIndex[] = L"StationIndex";
 
     // Options (in-game Options window)
     inline constexpr wchar_t CfgKeyAutoAttack[]       = L"AutoAttack";
@@ -115,6 +122,12 @@ namespace CfgDefaults
     // detail (e.g. ZzzObject GetPipeline caps at RenderLevel*2+5).
     inline constexpr int  CfgDefaultRenderLevel      = 4;
     inline constexpr bool CfgDefaultRenderAllEffects = true;
+
+    // Radio defaults: off, comfortable background level, first station in
+    // Data/Local/RadioStations.ini.
+    inline constexpr bool CfgDefaultRadioEnabled = false;
+    inline constexpr int  CfgDefaultRadioVolume = 30;
+    inline constexpr int  CfgDefaultRadioStationIndex = 0;
 }
 
 namespace CfgLimits
@@ -126,6 +139,10 @@ namespace CfgLimits
     inline constexpr int MaxVolumeLevel = 10;
     inline constexpr int MaxRenderLevel = 5;
 
+    // Radio volume slider: 0..100 (its own scale, finer than the 0..10 game
+    // sliders, because the radio is a continuous background stream).
+    inline constexpr int MaxRadioVolume = 100;
+
     inline int ClampVolumeLevel(int level)
     {
         return level < 0 ? 0 : (level > MaxVolumeLevel ? MaxVolumeLevel : level);
@@ -134,5 +151,10 @@ namespace CfgLimits
     inline int ClampRenderLevel(int level)
     {
         return level < 0 ? 0 : (level > MaxRenderLevel ? MaxRenderLevel : level);
+    }
+
+    inline int ClampRadioVolume(int level)
+    {
+        return level < 0 ? 0 : (level > MaxRadioVolume ? MaxRadioVolume : level);
     }
 }
