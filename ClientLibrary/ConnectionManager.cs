@@ -127,6 +127,15 @@ public unsafe partial class ConnectionManager
     {
         var tcpClient = new TcpClient(host, port);
 
+        // Disable Nagle's algorithm. TcpClient defaults to NoDelay=false, so
+        // the 87-byte proximity voice frames (20 ms each, C1/F4/20) sent on a
+        // connection that always has unacknowledged game traffic in flight
+        // were delayed and coalesced into bursts by the OS - a major cause of
+        // the "choppy voice" reports. Every packet this client sends is small
+        // and latency-sensitive (inputs, voice), so immediate sends are the
+        // right trade-off; the server listener already runs with NoDelay.
+        tcpClient.NoDelay = true;
+
         ConfigureKeepAlive(tcpClient.Client);
 
         var socketConnection = SocketConnection.Create(tcpClient.Client);
