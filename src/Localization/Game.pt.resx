@@ -1862,7 +1862,7 @@
     <comment>legacy_id=491</comment>
   </data>
   <data name="Your trade has been canceled." xml:space="preserve">
-    <value>Fora da lei — estágio 2</value>
+    <value>Sua negociação foi cancelada.</value>
     <comment>legacy_id=492</comment>
   </data>
   <data name="You cannot trade right now." xml:space="preserve">

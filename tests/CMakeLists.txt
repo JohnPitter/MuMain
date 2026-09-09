@@ -65,3 +65,5 @@ add_subdirectory(options)
 add_subdirectory(muhelper)
 
 add_subdirectory(keyconfig)
+
+add_subdirectory(trade)
