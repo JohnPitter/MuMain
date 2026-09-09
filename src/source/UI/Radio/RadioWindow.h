@@ -26,9 +26,10 @@ namespace SEASON3B
             IMAGE_RADIO_RIGHT = CNewUIMyInventory::IMAGE_INVENTORY_BACK_RIGHT,
             IMAGE_RADIO_BOTTOM = CNewUIMyInventory::IMAGE_INVENTORY_BACK_BOTTOM,
             IMAGE_RADIO_BTN_EXIT = CNewUIMyInventory::IMAGE_INVENTORY_EXIT_BTN,
-            // Shared empty button plate (108x29, 3 stacked frames) used by the
-            // labeled buttons of the other native windows.
-            IMAGE_RADIO_BTN_POWER = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY,
+            // Small native plate (64x29, 3 stacked frames) — the same one the
+            // message boxes use for "Cancelar". The old 108x29 plate read as
+            // a wide slab under the window (owner request: smaller, readable).
+            IMAGE_RADIO_BTN_POWER = CNewUIMessageBoxMng::IMAGE_MSGBOX_BTN_EMPTY_SMALL,
         };
 
         enum eWINDOW_SIZE
@@ -48,8 +49,13 @@ namespace SEASON3B
             CONTENT_WIDTH = WINDOW_WIDTH - 2 * CONTENT_LEFT,
             STATION_LABEL_Y = 56,
             COMBO_Y = 72,
-            COMBO_HEIGHT = 18,
-            COMBO_MAX_VISIBLE = 6,
+            // Options-window combo look: 16px rows, 5 visible rows in the open
+            // list — identical to the Idioma/Fonte combos of NewUIOptionWindow
+            // (same CNewUIComboBox widget; only the old row height/row count
+            // differed). Width stays CONTENT_WIDTH because station names are
+            // far longer than the options window's 148px labels.
+            COMBO_HEIGHT = 16,
+            COMBO_MAX_VISIBLE = 5,
             VOLUME_LABEL_Y = 104,
             VOLUME_TRACK_Y = 122,
             VOLUME_TRACK_WIDTH = 124,
@@ -61,8 +67,11 @@ namespace SEASON3B
             EXIT_BUTTON_X = 13,
             EXIT_BUTTON_WIDTH = 36,
             EXIT_BUTTON_HEIGHT = 29,
-            EXIT_BUTTON_Y = WINDOW_HEIGHT - FRAME_BOTTOM_HEIGHT - 32,
-            POWER_BUTTON_WIDTH = 108,
+            // Footer buttons live INSIDE the bottom frame strip, next to the
+            // bottom border (owner request: "mais perto do fundo"). 8px into
+            // the 45px strip, 8px of clearance below the plates.
+            EXIT_BUTTON_Y = WINDOW_HEIGHT - FRAME_BOTTOM_HEIGHT + 8,
+            POWER_BUTTON_WIDTH = 64,
             POWER_BUTTON_HEIGHT = 29,
             POWER_BUTTON_X = WINDOW_WIDTH - 13 - POWER_BUTTON_WIDTH,
             POWER_BUTTON_Y = EXIT_BUTTON_Y,

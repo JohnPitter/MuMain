@@ -10,6 +10,7 @@
 #include "UI/Legacy/UIControls.h"
 #include "UI/NewUI/NewUICommon.h"
 #include "UI/NewUI/NewUISystem.h"
+#include "UI/Radio/RadioStatusText.h"
 
 using namespace SEASON3B;
 
@@ -316,6 +317,10 @@ namespace SEASON3B
 
         if (!g_pNewUISystem->IsVisible(SEASON3B::INTERFACE_RADIO))
         {
+            // ClosingProcess parity with the Options window: a dropdown left
+            // open while the window hides must not reappear floating over the
+            // world the next time the open list outlives the window.
+            m_StationCombo.Close();
             return true;
         }
 
@@ -466,27 +471,35 @@ namespace SEASON3B
         g_pRenderText->RenderText(m_Pos.x + CONTENT_LEFT + VOLUME_TRACK_WIDTH + 8, m_Pos.y + VOLUME_TRACK_Y + 1,
             volumeValue, 40, LINE_HEIGHT, RT3_SORT_LEFT);
 
-        // Live status line under the controls (same text renderer, no labels).
+        // Live status line under the controls. Same builder as the HUD
+        // marquee — one source of truth for the state wording (tocando /
+        // conectando / offline-reconectando).
         Audio::Radio::RadioEngine::Snapshot status;
         Audio::Radio::GetStatus(status);
-        const wchar_t* state = L"Parada";
-        if (status.state == Audio::Radio::RadioEngine::State::Playing)
+        const wchar_t* station = status.stationName[0] != L'\0' ? status.stationName
+            : Audio::Radio::GetStationName(Audio::Radio::GetSelectedStation());
+
+        UI::Radio::RadioStatusKind kind = UI::Radio::RadioStatusKind::Off;
+        switch (status.state)
         {
-            state = L"Tocando agora:";
-        }
-        else if (status.state == Audio::Radio::RadioEngine::State::Connecting)
-        {
-            state = L"Conectando...";
-        }
-        else if (status.state == Audio::Radio::RadioEngine::State::Reconnecting)
-        {
-            state = L"Offline, reconectando...";
+        case Audio::Radio::RadioEngine::State::Playing:
+            kind = UI::Radio::RadioStatusKind::Playing;
+            break;
+        case Audio::Radio::RadioEngine::State::Connecting:
+            kind = UI::Radio::RadioStatusKind::Connecting;
+            break;
+        case Audio::Radio::RadioEngine::State::Reconnecting:
+            kind = UI::Radio::RadioStatusKind::Reconnecting;
+            break;
+        case Audio::Radio::RadioEngine::State::Off:
+        default:
+            kind = UI::Radio::RadioStatusKind::Off;
+            break;
         }
 
         wchar_t nowLine[256] = {};
-        swprintf_s(nowLine, L"%ls %ls", state,
-            status.nowPlaying[0] != L'\0' ? status.nowPlaying
-                : (status.stationName[0] != L'\0' ? status.stationName : L""));
+        UI::Radio::BuildRadioStatusText(kind, station, status.nowPlaying,
+            nowLine, 256);
         g_pRenderText->SetTextColor(kStatusRed, kStatusGreen, kStatusBlue, 255);
         g_pRenderText->RenderText(m_Pos.x + CONTENT_LEFT, m_Pos.y + NOW_PLAYING_Y,
             nowLine, CONTENT_WIDTH, LINE_HEIGHT * NOW_PLAYING_LINES, RT3_SORT_LEFT_CLIP);
