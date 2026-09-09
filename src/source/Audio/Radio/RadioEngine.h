@@ -81,8 +81,9 @@ namespace Audio::Radio
 
         bool EnsureMixerTrack();
         bool EnsureAudioStream(int channels, int sampleRate);
+        int DestinationBytesPerSecond() const;
+        int PrebufferTargetBytes() const;
         bool ReachedPrebuffer() const;
-        void KickTrackIfDue();
         void DestroyMixerTrack();
 
         mutable std::mutex m_stateMutex;
@@ -111,5 +112,9 @@ namespace Audio::Radio
         // One minimp3 frame of interleaved stereo (1152 * 2 samples max).
         static constexpr int kMaxSamplesPerFrame = 1152 * 2;
         int16_t m_pcmBuffer[kMaxSamplesPerFrame * 2] = {};
+
+        // Underrun telemetry. Worker-thread only (StreamLoop is the single
+        // writer/reader); surfaced through g_ErrorReport lines.
+        int m_underrunCount = 0;
     };
 }

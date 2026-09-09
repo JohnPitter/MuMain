@@ -33,19 +33,35 @@ namespace
     constexpr int kSendTimeoutMs = 10000;
     constexpr int kReceiveTimeoutMs = 15000;
 
-    // Silence between retries while a station is offline.
-    constexpr int kReconnectDelayMs = 10000;
+    // Silence between retries while a station is offline. 5s: fast enough that
+    // a blip on a flaky stream (Bossa Nova Brazil) heals before the owner
+    // notices, slow enough to never hammer a dead server.
+    constexpr int kReconnectDelayMs = 5000;
     constexpr int kRetryPollMs = 100;
 
-    constexpr DWORD kReadChunkBytes = 8192;
+    // WinHTTP delivers whatever the socket has; 16KB reads amortize the loop
+    // overhead without stalling on slow stations.
+    constexpr DWORD kReadChunkBytes = 16 * 1024;
     constexpr std::size_t kMaxHeaderWaitBytes = 32 * 1024;
 
-    // Absorb network jitter: hold this much decoded PCM (in mixer-format
-    // bytes) before the track starts, and stop reading from the socket while
-    // the backlog exceeds the cap (TCP flow control paces the server).
-    constexpr int kPrebufferBytes = 320 * 1024;   // ~0.9s of 44.1kHz stereo S16
+    // Absorb internet jitter: hold this many SECONDS of decoded PCM before
+    // the track starts, and stop reading from the socket while the backlog
+    // exceeds the cap (TCP flow control paces the server). The old fixed
+    // ~0.9s window stuttered ("picotando") on real streams — home Wi-Fi
+    // jitter spikes past a second regularly, so a stream that prebuffers in
+    // exactly one burst has nothing left when the next burst is late. 4s
+    // covers the observed jitter at 128-192 kbps with a tolerable start lag.
+    // Expressed in seconds and converted to BYTES of the mixer's destination
+    // format at runtime (SDL_GetAudioStreamAvailable counts destination
+    // bytes: F32 stereo 48kHz = 384000 B/s, S16 stereo 44.1kHz = 176400 B/s).
+    constexpr float kPrebufferSeconds = 4.f;
     constexpr int kMaxBufferedBytes = 3 * 1024 * 1024;
     constexpr int kCongestionSleepMs = 30;
+
+    // Fallback only: ReachedPrebuffer/KickTrackIfDue run after the audio
+    // stream exists, which itself requires a live mixer format. Kept so a
+    // format probe failure degrades to a sane window instead of zero.
+    constexpr int kFallbackPrebufferBytes = 1024 * 1024;
 
     const wchar_t* const kUserAgent = L"LuxViewRadio/1.0";
     const wchar_t* const kIcyMetaHeader = L"Icy-MetaData: 1\r\n";
@@ -246,25 +262,30 @@ namespace Audio::Radio
         return true;
     }
 
-    bool RadioEngine::ReachedPrebuffer() const
+    int RadioEngine::DestinationBytesPerSecond() const
     {
-        return m_stream != nullptr && SDL_GetAudioStreamAvailable(m_stream) >= kPrebufferBytes;
+        MIX_Mixer* mixer = AudioPlayer::GetMixer();
+        SDL_AudioSpec spec {};
+        if (mixer == nullptr || !MIX_GetMixerFormat(mixer, &spec))
+        {
+            return 0;
+        }
+        return SDL_AUDIO_BYTESIZE(spec.format) * spec.channels * spec.freq;
     }
 
-    void RadioEngine::KickTrackIfDue()
+    int RadioEngine::PrebufferTargetBytes() const
     {
-        if (m_track == nullptr || m_stream == nullptr)
+        const int bytesPerSecond = DestinationBytesPerSecond();
+        if (bytesPerSecond <= 0)
         {
-            return;
+            return kFallbackPrebufferBytes;
         }
+        return static_cast<int>(static_cast<float>(bytesPerSecond) * kPrebufferSeconds);
+    }
 
-        // Underrun recovery: the stream went dry and the mixer stopped the
-        // track; once a little audio is queued again, start pulling.
-        const int buffered = SDL_GetAudioStreamAvailable(m_stream);
-        if (!MIX_TrackPlaying(m_track) && buffered >= kPrebufferBytes / 4)
-        {
-            MIX_PlayTrack(m_track, 0);
-        }
+    bool RadioEngine::ReachedPrebuffer() const
+    {
+        return m_stream != nullptr && SDL_GetAudioStreamAvailable(m_stream) >= PrebufferTargetBytes();
     }
 
     void RadioEngine::DestroyMixerTrack()
@@ -455,6 +476,7 @@ namespace Audio::Radio
         int bytesUntilMeta = 0;
         bool headerDone = false;
         bool started = false;
+        bool awaitingReprime = false;
 
         while (generation == m_generation.load(std::memory_order_acquire))
         {
@@ -585,12 +607,46 @@ namespace Audio::Radio
                         MIX_PlayTrack(m_track, 0);
                     }
                     PublishState(State::Playing);
-                    g_ErrorReport.Write(L"[radio] playing\r\n");
+                    g_ErrorReport.Write(L"[radio] playing (%.1fs prebuffered)\r\n",
+                        kPrebufferSeconds);
                 }
             }
             else
             {
-                KickTrackIfDue();
+                // Underrun recovery with a full re-prime: when the stream runs
+                // dry the mixer stops the track. The old logic re-kicked after
+                // a quarter of the (tiny) prebuffer, so it started again with
+                // ~0.2s of slack and stuttered in a start/stop ping-pong. Now:
+                //   - buffer still substantial  -> resume right away;
+                //   - buffer essentially drained -> count the underrun, wait
+                //     for the FULL prebuffer window again, then resume.
+                const int buffered = m_stream != nullptr
+                    ? SDL_GetAudioStreamAvailable(m_stream) : 0;
+                if (!MIX_TrackPlaying(m_track) && m_track != nullptr)
+                {
+                    if (!awaitingReprime)
+                    {
+                        if (buffered <= PrebufferTargetBytes() / 16)
+                        {
+                            ++m_underrunCount;
+                            awaitingReprime = true;
+                            g_ErrorReport.Write(
+                                L"[radio] underrun #%d (buffered %d B) — re-priming %.0fs before resume\r\n",
+                                m_underrunCount, buffered, kPrebufferSeconds);
+                        }
+                        else
+                        {
+                            MIX_PlayTrack(m_track, 0);
+                        }
+                    }
+                    else if (ReachedPrebuffer())
+                    {
+                        awaitingReprime = false;
+                        MIX_PlayTrack(m_track, 0);
+                        g_ErrorReport.Write(L"[radio] resumed after underrun #%d\r\n",
+                            m_underrunCount);
+                    }
+                }
 
                 // Back off while the backlog exceeds the cap: don't read more
                 // from the socket until the mixer drains below it.
