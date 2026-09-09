@@ -56,6 +56,8 @@ add_subdirectory(events)
 
 add_subdirectory(changelog)
 
+add_subdirectory(maintenance)
+
 add_subdirectory(wedding)
 
 add_subdirectory(editor)

@@ -86,6 +86,7 @@ CNewUISystem::CNewUISystem()
     m_pNewTitleWindow = nullptr;
     m_pNewEventScheduleWindow = nullptr;
     m_pNewChangelogWindow = nullptr;
+    m_pNewMaintenanceWindow = nullptr;
     m_pNewItemExplanationWindow = nullptr;
     m_pNewSetItemExplanation = nullptr;
     m_pNewQuickCommandWindow = nullptr;
@@ -383,6 +384,13 @@ bool CNewUISystem::LoadMainSceneInterface()
         return false;
     }
 
+    m_pNewMaintenanceWindow = new CNewUIMaintenanceWindow;
+    // The maintenance notice is a small centered window (260 px wide).
+    if (m_pNewMaintenanceWindow->Create(m_pNewUIMng, (640 - CNewUIMaintenanceWindow::kWindowWidth) / 2, (480 - CNewUIMaintenanceWindow::kWindowHeight) / 2) == false)
+    {
+        return false;
+    }
+
     m_pNewHelpWindow = new CNewUIHelpWindow;
     if (m_pNewHelpWindow->Create(m_pNewUIMng, 0, 0) == false)
     {
@@ -577,6 +585,7 @@ void CNewUISystem::UnloadMainSceneInterface()
     SAFE_DELETE(m_pNewTitleWindow);
     SAFE_DELETE(m_pNewEventScheduleWindow);
     SAFE_DELETE(m_pNewChangelogWindow);
+    SAFE_DELETE(m_pNewMaintenanceWindow);
     SAFE_DELETE(m_pNewItemExplanationWindow);
     SAFE_DELETE(m_pNewSetItemExplanation);
     SAFE_DELETE(m_pNewQuickCommandWindow);
@@ -2430,6 +2439,11 @@ CNewUIEventScheduleWindow* CNewUISystem::GetUI_NewEventScheduleWindow() const
 CNewUIChangelogWindow* CNewUISystem::GetUI_NewChangelogWindow() const
 {
     return m_pNewChangelogWindow;
+}
+
+CNewUIMaintenanceWindow* CNewUISystem::GetUI_NewMaintenanceWindow() const
+{
+    return m_pNewMaintenanceWindow;
 }
 
 CNewUITitleWindow* CNewUISystem::GetUI_NewTitleWindow() const

@@ -13947,6 +13947,12 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
             // response; the server routes it by the WeddingRequest state.
             ReceiveWeddingRequest(ReceiveBuffer, Size);
             break;
+        case 0xEF:
+            // LuxView maintenance notice: the login push carries the active
+            // "Manutenção" message; the window shows once per login while the
+            // notice is on.
+            ReceiveMaintenance(ReceiveBuffer, Size);
+            break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer, Size);
             break;
