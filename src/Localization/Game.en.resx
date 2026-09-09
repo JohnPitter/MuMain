@@ -13145,6 +13145,7 @@
   <data name="AutoBattlerNoTime" xml:space="preserve"><value>No Auto Battler time left today.</value></data>
   <data name="AutoBattlerInventoryFull" xml:space="preserve"><value>Inventory full. Auto Battler stopped.</value></data>
   <data name="AutoBattlerSafeZone" xml:space="preserve"><value>You are in the safe zone. Leave the city to start the Auto Battler.</value></data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>You are in the safe zone. Leave the city to start the MU Helper.</value></data>
   <data name="AutoBattlerHint" xml:space="preserve"><value>Hunts every monster ahead. Stops on full inventory or quota. 1h/day, 12h VIP.</value></data>
   <data name="AutoBattlerCurrentMap" xml:space="preserve"><value>You are in: %ls</value></data>
   <data name="AutoBattlerStatusOn" xml:space="preserve"><value>Active</value></data>

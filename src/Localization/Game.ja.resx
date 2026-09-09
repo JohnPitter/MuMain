@@ -11010,6 +11010,7 @@
   <data name="AutoBattlerSafeZone" xml:space="preserve">
     <value>セーフゾーンにいます。街を出てオートバトルを開始してください。</value>
   </data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>セーフゾーンにいます。街を出てからMUヘルパーを開始してください。</value></data>
   <data name="AutoBattlerStart" xml:space="preserve">
     <value>開始</value>
   </data>
