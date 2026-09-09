@@ -12924,6 +12924,7 @@
   <data name="AutoBattlerSafeZone" xml:space="preserve">
     <value>Kamu di zona aman. Keluar kota untuk memulai Auto Battler.</value>
   </data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>Anda berada di zona aman. Keluar dari kota untuk memulai MU Helper.</value></data>
   <data name="AutoBattlerStart" xml:space="preserve">
     <value>Mulai</value>
   </data>

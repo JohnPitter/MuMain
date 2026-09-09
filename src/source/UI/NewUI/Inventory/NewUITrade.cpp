@@ -277,7 +277,14 @@ void CNewUITrade::RenderText()
     int nLevel;
     DWORD dwColor;
     ConvertYourLevel(nLevel, dwColor);
-    if (nLevel == 400)
+    // The real level travels in the packet (PTRADE::Level, little-endian). Older
+    // servers that never wrote it leave it at 0 -- fall back to the legacy tier
+    // estimate in that case so the window is never blank.
+    if (m_nYourLevel > 0)
+    {
+        mu_swprintf(szTemp, L"%d", m_nYourLevel);
+    }
+    else if (nLevel == 400)
     {
         mu_swprintf(szTemp, L"%d", nLevel);
     }

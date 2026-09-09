@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameLogic/Combat/SkillExecution.h"
+#include "I18N/All.h"
 
 #include <thread>
 #include <atomic>
@@ -187,8 +188,17 @@ namespace MUHelper
 
     void CMuHelper::TriggerStart()
     {
-        if (!Hero->SafeZone)
-            SocketClient->ToGameServer()->SendMuHelperStatusChangeRequest(0);
+        if (Hero->SafeZone)
+        {
+            // The helper never runs inside towns/safe zones, so the request
+            // is suppressed -- but the silent no-op made the strip's play
+            // button look dead: it stayed "play" forever with no feedback.
+            // Tell the player why nothing happened.
+            g_pSystemLogBox->AddText(I18N::Game::MuHelperSafeZone, SEASON3B::TYPE_SYSTEM_MESSAGE);
+            return;
+        }
+
+        SocketClient->ToGameServer()->SendMuHelperStatusChangeRequest(0);
     }
 
     void CMuHelper::TriggerStop()

@@ -5,6 +5,7 @@
 
 #include "Dotnet/Connection.h"
 #include "Network/Server/CSMapServer.h"
+#include "UI/NewUI/Inventory/TradeAnswerLayout.h"
 #include <span>
 #include <typeinfo>
 #include <cstddef>
@@ -468,6 +469,13 @@ typedef struct {
 ///////////////////////////////////////////////////////////////////////////////
 // trade
 ///////////////////////////////////////////////////////////////////////////////
+
+// C1 0x37 trade request answer. Must match the OpenMU 20-byte TradeRequestAnswer:
+// SubCode = Accepted byte (0 = rejected/canceled, 1 = accepted, 2 = cannot trade),
+// ID at offset 4, Level (total level, little-endian) at 14-15, GuildKey at 16-19.
+// The level is carried by the two formerly reserved bytes, so the packet size of
+// 20 is unchanged; servers which don't write it may leave garbage here, so treat
+// 0 as "unknown" in the UI.
 typedef struct {
     PBMSG_HEADER Header;
     BYTE         SubCode;
@@ -475,6 +483,20 @@ typedef struct {
     WORD         Level;
     DWORD        GuildKey;
 } PTRADE, * LPPTRADE;
+
+// Pin the native reader to the wire contract of the OpenMU C1 0x37 answer and
+// to the pure parser in TradeAnswerLayout.h (unit tested in tests/trade). The
+// level rides little-endian in the two reserved bytes at 14-15.
+static_assert(sizeof(PTRADE) == trade_answer::kPacketBytes,
+    "PTRADE must match the OpenMU TradeRequestAnswer packet size");
+static_assert(offsetof(PTRADE, SubCode) == trade_answer::kAcceptedOffset,
+    "PTRADE::SubCode must read the Accepted byte");
+static_assert(offsetof(PTRADE, ID) == trade_answer::kNameOffset,
+    "PTRADE::ID must read the partner name");
+static_assert(offsetof(PTRADE, Level) == trade_answer::kLevelOffset,
+    "PTRADE::Level must read the little-endian level bytes");
+static_assert(offsetof(PTRADE, GuildKey) == trade_answer::kGuildOffset,
+    "PTRADE::GuildKey must read the guild id");
 
 ///////////////////////////////////////////////////////////////////////////////
 // game

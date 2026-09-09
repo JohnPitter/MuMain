@@ -12924,6 +12924,7 @@
   <data name="AutoBattlerSafeZone" xml:space="preserve">
     <value>Ви в безпечній зоні. Залиште місто, щоб почати автобій.</value>
   </data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>Ви в безпечній зоні. Вийдіть з міста, щоб запустити MU Helper.</value></data>
   <data name="AutoBattlerStart" xml:space="preserve">
     <value>Старт</value>
   </data>

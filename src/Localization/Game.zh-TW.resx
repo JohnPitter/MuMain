@@ -12924,6 +12924,7 @@
   <data name="AutoBattlerSafeZone" xml:space="preserve">
     <value>你在安全區。離開城市後才能開始自動戰鬥。</value>
   </data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>您在安全區域內。離開城鎮以啟動MU Helper。</value></data>
   <data name="AutoBattlerStart" xml:space="preserve">
     <value>開始</value>
   </data>

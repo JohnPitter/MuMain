@@ -69,3 +69,10 @@ add_subdirectory(muhelper)
 add_subdirectory(keyconfig)
 
 add_subdirectory(radio)
+
+add_subdirectory(trade)
+
+add_subdirectory(wire)
+
+add_subdirectory(voice)
+

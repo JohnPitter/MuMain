@@ -41,6 +41,7 @@
 #include "GameLogic/Pets/w_PetProcess.h"
 #include "Network/Server/CSMapServer.h"
 #include "Network/Server/KeyConfiguration.h"
+#include "Network/Server/CalcItemLength.h"
 #include "GameLogic/NPCs/npcGateSwitch.h"
 #include "GameLogic/Items/CComGem.h"
 #include "GameLogic/Items/InventoryUtils.h"
@@ -1926,39 +1927,11 @@ void ReceiveDeleteInventory(const BYTE* ReceiveBuffer)
     g_ConsoleDebug->Write(MCD_RECEIVE, L"0x28 [ReceiveDeleteInventory(%d %d)]", Data->SubCode, Data->Value);
 }
 
-int CalcItemLength(std::span<const BYTE> ReceiveBuffer)
-{
-    auto Data = safe_cast<PITEM_EXTENDED_BASE>(ReceiveBuffer);
-    int size = 5;
-    if (Data->OptionFlags & ItemOptionFlags::HasOption)
-    {
-        size++;
-    }
-
-    if (Data->OptionFlags & ItemOptionFlags::HasExcellent)
-    {
-        size++;
-    }
-
-    if (Data->OptionFlags & ItemOptionFlags::HasAncient)
-    {
-        size++;
-    }
-
-    if (Data->OptionFlags & ItemOptionFlags::HasHarmony)
-    {
-        size++;
-    }
-
-    if (Data->OptionFlags & ItemOptionFlags::HasSockets)
-    {
-        auto socketCount = ReceiveBuffer[size] & 0xF;
-        size++;
-        size += socketCount;
-    }
-
-    return size;
-}
+// CalcItemLength moved to Network/Server/CalcItemLength.h: the mid-game
+// full-inventory resync (F3 0x10) parses every item of the reply with it, so
+// the reads are now clamped to the span (the old version dereferenced the
+// base-struct cast unchecked and read the socket byte past the buffer end).
+using Network::Wire::CalcItemLength;
 
 BOOL ReceiveInventoryExtended(std::span<const BYTE> ReceiveBuffer)
 {
@@ -6478,6 +6451,16 @@ void ReceiveGetItem(std::span<const BYTE> ReceiveBuffer)
     
     if (Data->Value == NOT_GET_ITEM)
     {
+        // OpenMU's ItemPickUpRequestFailed (C3 0x22) reuses this wire value
+        // for its "General" fail reason -- the pickup did not happen and the
+        // ground item stays. The pickup marker MUST be released here: every
+        // pickup send (manual clicks, the collector pets and the MU Helper's
+        // ObtainItem) is gated on SendGetItem == -1, and the server now
+        // refuses pickups routinely (ground-item owner protection, full
+        // inventory pre-check), so one refusal used to jam the whole
+        // pipeline -- the Auto Battler would fight but never loot again
+        // until the next map load.
+        SendGetItem = -1;
     }
     else
     {
@@ -6486,7 +6469,10 @@ void ReceiveGetItem(std::span<const BYTE> ReceiveBuffer)
             auto Data2 = safe_cast<PRECEIVE_INVENTORY_MONEY>(ReceiveBuffer);
             if (Data2 == nullptr)
             {
+                // Truncated zen reply: the tail's marker release is never
+                // reached, so release here before returning.
                 assert(false);
+                SendGetItem = -1;
                 return;
             }
 
@@ -6511,7 +6497,12 @@ void ReceiveGetItem(std::span<const BYTE> ReceiveBuffer)
             {
                 if (safe_cast<PRECEIVE_GET_ITEM_EXTENDED>(ReceiveBuffer) == nullptr)
                 {
+                    // Truncated extended block (e.g. the C3 0x22 pickup-fail
+                    // reason byte reaching a server build that pads it past
+                    // the 4-byte minimum): nothing was obtained, so release
+                    // the pickup marker instead of returning with it held.
                     assert(false);
+                    SendGetItem = -1;
                     return;
                 }
 

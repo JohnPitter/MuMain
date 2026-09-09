@@ -9,6 +9,8 @@
 #include <cmath>
 #include <cstdint>
 
+#include "Audio/VoiceDsp.h"
+
 #include "Core/Utilities/Log/ErrorReport.h"
 #include "Dotnet/Connection.h"
 #include "Engine/Object/ZzzCharacter.h"
@@ -23,14 +25,28 @@ namespace
     constexpr int kStatePacketBytes = kPacketHeaderBytes + 1;
     constexpr int kIncomingPayloadBytes = kServerSenderBytes + VoiceChat::EncodedFrameBytes;
     constexpr int kVoiceActivityThreshold = 300;
-    constexpr int kMaxQueuedPlaybackFrames = 12;
+    // Playback jitter buffer. 20 ms voice frames arrive over the shared game
+    // TCP connection with variable gaps (network jitter, Nagle residue, game
+    // traffic head-of-line). Playing each frame the instant it arrives made
+    // the output underrun between frames — the "stuttering/choppy" complaint.
+    // The stream therefore stays paused until kPrebufferFrames are queued and
+    // re-primes after every underrun, trading ~100 ms of latency for
+    // gap-free playback.
+    constexpr int kPrebufferFrames = 5;
+    // Hard cap (500 ms): beyond this the arrival rate truly exceeds the
+    // playback rate and dropping the incoming frame is the only option.
+    constexpr int kMaxQueuedPlaybackFrames = 25;
     constexpr Uint64 kSpeakerIndicatorDurationMs = 350;
     constexpr Uint64 kVoiceReceiptIntervalMs = 1000;
     constexpr std::size_t kObjectIdCount = static_cast<std::size_t>(UINT16_MAX) + 1;
 
     // Fixed playback boost so speech is audible over game sound/music. Not
     // user-configurable yet — kept as a simple constant to minimize startup
-    // surface area.
+    // surface area. Pairs with VoiceDsp's capture gain: quiet microphones end
+    // up 6.25x (+16 dB) louder end to end, and capture output is capped at
+    // 32767 / 2.5 so everything at or below the capture ceiling survives this
+    // gain without clipping (raw-hot speakers pass through and may clip mildly
+    // at their peaks — they are already loud).
     constexpr float kPlaybackGain = 2.5f;
 
     constexpr std::array<int, 89> kStepTable = {
@@ -61,6 +77,11 @@ namespace
         SDL_AudioStream* Playback = nullptr;
         bool MicrophoneEnabled = false;
         bool ListeningEnabled = true;
+        // Jitter buffer gate: while true the playback device stays paused and
+        // incoming frames accumulate until the prebuffer target is reached.
+        // Enters priming again whenever the queue drains completely
+        // (underrun), so a jitter gap never reaches the speaker as silence.
+        bool Priming = true;
     };
 
     VoiceState g_voice;
@@ -166,10 +187,7 @@ namespace
 
     bool ContainsVoiceActivity(const std::array<int16_t, VoiceChat::SamplesPerFrame>& pcm)
     {
-        int64_t total = 0;
-        for (const int16_t sample : pcm)
-            total += std::abs(static_cast<int>(sample));
-        return total / VoiceChat::SamplesPerFrame >= kVoiceActivityThreshold;
+        return VoiceDsp::HasVoiceActivity(pcm.data(), VoiceChat::SamplesPerFrame, kVoiceActivityThreshold);
     }
 
     bool OpenCapture()
@@ -192,12 +210,15 @@ namespace
             return true;
 
         const SDL_AudioSpec spec = CreateVoiceSpec();
+        // SDL_OpenAudioDeviceStream hands the logical device back paused; it
+        // is deliberately left that way here. ReceiveFrame resumes playback
+        // only once the jitter buffer holds kPrebufferFrames.
         g_voice.Playback = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, nullptr, nullptr);
         if (!g_voice.Playback)
             return false;
 
+        g_voice.Priming = true;
         SDL_SetAudioStreamGain(g_voice.Playback, kPlaybackGain);
-        SDL_ResumeAudioStreamDevice(g_voice.Playback);
         return true;
     }
 
@@ -271,6 +292,11 @@ namespace
             std::array<int16_t, VoiceChat::SamplesPerFrame> pcm {};
             if (SDL_GetAudioStreamData(g_voice.Capture, pcm.data(), kPcmBytesPerFrame) != kPcmBytesPerFrame)
                 return;
+
+            // Boost before the VAD gate and the encoder: a quiet microphone
+            // must not be gated off nor delivered at its anemic raw level
+            // (the "voice is way too quiet" complaint).
+            VoiceDsp::ApplyCaptureGain(pcm.data(), VoiceChat::SamplesPerFrame);
             if (!ContainsVoiceActivity(pcm))
                 continue;
 
@@ -369,13 +395,34 @@ namespace VoiceChat
             return;
         if (!OpenPlayback())
             return;
-        if (SDL_GetAudioStreamQueued(g_voice.Playback) >= kMaxQueuedPlaybackFrames * kPcmBytesPerFrame)
+
+        // Bytes queued on the stream's input side, in our capture format
+        // (S16LE 8 kHz mono): 320 bytes per 20 ms frame.
+        const int queued = SDL_GetAudioStreamQueued(g_voice.Playback);
+        if (queued >= kMaxQueuedPlaybackFrames * kPcmBytesPerFrame)
             return;
+
+        // Underrun: the device consumed every queued byte, so the speaker
+        // just heard silence. Pause and re-prime so the next jitter gap is
+        // absorbed by the prebuffer instead of reaching the listener.
+        if (!g_voice.Priming && queued <= 0)
+        {
+            g_voice.Priming = true;
+            SDL_PauseAudioStreamDevice(g_voice.Playback);
+        }
 
         std::array<int16_t, SamplesPerFrame> pcm {};
         const unsigned char* frame = payload + kServerSenderBytes;
         if (!DecodeFrame(frame, pcm))
             return;
         SDL_PutAudioStreamData(g_voice.Playback, pcm.data(), kPcmBytesPerFrame);
+
+        // Prebuffer satisfied: let the device start (or resume) with enough
+        // cushion to ride out the next arrival gap.
+        if (g_voice.Priming && SDL_GetAudioStreamQueued(g_voice.Playback) >= kPrebufferFrames * kPcmBytesPerFrame)
+        {
+            g_voice.Priming = false;
+            SDL_ResumeAudioStreamDevice(g_voice.Playback);
+        }
     }
 }

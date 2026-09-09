@@ -12924,6 +12924,7 @@
   <data name="AutoBattlerSafeZone" xml:space="preserve">
     <value>Nasa safe zone ka. Umalis sa lungsod para simulan ang Auto Battler.</value>
   </data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>Nasa safe zone ka. Umalis sa lungsod para simulan ang MU Helper.</value></data>
   <data name="AutoBattlerStart" xml:space="preserve">
     <value>Simulan</value>
   </data>

@@ -11,6 +11,7 @@
 #include "Render/Core/RenderConfig.h"
 #include "Render/Core/GlobalUBO.h"
 #include "Core/Utilities/Log/ErrorReport.h"
+#include "Audio/VolumeCurve.h"
 
 //=============================================================================
 // Character Selection State Implementation
@@ -184,20 +185,11 @@ BOOL CheckOptionMouseClick(int iOptionPos_y, BOOL bPlayClickSound)
 
 void SetEffectVolumeLevel(int level)
 {
-    if (level > 9)
-        level = 9;
-    if (level < 0)
-        level = 0;
-
-    if (level == 0)
-    {
-        SetMasterVolume(-10000);
-    }
-    else
-    {
-        long vol = -2000 * log10(10.f / float(level));
-        SetMasterVolume(vol);
-    }
+    // Pure 0..10 slider level -> DirectSound centibels (see VolumeCurve.h).
+    // Before 2026-09 this clamped to the legacy 0..9 curve domain, which made
+    // the slider's 100% play 0.9 dB below full — incoherent with the music
+    // slider's 10 -> 1.0 gain.
+    SetMasterVolume(VolumeCurve::EffectLevelToDsVolume(level));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

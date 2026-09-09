@@ -12925,6 +12925,7 @@
   <data name="AutoBattlerSafeZone" xml:space="preserve">
     <value>Du bist in der Sicherheitszone. Verlasse die Stadt, um den Auto Battler zu starten.</value>
   </data>
+  <data name="MuHelperSafeZone" xml:space="preserve"><value>Du bist in einer sicheren Zone. Verlasse die Stadt, um den MU Helper zu starten.</value></data>
   <data name="AutoBattlerStart" xml:space="preserve">
     <value>Start</value>
   </data>
