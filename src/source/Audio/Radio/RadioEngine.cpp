@@ -65,20 +65,16 @@ namespace
     constexpr int kMaxBufferedBytes = 12 * 1024 * 1024;
     constexpr int kCongestionSleepMs = 30;
 
-    // Underrun recovery (rodada 2): after the mixer track drains dry, resume
-    // once half the prebuffer window has re-accumulated. Round 1 demanded the
-    // FULL window again — on a stream that trickles slower than realtime that
-    // wait can stretch to minutes of silence while the UI still said
-    // "Playing". Half the window is still 2s of slack (the round-1 ping-pong
-    // came from resuming at 1/16th), and the safety timeout below bounds the
-    // wait even when data barely moves.
-    constexpr float kReprimeFraction = 0.5f;
-
-    // Safety valve: if a re-prime hasn't completed after this long but SOME
-    // audio is queued, resume anyway — playing with thin slack beats silence.
-    // Three consecutive timeout-resumes mean the connection feeds slower than
-    // realtime even though the socket is open: drop it and let ThreadMain's
-    // retry open a fresh connection.
+    // Underrun recovery (rodada 2, measured): after the mixer track drains
+    // dry, re-prime to the FULL window again (round 1's target was right —
+    // the harness showed a half-window resume keeps the bank at ~0.5s, which
+    // the station's sub-second delivery blips kill 3x more often) but with a
+    // SAFETY TIMEOUT. Round 1's real fault was that the full-window wait had
+    // NO timeout: a stream trickling slower than realtime stretched it to
+    // ~28s of silence while the UI still said "Playing" — the owner's
+    // "parou do nada". Measured (before_bossa.csv): delivery blips of 0.5-1s
+    // where the server sends NOTHING; the bank must be as deep as possible
+    // at every blip.
     constexpr int kReprimeTimeoutMs = 5000;
     constexpr int kMaxTimeoutResumesBeforeReconnect = 3;
 
@@ -775,34 +771,38 @@ namespace Audio::Radio
                 if (!MIX_TrackPlaying(m_track) && m_track != nullptr)
                 {
                     const auto now = std::chrono::steady_clock::now();
-                    if (!awaitingReprime)
+                    // Instant resume only with a HEALTHY bank (~1s). Round 1
+                    // re-kicked at prebuffer/16 (~0.25s): the station's
+                    // sub-second delivery blips then produced the thin-kick
+                    // machine-gun measured in before_bossa.csv (201 track
+                    // re-kicks in 10 minutes). Below the floor it is a real
+                    // underrun: count it, show Buffering, re-prime deeply.
+                    if (buffered > PrebufferTargetBytes() / 4)
                     {
-                        if (buffered <= PrebufferTargetBytes() / 16)
-                        {
-                            ++m_underrunCount;
-                            awaitingReprime = true;
-                            underrunSince = now;
-                            PublishState(State::Buffering);
-                            g_ErrorReport.Write(
-                                L"[radio] underrun #%d (buffered %d B) — re-priming %.1fs before resume\r\n",
-                                m_underrunCount, buffered,
-                                kPrebufferSeconds * kReprimeFraction);
-                        }
-                        else if (KickTrack())
+                        if (KickTrack())
                         {
                             std::lock_guard lock(m_stateMutex);
                             ++m_diag.resumeCount;
                         }
                     }
+                    else if (!awaitingReprime)
+                    {
+                        ++m_underrunCount;
+                        awaitingReprime = true;
+                        underrunSince = now;
+                        PublishState(State::Buffering);
+                        g_ErrorReport.Write(
+                            L"[radio] underrun #%d (buffered %d B) — re-priming %.0fs before resume\r\n",
+                            m_underrunCount, buffered, kPrebufferSeconds);
+                    }
                     else
                     {
-                        // Re-prime to HALF the start window (still 2s of
-                        // slack) so recovery is quick, with a safety timeout:
-                        // a stream trickling slower than realtime would never
-                        // rebuild a full window — after 5s with SOMETHING
-                        // queued, play rather than stay silent.
-                        const int reprimeTarget =
-                            static_cast<int>(PrebufferTargetBytes() * kReprimeFraction);
+                        // Re-prime to the FULL window; the timeout below is
+                        // the safety valve for streams that deliver slower
+                        // than realtime (measured: Bossa Nova Brazil sends
+                        // NOTHING in 65% of 250ms windows, with 0.5-1s
+                        // blips — the client can only bank through them).
+                        const int reprimeTarget = PrebufferTargetBytes();
                         const bool primed = buffered >= reprimeTarget;
                         const auto waitedMs = std::chrono::duration_cast<std::chrono::milliseconds>(
                             now - underrunSince).count();
