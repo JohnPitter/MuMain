@@ -3,3 +3,9 @@ mu_add_test(
     SOURCES
         test_calc_item_length.cpp
 )
+
+mu_add_test(
+    NAME test_delete_item_viewport
+    SOURCES
+        test_delete_item_viewport.cpp
+)

@@ -896,6 +896,15 @@ int CNewUIMyInventory::FindEmptySlot(ITEM* pItem) const
         return -1;
     }
 
+    // The ground-item struct of a stale/reused drop slot can carry a garbage
+    // type; ItemAttribute is a heap table, so an unchecked index here is the
+    // same class of main-thread UB the pickup path already had with
+    // CalcItemLength. Report "no space" instead of indexing out of bounds.
+    if (pItem->Type < 0 || pItem->Type >= MAX_ITEM)
+    {
+        return -1;
+    }
+
     const ITEM_ATTRIBUTE* pItemAttr = &ItemAttribute[pItem->Type];
     if (m_pNewInventoryCtrl)
     {
@@ -924,6 +933,13 @@ int CNewUIMyInventory::FindEmptySlotIncludingExtensions(IN int cx, IN int cy) co
 int CNewUIMyInventory::FindEmptySlotIncludingExtensions(ITEM* pItem) const
 {
     if (pItem == nullptr)
+    {
+        return -1;
+    }
+
+    // Bounds guard mirrors FindEmptySlot(ITEM*): never index ItemAttribute
+    // with a type outside the table (see the comment there).
+    if (pItem->Type < 0 || pItem->Type >= MAX_ITEM)
     {
         return -1;
     }

@@ -42,6 +42,7 @@
 #include "Network/Server/CSMapServer.h"
 #include "Network/Server/KeyConfiguration.h"
 #include "Network/Server/CalcItemLength.h"
+#include "Network/Server/DeleteItemViewport.h"
 #include "GameLogic/NPCs/npcGateSwitch.h"
 #include "GameLogic/Items/CComGem.h"
 #include "GameLogic/Items/InventoryUtils.h"
@@ -6407,20 +6408,25 @@ void ReceiveCreateItemViewportExtended(std::span<const BYTE> ReceiveBuffer)
     g_ConsoleDebug->Write(MCD_RECEIVE, L"0x20 [ReceiveCreateItemViewport]");
 }
 
-void ReceiveDeleteItemViewport(const BYTE* ReceiveBuffer)
+void ReceiveDeleteItemViewport(std::span<const BYTE> ReceiveBuffer)
 {
-    auto Data = (LPPWHEADER_DEFAULT_WORD)ReceiveBuffer;
-    int Offset = sizeof(PWHEADER_DEFAULT_WORD);
-    for (int i = 0; i < Data->Value; i++)
+    // Parsing moved to Network/Server/DeleteItemViewport.h (pure, bounds-checked).
+    // This packet ends every pickup-refusal cycle (owner protection / drop expiry),
+    // so it runs hot; the old handler walked ItemCount entries off a raw pointer
+    // with no length check and clamped out-of-range ids to slot 0, deleting an
+    // innocent ground item and desyncing the MU Helper's tracked drops.
+    int skipped = 0;
+    Network::Wire::ParseDeleteItemViewport(
+        ReceiveBuffer, MAX_ITEMS,
+        [](int Key)
+        {
+            Items[Key].Object.Live = false;
+            MUHelper::g_MuHelper.DeleteItem(Key);
+        },
+        &skipped);
+    if (skipped > 0)
     {
-        auto Data2 = (LPPDELETE_CHARACTER)(ReceiveBuffer + Offset);
-        int Key = ((int)(Data2->KeyH) << 8) + Data2->KeyL;
-        if (Key < 0 || Key >= MAX_ITEMS)
-            Key = 0;
-        Items[Key].Object.Live = false;
-        Offset += sizeof(PDELETE_CHARACTER);
-
-        MUHelper::g_MuHelper.DeleteItem(Key);
+        g_ConsoleDebug->Write(MCD_ERROR, L"0x21 [ReceiveDeleteItemViewport skipped %d out-of-range id(s)]", skipped);
     }
 }
 
@@ -14134,7 +14140,7 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
         ReceiveCreateMoney(received_span);
         break;
     case 0x21://delete item
-        ReceiveDeleteItemViewport(ReceiveBuffer);
+        ReceiveDeleteItemViewport(received_span);
         break;
     case 0x22://get item
         ReceiveGetItem(received_span);
