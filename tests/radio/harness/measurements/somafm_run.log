@@ -1,0 +1,20 @@
+[harness] mixer format: 48000 Hz, 2 ch, format 33056
+[radio] playing (4.0s prebuffered, 1437696 B queued)
+
+[radio] underrun #1 (buffered 27648 B) 
+[radio] resumed after underrun #1 on timeout (26783 ms, 110592 B) 
+[radio] underrun #2 (buffered 27648 B) 
+[radio] resumed after underrun #2 on timeout (25293 ms, 110592 B) 
+[radio] underrun #3 (buffered 27648 B) 
+
+[harness] ===== SUMMARY (10 min, https://ice1.somafm.com/groovesalad-128-mp3) =====
+[harness] final state: Buffering (nowPlaying: '')
+[harness] underruns: 3 | resumes: 5 | play failures: 0
+[harness] sessions: 1 | stream rebuilds (midstream format change): 0
+[harness] chunk reads: 8290 | last/max chunk stall ms: 0 / 339
+[harness] push gap ms last/max: 0 / 339
+[harness] buffered: 148536 B (~421 ms) | prebuffer target: 1411200 B
+[harness] Playing samples: 2115 of which silent (<250ms buffered): 43
+[harness] VERDICT: FAULTS OBSERVED (see counts above)
+[radio] read loop end: query avail=0 err=0x00002EF1
+

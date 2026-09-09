@@ -1,0 +1,111 @@
+[harness] mixer format: 48000 Hz, 2 ch, format 33056
+[radio] playing (4.0s prebuffered, 1446912 B queued)
+
+[radio] underrun #1 (buffered 129024 B) 
+[radio] resumed after underrun #1 on timeout (5993 ms, 119808 B) 
+[radio] underrun #2 (buffered 156672 B) 
+[radio] resumed after underrun #2 on timeout (6793 ms, 156672 B) 
+[radio] underrun #3 (buffered 138240 B) 
+[radio] resumed after underrun #3 on timeout (5994 ms, 138240 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1419264 B queued)
+
+[radio] underrun #4 (buffered 156672 B) 
+[radio] resumed after underrun #4 on timeout (6393 ms, 129024 B) 
+[radio] underrun #5 (buffered 156672 B) 
+[radio] resumed after underrun #5 on timeout (7201 ms, 147456 B) 
+[radio] underrun #6 (buffered 156672 B) 
+[radio] resumed after underrun #6 on timeout (6388 ms, 129024 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1548288 B queued)
+
+[radio] underrun #7 (buffered 147456 B) 
+[radio] resumed after underrun #7 on timeout (6396 ms, 156672 B) 
+[radio] underrun #8 (buffered 147456 B) 
+[radio] resumed after underrun #8 on timeout (6390 ms, 138240 B) 
+[radio] underrun #9 (buffered 147456 B) 
+[radio] resumed after underrun #9 on timeout (6396 ms, 129024 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1446912 B queued)
+
+[radio] underrun #10 (buffered 147456 B) 
+[radio] resumed after underrun #10 on timeout (7990 ms, 147456 B) 
+[radio] underrun #11 (buffered 156672 B) 
+[radio] resumed after underrun #11 on timeout (7197 ms, 156672 B) 
+[radio] underrun #12 (buffered 156672 B) 
+[radio] resumed after underrun #12 on timeout (6390 ms, 138240 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1511424 B queued)
+
+[radio] underrun #13 (buffered 156672 B) 
+[radio] resumed after underrun #13 on timeout (6793 ms, 138240 B) 
+[radio] underrun #14 (buffered 138240 B) 
+[radio] resumed after underrun #14 on timeout (6398 ms, 156672 B) 
+[radio] underrun #15 (buffered 138240 B) 
+[radio] resumed after underrun #15 on timeout (7599 ms, 129024 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1428480 B queued)
+
+[radio] underrun #16 (buffered 165888 B) 
+[radio] resumed after underrun #16 on timeout (7189 ms, 147456 B) 
+[radio] underrun #17 (buffered 147456 B) 
+[radio] resumed after underrun #17 on timeout (7994 ms, 129024 B) 
+[radio] underrun #18 (buffered 165888 B) 
+[radio] resumed after underrun #18 on timeout (6397 ms, 147456 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1511424 B queued)
+
+[radio] underrun #19 (buffered 73728 B) 
+[radio] resumed after underrun #19 on timeout (9595 ms, 156672 B) 
+[radio] underrun #20 (buffered 147456 B) 
+[radio] resumed after underrun #20 on timeout (7193 ms, 147456 B) 
+[radio] underrun #21 (buffered 165888 B) 
+[radio] resumed after underrun #21 on timeout (5596 ms, 119808 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1428480 B queued)
+
+[radio] underrun #22 (buffered 147456 B) 
+[radio] resumed after underrun #22 on timeout (7195 ms, 147456 B) 
+[radio] underrun #23 (buffered 129024 B) 
+[radio] resumed after underrun #23 on timeout (7597 ms, 156672 B) 
+[radio] underrun #24 (buffered 129024 B) 
+[radio] resumed after underrun #24 on timeout (5206 ms, 147456 B) 
+[radio] 3 consecutive timeout resumes 
+[radio] stream ended, retrying in 5000 ms
+
+[radio] stream ended, retrying in 5000 ms
+
+[radio] stream ended, retrying in 5000 ms
+
+[radio] stream ended, retrying in 5000 ms
+
+[radio] playing (4.0s prebuffered, 1548288 B queued)
+
+
+[harness] ===== SUMMARY (10 min, http://54.38.43.201:8009/stream-128kmp3-BossaNovaBrazil) =====
+[harness] final state: Playing (nowPlaying: '')
+[harness] underruns: 24 | resumes: 71 | play failures: 0
+[harness] sessions: 13 | stream rebuilds (midstream format change): 0
+[harness] chunk reads: 1704 | last/max chunk stall ms: 0 / 848
+[harness] push gap ms last/max: 0 / 848
+[harness] buffered: 169704 B (~481 ms) | prebuffer target: 1411200 B
+[harness] Playing samples: 1448 of which silent (<250ms buffered): 48
+[harness] VERDICT: FAULTS OBSERVED (see counts above)
+[radio] read loop end: query avail=0 err=0x00002EF1
+
