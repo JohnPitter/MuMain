@@ -1,7 +1,8 @@
 """Articulated trousers, split skirt panels, gauntlets and greaves."""
 import math
-from armor_surfaces import loft, section, segment_shell
+from armor_surfaces import loft, seal_shell_ends, section, segment_shell
 from celestial_geometry import ellipse, feather, gem, mesh, plate, rim, tendril, tube
+from celestial_gilding import edged_plate, inlaid_leaf, scroll, shin_relief
 
 
 def trousers(m):
@@ -51,7 +52,12 @@ def tabards(m, front):
                 samples = ((.5, t), (.5 + direction * .38, t + .03),
                            (.5 + direction * .43, t + .12), (.5, t + .13))
                 path = [panel_point(u, v, (side, front), .6) for u, v in samples]
-                tendril('Pants / branching acanthus embroidery', path, .32, m['Gold'])
+                scroll('Pants / branching acanthus embroidery', path, .38, m['Gold'])
+        for i in range(4):
+            t = .12 + i * .2
+            controls = [panel_point(u, v, (side, front), 1.0) for u, v in
+                        ((.5, t + .13), (.15, t + .10), (.13, t + .03), (.4, t))]
+            feather('Pants / pointed embroidery leaf', controls, (1.4, .25, 6), m['Gold'])
 
 
 def panel_point(u, t, sides, lift=0):
@@ -103,6 +109,10 @@ def vambrace(m, side):
         feather('Gloves / outer gilded blade', [(side * 31, 0, 100 + i * 5),
                 (side * 41, -2, 110 + i * 5), (side * 39, 0, 122 + i * 4),
                 (side * 36, 0, 136 + i * 3)], (1.7, .5), m['Gold'])
+    for i in range(3):
+        controls = [(side * 31, -9, 102 + i * 5), (side * 27, -10, 112 + i * 4),
+                    (side * 21, -9, 114 + i * 4), (side * 22, -8, 122 + i * 4)]
+        inlaid_leaf('Gloves / articulated forearm scrollwork', controls, (1.8, .45), m)
 
 
 def hand_plate(m, side):
@@ -146,16 +156,24 @@ def greave(m, side):
                 (side * 10.3 + offset * 6, -13, 38),
                 (side * 10.3 + offset * 7, -12, 56),
                 (side * 10.3, -11, 70)], .55, m['Gold'])
+    shin_relief(m, side)
 
 
 def sabaton(m, side):
-    segment_shell('Boots / pointed sabaton', ((side * 10.3, 6, 10), (side * 10.3, -25, 5)),
-                  [(0, 6, 5), (.3, 7, 6), (.7, 5.5, 4.5), (1, .4, .5)], m['Ivory'])
+    shell = segment_shell('Boots / pointed sabaton', ((side * 10.3, 6, 10), (side * 10.3, -25, 5)),
+                          [(0, 6, 5), (.3, 7, 6), (.7, 5.5, 4.5), (1, .4, .5)], m['Ivory'])
+    seal_shell_ends(shell)
     for offset in (-1, 1):
         tendril('Boots / toe gold rail', [(side * 10.3, -25, 5),
                 (side * 10.3 + offset * 7, -18, 11),
                 (side * 10.3 + offset * 6, -6, 16),
                 (side * 10.3 + offset * 5, 4, 12)], .55, m['Gold'])
+    for index in range(3):
+        depth = -18 + index * 6
+        center = side * 10.3
+        outline = [(center - 5, 9 + index), (center, 15 + index),
+                   (center + 5, 9 + index), (center, 7 + index)]
+        edged_plate('Boots / overlapping sabaton scale', outline, (depth, 1.3), m)
 
 
 BUILDERS = {'Pants': trousers, 'Gloves': gloves, 'Boots': boots}

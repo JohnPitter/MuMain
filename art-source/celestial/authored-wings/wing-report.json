@@ -1,8 +1,8 @@
 {
   "model": {
     "file": "Celestial_Wings.bmd",
-    "meshes": 14,
-    "triangles": 26142,
+    "meshes": 15,
+    "triangles": 28870,
     "textures": [
       "Celestial_Gold.jpg",
       "Celestial_Ivory.jpg",
@@ -13,11 +13,11 @@
     "animation_frames": 9
   },
   "motion": {
-    "checked_vertices": 124893,
-    "maximum_error": 9.888825528576447e-05,
-    "moving_vertices": 12220,
-    "vertices_per_pose": 13877,
-    "loop_seam_distance": 8.529922399520072e-06
+    "checked_vertices": 138141,
+    "maximum_error": 0.00011108566115235165,
+    "moving_vertices": 13692,
+    "vertices_per_pose": 15349,
+    "loop_seam_distance": 3.814697265625e-06
   },
   "status": "authored wing candidate; fidelity and ingame validation pending"
 }

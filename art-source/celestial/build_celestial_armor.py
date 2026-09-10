@@ -56,7 +56,7 @@ def render_reviews(scene, clips):
 
 
 def write_receipt(reports, clips, rig_source, player_source):
-    receipt = dict(status='first authored armor; visual revision pending; not deployed',
+    receipt = dict(status='authored armor candidate; fidelity and ingame acceptance pending; not deployed',
                    rig_sha256=rig_source['sha256'], player_sha256=player_source['sha256'],
                    pieces=reports, clips=clips)
     (OUTPUT / 'armor-report.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')

@@ -1,5 +1,5 @@
 """Compare every exported bone-local corner with the editable armor source."""
-from collections import defaultdict
+from collections import Counter, defaultdict
 import json
 import sys
 from pathlib import Path
@@ -32,6 +32,20 @@ def validate_area(group):
     return minimum
 
 
+def verify_closed_sabatons(group):
+    shoes = [obj for obj in group.objects if obj.name.startswith('Boots / pointed sabaton')]
+    if len(shoes) != 2:
+        raise ValueError('Expected two closed sabatons')
+    for obj in shoes:
+        counts = Counter()
+        for face in obj.data.polygons:
+            for edge in face.edge_keys:
+                counts[tuple(sorted(edge))] += 1
+        if not counts or any(count != 2 for count in counts.values()):
+            raise ValueError(f'Open or non-manifold sabaton: {obj.name}')
+    return len(shoes)
+
+
 def decoded(model):
     grouped = defaultdict(list)
     for mesh in model['meshes']:
@@ -61,6 +75,8 @@ def main():
                              triangles=sum(map(len, expected.values())),
                              minimum_triangle_area=validate_area(group), model_sha256=model['sha256'],
                              blend_sha256=digest(OUTPUT / 'celestial-authored-armor.blend'))
+        if name == 'Boots':
+            reports[name]['closed_sabatons'] = verify_closed_sabatons(group)
     (OUTPUT / 'roundtrip-report.json').write_text(json.dumps(reports, indent=2), encoding='utf-8')
     print('ARMOR_ROUNDTRIP_VERIFIED', json.dumps(reports), flush=True)
 

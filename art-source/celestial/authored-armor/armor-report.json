@@ -1,12 +1,12 @@
 {
-  "status": "first authored armor; visual revision pending; not deployed",
+  "status": "authored armor candidate; fidelity and ingame acceptance pending; not deployed",
   "rig_sha256": "a3942b1630c09255cea9be18eb22825b55f9e410831fab9aa9510fe32a544ac3",
   "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
   "pieces": [
     {
       "file": "Celestial_Helm.bmd",
       "meshes": 3,
-      "triangles": 1938,
+      "triangles": 2506,
       "textures": [
         "Celestial_Gold.jpg",
         "Celestial_Ivory.jpg",
@@ -16,8 +16,8 @@
     },
     {
       "file": "Celestial_Armor.bmd",
-      "meshes": 4,
-      "triangles": 5490,
+      "meshes": 5,
+      "triangles": 7098,
       "textures": [
         "Celestial_Gold.jpg",
         "Celestial_Ivory.jpg",
@@ -27,8 +27,8 @@
     },
     {
       "file": "Celestial_Pants.bmd",
-      "meshes": 11,
-      "triangles": 18242,
+      "meshes": 8,
+      "triangles": 11906,
       "textures": [
         "Celestial_Gold.jpg",
         "Celestial_Ivory.jpg",
@@ -39,7 +39,7 @@
     {
       "file": "Celestial_Gloves.bmd",
       "meshes": 3,
-      "triangles": 2180,
+      "triangles": 2900,
       "textures": [
         "Celestial_Gold.jpg",
         "Celestial_Ivory.jpg",
@@ -50,7 +50,7 @@
     {
       "file": "Celestial_Boots.bmd",
       "meshes": 4,
-      "triangles": 3200,
+      "triangles": 4864,
       "textures": [
         "Celestial_Gold.jpg",
         "Celestial_Ivory.jpg",
@@ -65,7 +65,7 @@
       "action": 4,
       "start": 5,
       "end": 29,
-      "checked_vertices": 113925,
+      "checked_vertices": 109039,
       "maximum_error": 0.00010251888008405066
     },
     {
@@ -73,7 +73,7 @@
       "action": 17,
       "start": 37,
       "end": 61,
-      "checked_vertices": 113925,
+      "checked_vertices": 109039,
       "maximum_error": 0.00010831658069229648
     },
     {
@@ -81,7 +81,7 @@
       "action": 26,
       "start": 69,
       "end": 93,
-      "checked_vertices": 113925,
+      "checked_vertices": 109039,
       "maximum_error": 9.608949064491271e-05
     },
     {
@@ -89,7 +89,7 @@
       "action": 146,
       "start": 101,
       "end": 121,
-      "checked_vertices": 97650,
+      "checked_vertices": 93462,
       "maximum_error": 0.00012246548495764442
     },
     {
@@ -97,7 +97,7 @@
       "action": 237,
       "start": 129,
       "end": 149,
-      "checked_vertices": 97650,
+      "checked_vertices": 93462,
       "maximum_error": 0.00012996087181414652
     },
     {
@@ -105,7 +105,7 @@
       "action": 11,
       "start": 157,
       "end": 177,
-      "checked_vertices": 97650,
+      "checked_vertices": 93462,
       "maximum_error": 0.00011584303403966193
     },
     {
@@ -113,7 +113,7 @@
       "action": 34,
       "start": 185,
       "end": 205,
-      "checked_vertices": 97650,
+      "checked_vertices": 93462,
       "maximum_error": 0.00015963721854153387
     },
     {
@@ -121,7 +121,7 @@
       "action": 39,
       "start": 213,
       "end": 237,
-      "checked_vertices": 113925,
+      "checked_vertices": 109039,
       "maximum_error": 0.00011141267293174922
     }
   ]

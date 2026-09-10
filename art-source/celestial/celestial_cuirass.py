@@ -3,6 +3,7 @@ import math
 
 from armor_surfaces import loft, section, segment_shell
 from celestial_geometry import ellipse, feather, gem, mesh, plate, rim, tendril
+from celestial_gilding import chest_relief, inlaid_leaf, scroll, shoulder_relief
 
 
 def helmet_shell(m):
@@ -17,7 +18,9 @@ def helmet_shell(m):
                 continue
             a, b = row * 24 + i, row * 24 + (i + 1) % 24
             faces.append((a, b, b + 24, a + 24))
-    mesh('Helm / open-face crown shell', vertices, faces, m['Ivory'])
+    shell = mesh('Helm / open-face crown shell', vertices, faces, m['Gold'])
+    for face in shell.data.polygons:
+        face.use_smooth = True
 
 
 def helmet(m):
@@ -26,26 +29,28 @@ def helmet(m):
 
 def helmet_details(m):
     helmet_shell(m)
-    gem('Helm / forehead diamond', (0, -23, 186), (3.3, 1.7, 7.5), m['Sapphire'])
-    rim('Helm / diamond setting', [(0, 194), (4, 186), (0, 178), (-4, 186)], -23, m['Gold'], .4)
+    gem('Helm / forehead diamond', (0, -24, 186), (2.9, 1.7, 6.5), m['Sapphire'])
+    rim('Helm / diamond setting', [(0, 195), (4, 186), (0, 176), (-4, 186)], -24, m['Gold'], .6)
     for side in (-1, 1):
-        brow = [(side * 14, 179), (side * 8, 194), (0, 188), (0, 178), (side * 6, 173)]
-        plate('Helm / split brow crest', brow, (-20, 1.5), m['Gold'])
+        inlaid_leaf('Helm / split brow crest', [(side * 1, -24, 175), (side * 7, -24, 181),
+                    (side * 15, -22, 187), (side * 17, -14, 197)], (3.7, .9), m)
         cheek = [(side * 11, 181), (side * 13, 174), (side * 8, 158), (side * 6, 171)]
         plate('Helm / pointed cheek guard', cheek, (-16, 2), m['Ivory'])
         rim('Helm / cheek edging', cheek, -16.5, m['Gold'], .5)
-        for i in range(3):
-            controls = [(side * (8 + i * 2), i * 2, 177),
-                        (side * (19 + i * 2), i * 2, 183),
-                        (side * (12 + i * 2), i * 2, 196),
-                        (side * (10 + i * 4), i * 2, 213 - i * 6)]
-            feather('Helm / swept crown lance', controls, (2.0 - i * .25, .6), m['Gold'])
+        for i in range(4):
+            controls = [(side * (5 + i * 2), -14 + i * 5, 180),
+                        (side * (16 + i * 2), -18 + i * 5, 186),
+                        (side * (13 + i * 3), -9 + i * 5, 199),
+                        (side * (7 + i * 5), -3 + i * 5, 216 - i * 5)]
+            inlaid_leaf('Helm / swept crown lance', controls, (3.5 - i * .35, .8), m)
+        for i in range(2):
+            scroll('Helm / temple acanthus', [(side * 7, -23, 176 + i * 5),
+                   (side * 22, -23, 183 + i * 7), (side * 19, -16, 190 + i * 5),
+                   (side * 11, -18, 186 + i * 6)], .6, m['Gold'])
         feather('Helm / temple ivory blade', [(side * 10, -8, 173), (side * 20, -3, 182),
                 (side * 19, 1, 188), (side * 17, 2, 196)], (2.1, .7), m['Ivory'])
-        tendril('Helm / brow tracery', [(side * 2, -23, 180), (side * 17, -22, 188),
-                (side * 14, -20, 176), (side * 9, -18, 171)], .38, m['Gold'])
-    feather('Helm / axial crown', [(0, 0, 184), (0, 0, 192), (0, 0, 205),
-            (0, 0, 218)], (2.1, .7), m['Gold'])
+    inlaid_leaf('Helm / axial crown', [(0, -20, 188), (0, -22, 197), (0, -8, 210),
+                (0, -1, 225)], (3.6, .9), m)
 
 
 def torso_bone(_obj, position):
@@ -73,11 +78,10 @@ def torso(m):
             feather('Armor / rib lamella', [(side * 2, -11, 124 - i * 5),
                     (side * 9, -13, 128 - i * 4), (side * 17, -8, 129 - i * 3),
                     (side * (17 - i * 2), -6, 138 - i * 6)], (2.0, .6), m['Gold'])
-        tendril('Armor / chest filigree', [(side * 2, -15, 142), (side * 16, -17, 152),
-                (side * 18, -15, 140), (side * 10, -15, 138)], .48, m['Gold'])
-    diamond = [(0, 158), (5.5, 147), (0, 136), (-5.5, 147)]
+        chest_relief(m, side)
+    diamond = [(0, 156), (4.3, 147), (0, 138), (-4.3, 147)]
     rim('Armor / heart setting', diamond, -15.5, m['Gold'], .7)
-    gem('Armor / heart sapphire', (0, -15.8, 147), (4.3, 2, 9), m['Sapphire'])
+    gem('Armor / heart sapphire', (0, -17, 147), (3.3, 2, 7), m['Sapphire'])
     feather('Armor / abdominal spear', [(0, -10, 132), (0, -13, 121),
             (0, -11, 113), (0, -10, 105)], (3.3, 1.1), m['Gold'])
 
@@ -97,6 +101,7 @@ def shoulder(m, side):
                 (side * 31, -8, 154 - i * 4), (side * 42, -4, 159 - i * 5),
                 (side * (43 - i), 0, 170 - i * 7)], (2.5, .8), m['Ivory'])
     gem('Armor / shoulder sapphire', (side * 29, -9, 160), (2.5, 1.2, 5.5), m['Sapphire'])
+    shoulder_relief(m, side)
     for i in range(3):
         feather('Armor / upper-arm gold inset', [(side * 24, -7, 148 - i * 7),
                 (side * 32, -6, 145 - i * 6), (side * 30, -4, 137 - i * 6),

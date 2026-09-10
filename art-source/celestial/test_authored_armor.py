@@ -89,6 +89,7 @@ class AuthoredArmorTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256((OUTPUT / path).read_bytes()).hexdigest(), digest)
         report = json.loads((OUTPUT / 'roundtrip-report.json').read_text())
         self.assertEqual(set(report), set(NAMES))
+        self.assertEqual(report['Boots']['closed_sabatons'], 2)
         for name, value in report.items():
             validate_proof(value, OUTPUT / 'Data/Player' / f'Celestial_{name}.bmd',
                            OUTPUT / 'celestial-authored-armor.blend')

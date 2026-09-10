@@ -5,6 +5,7 @@ from mathutils import Vector
 
 from armor_surfaces import section
 from celestial_geometry import bezier, ellipse, feather, gem, tendril, tube
+from celestial_gilding import inlaid_leaf
 from wing_animation import HALO_CENTER
 
 CHAINS = {1: (1, 2, 3, 4, 5), -1: (24, 25, 26, 27, 28)}
@@ -18,17 +19,20 @@ def nearest_bone(point, bind, indices):
 def flight_path(side, index, row):
     t = index / (FEATHERS_PER_ROW[row] - 1)
     root = Vector((side * (22 + 62 * t), -3 - row * 4, 8 + 90 * t))
-    tip = Vector((side * (85 + 90 * math.sin(math.pi * t) + 40 * t),
-                  16 + 12 * math.sin(math.pi * t), -65 + 230 * t))
+    stagger = 1 + .035 * math.sin(index * 2.3 + row * 1.1)
+    tip = Vector((side * (66 + 65 * math.sin(math.pi * t) + 32 * t) * stagger,
+                  20 + 17 * math.sin(math.pi * t), -73 + 264 * t))
     tip = root.lerp(tip, 1 - row * .22)
     tip.y -= row * 5
-    bend = Vector((side * 8, -10, 10))
+    bend = Vector((side * 12, -14, 13))
     return [root, root.lerp(tip, .36) + bend, root.lerp(tip, .78) + bend * .35, tip]
 
 
 def flight_feather(palette, controls, row):
     width = (6.0, 5.1, 4.2)[row]
-    feather('Wings / layered ivory flight feather', controls, (width, .75, 8), palette['Ivory'])
+    vane = feather('Wings / layered ivory flight feather', controls, (width, .65, 8), palette['Ivory'])
+    for face in vane.data.polygons:
+        face.use_smooth = True
     path = bezier(controls, 9)
     quill = [p + Vector((0, -.85, 0)) for p in path]
     tube('Wings / gilded feather rachis', quill,
@@ -46,23 +50,23 @@ def fan(palette, bind, side):
             controls = flight_path(side, index, row)
             bone = nearest_bone(controls[0], bind, indices)
             section(bone, lambda p=controls, r=row: flight_feather(palette, p, r))
-    section(lambda _obj, p: nearest_bone(p, bind, indices), lambda: crest(palette, side))
+    crest(palette, bind, side)
 
 
-def crest(palette, side):
-    controls = [(side * 13, -13, -4), (side * 41, -19, 28),
-                (side * 92, -13, 101), (side * 106, -7, 156)]
-    tendril('Wings / sculpted gold leading edge', controls, 2.5, palette['Gold'])
-    for i in range(10):
-        t = i / 9
-        root = Vector((side * (21 + 64 * t), -14, 12 + 101 * t))
-        tip = root + Vector((side * (23 - 13 * t), -3, 22 + 29 * t))
-        path = [root, root.lerp(tip, .3) + Vector((side * 8, -3, 0)),
-                root.lerp(tip, .7), tip]
-        feather('Wings / radiant gold covert', path, (4 - t, 1.1, 8), palette['Gold'])
-        inset = [p + Vector((0, -1.2, 0)) for p in path]
-        feather('Wings / ivory covert inlay', inset, (1.25, .25, 8), palette['Ivory'])
-    gem('Wings / shoulder crystal', (side * 33, -18, 35), (3, 1.5, 8), palette['Sapphire'])
+def crest(palette, bind, side):
+    for row in range(2):
+        for index in range(12):
+            t = index / 11
+            root = Vector((side * (19 + 65 * t + row * 7), -18 - row * 3, 8 + 100 * t))
+            tip = root + Vector((side * (17 - 7 * t + row * 5), -3, 30 + 40 * t - row * 12))
+            path = [root, root.lerp(tip, .3) + Vector((side * 9, -4, 0)),
+                    root.lerp(tip, .7), tip]
+            bone = nearest_bone(root, bind, CHAINS[side])
+            section(bone, lambda p=path, w=5.3 - t * 1.6:
+                    inlaid_leaf('Wings / overlapping gold covert', p, (w, .95), palette))
+    root = (side * 33, -23, 35)
+    section(nearest_bone(root, bind, CHAINS[side]), lambda:
+            gem('Wings / shoulder crystal', root, (3, 1.5, 8), palette['Sapphire']))
 
 
 def halo(palette):

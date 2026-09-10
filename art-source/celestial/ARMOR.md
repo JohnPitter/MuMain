@@ -8,7 +8,8 @@ e as poses do personagem são referências de encaixe, não aprovação visual.
 ## Fontes e reprodução
 
 O projeto usa Blender 4.2. As formas estão em `celestial_cuirass.py` e
-`celestial_limb_armor.py`; as superfícies, pesos e exportação são módulos
+`celestial_limb_armor.py`, com relevos compartilhados em `celestial_gilding.py`;
+as superfícies, pesos e exportação são módulos
 separados. Cada vértice tem exatamente uma influência, como exige o renderer
 do MU; o exportador rejeita pesos que seriam silenciosamente perdidos.
 
@@ -51,7 +52,7 @@ Proporções, placas e ornamentos ainda estão simplificados frente ao conceito.
 do rosto (também Grand Master), painéis da calça em movimento e botas. Falta
 aprovação visual e medição de desempenho. Asas/halo e composição equipada
 agora têm candidatos próprios documentados em `WINGS.md`, não aprovação.
-O lote da armadura soma 31.050 triângulos; não há orçamento
+O lote da armadura soma 29.274 triângulos; não há orçamento
 de desempenho validado para cenas cheias de jogadores.
 
 A prévia MP4 é animação real destas malhas no Blender, não captura do MU.
@@ -68,3 +69,18 @@ nível 400 e classes Soul Master/Grand Master. A defesa base das cinco peças é
 Os bônus exclusivos ilustrados no conceito, sockets, opções, progressão e
 obtenção ainda precisam de auditoria. Nenhum estado remoto foi consultado ou
 alterado nesta etapa artística.
+
+## Revisão de ornamentos e silhueta
+
+As referências originais do usuário estão preservadas em `references/`, sem
+alterações. A revisão adiciona lâminas sobrepostas à coroa, relevos ao peitoral,
+ombreiras e antebraços, e placas às caneleiras/pés. Os bordados dos painéis
+foram reamostrados com menos segmentos: 11.906 triângulos na calça, em vez de
+18.242. Total da armadura: 29.274 em vez de 31.050, mesmo com os novos relevos
+e o fechamento das pontas/calcanhares. A vista traseira revelou as aberturas
+dos pés: foram fechadas e o verificador exige dois sabatons sem borda aberta.
+
+Os oito movimentos e o retorno BMD/Blender foram medidos novamente. Isto não
+aprova a fidelidade: as formas ainda são geométricas/regulares demais perante
+o conceito, e faltam textura/gravura fina, revisão das costas e detalhes do
+encaixe. A cabeça é a nativa do Soul Master, não uma recriação do rosto da arte.

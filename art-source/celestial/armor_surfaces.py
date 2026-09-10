@@ -2,6 +2,7 @@
 import math
 
 import bpy
+import bmesh
 from mathutils import Vector
 
 from celestial_geometry import mesh
@@ -33,6 +34,17 @@ def segment_shell(name, endpoints, radii, material):
     for vertex in obj.data.vertices:
         vertex.co = start + rotation @ vertex.co
     return obj
+
+
+def seal_shell_ends(obj):
+    topology = bmesh.new()
+    topology.from_mesh(obj.data)
+    boundary = [edge for edge in topology.edges if edge.is_boundary]
+    bmesh.ops.holes_fill(topology, edges=boundary)
+    bmesh.ops.recalc_face_normals(topology, faces=list(topology.faces))
+    topology.to_mesh(obj.data)
+    topology.free()
+    obj.data.update()
 
 
 def bind_objects(objects, resolver):

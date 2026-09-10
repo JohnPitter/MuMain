@@ -1,7 +1,7 @@
 """Review decoded equipment together using the client's current link transforms.
 
 This is a Blender reconstruction of attachment math, not an ingame capture.
-Run with -- <client Data/Player> to render idle, casting and flight snapshots.
+Run with -- <client Data/Player> to render poses plus rear and side snapshots.
 """
 import hashlib
 import json
@@ -22,6 +22,8 @@ from inspect_bmd_rig import inspect
 OUTPUT = ROOT / 'equipped-review'
 ARMOR_NAMES = ('Helm', 'Armor', 'Pants', 'Gloves', 'Boots')
 CLIENT_SOURCE = ROOT.parents[1] / 'src/source/Engine/Object/ZzzCharacter.cpp'
+REVIEWS = (('idle', 4, 0, 'front'), ('cast', 146, 2, 'front'), ('flight', 34, 1, 'front'),
+           ('rear', 4, 0, 'rear'), ('side', 4, 0, 'side'))
 
 
 def import_surface(model, transforms, palette):
@@ -48,9 +50,10 @@ def load_models():
     return {name: inspect(path, True) for name, path in paths.items()}
 
 
-def configure_scene(scene):
+def configure_scene(scene, view):
     target = Vector((0, 0, 135))
-    scene.camera.location = (120, -630, 180)
+    scene.camera.location = {'front': (120, -630, 180), 'rear': (-120, 630, 180),
+                             'side': (630, -60, 180)}[view]
     scene.camera.rotation_euler = (target - scene.camera.location).to_track_quat('-Z', 'Y').to_euler()
     scene.camera.data.ortho_scale = 450
     scene.camera.data.clip_end = 1600
@@ -70,7 +73,6 @@ def render_pose(models, pose, palette, head):
         model = models[name]
         transforms = [parent @ transform for transform in world_matrices(model, 0)]
         import_surface(model, transforms, palette)
-    configure_scene(scene)
     return scene
 
 
@@ -83,8 +85,9 @@ def main():
     for mesh in head['meshes']:
         palette[mesh['texture']] = native_material(directory, mesh['texture'])
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    for name, action, frame in (('idle', 4, 0), ('cast', 146, 2), ('flight', 34, 1)):
+    for name, action, frame, view in REVIEWS:
         scene = render_pose(models, world_matrices(player, frame, action), palette, head)
+        configure_scene(scene, view)
         scene.render.filepath = str(OUTPUT / f'Celestial_Equipped_{name}.png')
         bpy.ops.render.render(write_still=True)
         bpy.ops.file.pack_all()
@@ -93,6 +96,8 @@ def main():
                   models={name: model['sha256'] for name, model in models.items()},
                   attachment_source_sha256=hashlib.sha256(CLIENT_SOURCE.read_bytes()).hexdigest(),
                   player_sha256=player['sha256'], head_sha256=head['sha256'],
+                  views=[dict(name=name, action=action, frame=frame, view=view)
+                         for name, action, frame, view in REVIEWS],
                   jewelry='ring and pendant are inventory assets; not rendered on the body by the current client')
     (OUTPUT / 'review-report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
 
