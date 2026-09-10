@@ -7139,6 +7139,13 @@ void RenderPartObjectBody(BMD* b, OBJECT* o, int Type, float Alpha, int RenderTy
         b->RenderBody(RENDER_TEXTURE, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV, o->HiddenMesh);
         b->RenderMesh(1, RENDER_BRIGHT | RENDER_CHROME, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV);
     }
+    else if (Type == MODEL_CELESTIAL_WINGS)
+    {
+        Vector(0.85f, 0.9f, 1.f, b->BodyLight);
+        glColor3fv(b->BodyLight);
+        b->RenderBody(RENDER_TEXTURE, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV, o->HiddenMesh);
+        b->RenderBody(RENDER_TEXTURE | RENDER_BRIGHT, o->Alpha * 0.55f, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, WorldTime * 0.00015f, o->HiddenMesh);
+    }
     else if (Type == MODEL_DIVINE_SWORD_OF_ARCHANGEL)
     {
         b->RenderMesh(0, RENDER_TEXTURE | RENDER_METAL, Alpha, 0, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV);
@@ -9688,6 +9695,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
     case MODEL_WING_OF_CURSE:
     case MODEL_WINGS_OF_DESPAIR:
     case MODEL_WING_OF_DIMENSION:
+    case MODEL_CELESTIAL_WINGS:
     case MODEL_WINGS_OF_SPIRITS:
     case MODEL_WINGS_OF_SOUL:
     case MODEL_WINGS_OF_DRAGON:
@@ -10360,6 +10368,20 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
         {
             b->TransformPosition(BoneTransform[iGreenFlarePos[i]], p, Position, true);
             CreateSprite(BITMAP_FLARE, Position, Scale + 2.0f, Light, o);
+        }
+    }
+    else if (Type == MODEL_CELESTIAL_WINGS)
+    {
+        vec3_t point, position, light;
+        Vector(0.f, 0.f, 0.f, point);
+        b->TransformPosition(BoneTransform[0], point, position, true);
+
+        const float pulse = absf(sinf(WorldTime * 0.002f));
+        Vector(0.45f + (pulse * 0.35f), 0.55f + (pulse * 0.3f), 1.f, light);
+        CreateSprite(BITMAP_FLARE, position, 1.5f + pulse, light, o);
+        if (rand_fps_check(1))
+        {
+            CreateParticle(BITMAP_CHROME_ENERGY2, position, o->Angle, light, 0, 0.75f + (pulse * 0.25f));
         }
     }
 

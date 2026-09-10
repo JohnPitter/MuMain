@@ -46,6 +46,24 @@ bool Flip = false;
 
 namespace
 {
+    void LoadCelestialWings()
+    {
+        wchar_t modelPath[] = L"Data\\Item\\Celestial_Wings.smd";
+        wchar_t animationPath[] = L"Data\\Item\\Celestial_Wings_Anim.smd";
+        const bool hasAssets = GetFileAttributesW(modelPath) != INVALID_FILE_ATTRIBUTES
+            && GetFileAttributesW(animationPath) != INVALID_FILE_ATTRIBUTES;
+        if (hasAssets && OpenSMDModel(MODEL_CELESTIAL_WINGS, modelPath, 1))
+        {
+            if (OpenSMDAnimation(MODEL_CELESTIAL_WINGS, animationPath))
+            {
+                return;
+            }
+            Models[MODEL_CELESTIAL_WINGS].Release();
+        }
+        g_ErrorReport.Write(L"[Celestial] Wings assets unavailable; using Wing44 fallback.\r\n");
+        gLoadData.AccessModel(MODEL_CELESTIAL_WINGS, L"Data\\Item\\", L"Wing", 44);
+    }
+
     constexpr DWORD kStartupLoadingFrameIntervalMs = 33;
     constexpr DWORD kStartupLoadingStageCount = 11;
 
@@ -334,6 +352,11 @@ void OpenPlayers()
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_ARMOR, L"Data\\Player\\", L"ArmorMale74", -1);
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_PANTS, L"Data\\Player\\", L"PantMale74", -1);
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_BOOTS, L"Data\\Player\\", L"BootMale74", -1);
+    gLoadData.AccessModel(MODEL_CELESTIAL_HELM, L"Data\\Player\\", L"HelmMale74", -1);
+    gLoadData.AccessModel(MODEL_CELESTIAL_ARMOR, L"Data\\Player\\", L"ArmorMale74", -1);
+    gLoadData.AccessModel(MODEL_CELESTIAL_PANTS, L"Data\\Player\\", L"PantMale74", -1);
+    gLoadData.AccessModel(MODEL_CELESTIAL_GLOVES, L"Data\\Player\\", L"GloveMale", 40);
+    gLoadData.AccessModel(MODEL_CELESTIAL_BOOTS, L"Data\\Player\\", L"BootMale74", -1);
 
     {
         auto* pCloth = new CPhysicsClothMesh[1];
@@ -642,6 +665,11 @@ void OpenPlayerTextures()
     gLoadData.OpenTexture(MODEL_PHOENIX_SOUL_ARMOR, L"Player\\");
     gLoadData.OpenTexture(MODEL_PHOENIX_SOUL_PANTS, L"Player\\");
     gLoadData.OpenTexture(MODEL_PHOENIX_SOUL_BOOTS, L"Player\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_HELM, L"Player\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_ARMOR, L"Player\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_PANTS, L"Player\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_GLOVES, L"Player\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_BOOTS, L"Player\\");
 }
 
 void OpenItems()
@@ -701,6 +729,7 @@ void OpenItems()
 
     gLoadData.AccessModel(MODEL_GRAND_SOUL_SHIELD, L"Data\\Item\\", L"Shield", 16);
     gLoadData.AccessModel(MODEL_ELEMENTAL_SHIELD, L"Data\\Item\\", L"Shield", 17);
+    gLoadData.AccessModel(MODEL_CELESTIAL_SHIELD, L"Data\\Item\\", L"Shield", 13);
 
     //////////////////////////////////////////////////////////////////////////
     //  MODEL_STAFF
@@ -713,6 +742,7 @@ void OpenItems()
     gLoadData.AccessModel(MODEL_DIVINE_STAFF_OF_ARCHANGEL, L"Data\\Item\\", L"Staff", 11);
     gLoadData.AccessModel(MODEL_DIVINE_STICK_OF_ARCHANGEL, L"Data\\Item\\", L"Archangelus");
     gLoadData.AccessModel(MODEL_STAFF_OF_KUNDUN, L"Data\\Item\\", L"Staff", 12);
+    gLoadData.AccessModel(MODEL_CELESTIAL_STAFF, L"Data\\Item\\", L"Staff", 12);
 
     for (int i = 14; i <= 20; ++i)
         ::gLoadData.AccessModel(MODEL_STAFF + i, L"Data\\Item\\", L"Staff", i + 1);
@@ -744,6 +774,9 @@ void OpenItems()
 
     for (int i = 0; i < 2; i++)
         gLoadData.AccessModel(MODEL_HELPER + i + 8, L"Data\\Item\\", L"Ring", i + 1);
+
+    gLoadData.AccessModel(MODEL_CELESTIAL_RING, L"Data\\Item\\", L"Ring", 2);
+    gLoadData.AccessModel(MODEL_CELESTIAL_PENDANT, L"Data\\Item\\", L"Necklace", 2);
 
     g_ChangeRingMgr->LoadItemModel();
 
@@ -1071,6 +1104,8 @@ void OpenItems()
     for (int i = 41; i <= 43; ++i)
         ::gLoadData.AccessModel(MODEL_WING + i, L"Data\\Item\\", L"Wing", i + 1);
 
+    LoadCelestialWings();
+
     gLoadData.AccessModel(MODEL_BOOK_OF_SAHAMUTT, L"Data\\Item\\", L"Book_of_Sahamutt");
     gLoadData.AccessModel(MODEL_BOOK_OF_NEIL, L"Data\\Item\\", L"Book_of_Neil");
     gLoadData.AccessModel(MODEL_BOOK_OF_LAGLE, L"Data\\Item\\", L"Book_of_Rargle");
@@ -1322,6 +1357,8 @@ void OpenItemTextures()
     for (int i = 41; i <= 43; ++i)
         ::gLoadData.OpenTexture(MODEL_WING + i, L"Item\\");
 
+    gLoadData.OpenTexture(MODEL_CELESTIAL_WINGS, L"Item\\");
+
     for (int i = 21; i <= 23; ++i)
         ::gLoadData.OpenTexture(MODEL_STAFF + i, L"Item\\");
 
@@ -1401,6 +1438,11 @@ void OpenItemTextures()
 
     for (int i = 14; i <= 20; ++i)
         gLoadData.OpenTexture(MODEL_STAFF + i, L"Item\\");
+
+    gLoadData.OpenTexture(MODEL_CELESTIAL_STAFF, L"Item\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_SHIELD, L"Item\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_RING, L"Item\\");
+    gLoadData.OpenTexture(MODEL_CELESTIAL_PENDANT, L"Item\\");
 
     for (int i = 21; i <= 28; ++i)
         gLoadData.OpenTexture(MODEL_HELPER + i, L"Item\\");

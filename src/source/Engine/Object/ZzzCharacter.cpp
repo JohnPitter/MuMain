@@ -174,6 +174,43 @@ static  int     g_iOldPositionX = 0;
 static  int     g_iOldPositionY = 0;
 static  float   g_fStopTime = 0.f;
 
+namespace
+{
+    constexpr int CELESTIAL_SET_EFFECT_MINIMUM_LEVEL = 10;
+    constexpr int CELESTIAL_SET_EFFECT_INTERVAL = 8;
+    constexpr int CELESTIAL_SET_ROOT_BONE = 0;
+    constexpr float CELESTIAL_SET_AURA_HEIGHT = 75.0f;
+    constexpr float CELESTIAL_SET_AURA_SCALE = 1.6f;
+    constexpr float CELESTIAL_SET_AURA_RED = 1.0f;
+    constexpr float CELESTIAL_SET_AURA_GREEN = 0.78f;
+    constexpr float CELESTIAL_SET_AURA_BLUE = 0.28f;
+
+    bool IsCelestialArmorSet(const CHARACTER* character)
+    {
+        return character->BodyPart[BODYPART_HELM].Type == MODEL_CELESTIAL_HELM
+            && character->BodyPart[BODYPART_ARMOR].Type == MODEL_CELESTIAL_ARMOR
+            && character->BodyPart[BODYPART_PANTS].Type == MODEL_CELESTIAL_PANTS
+            && character->BodyPart[BODYPART_GLOVES].Type == MODEL_CELESTIAL_GLOVES
+            && character->BodyPart[BODYPART_BOOTS].Type == MODEL_CELESTIAL_BOOTS;
+    }
+
+    void RenderCelestialSetAura(const CHARACTER* character, OBJECT* object, BMD* model)
+    {
+        if (EquipmentLevelSet < CELESTIAL_SET_EFFECT_MINIMUM_LEVEL || !IsCelestialArmorSet(character) || !rand_fps_check(CELESTIAL_SET_EFFECT_INTERVAL))
+        {
+            return;
+        }
+
+        vec3_t localPosition;
+        vec3_t worldPosition;
+        vec3_t light;
+        Vector(0.0f, 0.0f, CELESTIAL_SET_AURA_HEIGHT, localPosition);
+        Vector(CELESTIAL_SET_AURA_RED, CELESTIAL_SET_AURA_GREEN, CELESTIAL_SET_AURA_BLUE, light);
+        model->TransformPosition(object->BoneTransform[CELESTIAL_SET_ROOT_BONE], localPosition, worldPosition, true);
+        CreateSprite(BITMAP_LIGHT, worldPosition, CELESTIAL_SET_AURA_SCALE, light, object);
+    }
+}
+
 void RegisterBuff(eBuffState buff, OBJECT* o, const int bufftime = 0);
 void UnRegisterBuff(eBuffState buff, OBJECT* o);
 
@@ -6682,6 +6719,8 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         if (Type >= MODEL_WING && Type <= MODEL_WINGS_OF_DARKNESS) return; // 1st and 2nd Wings
         else if (Type >= MODEL_WING_OF_STORM && Type <= MODEL_WING_OF_DIMENSION) // 3rd Wings
             return;
+        else if (Type == MODEL_CELESTIAL_WINGS)
+            return;
         else if (MODEL_WING + 130 >= Type && Type <= MODEL_WING + 135) return; // Small Wings and Capes
         else if (Type >= MODEL_CAPE_OF_FIGHTER && Type <= MODEL_CAPE_OF_OVERRULE) return; // Capes
     }
@@ -7529,6 +7568,23 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         CreateSprite(BITMAP_SHINY + 1, Position, 1.f, Light, o, 360.f - Rotation);
     }
     break;
+    case MODEL_CELESTIAL_STAFF:
+    {
+        const float pulse = 0.65f + 0.35f * sinf(WorldTime * 0.002f);
+        const float rotation = WorldTime * 0.054f;
+
+        Vector(0.f, 0.f, 0.f, p);
+        b->TransformPosition(BoneTransform[0], p, Position, true);
+        Vector(1.f, 0.78f, 0.24f, Light);
+        CreateSprite(BITMAP_LIGHT, Position, 1.6f + pulse, Light, o);
+        CreateSprite(BITMAP_SHINY + 1, Position, 0.75f + pulse * 0.35f, Light, o, rotation);
+
+        Vector(0.45f, 0.78f, 1.f, Light);
+        CreateSprite(BITMAP_SHINY + 1, Position, 0.55f + pulse * 0.25f, Light, o, 360.f - rotation);
+        if (rand_fps_check(2))
+            CreateParticle(BITMAP_SPARK + 1, Position, o->Angle, Light, 11, 0.35f + pulse * 0.2f);
+    }
+    break;
     case MODEL_GREAT_LORD_SCEPTER:
     {
         auto Rotation = (float)(rand() % 360);
@@ -7621,6 +7677,18 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         CreateSprite(BITMAP_SHINY + 1, Position, 1.5f, Light, o);
         CreateSprite(BITMAP_LIGHT, Position, Luminosity + 1.5f, Light, o);
         break;
+    case MODEL_CELESTIAL_SHIELD:
+    {
+        const float pulse = 0.7f + 0.3f * sinf(WorldTime * 0.002f);
+        Vector(0.f, 0.f, 0.f, p);
+        b->TransformPosition(BoneTransform[0], p, Position, true);
+
+        Vector(1.f, 0.75f, 0.2f, Light);
+        CreateSprite(BITMAP_LIGHT, Position, 1.1f + pulse, Light, o);
+        Vector(0.4f, 0.72f, 1.f, Light);
+        CreateSprite(BITMAP_SHINY + 1, Position, 0.6f + pulse * 0.35f, Light, o, WorldTime * 0.036f);
+    }
+    break;
     case MODEL_ELEMENTAL_MACE:
         Vector(Luminosity * 1.f, Luminosity * 0.9f, Luminosity * 0.f, Light);
 
@@ -8484,6 +8552,7 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         case MODEL_WING_OF_ILLUSION:        // Wing of Illusion
         case MODEL_WING_OF_RUIN:        // Wing of Ruin
         case MODEL_WING_OF_DIMENSION:        // Wing of Dimension
+        case MODEL_CELESTIAL_WINGS:
 
         case MODEL_WING + 131:        // Small Wing of Curse
         case MODEL_WING + 132:        // Small Wings of Elf
@@ -11062,6 +11131,7 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
                         CreateSprite(BITMAP_LIGHT, Position, 1.3f, Light, o);
                     }
                 }
+                RenderCelestialSetAura(c, o, b);
                 if ((c->BodyPart[BODYPART_BOOTS].Type >= MODEL_DRAGON_KNIGHT_BOOTS && c->BodyPart[BODYPART_BOOTS].Type <= MODEL_SUNLIGHT_BOOTS)
                     || c->BodyPart[BODYPART_BOOTS].Type == MODEL_AURA_BOOTS)
                 {

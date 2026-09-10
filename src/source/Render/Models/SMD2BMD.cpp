@@ -76,7 +76,7 @@ void FixupSMD()
 
     for (int i = 0; i < tg->TriangleNum; i++)
     {
-        int MeshNum = 0;
+        int MeshNum = -1;
         for (int k = 0; k < mg->MeshNum; k++)
         {
             if (strcmp(tg->TextureName[i], mg->Texture[k].FileName) == 0)
@@ -86,7 +86,7 @@ void FixupSMD()
             }
         }
 
-        if (MeshNum == 0)
+        if (MeshNum == -1)
         {
             MeshNum = mg->MeshNum;
             mg->Mesh[MeshNum].Texture = mg->MeshNum;
@@ -106,6 +106,7 @@ void FixupSMD()
                 {
                     Vertex_t* v2 = &m->Vertex[k];
                     if (
+                        v->Node == v2->Node &&
                         v->Position[0] == v2->Position[0] &&
                         v->Position[1] == v2->Position[1] &&
                         v->Position[2] == v2->Position[2])
@@ -131,6 +132,8 @@ void FixupSMD()
                 {
                     Normal_t* n = &m->Normal[k];
                     if (
+                        v->Node == n->Node &&
+                        m->VertexList[m->TriangleNum][j] == n->BindVertex &&
                         v->Normal[0] == n->Normal[0] &&
                         v->Normal[1] == n->Normal[1] &&
                         v->Normal[2] == n->Normal[2])
