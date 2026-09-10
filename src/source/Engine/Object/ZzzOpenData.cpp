@@ -46,6 +46,22 @@ bool Flip = false;
 
 namespace
 {
+    void LoadCelestialProps()
+    {
+        constexpr const wchar_t* directory = L"Data\\Item\\";
+        gLoadData.AccessModel(MODEL_CELESTIAL_STAFF, directory, L"Celestial_Staff", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_SHIELD, directory, L"Celestial_Shield", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_RING, directory, L"Celestial_Ring", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_PENDANT, directory, L"Celestial_Pendant", -1);
+        constexpr int models[] = {MODEL_CELESTIAL_STAFF, MODEL_CELESTIAL_SHIELD,
+                                  MODEL_CELESTIAL_RING, MODEL_CELESTIAL_PENDANT};
+        for (const int model : models)
+        {
+            if (!Models[model].m_bCompletedAlloc)
+                g_ErrorReport.Write(L"[Celestial] Authored prop failed to load: %d. Repair client assets.\r\n", model);
+        }
+    }
+
     void LoadCelestialWings()
     {
         wchar_t modelPath[] = L"Data\\Item\\Celestial_Wings.smd";
@@ -729,7 +745,6 @@ void OpenItems()
 
     gLoadData.AccessModel(MODEL_GRAND_SOUL_SHIELD, L"Data\\Item\\", L"Shield", 16);
     gLoadData.AccessModel(MODEL_ELEMENTAL_SHIELD, L"Data\\Item\\", L"Shield", 17);
-    gLoadData.AccessModel(MODEL_CELESTIAL_SHIELD, L"Data\\Item\\", L"Shield", 13);
 
     //////////////////////////////////////////////////////////////////////////
     //  MODEL_STAFF
@@ -742,7 +757,6 @@ void OpenItems()
     gLoadData.AccessModel(MODEL_DIVINE_STAFF_OF_ARCHANGEL, L"Data\\Item\\", L"Staff", 11);
     gLoadData.AccessModel(MODEL_DIVINE_STICK_OF_ARCHANGEL, L"Data\\Item\\", L"Archangelus");
     gLoadData.AccessModel(MODEL_STAFF_OF_KUNDUN, L"Data\\Item\\", L"Staff", 12);
-    gLoadData.AccessModel(MODEL_CELESTIAL_STAFF, L"Data\\Item\\", L"Staff", 12);
 
     for (int i = 14; i <= 20; ++i)
         ::gLoadData.AccessModel(MODEL_STAFF + i, L"Data\\Item\\", L"Staff", i + 1);
@@ -775,8 +789,7 @@ void OpenItems()
     for (int i = 0; i < 2; i++)
         gLoadData.AccessModel(MODEL_HELPER + i + 8, L"Data\\Item\\", L"Ring", i + 1);
 
-    gLoadData.AccessModel(MODEL_CELESTIAL_RING, L"Data\\Item\\", L"Ring", 2);
-    gLoadData.AccessModel(MODEL_CELESTIAL_PENDANT, L"Data\\Item\\", L"Necklace", 2);
+    LoadCelestialProps();
 
     g_ChangeRingMgr->LoadItemModel();
 

@@ -1,0 +1,18 @@
+{
+  "Staff": {
+    "max_error": 7.152557373046875e-07,
+    "triangles": 10636
+  },
+  "Shield": {
+    "max_error": 4.76837158203125e-07,
+    "triangles": 8494
+  },
+  "Ring": {
+    "max_error": 2.384185791015625e-07,
+    "triangles": 6172
+  },
+  "Pendant": {
+    "max_error": 9.238719940185547e-07,
+    "triangles": 7594
+  }
+}

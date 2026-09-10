@@ -4,6 +4,7 @@
 #include "Camera/CameraMove.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
 #include "Render/Models/ZzzBMD.h"
+#include "Render/Models/CelestialModels.h"
 #include "Render/Shaders/ItemSpecularShader.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -46,6 +47,33 @@
 #include "Engine/Object/CullingConstants.h"
 
 static bool IsRenderableModelType(int Type);
+
+namespace
+{
+    void RenderCelestialMaterialAccents(BMD* model, OBJECT* object, int level, float alpha)
+    {
+        constexpr int shimmerMinimumLevel = 7;
+        constexpr float shimmerMaximumDistance = 1200.0f;
+        constexpr float shimmerStrength = 0.18f;
+        if (level < shimmerMinimumLevel || g_pOption->GetRenderLevel() == 0
+            || object->Distance > shimmerMaximumDistance)
+            return;
+
+        vec3_t originalLight;
+        VectorCopy(model->BodyLight, originalLight);
+        for (int mesh = 0; mesh < model->NumMeshs; ++mesh)
+        {
+            if (strcmp(model->Textures[mesh].FileName, "Celestial_Gold.jpg") != 0)
+                continue;
+
+            Vector(0.8f, 0.68f, 0.4f, model->BodyLight);
+            model->RenderMesh(mesh, RENDER_CHROME | RENDER_BRIGHT,
+                              alpha * shimmerStrength, -1, shimmerStrength,
+                              object->BlendMeshTexCoordU, object->BlendMeshTexCoordV);
+        }
+        VectorCopy(originalLight, model->BodyLight);
+    }
+}
 
 // DevEditor function declarations
 #ifdef _EDITOR
@@ -10431,6 +10459,12 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
         {
             Vector(Luminosity * 0.3f, Luminosity * 0.5f, Luminosity * 1.f, b->BodyLight);
             RenderPartObjectBody(b, o, Type, Alpha, RenderType);
+        }
+        else if (Render::Items::Celestial::IsAuthoredProp(Type))
+        {
+            VectorCopy(Light, b->BodyLight);
+            RenderPartObjectBody(b, o, Type, Alpha, RenderType);
+            RenderCelestialMaterialAccents(b, o, Level, Alpha);
         }
         else if (Level < 3 || o->Type == MODEL_ZEN)
         {

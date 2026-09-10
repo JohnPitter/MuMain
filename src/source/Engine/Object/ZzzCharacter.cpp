@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Render/Models/CelestialModels.h"
 #include <execution>
 #include <algorithm>
 #include <span>
@@ -208,6 +209,32 @@ namespace
         Vector(CELESTIAL_SET_AURA_RED, CELESTIAL_SET_AURA_GREEN, CELESTIAL_SET_AURA_BLUE, light);
         model->TransformPosition(object->BoneTransform[CELESTIAL_SET_ROOT_BONE], localPosition, worldPosition, true);
         CreateSprite(BITMAP_LIGHT, worldPosition, CELESTIAL_SET_AURA_SCALE, light, object);
+    }
+
+    void RenderCelestialStaffGlow(BMD* model, OBJECT* object)
+    {
+        if (model->NumBones <= Render::Items::Celestial::StaffTipBone)
+            return;
+
+        constexpr float pulseSpeed = 0.002f;
+        constexpr float rotationSpeed = 0.054f;
+        const float pulse = 0.65f + 0.35f * sinf(WorldTime * pulseSpeed);
+        const float rotation = WorldTime * rotationSpeed;
+        vec3_t origin = {0.f, 0.f, 0.f};
+        vec3_t position;
+        vec3_t light = {1.f, 0.78f, 0.24f};
+        model->TransformPosition(BoneTransform[Render::Items::Celestial::StaffHeartBone],
+                                 origin, position, true);
+        CreateSprite(BITMAP_LIGHT, position, 1.6f + pulse, light, object);
+        CreateSprite(BITMAP_SHINY + 1, position, 0.75f + pulse * 0.35f, light, object, rotation);
+        Vector(0.45f, 0.78f, 1.f, light);
+        CreateSprite(BITMAP_SHINY + 1, position, 0.55f + pulse * 0.25f, light, object, 360.f - rotation);
+        if (rand_fps_check(2))
+            CreateParticle(BITMAP_SPARK + 1, position, object->Angle, light, 11, 0.35f + pulse * 0.2f);
+        model->TransformPosition(BoneTransform[Render::Items::Celestial::StaffTipBone],
+                                 origin, position, true);
+        Vector(1.f, 0.9f, 0.65f, light);
+        CreateSprite(BITMAP_SHINY + 1, position, 0.3f + pulse * 0.1f, light, object, rotation);
     }
 }
 
@@ -7569,21 +7596,7 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
     }
     break;
     case MODEL_CELESTIAL_STAFF:
-    {
-        const float pulse = 0.65f + 0.35f * sinf(WorldTime * 0.002f);
-        const float rotation = WorldTime * 0.054f;
-
-        Vector(0.f, 0.f, 0.f, p);
-        b->TransformPosition(BoneTransform[0], p, Position, true);
-        Vector(1.f, 0.78f, 0.24f, Light);
-        CreateSprite(BITMAP_LIGHT, Position, 1.6f + pulse, Light, o);
-        CreateSprite(BITMAP_SHINY + 1, Position, 0.75f + pulse * 0.35f, Light, o, rotation);
-
-        Vector(0.45f, 0.78f, 1.f, Light);
-        CreateSprite(BITMAP_SHINY + 1, Position, 0.55f + pulse * 0.25f, Light, o, 360.f - rotation);
-        if (rand_fps_check(2))
-            CreateParticle(BITMAP_SPARK + 1, Position, o->Angle, Light, 11, 0.35f + pulse * 0.2f);
-    }
+        RenderCelestialStaffGlow(b, o);
     break;
     case MODEL_GREAT_LORD_SCEPTER:
     {

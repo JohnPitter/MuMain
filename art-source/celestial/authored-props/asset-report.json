@@ -1,0 +1,114 @@
+{
+  "status": "geometry review; no ingame verification; not deployed",
+  "items": [
+    {
+      "file": "Celestial_Staff.bmd",
+      "meshes": 8,
+      "triangles": 10636,
+      "bones": 3,
+      "textures": [
+        "Celestial_Emissive.jpg",
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bounds": [
+        [
+          -5.549956321716309,
+          6.0
+        ],
+        [
+          -128.0,
+          91.00028991699219
+        ],
+        [
+          -25.702646255493164,
+          25.702646255493164
+        ]
+      ],
+      "sha256": "5ac97450a5ae8f3c979647b1bb20693286e9aa1b451eb4be01112b023125ffbb",
+      "objects": 49
+    },
+    {
+      "file": "Celestial_Shield.bmd",
+      "meshes": 6,
+      "triangles": 8494,
+      "bones": 1,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bounds": [
+        [
+          -3.5,
+          16.299999237060547
+        ],
+        [
+          -28.601289749145508,
+          28.601289749145508
+        ],
+        [
+          -44.0,
+          62.00059127807617
+        ]
+      ],
+      "sha256": "ddfbacdf436e946918f1475736d81ce8d5d77593156d993e2eda421328b7ab6b",
+      "objects": 51
+    },
+    {
+      "file": "Celestial_Pendant.bmd",
+      "meshes": 6,
+      "triangles": 7594,
+      "bones": 1,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bounds": [
+        [
+          -13.852678298950195,
+          13.852678298950195
+        ],
+        [
+          -18.305461883544922,
+          21.399999618530273
+        ],
+        [
+          -1.3000001907348633,
+          3.8195555210113525
+        ]
+      ],
+      "sha256": "7d983077eeaceb138daf39762da727197456e2de5afbf8e9dc085ff59ef2af14",
+      "objects": 42
+    },
+    {
+      "file": "Celestial_Ring.bmd",
+      "meshes": 5,
+      "triangles": 6172,
+      "bones": 1,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bounds": [
+        [
+          -8.800000190734863,
+          8.798434257507324
+        ],
+        [
+          -2.478999614715576,
+          11.440841674804688
+        ],
+        [
+          -11.800000190734863,
+          7.665999889373779
+        ]
+      ],
+      "sha256": "27f799ad23178a4f86e7d37d02ec040206a1d9458ae022f55174b8584c4dc01e",
+      "objects": 25
+    }
+  ]
+}
