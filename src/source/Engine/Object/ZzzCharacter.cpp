@@ -7,6 +7,7 @@
 
 #include "stdafx.h"
 #include "Render/Models/CelestialModels.h"
+#include "Render/Models/HelmetAppearance.h"
 #include <execution>
 #include <algorithm>
 #include <span>
@@ -12306,13 +12307,7 @@ void SetCharacterScale(CHARACTER* c)
     if (c->Change)
         return;
 
-    if (c->BodyPart[BODYPART_HELM].Type == MODEL_HELM ||
-        c->BodyPart[BODYPART_HELM].Type == MODEL_PAD_HELM ||
-        c->BodyPart[BODYPART_HELM].Type == MODEL_HELM + 63 ||
-        c->BodyPart[BODYPART_HELM].Type == MODEL_HELM + 68 ||
-        c->BodyPart[BODYPART_HELM].Type == MODEL_HELM + 65 ||
-        c->BodyPart[BODYPART_HELM].Type == MODEL_HELM + 70 ||
-        (c->BodyPart[BODYPART_HELM].Type >= MODEL_VINE_HELM && c->BodyPart[BODYPART_HELM].Type <= MODEL_SPIRIT_HELM))
+    if (Render::Items::UsesSeparateHead(c->BodyPart[BODYPART_HELM].Type))
     {
         c->BodyPart[BODYPART_HEAD].Type = static_cast<int>(MODEL_BODY_HELM) + c->SkinIndex;
     }

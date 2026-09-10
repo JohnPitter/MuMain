@@ -21,7 +21,7 @@ def c_string(value):
     return encoded.ljust(32, b'\0')
 
 
-def triangle_groups(objects, transform):
+def triangle_groups(objects, transform, bind=None):
     grouped = defaultdict(list)
     for obj in sorted(objects, key=lambda item: item.name):
         data = obj.data
@@ -35,9 +35,23 @@ def triangle_groups(objects, transform):
                 vertex = data.vertices[data.loops[loop_id].vertex_index]
                 uv = data.uv_layers.active.data[loop_id].uv
                 normal = (normals @ data.corner_normals[loop_id].vector).normalized()
-                corners.append((tuple(matrix @ vertex.co), tuple(normal), (uv.x, 1 - uv.y)))
+                corner = (tuple(matrix @ vertex.co), tuple(normal), (uv.x, 1 - uv.y))
+                corners.append(bound_corner(corner, vertex, obj, bind))
             grouped[texture].append(corners)
     return grouped
+
+
+def bound_corner(corner, vertex, obj, bind):
+    if bind is None:
+        return corner
+    influences = [group for group in vertex.groups if group.weight > 0]
+    if len(influences) != 1 or abs(influences[0].weight - 1) > .0001:
+        raise ValueError(f'MU requires one full influence: {obj.name}/{vertex.index}')
+    node = int(obj.vertex_groups[influences[0].group].name.removeprefix('mu_'))
+    inverse = bind[node].inverted()
+    position, normal, uv = corner
+    return (tuple(inverse @ Vector(position)),
+            tuple((inverse.to_3x3() @ Vector(normal)).normalized()), uv, node)
 
 
 def encode_mesh(triangles, texture, index):
@@ -45,9 +59,11 @@ def encode_mesh(triangles, texture, index):
     vertex_ids, normal_ids, uv_ids = {}, {}, {}
     for triangle in triangles:
         face = [[], [], []]
-        for position, normal, uv in triangle:
-            v = intern(position, vertices, vertex_ids)
-            n = intern((*normal, v), normals, normal_ids)
+        for corner in triangle:
+            position, normal, uv = corner[:3]
+            node = corner[3] if len(corner) == 4 else 0
+            v = intern((node, *position), vertices, vertex_ids)
+            n = intern((node, *normal, v), normals, normal_ids)
             t = intern(uv, uvs, uv_ids)
             for values, value in zip(face, (v, n, t)):
                 values.append(value)
@@ -56,10 +72,10 @@ def encode_mesh(triangles, texture, index):
     if max(counts) > MAX_MESH_ELEMENTS:
         raise ValueError(f'Client mesh limit exceeded: {counts}')
     result = bytearray(struct.pack('<5h', *counts, index))
-    for point in vertices:
-        result.extend(struct.pack('<h2x3f', 0, *point))
-    for nx, ny, nz, vertex in normals:
-        result.extend(struct.pack('<h2x3fh2x', 0, nx, ny, nz, vertex))
+    for node, *point in vertices:
+        result.extend(struct.pack('<h2x3f', node, *point))
+    for node, nx, ny, nz, vertex in normals:
+        result.extend(struct.pack('<h2x3fh2x', node, nx, ny, nz, vertex))
     for uv in uvs:
         result.extend(struct.pack('<2f', *uv))
     for face in faces:

@@ -1,0 +1,104 @@
+{
+  "status": "first authored armor; visual revision pending; not deployed",
+  "rig_sha256": "a3942b1630c09255cea9be18eb22825b55f9e410831fab9aa9510fe32a544ac3",
+  "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+  "pieces": [
+    {
+      "file": "Celestial_Helm.bmd",
+      "meshes": 3,
+      "triangles": 1938,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bones": 51
+    },
+    {
+      "file": "Celestial_Armor.bmd",
+      "meshes": 4,
+      "triangles": 5490,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bones": 51
+    },
+    {
+      "file": "Celestial_Pants.bmd",
+      "meshes": 11,
+      "triangles": 18242,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bones": 51
+    },
+    {
+      "file": "Celestial_Gloves.bmd",
+      "meshes": 3,
+      "triangles": 2180,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bones": 51
+    },
+    {
+      "file": "Celestial_Boots.bmd",
+      "meshes": 4,
+      "triangles": 3200,
+      "textures": [
+        "Celestial_Gold.jpg",
+        "Celestial_Ivory.jpg",
+        "Celestial_Sapphire.jpg"
+      ],
+      "bones": 51
+    }
+  ],
+  "clips": [
+    {
+      "name": "PLAYER_STOP_WAND",
+      "action": 10,
+      "start": 5,
+      "end": 37,
+      "checked_vertices": 146475,
+      "maximum_error": 9.42353769457674e-05
+    },
+    {
+      "name": "PLAYER_WALK_WAND",
+      "action": 23,
+      "start": 45,
+      "end": 73,
+      "checked_vertices": 130200,
+      "maximum_error": 0.00015324510659227845
+    },
+    {
+      "name": "PLAYER_RUN_WAND",
+      "action": 32,
+      "start": 81,
+      "end": 125,
+      "checked_vertices": 195300,
+      "maximum_error": 9.567212069690287e-05
+    },
+    {
+      "name": "PLAYER_SKILL_HAND1",
+      "action": 146,
+      "start": 133,
+      "end": 153,
+      "checked_vertices": 97650,
+      "maximum_error": 0.00012246548495764442
+    },
+    {
+      "name": "PLAYER_DIE1",
+      "action": 237,
+      "start": 161,
+      "end": 181,
+      "checked_vertices": 97650,
+      "maximum_error": 0.00012996087181414652
+    }
+  ]
+}

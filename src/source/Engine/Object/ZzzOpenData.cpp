@@ -46,6 +46,23 @@ bool Flip = false;
 
 namespace
 {
+    void LoadCelestialArmor()
+    {
+        constexpr const wchar_t* directory = L"Data\\Player\\";
+        gLoadData.AccessModel(MODEL_CELESTIAL_HELM, directory, L"Celestial_Helm", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_ARMOR, directory, L"Celestial_Armor", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_PANTS, directory, L"Celestial_Pants", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_GLOVES, directory, L"Celestial_Gloves", -1);
+        gLoadData.AccessModel(MODEL_CELESTIAL_BOOTS, directory, L"Celestial_Boots", -1);
+        constexpr int models[] = {MODEL_CELESTIAL_HELM, MODEL_CELESTIAL_ARMOR,
+            MODEL_CELESTIAL_PANTS, MODEL_CELESTIAL_GLOVES, MODEL_CELESTIAL_BOOTS};
+        for (const int model : models)
+        {
+            if (!Models[model].m_bCompletedAlloc)
+                g_ErrorReport.Write(L"[Celestial] Authored armor failed to load: %d. Repair client assets.\r\n", model);
+        }
+    }
+
     void LoadCelestialProps()
     {
         constexpr const wchar_t* directory = L"Data\\Item\\";
@@ -368,11 +385,7 @@ void OpenPlayers()
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_ARMOR, L"Data\\Player\\", L"ArmorMale74", -1);
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_PANTS, L"Data\\Player\\", L"PantMale74", -1);
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_BOOTS, L"Data\\Player\\", L"BootMale74", -1);
-    gLoadData.AccessModel(MODEL_CELESTIAL_HELM, L"Data\\Player\\", L"HelmMale74", -1);
-    gLoadData.AccessModel(MODEL_CELESTIAL_ARMOR, L"Data\\Player\\", L"ArmorMale74", -1);
-    gLoadData.AccessModel(MODEL_CELESTIAL_PANTS, L"Data\\Player\\", L"PantMale74", -1);
-    gLoadData.AccessModel(MODEL_CELESTIAL_GLOVES, L"Data\\Player\\", L"GloveMale", 40);
-    gLoadData.AccessModel(MODEL_CELESTIAL_BOOTS, L"Data\\Player\\", L"BootMale74", -1);
+    LoadCelestialArmor();
 
     {
         auto* pCloth = new CPhysicsClothMesh[1];

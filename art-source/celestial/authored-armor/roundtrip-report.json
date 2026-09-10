@@ -1,0 +1,27 @@
+{
+  "Helm": {
+    "max_error": 4.015470267404453e-07,
+    "triangles": 1938,
+    "minimum_triangle_area": 0.0005402071757079221
+  },
+  "Armor": {
+    "max_error": 2.384185791015625e-07,
+    "triangles": 5490,
+    "minimum_triangle_area": 0.00035074621004939143
+  },
+  "Pants": {
+    "max_error": 3.5762786865234375e-07,
+    "triangles": 18242,
+    "minimum_triangle_area": 0.0006869208873957031
+  },
+  "Gloves": {
+    "max_error": 1.1362135410308838e-07,
+    "triangles": 2180,
+    "minimum_triangle_area": 0.0005097555009595387
+  },
+  "Boots": {
+    "max_error": 3.5762786865234375e-07,
+    "triangles": 3200,
+    "minimum_triangle_area": 0.0020298025833164835
+  }
+}

@@ -10460,7 +10460,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
             Vector(Luminosity * 0.3f, Luminosity * 0.5f, Luminosity * 1.f, b->BodyLight);
             RenderPartObjectBody(b, o, Type, Alpha, RenderType);
         }
-        else if (Render::Items::Celestial::IsAuthoredProp(Type))
+        else if (Render::Items::Celestial::IsAuthoredEquipment(Type))
         {
             VectorCopy(Light, b->BodyLight);
             RenderPartObjectBody(b, o, Type, Alpha, RenderType);
