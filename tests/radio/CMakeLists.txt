@@ -6,6 +6,7 @@
 add_library(radio_parsers STATIC
     ${CMAKE_SOURCE_DIR}/src/source/Audio/Radio/IcyMetadata.cpp
     ${CMAKE_SOURCE_DIR}/src/source/Audio/Radio/RadioStationList.cpp
+    ${CMAKE_SOURCE_DIR}/src/source/Audio/Radio/TitleTimeline.cpp
     ${CMAKE_SOURCE_DIR}/src/source/UI/Radio/RadioMarquee.cpp
     ${CMAKE_SOURCE_DIR}/src/source/UI/Radio/RadioStatusText.cpp
 )
@@ -23,6 +24,7 @@ mu_add_test(
     SOURCES
         test_icy_metadata.cpp
         test_radio_station_list.cpp
+        test_radio_title_timeline.cpp
         test_radio_marquee.cpp
         test_radio_status_text.cpp
     LINK_LIBS
@@ -40,6 +42,7 @@ if(MU_BUILD_RADIO_HARNESS)
         harness/radio_harness.cpp
         ${CMAKE_SOURCE_DIR}/src/source/Audio/Radio/RadioEngine.cpp
         ${CMAKE_SOURCE_DIR}/src/source/Audio/Radio/IcyMetadata.cpp
+        ${CMAKE_SOURCE_DIR}/src/source/Audio/Radio/TitleTimeline.cpp
     )
     # The shim dir owns stdafx.h / AudioPlayer.h / ErrorReport.h for the
     # engine translation unit: the same seam trick as the stdafx_shim above,

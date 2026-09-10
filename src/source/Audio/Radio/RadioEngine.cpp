@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstring>
+#include <deque>
 #include <vector>
 
 #include "Audio/AudioPlayer.h"
@@ -181,6 +182,48 @@ namespace Audio::Radio
     {
         std::lock_guard lock(m_stateMutex);
         out = m_snapshot;
+
+        // Playback-synced now playing: the snapshot title is the newest thing
+        // the parser saw on the wire, but the listener hears the stream one
+        // pre-buffer behind it. Convert the still-queued audio into stream
+        // time (same trick as PrebufferTargetBytes: SDL counts destination
+        // bytes and MIX_SetTrackAudioStream pins that format, so bytes/second
+        // -> microseconds is exact) and subtract it from the produced
+        // timeline — what is left is the position the speakers are on. Then
+        // report the title that owns that position.
+        if (out.state != State::Playing && out.state != State::Buffering)
+        {
+            return;
+        }
+        if (m_titles.Empty())
+        {
+            return;
+        }
+
+        std::int64_t queuedUs = 0;
+        if (m_stream != nullptr)
+        {
+            SDL_AudioSpec dst {};
+            if (SDL_GetAudioStreamFormat(m_stream, nullptr, &dst))
+            {
+                const std::int64_t bytesPerSecond =
+                    static_cast<std::int64_t>(SDL_AUDIO_BYTESIZE(dst.format))
+                    * dst.channels * dst.freq;
+                if (bytesPerSecond > 0)
+                {
+                    queuedUs = static_cast<std::int64_t>(
+                        SDL_GetAudioStreamAvailable(m_stream)) * 1000000LL / bytesPerSecond;
+                }
+            }
+        }
+
+        const std::int64_t producedUs = m_producedUs.load(std::memory_order_acquire);
+        const std::int64_t playbackUs = producedUs > queuedUs ? producedUs - queuedUs : 0;
+        const std::wstring& current = m_titles.TitleAt(playbackUs);
+        if (!current.empty())
+        {
+            wcsncpy_s(out.nowPlaying, current.c_str(), _TRUNCATE);
+        }
     }
 
     void RadioEngine::GetDiagnostics(Diagnostics& out) const
@@ -204,23 +247,16 @@ namespace Audio::Radio
         }
     }
 
-    void RadioEngine::PublishTitle(const char* data, std::size_t size)
+    bool RadioEngine::ExtractTitleWide(const char* data, std::size_t size, std::wstring& outWide)
     {
         std::string title;
         if (!IcyMetadata::ExtractStreamTitle(data, size, title))
         {
-            return;
+            return false;
         }
 
-        std::wstring wide;
-        IcyMetadata::Utf8ToWide(title, wide);
-        if (wide.empty())
-        {
-            return;
-        }
-
-        std::lock_guard lock(m_stateMutex);
-        wcsncpy_s(m_snapshot.nowPlaying, wide.c_str(), _TRUNCATE);
+        IcyMetadata::Utf8ToWide(title, outWide);
+        return !outWide.empty();
     }
 
     void RadioEngine::PublishState(State state)
@@ -231,6 +267,10 @@ namespace Audio::Radio
         if (state == State::Off)
         {
             m_snapshot.nowPlaying[0] = L'\0';
+            // A stopped session has no valid timeline: positions from it must
+            // never answer a later query (GetStatus also gates on state).
+            m_titles.Reset();
+            m_producedUs.store(0, std::memory_order_release);
         }
     }
 
@@ -283,6 +323,12 @@ namespace Audio::Radio
         {
             return false;
         }
+
+        // m_stream is read every frame by GetStatus/GetDiagnostics on the UI
+        // thread (now-playing sync needs the live queue level), so the
+        // destroy/recreate below must exclude concurrent readers. The lock is
+        // safe here: StreamLoop never holds m_stateMutex when it calls in.
+        std::lock_guard lock(m_stateMutex);
 
         if (m_stream != nullptr)
         {
@@ -400,7 +446,11 @@ namespace Audio::Radio
             {
                 std::lock_guard lock(m_stateMutex);
                 m_snapshot.nowPlaying[0] = L'\0';
+                // Fresh connection, fresh timeline: title positions from the
+                // previous session must not answer this one's queries.
+                m_titles.Reset();
             }
+            m_producedUs.store(0, std::memory_order_release);
 
             if (!EnsureMixerTrack())
             {
@@ -561,6 +611,25 @@ namespace Audio::Radio
         bool started = false;
         bool awaitingReprime = false;
 
+        // Now-playing position bookkeeping (per connection). The parser hands
+        // us titles at BYTE boundaries of the MP3 payload; the decoder walks
+        // the same bytes one frame at a time and produces PCM. We bind a
+        // title to (a) the decoder-input byte position where its audio starts
+        // and (b) — once the decoder consumes up to that byte — the stream
+        // TIME (microseconds of decoded PCM) at that point. GetStatus then
+        // subtracts the still-queued audio from that timeline to land on the
+        // position the listener actually hears. Counters reset with the
+        // session (ThreadMain clears m_titles/m_producedUs per connection).
+        std::int64_t appendedBytes = 0;   // MP3 payload bytes handed to the decoder
+        std::int64_t decodedBytes = 0;    // MP3 payload bytes the decoder consumed
+        std::int64_t timelineUs = 0;      // stream time of the PCM pushed so far
+        struct ByteTitle
+        {
+            std::int64_t bytePos;
+            std::wstring title;
+        };
+        std::deque<ByteTitle> pendingByteTitles;
+
         // Kick helper: shared by the start path and underrun recovery so a
         // refused MIX_PlayTrack is counted (a silent refusal here reads as
         // "the radio stopped out of nowhere" with nothing in the log).
@@ -641,6 +710,7 @@ namespace Audio::Radio
                 }
 
                 mp3Buffer.assign(pending.begin() + headerEnd, pending.end());
+                appendedBytes += static_cast<std::int64_t>(pending.size() - headerEnd);
                 pending.clear();
                 headerDone = true;
             }
@@ -657,6 +727,7 @@ namespace Audio::Radio
                 if (metaInterval == 0)
                 {
                     mp3Buffer.insert(mp3Buffer.end(), pending.begin() + offset, pending.end());
+                    appendedBytes += static_cast<std::int64_t>(pending.size() - offset);
                     offset = pending.size();
                     break;
                 }
@@ -668,6 +739,7 @@ namespace Audio::Radio
                     mp3Buffer.insert(mp3Buffer.end(), pending.begin() + offset,
                         pending.begin() + offset + take);
                     offset += take;
+                    appendedBytes += static_cast<std::int64_t>(take);
                     bytesUntilMeta -= static_cast<int>(take);
                     continue;
                 }
@@ -684,7 +756,14 @@ namespace Audio::Radio
                 }
                 if (metaLength > 0)
                 {
-                    PublishTitle(pending.data() + offset + 1, metaLength);
+                    // The title describes the audio AFTER this boundary:
+                    // bind it to the decoder-input byte position reached so
+                    // far (metadata bytes themselves are not MP3 payload).
+                    std::wstring wide;
+                    if (ExtractTitleWide(pending.data() + offset + 1, metaLength, wide))
+                    {
+                        pendingByteTitles.push_back({ appendedBytes, std::move(wide) });
+                    }
                 }
                 offset += 1 + metaLength;
                 bytesUntilMeta = metaInterval;
@@ -700,6 +779,17 @@ namespace Audio::Radio
             std::size_t decoded = 0;
             while (decoded + 4 <= mp3Buffer.size())
             {
+                // Promote titles whose byte boundary the decoder has reached:
+                // the timeline at this instant IS the stream position where
+                // that title's audio begins (<=1 frame of slack).
+                while (!pendingByteTitles.empty()
+                    && pendingByteTitles.front().bytePos <= decodedBytes)
+                {
+                    std::lock_guard lock(m_stateMutex);
+                    m_titles.Add(timelineUs, std::move(pendingByteTitles.front().title));
+                    pendingByteTitles.pop_front();
+                }
+
                 mp3dec_frame_info_t info {};
                 const int samples = mp3dec_decode_frame(decoder,
                     mp3Buffer.data() + decoded, static_cast<int>(mp3Buffer.size() - decoded),
@@ -709,12 +799,32 @@ namespace Audio::Radio
                     break;  // need more data (resyncs on the next read)
                 }
                 decoded += info.frame_bytes;
+                decodedBytes += info.frame_bytes;
 
-                if (samples > 0 && EnsureAudioStream(info.channels, info.hz))
+                if (samples > 0 && info.hz > 0 && EnsureAudioStream(info.channels, info.hz))
                 {
                     const int bytes = samples * info.channels * static_cast<int>(sizeof(int16_t));
-                    SDL_PutAudioStreamData(m_stream, m_pcmBuffer, bytes);
+                    if (SDL_PutAudioStreamData(m_stream, m_pcmBuffer, bytes))
+                    {
+                        timelineUs += samples * 1000000LL / info.hz;
+                    }
                 }
+            }
+            // Titles still pending after the batch sit inside the sub-frame
+            // residue; their boundaries are within one frame of the timeline
+            // end, so land them there instead of losing them at a disconnect.
+            if (!pendingByteTitles.empty())
+            {
+                std::lock_guard lock(m_stateMutex);
+                for (auto& byteTitle : pendingByteTitles)
+                {
+                    m_titles.Add(timelineUs, std::move(byteTitle.title));
+                }
+                pendingByteTitles.clear();
+            }
+            if (timelineUs != m_producedUs.load(std::memory_order_relaxed))
+            {
+                m_producedUs.store(timelineUs, std::memory_order_release);
             }
             if (decoded > 0)
             {

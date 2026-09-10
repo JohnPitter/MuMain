@@ -23,6 +23,8 @@
 #include <thread>
 #include <winhttp.h>
 
+#include "Audio/Radio/TitleTimeline.h"
+
 struct MIX_Track;
 struct SDL_AudioStream;
 // minimp3's mp3dec_t is an anonymous-struct typedef, so it cannot be
@@ -102,7 +104,7 @@ namespace Audio::Radio
         void ThreadMain(std::uint32_t generation);
         bool StreamConnection(std::uint32_t generation);
         bool StreamLoop(HINTERNET request, std::uint32_t generation);
-        void PublishTitle(const char* data, std::size_t size);
+        bool ExtractTitleWide(const char* data, std::size_t size, std::wstring& outWide);
         void PublishState(State state);
 
         // Closes the in-flight request (if any) so a worker blocked inside a
@@ -123,6 +125,20 @@ namespace Audio::Radio
         std::wstring m_url;
         std::wstring m_stationName;
         int m_volume = 0;               // 0..100, guarded by m_stateMutex
+
+        // Now-playing sync (see TitleTimeline.h): m_snapshot.nowPlaying holds
+        // the LATEST DOWNLOADED title, which runs one pre-buffer (~4s, up to
+        // the backlog cap) ahead of the audible audio. m_titles binds every
+        // title to the stream position where its audio begins (microseconds
+        // of decoded audio, worker-written under m_stateMutex) and GetStatus
+        // answers with the title that owns the CURRENT PLAYBACK position:
+        // produced (m_producedUs) minus still-queued (SDL_GetAudioStream-
+        // Available). We count our own stream accounting instead of
+        // MIX_GetTrackPlaybackPosition because that input position is not
+        // defined for MIX_SetTrackAudioStream tracks (the seek API refuses
+        // them) — our counters are exact by construction.
+        TitleTimeline m_titles;
+        std::atomic<std::int64_t> m_producedUs { 0 };  // decoded PCM pushed to m_stream, us
 
         // The in-flight WinHTTP request, closed by Stop() to abort a blocked
         // read immediately.
