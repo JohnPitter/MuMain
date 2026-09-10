@@ -1,0 +1,14 @@
+=== groovesalad_ref start 14:59:50 ===
+groovesalad_ref exit=1
+=== liga_samba start 15:09:51 ===
+liga_samba exit=1
+=== anonfm start 15:19:51 ===
+anonfm exit=1
+=== vip_smoothjazz start 15:29:51 ===
+vip_smoothjazz exit=1
+=== delicious_beach start 15:39:52 ===
+=== somafm queue armed 15:44:42, waiting for free link ===
+delicious_beach exit=0
+=== yumi start 15:49:52 ===
+=== somafm queue start 16:00:01 ===
+=== secretagent start 16:00:01 ===
