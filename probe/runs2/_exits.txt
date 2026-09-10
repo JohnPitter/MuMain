@@ -1,0 +1,6 @@
+swiss_jazz exit=1
+kexp exit=1
+liga_samba exit=1
+airport_lounge exit=1
+ella_bossa exit=1
+WAVE w1 DONE
