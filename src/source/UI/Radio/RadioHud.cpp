@@ -16,11 +16,16 @@
 
 namespace
 {
-    // Button: the same native empty plate + size as MiniMapCorner's voice
-    // mic/sound buttons, mirrored to the left screen edge, vertically
-    // centered. Stands alone: the "tocando agora" text moved to the marquee
-    // strip above the bottom functionality bar.
-    constexpr float kButtonWidth = 36.f;
+    // Button: the radio plate is the native 54-wide empty-button sheet
+    // (Interface\Radio_btn_plate.OZT = exact flipX of
+    // newui_btn_empty_very_small). The widget draws texels 1:1, so the rect
+    // spans the FULL 54 texels and sits 18px BEHIND the left screen edge
+    // (owner mock, rodada 3): the plate's cut/open side is glued behind the
+    // wall — no gap at x=0, mid-plate pixels running into the edge — and its
+    // closed border shows at screen x=35, facing the gameplay area.
+    constexpr float kPlateWidth = 54.f;
+    constexpr float kPlateHiddenWidth = 18.f;  // behind the left screen edge
+    constexpr float kButtonVisibleWidth = kPlateWidth - kPlateHiddenWidth;
     constexpr float kButtonHeight = 23.f;
 
     // The Radio_icon.OZT sheet stacks two 256x256 frames vertically
@@ -65,9 +70,10 @@ namespace
 
     void ButtonOrigin(float* outX, float* outY)
     {
-        // Mirrored anchor of the voice dock (right edge, centered): glued to
-        // the LEFT screen edge at the same height.
-        *outX = 0.f;
+        // Encostado na borda esquerda, sem gap: the rect starts 18px behind
+        // the wall so the visible plate (screen 0..36) runs edge-to-edge —
+        // its open side hidden behind the screen edge, closed border inward.
+        *outX = -kPlateHiddenWidth;
         *outY = REFERENCE_HEIGHT / 2.f;
     }
 
@@ -171,22 +177,24 @@ namespace
 
         if (!s_buttonReady)
         {
-            // The native empty plate mirrored to face the left screen edge
-            // (BITMAP_LUXUI_RADIO_PLATE): same 54x69 3-frame sheet, flipped,
-            // so the "abertura" reads as coming out of the screen edge.
+            // The plate sheet flipped to face the left screen edge
+            // (BITMAP_LUXUI_RADIO_PLATE): full 54-wide rect, 18px of it
+            // hidden behind the screen edge (see ButtonOrigin).
             s_BtnRadio.ChangeButtonImgState(true, BITMAP_LUXUI_RADIO_PLATE, true);
             s_BtnRadio.ChangeButtonInfo(static_cast<int>(x), static_cast<int>(y),
-                static_cast<int>(kButtonWidth), static_cast<int>(kButtonHeight));
+                static_cast<int>(kPlateWidth), static_cast<int>(kButtonHeight));
             s_BtnRadio.ChangeToolTipText(&kRadioTooltip, 0);
             // Push the tooltip to the RIGHT: the button sits on the left screen
             // edge, so the voice dock's leftward offset would clip off-screen.
-            s_BtnRadio.MoveTextTipPos(90, 9);
+            // Anchor moved 9px left with the rect (m_Pos.x + 27), so +99 keeps
+            // the tooltip where it always was.
+            s_BtnRadio.MoveTextTipPos(99, 9);
             s_buttonReady = true;
         }
         else
         {
             s_BtnRadio.ChangeButtonInfo(static_cast<int>(x), static_cast<int>(y),
-                static_cast<int>(kButtonWidth), static_cast<int>(kButtonHeight));
+                static_cast<int>(kPlateWidth), static_cast<int>(kButtonHeight));
         }
     }
 }
@@ -234,7 +242,10 @@ namespace UI::Radio
         s_BtnRadio.Render();
 
         const POINT pos = s_BtnRadio.GetPos();
-        RenderIcon(pos.x + (kButtonWidth * 0.5f), pos.y + (kButtonHeight * 0.5f), enabled);
+        // Center the glyph on the VISIBLE plate (screen 0..36), not on the
+        // full rect that starts behind the wall.
+        RenderIcon(pos.x + kPlateHiddenWidth + (kButtonVisibleWidth * 0.5f),
+            pos.y + (kButtonHeight * 0.5f), enabled);
 
         // Marquee gate (owner request): the "tocando agora" strip exists ONLY
         // while the radio is enabled AND actually playing. Desligada/offline a

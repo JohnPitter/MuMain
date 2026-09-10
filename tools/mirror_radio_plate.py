@@ -10,6 +10,12 @@ bottom-left origin), BGRA bottom-up payload, 26-byte zero footer. The 3-frame
 vertical state sheet (up/over/down) survives intact: frames are full-width, so
 a whole-texture mirror flips each state consistently.
 
+Rodada 3: flipX CONFIRMED by the owner as the final transform (the 180
+rotation tried in between was reverted — it undid the mirror). Paired with
+the widget change in UI/Radio/RadioHud.cpp: the button rect spans the full
+54 texels and starts 18px behind the left screen edge, so the open/cut side
+is glued behind the wall and the closed border faces the gameplay area.
+
 The client loads it as `Interface\\Radio_btn_plate.tga` (CGlobalBitmap::OpenTga
 exchanges the extension to .OZT) under BITMAP_LUXUI_RADIO_PLATE — see
 UI/Radio/RadioHud.cpp.
