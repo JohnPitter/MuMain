@@ -1,0 +1,6 @@
+https://stream-relay-geo.ntslive.net/stream
+https://icecast.anon.fm/radio
+https://az1.mediacp.eu/listen/airport-lounge-radio/radio.mp3
+https://az1.mediacp.eu/listen/100coverslounge/radio.mp3
+https://stream.ella-radio.de/ella-bossa/mp3-192/
+http://radio.linn.co.uk:8002/autodj

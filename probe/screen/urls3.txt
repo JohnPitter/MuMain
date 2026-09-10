@@ -1,0 +1,6 @@
+http://streams.dez.ovh:8000/radio.mp3
+https://listen.reyfm.de/lofi_128kbps.mp3
+http://listen.181fm.com/181-lofi_128k.mp3
+https://yumicoradio.net/stream
+http://stream.laut.fm/synthpop
+http://radio.linn.co.uk:8003/autodj

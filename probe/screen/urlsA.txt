@@ -1,0 +1,6 @@
+http://stream.srg-ssr.ch/m/rsj/mp3_128
+http://stream.srg-ssr.ch/m/rsp/mp3_128
+http://stream.srg-ssr.ch/m/rsc_de/mp3_128
+https://kexp.streamguys1.com/kexp128.mp3
+https://stream0.wfmu.org/freeform-128k
+http://radio.linn.co.uk:8004/autodj

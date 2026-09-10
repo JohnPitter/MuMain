@@ -41,8 +41,8 @@ def rate(url, window_s=80, warmup_s=10):
     dt = time.time() - t1
     got = (total - w0) / dt
     s.close()
-    x = got / (nominal/8.0) * 100 if nominal else 0
-    print(f"{url}\n  icy-br={nominal//1000}k measured={got:.0f} B/s over {dt:.0f}s => {got/nominal*100:.1f}% of nominal {'[CLOSED EARLY]' if ended else ''}")
+    pct = (got * 8.0 / nominal * 100.0) if nominal else 0.0
+    print(f"{url}\n  icy-br={nominal//1000}k measured={got:.0f} B/s over {dt:.0f}s => {pct:.1f}% of nominal {'[CLOSED EARLY]' if ended else ''}")
 
 for url in sys.argv[1:]:
     try: rate(url)

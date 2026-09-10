@@ -1,0 +1,6 @@
+https://radio4.vip-radios.fm:18060/stream-128kmp3-SmoothJazzLounge
+http://srv1.braudio.com.br:7308/;stream.nsv
+https://server31435.streamplus.de/;stream.mp3
+https://stm1.srvif.com:7576/;
+http://stream.laut.fm/ondalatina
+https://stream.ella-radio.de/ella-smooth-bossa-nova/mp3-192/
