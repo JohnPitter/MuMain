@@ -1,0 +1,14 @@
+beatblender exit=1
+nightride exit=1
+lofi247 exit=1
+jazz_infomaniak exit=1
+maqtempo_mpb exit=1
+lush exit=1
+transamerica exit=1
+fip exit=1
+groovesalad exit=1
+classicfm exit=1
+rp_main exit=1
+mpr_relax exit=0
+sonicuniverse exit=1
+ALL DONE

@@ -1,0 +1,5 @@
+rp_main exit=1
+lush exit=1
+beatblender exit=1
+sonicuniverse exit=1
+groovesalad_ice4 exit=1
