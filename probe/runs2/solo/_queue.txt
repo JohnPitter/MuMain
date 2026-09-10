@@ -12,3 +12,15 @@ delicious_beach exit=0
 === yumi start 15:49:52 ===
 === somafm queue start 16:00:01 ===
 === secretagent start 16:00:01 ===
+secretagent exit=1
+=== vaporwaves start 16:10:02 ===
+vaporwaves exit=1
+=== u80s start 16:20:03 ===
+u80s exit=1
+=== dronezone start 16:30:03 ===
+dronezone exit=1
+=== lush_day start 16:40:04 ===
+lush_day exit=1
+SOMAFM QUEUE DONE 16:50:05
+=== bootliquor start 16:58:45 ===
+bootliquor exit=0
