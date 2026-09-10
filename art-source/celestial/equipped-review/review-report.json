@@ -1,0 +1,17 @@
+{
+  "status": "attachment-math preview, not ingame or visual acceptance",
+  "models": {
+    "Helm": "4847619d47b889bf1e9914b6dc8ffea8d81e8d9ec0cc3ccd12135225e3331bb4",
+    "Armor": "a4a8dc17f9db64509d461f3e774465f6c8d8c928abb37e74bfc3c2d65596937a",
+    "Pants": "16e3779737335fde2b184249b09c8b470381a031a8f4c4f598454353f9b404b6",
+    "Gloves": "351bfe2d3914824f76cdc9c93851689015e92f4792053159e2122464764f9b1c",
+    "Boots": "ce797b8db53393b21d96454ddec2dfc43e055baa589edb12a17e996a226874f5",
+    "Staff": "5ac97450a5ae8f3c979647b1bb20693286e9aa1b451eb4be01112b023125ffbb",
+    "Shield": "ddfbacdf436e946918f1475736d81ce8d5d77593156d993e2eda421328b7ab6b",
+    "Wings": "a26654803c1f7ed91116622b0f75c02aa8d255fe93443c6dc6cf14b1b79d1d85"
+  },
+  "attachment_source_sha256": "51f58faa70bc5552ec49e2c14caedcf9ebc1488310efbda8fd43ccbf6e848ceb",
+  "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+  "head_sha256": "57bc2d602fc82c8908237b83346e0d7ce345c2ac128822185b0d0894300d00ba",
+  "jewelry": "ring and pendant are inventory assets; not rendered on the body by the current client"
+}

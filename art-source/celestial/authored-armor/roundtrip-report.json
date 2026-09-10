@@ -2,26 +2,36 @@
   "Helm": {
     "max_error": 4.015470267404453e-07,
     "triangles": 1938,
-    "minimum_triangle_area": 0.0005402071757079221
+    "minimum_triangle_area": 0.0005402071757079221,
+    "model_sha256": "4847619d47b889bf1e9914b6dc8ffea8d81e8d9ec0cc3ccd12135225e3331bb4",
+    "blend_sha256": "84a2ef0ea73b20def2737adf223892835031a02ae6ce3530ac686691bd0ea090"
   },
   "Armor": {
     "max_error": 2.384185791015625e-07,
     "triangles": 5490,
-    "minimum_triangle_area": 0.00035074621004939143
+    "minimum_triangle_area": 0.00035074621004939143,
+    "model_sha256": "a4a8dc17f9db64509d461f3e774465f6c8d8c928abb37e74bfc3c2d65596937a",
+    "blend_sha256": "84a2ef0ea73b20def2737adf223892835031a02ae6ce3530ac686691bd0ea090"
   },
   "Pants": {
     "max_error": 3.5762786865234375e-07,
     "triangles": 18242,
-    "minimum_triangle_area": 0.0006869208873957031
+    "minimum_triangle_area": 0.0006869208873957031,
+    "model_sha256": "16e3779737335fde2b184249b09c8b470381a031a8f4c4f598454353f9b404b6",
+    "blend_sha256": "84a2ef0ea73b20def2737adf223892835031a02ae6ce3530ac686691bd0ea090"
   },
   "Gloves": {
     "max_error": 1.1362135410308838e-07,
     "triangles": 2180,
-    "minimum_triangle_area": 0.0005097555009595387
+    "minimum_triangle_area": 0.0005097555009595387,
+    "model_sha256": "351bfe2d3914824f76cdc9c93851689015e92f4792053159e2122464764f9b1c",
+    "blend_sha256": "84a2ef0ea73b20def2737adf223892835031a02ae6ce3530ac686691bd0ea090"
   },
   "Boots": {
     "max_error": 3.5762786865234375e-07,
     "triangles": 3200,
-    "minimum_triangle_area": 0.0020298025833164835
+    "minimum_triangle_area": 0.0020298025833164835,
+    "model_sha256": "ce797b8db53393b21d96454ddec2dfc43e055baa589edb12a17e996a226874f5",
+    "blend_sha256": "84a2ef0ea73b20def2737adf223892835031a02ae6ce3530ac686691bd0ea090"
   }
 }

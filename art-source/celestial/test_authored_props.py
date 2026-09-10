@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from inspect_bmd_rig import inspect, payload
+from artifact_proof import validate_proof
 
 ROOT = Path(__file__).resolve().parent
 STAGED = ROOT / 'authored-props'
@@ -100,6 +101,13 @@ class AuthoredPropsTests(unittest.TestCase):
         self.assertEqual(set(manifest), files)
         for name, digest in manifest.items():
             self.assertEqual(hashlib.sha256((STAGED / name).read_bytes()).hexdigest(), digest)
+
+    def test_geometry_proof_matches_current_artifacts(self):
+        report = json.loads((STAGED / 'roundtrip-report.json').read_text())
+        self.assertEqual(set(report), set(NAMES))
+        for name, proof in report.items():
+            validate_proof(proof, ITEMS / f'Celestial_{name}.bmd', STAGED / 'celestial-authored-props.blend')
+            self.assertLess(proof['max_error'], .00002)
 
     def test_bad_signature_rejected(self):
         with self.assertRaises(ValueError):

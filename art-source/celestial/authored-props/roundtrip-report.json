@@ -1,18 +1,26 @@
 {
   "Staff": {
     "max_error": 7.152557373046875e-07,
-    "triangles": 10636
+    "triangles": 10636,
+    "model_sha256": "5ac97450a5ae8f3c979647b1bb20693286e9aa1b451eb4be01112b023125ffbb",
+    "blend_sha256": "0d637dcb714e54f32914b4ddb80477ecfa0117b8f1a9ff6d121b724aec8b59b0"
   },
   "Shield": {
     "max_error": 4.76837158203125e-07,
-    "triangles": 8494
+    "triangles": 8494,
+    "model_sha256": "ddfbacdf436e946918f1475736d81ce8d5d77593156d993e2eda421328b7ab6b",
+    "blend_sha256": "0d637dcb714e54f32914b4ddb80477ecfa0117b8f1a9ff6d121b724aec8b59b0"
   },
   "Ring": {
     "max_error": 2.384185791015625e-07,
-    "triangles": 6172
+    "triangles": 6172,
+    "model_sha256": "27f799ad23178a4f86e7d37d02ec040206a1d9458ae022f55174b8584c4dc01e",
+    "blend_sha256": "0d637dcb714e54f32914b4ddb80477ecfa0117b8f1a9ff6d121b724aec8b59b0"
   },
   "Pendant": {
     "max_error": 9.238719940185547e-07,
-    "triangles": 7594
+    "triangles": 7594,
+    "model_sha256": "7d983077eeaceb138daf39762da727197456e2de5afbf8e9dc085ff59ef2af14",
+    "blend_sha256": "0d637dcb714e54f32914b4ddb80477ecfa0117b8f1a9ff6d121b724aec8b59b0"
   }
 }

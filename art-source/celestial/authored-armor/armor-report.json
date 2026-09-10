@@ -61,44 +61,68 @@
   ],
   "clips": [
     {
-      "name": "PLAYER_STOP_WAND",
-      "action": 10,
+      "name": "PLAYER_STOP_SWORD",
+      "action": 4,
       "start": 5,
-      "end": 37,
-      "checked_vertices": 146475,
-      "maximum_error": 9.42353769457674e-05
+      "end": 29,
+      "checked_vertices": 113925,
+      "maximum_error": 0.00010251888008405066
     },
     {
-      "name": "PLAYER_WALK_WAND",
-      "action": 23,
-      "start": 45,
-      "end": 73,
-      "checked_vertices": 130200,
-      "maximum_error": 0.00015324510659227845
+      "name": "PLAYER_WALK_SWORD",
+      "action": 17,
+      "start": 37,
+      "end": 61,
+      "checked_vertices": 113925,
+      "maximum_error": 0.00010831658069229648
     },
     {
-      "name": "PLAYER_RUN_WAND",
-      "action": 32,
-      "start": 81,
-      "end": 125,
-      "checked_vertices": 195300,
-      "maximum_error": 9.567212069690287e-05
+      "name": "PLAYER_RUN_SWORD",
+      "action": 26,
+      "start": 69,
+      "end": 93,
+      "checked_vertices": 113925,
+      "maximum_error": 9.608949064491271e-05
     },
     {
       "name": "PLAYER_SKILL_HAND1",
       "action": 146,
-      "start": 133,
-      "end": 153,
+      "start": 101,
+      "end": 121,
       "checked_vertices": 97650,
       "maximum_error": 0.00012246548495764442
     },
     {
       "name": "PLAYER_DIE1",
       "action": 237,
-      "start": 161,
-      "end": 181,
+      "start": 129,
+      "end": 149,
       "checked_vertices": 97650,
       "maximum_error": 0.00012996087181414652
+    },
+    {
+      "name": "PLAYER_STOP_FLY",
+      "action": 11,
+      "start": 157,
+      "end": 177,
+      "checked_vertices": 97650,
+      "maximum_error": 0.00011584303403966193
+    },
+    {
+      "name": "PLAYER_FLY",
+      "action": 34,
+      "start": 185,
+      "end": 205,
+      "checked_vertices": 97650,
+      "maximum_error": 0.00015963721854153387
+    },
+    {
+      "name": "PLAYER_ATTACK_SWORD_RIGHT1",
+      "action": 39,
+      "start": 213,
+      "end": 237,
+      "checked_vertices": 113925,
+      "maximum_error": 0.00011141267293174922
     }
   ]
 }

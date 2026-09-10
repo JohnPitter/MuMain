@@ -50,6 +50,34 @@ static bool IsRenderableModelType(int Type);
 
 namespace
 {
+    void RenderCelestialWingSurface(BMD* model, OBJECT* object)
+    {
+        glColor3fv(model->BodyLight);
+        model->RenderBody(RENDER_TEXTURE, object->Alpha, object->BlendMesh,
+                          object->BlendMeshLight, object->BlendMeshTexCoordU,
+                          object->BlendMeshTexCoordV, object->HiddenMesh);
+    }
+
+    void RenderCelestialHaloGlow(BMD* model, OBJECT* object)
+    {
+        constexpr float maximumDistance = 1200.f;
+        if (model->NumBones <= Render::Items::Celestial::WingHaloBone
+            || g_pOption->GetRenderLevel() == 0 || object->Distance > maximumDistance)
+            return;
+
+        constexpr float pulseSpeed = 0.002f;
+        constexpr float rotationSpeed = 0.025f;
+        constexpr float haloScale = 0.55f;
+        const float pulse = 0.75f + 0.25f * sinf(WorldTime * pulseSpeed);
+        vec3_t origin = {0.f, 0.f, 0.f};
+        vec3_t position;
+        vec3_t light = {0.4f * pulse, 0.28f * pulse, 0.1f * pulse};
+        model->TransformPosition(BoneTransform[Render::Items::Celestial::WingHaloBone],
+                                 origin, position, true);
+        CreateSprite(BITMAP_SHINY + 1, position, haloScale, light, object,
+                     WorldTime * rotationSpeed);
+    }
+
     void RenderCelestialMaterialAccents(BMD* model, OBJECT* object, int level, float alpha)
     {
         constexpr int shimmerMinimumLevel = 7;
@@ -7169,10 +7197,7 @@ void RenderPartObjectBody(BMD* b, OBJECT* o, int Type, float Alpha, int RenderTy
     }
     else if (Type == MODEL_CELESTIAL_WINGS)
     {
-        Vector(0.85f, 0.9f, 1.f, b->BodyLight);
-        glColor3fv(b->BodyLight);
-        b->RenderBody(RENDER_TEXTURE, o->Alpha, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, o->BlendMeshTexCoordV, o->HiddenMesh);
-        b->RenderBody(RENDER_TEXTURE | RENDER_BRIGHT, o->Alpha * 0.55f, o->BlendMesh, o->BlendMeshLight, o->BlendMeshTexCoordU, WorldTime * 0.00015f, o->HiddenMesh);
+        RenderCelestialWingSurface(b, o);
     }
     else if (Type == MODEL_DIVINE_SWORD_OF_ARCHANGEL)
     {
@@ -10400,17 +10425,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
     }
     else if (Type == MODEL_CELESTIAL_WINGS)
     {
-        vec3_t point, position, light;
-        Vector(0.f, 0.f, 0.f, point);
-        b->TransformPosition(BoneTransform[0], point, position, true);
-
-        const float pulse = absf(sinf(WorldTime * 0.002f));
-        Vector(0.45f + (pulse * 0.35f), 0.55f + (pulse * 0.3f), 1.f, light);
-        CreateSprite(BITMAP_FLARE, position, 1.5f + pulse, light, o);
-        if (rand_fps_check(1))
-        {
-            CreateParticle(BITMAP_CHROME_ENERGY2, position, o->Angle, light, 0, 0.75f + (pulse * 0.25f));
-        }
+        RenderCelestialHaloGlow(b, o);
     }
 
     if (!o->EnableShadow)

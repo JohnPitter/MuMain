@@ -25,13 +25,18 @@ medição das poses. Imagens antigas não comprovam uma geração nova sem rende
 ## Conteúdo verificado
 
 - `authored-armor/celestial-authored-armor.blend`: malhas editáveis, texturas
-  empacotadas, 51 ossos e cinco sequências nativas na linha do tempo.
-- Marcadores: repouso com cajado, caminhada, corrida, magia e morte. Todos os
+  empacotadas, 51 ossos e oito sequências nativas na linha do tempo.
+- Marcadores: repouso, caminhada, corrida, magia, morte, repouso em voo,
+  deslocamento em voo e ataque físico. Cajado de uma mão usa as poses
+  `SWORD` (4/17/26), conforme seleção real do cliente, não as `WAND`.
+  Todos os
   vértices foram comparados com a transformação nativa em cada keyframe.
-  Erro máximo medido: 0,000154 unidade; isto não mede interpenetrações.
+  Erro máximo medido: 0,000160 unidade; isto não mede interpenetrações.
 - Cinco BMD em `authored-armor/Data/Player` e três OZJ. O relatório de ida e
   volta compara todos os cantos, ossos, normais e UVs. Erro < 0,000001;
   triângulos de área nula são rejeitados. Manifesto SHA256 cobre os oito arquivos.
+  O relatório registra também os hashes do BMD e do `.blend` efetivamente
+  comparados; regenerar arte sem repetir a verificação invalida o pacote.
 - O rosto original `HelmClass201.bmd` aparece **só como referência de encaixe**
   na coleção `REFERENCE ONLY`, nunca nos BMD exportados. Não é rosto novo.
 - No cliente, a coroa habilita a cabeça nativa; o teste cobre todos os IDs
@@ -44,8 +49,9 @@ medição das poses. Imagens antigas não comprovam uma geração nova sem rende
 Proporções, placas e ornamentos ainda estão simplificados frente ao conceito.
 É necessário revisar costas/laterais, encontro de ombreiras e braços, abertura
 do rosto (também Grand Master), painéis da calça em movimento e botas. Falta
-aprovação visual, asas/halo, composição equipada com cajado/escudo e medição
-de desempenho. O lote da armadura soma 31.050 triângulos; não há orçamento
+aprovação visual e medição de desempenho. Asas/halo e composição equipada
+agora têm candidatos próprios documentados em `WINGS.md`, não aprovação.
+O lote da armadura soma 31.050 triângulos; não há orçamento
 de desempenho validado para cenas cheias de jogadores.
 
 A prévia MP4 é animação real destas malhas no Blender, não captura do MU.

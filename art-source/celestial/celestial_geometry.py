@@ -149,8 +149,9 @@ def gem(name, center, size, material):
 
 def feather(name, controls, dimensions, material):
     """Curved leaf with raised midrib, tapered tip, and a closed underside."""
-    width, thickness = dimensions
-    path = bezier(controls, 12)
+    width, thickness = dimensions[:2]
+    samples = dimensions[2] if len(dimensions) > 2 else 12
+    path = bezier(controls, samples)
     vertices = []
     for i, center in enumerate(path):
         t = i / (len(path) - 1)

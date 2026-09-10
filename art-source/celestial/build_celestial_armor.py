@@ -19,7 +19,7 @@ from build_celestial_props import frame_camera, setup_scene
 from celestial_cuirass import armor, helmet
 from celestial_geometry import collection, materials
 from celestial_limb_armor import BUILDERS
-from export_armor_bmd import export
+from export_skinned_bmd import ExportSpec, export
 from import_native_reference import create_rig, world_matrices
 from inspect_bmd_rig import inspect
 
@@ -79,7 +79,8 @@ def main():
     for name, builder in dict(Helm=helmet, Armor=armor, **BUILDERS).items():
         group = collection('Celestial ' + name, lambda b=builder: b(palette))
         bpy.context.view_layer.update()
-        report = export(group, bind, model, OUTPUT / 'Data' / 'Player' / f'Celestial_{name}.bmd')
+        spec = ExportSpec(model, OUTPUT / 'Data' / 'Player' / f'Celestial_{name}.bmd')
+        report = export(group, bind, spec)
         add_skin(group, rig)
         groups[name] = group
         reports.append(report)

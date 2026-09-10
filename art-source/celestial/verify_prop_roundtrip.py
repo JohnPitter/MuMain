@@ -8,6 +8,7 @@ import bpy
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+from artifact_proof import digest
 from export_prop_bmd import TRANSFORMS, triangle_groups
 from inspect_bmd_rig import inspect
 
@@ -54,9 +55,12 @@ def main():
     for name, transform in TRANSFORMS.items():
         collection = bpy.data.collections['Celestial ' + name]
         expected = triangle_groups(collection.objects, transform)
-        decoded = decoded_triangles(inspect(OUTPUT / 'Data' / 'Item' / f'Celestial_{name}.bmd', True))
+        model = inspect(OUTPUT / 'Data' / 'Item' / f'Celestial_{name}.bmd', True)
+        decoded = decoded_triangles(model)
         print('VERIFYING', name, flush=True)
-        reports[name] = dict(max_error=compare(expected, decoded), triangles=sum(map(len, expected.values())))
+        reports[name] = dict(max_error=compare(expected, decoded), triangles=sum(map(len, expected.values())),
+                             model_sha256=model['sha256'],
+                             blend_sha256=digest(OUTPUT / 'celestial-authored-props.blend'))
     (OUTPUT / 'roundtrip-report.json').write_text(json.dumps(reports, indent=2), encoding='utf-8')
     print('ROUNDTRIP_VERIFIED', json.dumps(reports), flush=True)
 

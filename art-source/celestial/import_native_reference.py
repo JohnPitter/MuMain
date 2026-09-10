@@ -19,6 +19,8 @@ def world_matrices(model, frame, action=0):
         clip = bone['clips'][action]
         local = Euler(clip['rotations'][frame], 'XYZ').to_matrix().to_4x4()
         local.translation = Vector(clip['positions'][frame])
+        if index == 0 and model['action_locks'][action]:
+            local[0][3], local[1][3] = clip['positions'][0][:2]
         parent = bone['parent']
         if parent >= index:
             raise ValueError('Unsupported bone ordering')
@@ -63,8 +65,21 @@ def create_mesh(source, rig, bind, index):
     for node in source['used_bones']:
         group = obj.vertex_groups.new(name=f'mu_{node:03d}')
         group.add([i for i, (bone, _) in enumerate(source['points']) if bone == node], 1, 'REPLACE')
-    obj.modifiers.new('NativeSkin', 'ARMATURE').object = rig
+    apply_normals(source, data, bind)
+    if rig is not None:
+        obj.modifiers.new('NativeSkin', 'ARMATURE').object = rig
     return obj
+
+
+def apply_normals(source, data, bind):
+    normals = []
+    for polygon, indices in zip(data.polygons, source['normal_indices']):
+        polygon.use_smooth = True
+        for index in indices:
+            node, nx, ny, nz, _ = source['normal_vectors'][index]
+            matrix = bind[node].to_3x3().inverted().transposed()
+            normals.append(tuple((matrix @ Vector((nx, ny, nz))).normalized()))
+    data.normals_split_custom_set(normals)
 
 
 def animate(model, rig):

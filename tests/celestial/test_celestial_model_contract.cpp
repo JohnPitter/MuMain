@@ -7,13 +7,13 @@
 
 using Render::Items::Celestial::IsAuthoredEquipment;
 
-TEST_CASE("Celestial authored surface policy only covers its nine equipment models")
+TEST_CASE("Celestial authored surface policy only covers its ten equipment models")
 {
     int count = 0;
     for (int model = 0; model < MAX_MODELS; ++model)
         count += IsAuthoredEquipment(model) ? 1 : 0;
 
-    CHECK(count == 9);
+    CHECK(count == 10);
     CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_STAFF));
     CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_SHIELD));
     CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_RING));
@@ -23,14 +23,15 @@ TEST_CASE("Celestial authored surface policy only covers its nine equipment mode
     CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_PANTS));
     CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_GLOVES));
     CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_BOOTS));
+    CHECK(IsAuthoredEquipment(MODEL_CELESTIAL_WINGS));
 }
 
-TEST_CASE("Celestial policy does not change existing gear or experimental wings")
+TEST_CASE("Celestial policy does not change existing equipment")
 {
     CHECK_FALSE(IsAuthoredEquipment(MODEL_STAFF_OF_KUNDUN));
     CHECK_FALSE(IsAuthoredEquipment(MODEL_CELESTIAL_BOW));
     CHECK_FALSE(IsAuthoredEquipment(MODEL_PHOENIX_SOUL_ARMOR));
-    CHECK_FALSE(IsAuthoredEquipment(MODEL_CELESTIAL_WINGS));
+    CHECK_FALSE(IsAuthoredEquipment(MODEL_WING_OF_RUIN));
     CHECK_FALSE(IsAuthoredEquipment(MODEL_HELPER + EWS_ELF_2_CHARM));
     CHECK_FALSE(IsAuthoredEquipment(-1));
 }
@@ -39,6 +40,7 @@ TEST_CASE("Celestial staff anchors agree with the authored BMD skeleton contract
 {
     CHECK(Render::Items::Celestial::StaffHeartBone == 1);
     CHECK(Render::Items::Celestial::StaffTipBone == 2);
+    CHECK(Render::Items::Celestial::WingHaloBone == 47);
     CHECK(MODEL_CELESTIAL_RING == MODEL_HELPER + 200);
     CHECK(MODEL_CELESTIAL_PENDANT == MODEL_HELPER + 201);
 }

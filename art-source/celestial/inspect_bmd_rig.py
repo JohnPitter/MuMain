@@ -102,19 +102,21 @@ def inspect(path, full=False):
     if max(mesh_count, bone_count, action_count) > 4096:
         raise ValueError('Unexpected model counts')
     meshes = [read_mesh(reader, full) for _ in range(mesh_count)]
-    actions = []
+    actions, locks, root_positions = [], [], []
     for _ in range(action_count):
         frames, locked = reader.unpack('hB')
         if frames < 0:
             raise ValueError('Negative frame count')
-        if locked:
-            reader.take(frames * 12)
+        positions = [reader.unpack('3f') for _ in range(frames)] if locked else []
         actions.append(frames)
+        locks.append(bool(locked))
+        root_positions.append(positions)
     bones = [read_bone(reader, actions, full) for _ in range(bone_count)]
     if reader.offset != len(reader.data):
         raise ValueError(f'Unread payload bytes: {len(reader.data) - reader.offset}')
     return dict(file=str(path.resolve()), sha256=hashlib.sha256(raw).hexdigest(),
-                name=name, meshes=meshes, action_frames=actions, bones=bones)
+                name=name, meshes=meshes, action_frames=actions, action_locks=locks,
+                action_positions=root_positions, bones=bones)
 
 
 if __name__ == '__main__':

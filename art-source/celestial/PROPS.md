@@ -14,6 +14,8 @@ no cliente do jogo. As duas unidades do anel usam a mesma malha.
 3. Após mudanças nas fontes, repetir a geração e executar
    `verify_prop_roundtrip.py` também no Blender. Ele compara cada triângulo,
    normal e UV do `.blend` com a leitura independente do BMD exportado.
+   O relatório inclui hashes dos dois arquivos para rejeitar provas antigas
+   depois de uma nova geração. São dez testes dos acessórios nesta revisão.
 4. Executar `python test_authored_props.py`: verifica estrutura, índices,
    normais, triângulos, âncoras, encaixe da pedra do anel e todas as texturas.
 

@@ -6,8 +6,9 @@ from mathutils import Vector
 
 from import_native_reference import world_matrices
 
-CLIPS = ('PLAYER_STOP_WAND', 'PLAYER_WALK_WAND', 'PLAYER_RUN_WAND',
-         'PLAYER_SKILL_HAND1', 'PLAYER_DIE1')
+CLIPS = ('PLAYER_STOP_SWORD', 'PLAYER_WALK_SWORD', 'PLAYER_RUN_SWORD',
+         'PLAYER_SKILL_HAND1', 'PLAYER_DIE1', 'PLAYER_STOP_FLY', 'PLAYER_FLY',
+         'PLAYER_ATTACK_SWORD_RIGHT1')
 FRAME_STRIDE = 4
 POSE_TOLERANCE = .0002
 

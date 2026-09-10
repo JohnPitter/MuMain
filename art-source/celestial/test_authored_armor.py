@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from inspect_bmd_rig import inspect
+from artifact_proof import validate_proof
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / 'authored-armor'
@@ -73,8 +74,9 @@ class AuthoredArmorTests(unittest.TestCase):
 
     def test_all_required_player_clips_were_measured(self):
         report = json.loads((OUTPUT / 'armor-report.json').read_text())
-        expected = {'PLAYER_STOP_WAND': 10, 'PLAYER_WALK_WAND': 23, 'PLAYER_RUN_WAND': 32,
-                    'PLAYER_SKILL_HAND1': 146, 'PLAYER_DIE1': 237}
+        expected = {'PLAYER_STOP_SWORD': 4, 'PLAYER_WALK_SWORD': 17, 'PLAYER_RUN_SWORD': 26,
+                    'PLAYER_SKILL_HAND1': 146, 'PLAYER_DIE1': 237, 'PLAYER_STOP_FLY': 11,
+                    'PLAYER_FLY': 34, 'PLAYER_ATTACK_SWORD_RIGHT1': 39}
         self.assertEqual({clip['name']: clip['action'] for clip in report['clips']}, expected)
         for clip in report['clips']:
             self.assertGreater(clip['checked_vertices'], 50000)
@@ -87,7 +89,9 @@ class AuthoredArmorTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256((OUTPUT / path).read_bytes()).hexdigest(), digest)
         report = json.loads((OUTPUT / 'roundtrip-report.json').read_text())
         self.assertEqual(set(report), set(NAMES))
-        for value in report.values():
+        for name, value in report.items():
+            validate_proof(value, OUTPUT / 'Data/Player' / f'Celestial_{name}.bmd',
+                           OUTPUT / 'celestial-authored-armor.blend')
             self.assertLess(value['max_error'], .00002)
             self.assertGreater(value['minimum_triangle_area'], 1e-8)
 

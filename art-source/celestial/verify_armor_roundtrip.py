@@ -9,6 +9,7 @@ from mathutils import Matrix
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+from artifact_proof import digest
 from export_prop_bmd import triangle_groups
 from import_native_reference import world_matrices
 from inspect_bmd_rig import inspect
@@ -58,7 +59,8 @@ def main():
                               for triangle in triangles] for texture, triangles in expected.items()}
         reports[name] = dict(max_error=compare(expected, decoded(model)),
                              triangles=sum(map(len, expected.values())),
-                             minimum_triangle_area=validate_area(group))
+                             minimum_triangle_area=validate_area(group), model_sha256=model['sha256'],
+                             blend_sha256=digest(OUTPUT / 'celestial-authored-armor.blend'))
     (OUTPUT / 'roundtrip-report.json').write_text(json.dumps(reports, indent=2), encoding='utf-8')
     print('ARMOR_ROUNDTRIP_VERIFIED', json.dumps(reports), flush=True)
 

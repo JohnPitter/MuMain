@@ -81,20 +81,9 @@ namespace
 
     void LoadCelestialWings()
     {
-        wchar_t modelPath[] = L"Data\\Item\\Celestial_Wings.smd";
-        wchar_t animationPath[] = L"Data\\Item\\Celestial_Wings_Anim.smd";
-        const bool hasAssets = GetFileAttributesW(modelPath) != INVALID_FILE_ATTRIBUTES
-            && GetFileAttributesW(animationPath) != INVALID_FILE_ATTRIBUTES;
-        if (hasAssets && OpenSMDModel(MODEL_CELESTIAL_WINGS, modelPath, 1))
-        {
-            if (OpenSMDAnimation(MODEL_CELESTIAL_WINGS, animationPath))
-            {
-                return;
-            }
-            Models[MODEL_CELESTIAL_WINGS].Release();
-        }
-        g_ErrorReport.Write(L"[Celestial] Wings assets unavailable; using Wing44 fallback.\r\n");
-        gLoadData.AccessModel(MODEL_CELESTIAL_WINGS, L"Data\\Item\\", L"Wing", 44);
+        gLoadData.AccessModel(MODEL_CELESTIAL_WINGS, L"Data\\Item\\", L"Celestial_Wings", -1);
+        if (!Models[MODEL_CELESTIAL_WINGS].m_bCompletedAlloc)
+            g_ErrorReport.Write(L"[Celestial] Authored wings failed to load. Repair client assets.\r\n");
     }
 
     constexpr DWORD kStartupLoadingFrameIntervalMs = 33;
