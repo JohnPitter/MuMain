@@ -74,3 +74,23 @@ usuário; nenhum jogo foi iniciado ou encerrado para esta revisão.**
 
 O novo [Manto do Poseidon](../poseidon/design-spec.md) é um trabalho separado para
 Lord Emperor. Seus protótipos não fazem parte do pacote Celestial.
+
+## Publicação somente em Testes
+
+Concluída em **11/09/2026 15:26:44 UTC / 12:26 Brasília**. Base imutável
+`openmu-assets/celestial-test-golden-metal-20260911.zip`, 761.715.845 bytes,
+SHA256 `3600ab2fd60160fe9a835d0b1abc26f0620c4fa10699b8be22432f001719047f`.
+Main `ed591f15a47260cf67fcb2880bab374a5d046e8d4edacba3bc1df249820534a8`.
+Somente Main e quatro OZJ mudaram; 13.832 outras entradas foram preservadas.
+
+Às15:28:13 UTC, a API autenticada entregou a base completa e o patch; hashes e
+união efetiva dos 19 arquivos protegidos conferem. O patch não contém Celestial
+assets; as novas texturas vêm da base. A DLL de conexão permaneceu intacta.
+Produção foi comparada antes/depois sem mudança. Não houve reinício do servidor,
+alteração de banco/personagens nem instalação na cópia local do jogador.
+
+Recibos no workspace operacional `scratchpad/celestial-golden-metal-20260911`:
+`golden-metal-deployed.json`, `golden-metal-api.json`, `golden-metal-before.json`.
+A base Golden anterior `10141413…e426ed` permanece intacta para retorno.
+Código runtime `d49aed78`, acabamento/estudo `3a27630c`; commits locais sem push.
+**Entrega do launcher verificada; aceitação visual ingame continua pendente.**
