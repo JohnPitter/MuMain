@@ -1,5 +1,44 @@
 # Celestial Ultimate: fases, requisitos e consulta
 
+## Conjunto Poseidon (Lord Emperor)
+
+O segundo conjunto autoral usa a mesma mecânica de categoria intrínseca do
+Celestial, com categoria própria (2) no catálogo E7 v2 e identidade visual
+própria no tooltip ("Conjunto Poseidon"). Exclusivo **Lord Emperor** (classe 17),
+nível 400, aceitando Excellent/Luck/adicionais sem perder a aparência autoral.
+Os 13 itens e seus IDs no servidor:
+
+| Item | ID | Modelo do cliente |
+|---|---|---|
+| Tridente / Cetro Oceânico | 2/20 · 2/21 | `Data/Item/Poseidon_Trident.bmd` · `Poseidon_Scepter.bmd` |
+| Coroa | 7/75 | `Data/Player/Poseidon_Helm.bmd` |
+| Peitoral | 8/75 | `Data/Player/Poseidon_Armor.bmd` |
+| Calça | 9/75 | `Data/Player/Poseidon_Pant.bmd` |
+| Luvas | 10/75 | `Data/Player/Poseidon_Glove.bmd` |
+| Botas | 11/75 | `Data/Player/Poseidon_Boot.bmd` |
+| Manto | 12/52 | `Data/Item/Poseidon_Cape.bmd` (tecido gerado pelo cloth do runtime) |
+| Pendant / Anel das Marés / Anel do Imperador | 13/202–204 | `Data/Item/Poseidon_Pendant/RingTide/RingEmperor.bmd` |
+| Cavalo / Águia | 13/205–206 | instalados em `Data/Item/` nesta onda; lógica de pet/mount vem depois |
+
+Fases cumulativas: 30% com as cinco peças de armadura; 60% com pendant e os
+dois anéis; 100% com manto, uma das duas armas, montaria e águia (12
+instâncias). O Shift mostra as fases e os valores com o mesmo formato do
+Celestial; a apresentação troca título e rótulos de fase pela categoria
+recebida do servidor — nenhum bônus é inventado no cliente.
+
+O manto tem **slots de textura de cloth próprios** (`BITMAP_ROBE+11/12/13`
+com os atlas `Poseidon_Gold/Black/Pearl`): os mantos nativos do Dark Lord
+continuam usando `ROBE+6/+9/+10`, sem vazamento nos dois sentidos. A saia de
+cloth continua atrelada às skins de armadura DL/LE nativas; o conjunto
+Poseidon não cria saia. O set entra **limpo texturizado**: recebe a mesma
+isenção de tintas Excellent/Antigo do Celestial, mas sem brilho/aura/efeitos
+(FX são uma onda posterior).
+
+Para a conferência contra o emissor .NET, definir `POSEIDON_CATALOG_FIXTURE`
+com `poseidon-equipment-catalog-v2.bin` gerado nos testes do OpenMU. Candidato
+de distribuição: `art-source/poseidon/package_poseidon_candidate.py`
+(13 BMDs + 4 atlas OZJ nas pastas Player e Item + Main; sem DLL de conexão).
+
 ## Revisão Ultimate
 
 Celestial é uma categoria Ultimate exclusiva, exibida com título dourado. Os
