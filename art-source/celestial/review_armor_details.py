@@ -16,13 +16,16 @@ from inspect_bmd_rig import inspect
 from review_equipped_set import ARMOR_NAMES, import_surface
 
 OUTPUT = ROOT / 'armor-details'
-VIEWS = (('front', False, (.12, -1, .04), 'soul-master'),
-         ('rear', False, (-.12, 1, .04), 'soul-master'),
-         ('side', False, (1, .2, .04), 'soul-master'),
-         ('helm-front', True, (.12, -1, .1), 'soul-master'),
-         ('helm-rear', True, (-.12, 1, .1), 'soul-master'),
-         ('grand-master-front', False, (.12, -1, .04), 'grand-master'),
-         ('grand-master-helm', True, (.12, -1, .1), 'grand-master'))
+VIEWS = (('front', ARMOR_NAMES, (.12, -1, .04), 'soul-master'),
+         ('rear', ARMOR_NAMES, (-.12, 1, .04), 'soul-master'),
+         ('side', ARMOR_NAMES, (1, .2, .04), 'soul-master'),
+         ('helm-front', ('Helm',), (.12, -1, .1), 'soul-master'),
+         ('helm-rear', ('Helm',), (-.12, 1, .1), 'soul-master'),
+         ('grand-master-front', ARMOR_NAMES, (.12, -1, .04), 'grand-master'),
+         ('grand-master-helm', ('Helm',), (.12, -1, .1), 'grand-master'),
+         ('boots-front', ('Boots',), (.25, -1, .1), 'grand-master'),
+         ('boots-rear', ('Boots',), (-.22, 1, .07), 'grand-master'),
+         ('boots-side', ('Boots',), (1, .3, .06), 'grand-master'))
 
 
 def frame(scene, objects, direction):
@@ -53,10 +56,10 @@ def main():
             palette[surface['texture']] = native_material(directory, surface['texture'])
     pose = world_matrices(player, 0, 4)
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    for name, helmet_only, direction, character_class in VIEWS:
+    for name, parts, direction, character_class in VIEWS:
         scene = setup_scene()
-        objects = import_surface(heads[character_class], pose, palette)
-        for part in ('Helm',) if helmet_only else ARMOR_NAMES:
+        objects = import_surface(heads[character_class], pose, palette) if 'Helm' in parts else []
+        for part in parts:
             objects.extend(import_surface(models[part], pose, palette))
         frame(scene, objects, direction)
         scene.render.filepath = str(OUTPUT / f'Celestial_Armor_{name}.png')

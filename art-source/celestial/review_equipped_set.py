@@ -79,7 +79,7 @@ def render_pose(models, pose, palette, head):
 def main():
     directory = Path(sys.argv[sys.argv.index('--') + 1])
     player = inspect(directory / 'player.bmd', True)
-    head = load_head(directory)
+    head = load_head(directory, 'grand-master')
     models = load_models()
     palette = {material.name: material for material in materials().values()}
     for mesh in head['meshes']:
@@ -95,7 +95,7 @@ def main():
     report = dict(status='attachment-math preview, not ingame or visual acceptance',
                   models={name: model['sha256'] for name, model in models.items()},
                   attachment_source_sha256=hashlib.sha256(CLIENT_SOURCE.read_bytes()).hexdigest(),
-                  player_sha256=player['sha256'], head_sha256=head['sha256'],
+                  player_sha256=player['sha256'], head_sha256=head['sha256'], head_class='grand-master',
                   views=[dict(name=name, action=action, frame=frame, view=view)
                          for name, action, frame, view in REVIEWS],
                   jewelry='ring and pendant are inventory assets; not rendered on the body by the current client')

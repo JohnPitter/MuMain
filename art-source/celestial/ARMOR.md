@@ -3,12 +3,16 @@
 As cinco peças agora têm geometria própria. Nenhum triângulo de Phoenix Soul,
 Venom Mist ou outro equipamento nativo é usado nos BMD deste lote. O esqueleto
 e as poses do personagem são referências de encaixe, não aprovação visual.
-**Ainda não está idêntico ao conceito, não foi implantado e não está validado ingame.**
+O usuário confirmou a entrada no jogo e aprovou a aparência da versão publicada
+em Testes em 11/09/2026. Esta revisão posterior melhora as botas; seus novos
+detalhes ainda dependem da validação pessoal no cliente. Não é reprodução
+pixel a pixel do conceito.
 
 ## Fontes e reprodução
 
 O projeto usa Blender 4.2. As formas estão em `celestial_cuirass.py` e
-`celestial_limb_armor.py`, com costas em `celestial_rear_armor.py` e relevos
+`celestial_limb_armor.py`, botas em `celestial_boot_armor.py`, costas em
+`celestial_rear_armor.py` e relevos
 compartilhados em `celestial_gilding.py`;
 as superfícies, pesos e exportação são módulos
 separados. Cada vértice tem exatamente uma influência, como exige o renderer
@@ -21,7 +25,7 @@ Executar no Blender em background, com `--python-exit-code 1`:
 3. `render_armor_motion.py`, para a prévia curta de caminhada.
 4. No Python, `python -m unittest discover -s art-source/celestial -p test_authored_armor.py -v`.
 5. `review_armor_details.py -- <diretório Data/Player>` para frente, costas,
-   lateral e dois closes do elmo sem as asas encobrindo a armadura.
+   lateral, closes do elmo e das botas sem asas ou calça encobrindo os detalhes.
 6. `review_equipped_set.py -- <diretório Data/Player>` para conferir a composição
    com cajado, escudo, asas e cabeça nas poses nativas.
 
@@ -57,7 +61,7 @@ Proporções, placas e ornamentos ainda estão simplificados frente ao conceito.
 do rosto (também Grand Master), painéis da calça em movimento e botas. Falta
 aprovação visual e medição de desempenho. Asas/halo e composição equipada
 agora têm candidatos próprios documentados em `WINGS.md`, não aprovação.
-O lote atual da armadura soma 35.182 triângulos; não há orçamento
+O lote atual da armadura soma 39.486 triângulos; não há orçamento
 de desempenho validado para cenas cheias de jogadores.
 
 A prévia MP4 é animação real destas malhas no Blender, não captura do MU.
@@ -68,8 +72,9 @@ Somente distribuir executável e todos os assets juntos após essa revisão.
 ## Requisitos do conjunto completo
 
 Continuam no escopo: cinco peças, cajado, escudo, asas, pendant e duas unidades
-do anel (uma malha compartilhada). O código de inicialização consultado mantém
-nível 400 e classes Soul Master/Grand Master. A defesa base das cinco peças é
+do anel (uma malha compartilhada). Os novos requisitos solicitados são nível 400
+e Grand Master; a regra fica no servidor, não no gerador das malhas. A defesa
+base das cinco peças é
 324 contra 251 do Venom Mist; isto não certifica o balanceamento completo.
 Os bônus completos foram implementados no servidor ca012d180 e a indicação
 visual no cliente 18c1f0d6, ainda locais; ver `docs/gameplay/celestial-equipment-state.md`.
@@ -134,3 +139,23 @@ pessoalmente a validação ingame. Essa autorização não é aprovação artís
 O pacote deve preservar a DLL de conexão e todos os arquivos não relacionados,
 usar uma base exclusiva de Testes e manter produção inalterada. O registro de
 implantação e seus hashes ficam no CHANGELOG operacional do workspace.
+
+## Botas posteriores e formato do pé — 2026-09-11
+
+As caneleiras recebem lâminas douradas com esmalte marfim na panturrilha,
+uma nervura sobre o tendão, safiras posteriores, penas laterais e contorno
+articulado do tornozelo. O pé arredondado foi substituído por um sabaton com
+calcanhar angular, sola definida e quatro placas sobrepostas no peito do pé.
+Ouro, marfim e safira continuam separados, sem alterar as texturas compartilhadas.
+
+Somente `Celestial_Boots.bmd` muda nos oito arquivos distribuídos da armadura.
+São 9.168 triângulos nas botas, antes 4.864; as cinco peças somam 39.486.
+Os ossos de panturrilha/pé e as oito sequências nativas permanecem iguais.
+O verificador exige dois pés e duas solas fechados, oito placas de peito do pé,
+oito relevos laterais e 44 ornamentos posteriores, todos com volume positivo.
+As 29 verificações Python e a comparação de cada canto/normal/UV exportado
+passaram. Os renders equipados agora usam a cabeça nativa Grand Master.
+
+As prévias de frente, costas, lateral e caminhada são geometria real no Blender,
+não captura do jogo. A aprovação da versão anterior não substitui a revisão
+destes novos detalhes e do desempenho em cenas com vários personagens.

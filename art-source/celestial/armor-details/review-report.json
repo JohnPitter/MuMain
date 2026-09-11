@@ -5,7 +5,7 @@
     "Armor": "d72e091f1c06e539bac078b61ca95375b448334cade51e9bf16d435c2f8c22ab",
     "Pants": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599",
     "Gloves": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c",
-    "Boots": "3de97201eead854eb739d0021992c3f51c27b96d2bf7fc155af3c0158f3246dc"
+    "Boots": "9d8019f8aae2bf04ea485ff27bc49befd8de1454453d0e942c8eb74dc45226a6"
   },
   "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
   "action": 4,
@@ -47,6 +47,18 @@
     },
     {
       "name": "grand-master-helm",
+      "character_class": "grand-master"
+    },
+    {
+      "name": "boots-front",
+      "character_class": "grand-master"
+    },
+    {
+      "name": "boots-rear",
+      "character_class": "grand-master"
+    },
+    {
+      "name": "boots-side",
       "character_class": "grand-master"
     }
   ]

@@ -47,6 +47,22 @@ def verify_closed_sabatons(group):
     return len(shoes)
 
 
+def verify_boot_anatomy(group):
+    required = {'anatomical_sabaton': 2, 'gilded_sole': 2, 'instep_lamella': 8, 'lateral_calf_relief': 8}
+    forms = [obj for obj in group.objects if obj.get('celestial_surface') in required]
+    if Counter(obj['celestial_surface'] for obj in forms) != required:
+        raise ValueError('Boots lost a shaped foot, sole, or articulated instep scale')
+    for obj in forms:
+        topology = bmesh.new()
+        topology.from_mesh(obj.data)
+        try:
+            if any(not edge.is_manifold for edge in topology.edges) or topology.calc_volume(signed=True) <= 0:
+                raise ValueError(f'Open or inverted boot anatomy: {obj.name}')
+        finally:
+            topology.free()
+    return required
+
+
 def verify_rear_reliefs(group):
     reliefs = [obj for obj in group.objects if obj.get('celestial_facing') == 'rear']
     for obj in reliefs:
@@ -111,7 +127,8 @@ def main():
                              blend_sha256=digest(OUTPUT / 'celestial-authored-armor.blend'))
         if name == 'Boots':
             reports[name]['closed_sabatons'] = verify_closed_sabatons(group)
-        if name in ('Helm', 'Armor'):
+            reports[name]['anatomical_parts'] = verify_boot_anatomy(group)
+        if name in ('Helm', 'Armor', 'Boots'):
             reports[name]['rear_reliefs'] = verify_rear_reliefs(group)
         if name == 'Armor':
             reports[name]['curved_front_plates'] = verify_curved_plates(group)
