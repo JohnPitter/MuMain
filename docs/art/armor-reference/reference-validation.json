@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "local_links_checked": 268,
+  "previews_checked": 154,
+  "armor_families": 70,
+  "source_hashes_checked": 386,
+  "catalog_summary": {
+    "sources": 45,
+    "bmd_occurrences": 20555,
+    "unique_bmd_sha256": 1000,
+    "duplicate_bmd_occurrences": 19555,
+    "canonical_bmd": 1019,
+    "parsed_unique_bmd": 998,
+    "failed_unique_bmd": 0,
+    "non_mesh_bmd_tables": 2,
+    "unique_texture_sha256": 1063,
+    "failed_texture_decode": 0,
+    "missing_texture_references": 787,
+    "canonical_missing_texture_references": 34,
+    "conflicting_same_paths": 10,
+    "appearance_variant_paths": 79,
+    "canonical_categories": {
+      "accessory": 25,
+      "unmapped_item_resource": 154,
+      "consumable_quest_or_other": 98,
+      "weapon": 138,
+      "shield": 23,
+      "wings_or_cape": 26,
+      "helper_pet_or_other": 75,
+      "player_auxiliary_resource": 8,
+      "equipment": 380,
+      "class_body_or_head": 90,
+      "player_animation_reference": 2
+    }
+  },
+  "ingame_validation": false
+}

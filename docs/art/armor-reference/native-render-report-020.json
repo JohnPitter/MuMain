@@ -1,0 +1,489 @@
+{
+  "source": {
+    "id": "e8ca9722340c",
+    "location": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "prefix": "",
+    "kind": "zip",
+    "canonical": true,
+    "indexed_files": 13623,
+    "candidates": 1019
+  },
+  "families": [
+    {
+      "item_number": 20,
+      "views": [
+        "family-020-front.png",
+        "family-020-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale21.bmd",
+          "sha256": "e9da95468983a32ef0724c26beb1da722db94b5a10a5cb56e71d8d0ead7fddcd"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale21.bmd",
+          "sha256": "8e4f1f35a01aae99022bb4d64fcb5068e4b83f9eaf141dae01f28b75deb71183"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale21.bmd",
+          "sha256": "4c53a89c9e1dddc95e74d02aa4f73a6b82c57cca10ce501fa745d87eb4bcd9e2"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale21.bmd",
+          "sha256": "fdf2e44d5f7bf6cc4f5081f16a3c65f3a9c61040b234d236e0b186c31eab823a"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/ArmorMale21.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/BootMale21.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/GloveMale21.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/PantMale21.bmd",
+          "mesh": 2,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 21,
+      "views": [
+        "family-021-front.png",
+        "family-021-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale22.bmd",
+          "sha256": "208549312edeaa86a1577a6397186eb9263addfc6b2f6a39dbb70bcfacb5d9ad"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale22.bmd",
+          "sha256": "294818e99e20e30e3865ea3d3745dc58404b45ce5f43a5362dbba57f013be6e1"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale22.bmd",
+          "sha256": "8f21db4cb79ba3645627774eed5070a3cc0486a60e8cefa8e0e8c53c989a6f4d"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale22.bmd",
+          "sha256": "617e05c56b55216b2ebd5d0ac2529095d486bef4621279cc3b34e12446c1e9b0"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale22.bmd",
+          "sha256": "96d60e5494b73fa25917036eaa53625c2c7bf018866c051bb2d22a655ef78c65"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/ArmorMale22.bmd",
+          "mesh": 0,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/GloveMale22.bmd",
+          "mesh": 0,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/PantMale22.bmd",
+          "mesh": 0,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 22,
+      "views": [
+        "family-022-front.png",
+        "family-022-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale23.bmd",
+          "sha256": "2839b0312468c3f12c007482eb57b2ca38d629a7ce1be9627595ab8884ce248f"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale23.bmd",
+          "sha256": "faecebd854e7e1363dd9eab6033c959d70a18371be2ed3eb3643e842841cabbb"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale23.bmd",
+          "sha256": "98349dbefda9bc2f37b402e1712f24897ae858509db1c60dbdebe3eca8017c10"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale23.bmd",
+          "sha256": "a3be99c72aef636b4483e8cf7e87d62a020492ad9ab9fa485c6c1b456249b7e1"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale23.bmd",
+          "sha256": "c10d452d8cceae98da132a8b1638b11f33ad00c6511c5b98c979fa6c85e22cde"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/PantMale23.bmd",
+          "mesh": 0,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 23,
+      "views": [
+        "family-023-front.png",
+        "family-023-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale24.bmd",
+          "sha256": "b5426566d6de0ab976121275d3b23efa444c1531c7178040a48fbd77f741b1bd"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale24.bmd",
+          "sha256": "12cbced9cc36187ead361f3fb3b60938ae1f70d2501b06769812b0e6fc8dc6d5"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale24.bmd",
+          "sha256": "db9080a72b7e9f011b63e68e9f9adb1cd81a13a5b57e25dfcbef3facf5f8f2da"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale24.bmd",
+          "sha256": "fbc1a76d2c76ccf5f17ff4dd1fab97ea47a0d585fd90e288ca3227241a503ccd"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/ArmorMale24.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/PantMale24.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 24,
+      "views": [
+        "family-024-front.png",
+        "family-024-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale25.bmd",
+          "sha256": "47504a4d16d355b9223df2abd94574cb7b99e1afc8e3d7f998a04d612e8dc52b"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale25.bmd",
+          "sha256": "f65cdb327a2160857316cbc7794cc1f569b233c6fb55faeb4c46dbb45fea1a76"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale25.bmd",
+          "sha256": "8e949e863c6088938d825d9f32039bf5c3c0b0bb5fda8a6a2c7b81d17efd73b0"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale25.bmd",
+          "sha256": "dabdf3271d0b2769e13fc72c8980df951aa2b0b3cbcd21c417877c7d827f5c60"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale25.bmd",
+          "sha256": "897cc35372d2022cdc03855564ee2f5dafa9d0027c9193fb5f66ffad31b6c9bf"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/BootMale25.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/GloveMale25.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/HelmMale25.bmd",
+          "mesh": 2,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 25,
+      "views": [
+        "family-025-front.png",
+        "family-025-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale26.bmd",
+          "sha256": "75cb0342a41f68c2f3b49957520d2d39ecc096f4886b511004dae45fbafb9e7e"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale26.bmd",
+          "sha256": "82d05068f5a062c0e6228f7e822338c7692aa2cf30a58a2059136dc144b4e71c"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale26.bmd",
+          "sha256": "455fe1e68fe2d867510fbd6c0d73990abf2a6078e8f9a8b0d79888d8f0f5885f"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale26.bmd",
+          "sha256": "d02da10d5170db8b6c25bbb6596bf99c729ff98faee75ae81f312a0843d75b98"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale26.bmd",
+          "sha256": "2dd610bb5a81da00588f1a43be08e0cc88e8d57bf18deb0be8583777c1179632"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 26,
+      "views": [
+        "family-026-front.png",
+        "family-026-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale27.bmd",
+          "sha256": "48494b61e522a82451aa97c563865e5f5a3cb69cad1588c82035f8d3eb983e75"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale27.bmd",
+          "sha256": "fbf89b48ce12de5d445d84049d90c3b69340ec755155fe0b0bcbaa21d471fbca"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale27.bmd",
+          "sha256": "1ca1bbe1f56181c957f7f4a3eb34335d52fccc0c6bb7d8301635235e5140782e"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale27.bmd",
+          "sha256": "daa9b3e89aa0375b6ecf9b7808e3c095b34c43d2dd3e7b7eb226cb43e5510332"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale27.bmd",
+          "sha256": "1485374839f6e210d03de1386f264cfd6836e23087207dd18f2e5ebd652baeff"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 27,
+      "views": [
+        "family-027-front.png",
+        "family-027-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale28.bmd",
+          "sha256": "2e961f866d68324b0f72c05a67f50b98fb00d3c7e1d759dbff591a7f59d090ec"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale28.bmd",
+          "sha256": "f3cffd3b10663f79b4f72d584d76b34395944a2d77c717a56dd8422688c3cac0"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale28.bmd",
+          "sha256": "96afffc9c567d60867027603a419a55e70e0e03719f2f0f4cd7b032442a031c7"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale28.bmd",
+          "sha256": "ed28b8cd4457e243872e245ffbd7f0cc7206f045c49155cdc8484389e8969db1"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale28.bmd",
+          "sha256": "b0684d26d244d3a18fad3d29076d653c2f1b074688c79c74cff195f2927ba49d"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/ArmorMale28.bmd",
+          "mesh": 2,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/BootMale28.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/GloveMale28.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/PantMale28.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 28,
+      "views": [
+        "family-028-front.png",
+        "family-028-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale29.bmd",
+          "sha256": "3b5ca73c02955659aada85cfc6c597cd38e285866d4d206d72d03a09eeec46d6"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale29.bmd",
+          "sha256": "b1c3c80ba9214b749a68ec9d377a066e4559f10f6e06cd759c7436ed5d6ea43f"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/GloveMale29.bmd",
+          "sha256": "2be7cd30a075b68c362b0f1d37093cc9b20e1ccab2b19744d2ba456ab9f1306c"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale29.bmd",
+          "sha256": "3174362ef5fda1d7f0ef9bc7b093dde858a962623f36db553ef7b279a3cb90d8"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale29.bmd",
+          "sha256": "861ecbd044e227aeb42f8e833fae249450aca1f3af6fb61b52496045bff6593d"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 29,
+      "views": [
+        "family-029-front.png",
+        "family-029-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/HDK_ArmorMale01.bmd",
+          "sha256": "180747f6f028ffe86de3b19339fe1d3a02e1a8625b0c1a6f3bdee8bea6cd5e4d"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/HDK_BootMale01.bmd",
+          "sha256": "69103a5d76b0373476a978161090c3e49071d4f0ceb098fb2e8fd55771ecd739"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/HDK_GloveMale01.bmd",
+          "sha256": "935eab5d8db073ff0b10502f1a5be9b70f7d07439318b50fc4c6839e9a96785e"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HDK_HelmMale01.bmd",
+          "sha256": "ee18c58fcbe8f83f832a80d6889ccbc023e7ae5e415e419f9002b05ee8026e01"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/HDK_PantMale01.bmd",
+          "sha256": "5509f3a13481fdc294d98f0fb59e0aeb001c3e9a19eb86af9e412c1548944a78"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    }
+  ],
+  "missing_textures": [],
+  "validation": "Native BMD geometry and textures in bind pose; diagnostic Blender lighting, not ingame."
+}

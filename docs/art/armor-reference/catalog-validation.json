@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "occurrences_checked": 20555,
+  "canonical_models": 1019,
+  "families_checked": 70,
+  "thumbnails_checked": 1063,
+  "canonical_archive_unchanged": true,
+  "shared_parser_unchanged": true,
+  "asset_writes": false
+}

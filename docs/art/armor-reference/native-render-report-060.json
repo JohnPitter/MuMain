@@ -1,0 +1,447 @@
+{
+  "source": {
+    "id": "e8ca9722340c",
+    "location": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "prefix": "",
+    "kind": "zip",
+    "canonical": true,
+    "indexed_files": 13623,
+    "candidates": 1019
+  },
+  "families": [
+    {
+      "item_number": 65,
+      "views": [
+        "family-065-front.png",
+        "family-065-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/65/new_Armor04.bmd",
+          "sha256": "0f78a5312486f7a22a50fd200a5738dde10885b60dd3c8d7d40e465c89720a45"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/65/new_Boot04.bmd",
+          "sha256": "a90c66f547ac11865addd9d8ae1fc9208f2cca8508a90ed6fd549da7cb0f0bfb"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/65/new_Glove04.bmd",
+          "sha256": "1b9b79a98626b66f01170c68dfad45bf7677e7c5680a56c9a56e0c02f2ff26fa"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/65/new_Helm04.bmd",
+          "sha256": "f6d7739b2c20c09334befb76d1894e24e49f3176c52a2a22b41edc887a3effc3"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/65/new_Pant04.bmd",
+          "sha256": "418a0651414c0dc463cdb6f29680c60419861cc6dbd2c2aa3c3497ab16d8ab9d"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 66,
+      "views": [
+        "family-066-front.png",
+        "family-066-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/66/new_Armor05.bmd",
+          "sha256": "0714f2ce1cdd3f7576956fe259cbefe2ca3cd7033678d25f6b8b735328fa63bd"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/66/new_Boot05.bmd",
+          "sha256": "c5e191b8fa3f4a6ac2d6f4f71523692e962a8b9f033ca7eaae4c56f5a27abec0"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/66/new_Glove05.bmd",
+          "sha256": "b87d164b7c23c99e73674068cfb75f4ceee606f536395e576c0b1091d6c316f7"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/66/new_Helm05.bmd",
+          "sha256": "1a62964145efdc98d30fddf2f99045894b6694b2967cec725fcb66756d71c884"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/66/new_Pant05.bmd",
+          "sha256": "3c93b516f4c29b07a9db54f33b38db7f964949d7de72eebb060f30043ce20539"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 67,
+      "views": [
+        "family-067-front.png",
+        "family-067-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/67/new_Armor06.bmd",
+          "sha256": "087c06b1e8163bf90d679f316ce7cfda15732eb19acd17b696f6df273bc3f96e"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/67/new_Boot06.bmd",
+          "sha256": "79d3189ad5afd00c9fdf06f6e3e79b1e164112529d5cd9f61d8406a6bf386cc5"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/67/new_Glove06.bmd",
+          "sha256": "5073739fd1d3b7e51174351221e6f2c9a76bfff06e47be2edab9aac3f9311ae0"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/67/new_Helm06.bmd",
+          "sha256": "330e29f7803925a3ac39a2e4d3193bb497f5875cab9aa358ed35418527146cc0"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/67/new_Pant06.bmd",
+          "sha256": "b26dcbe154328ebcab1bf4f2b0e92b0fcafb0d45940d06d794306b487588b88c"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/LuckyItem/67/new_Armor06.bmd",
+          "mesh": 0,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/LuckyItem/67/new_Pant06.bmd",
+          "mesh": 1,
+          "texture": "hide_m.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 68,
+      "views": [
+        "family-068-front.png",
+        "family-068-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/68/new_Armor07.bmd",
+          "sha256": "94185d4164450cb0deb19acbacd4e52e2300e0c30062edac1827ef2d87698955"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/68/new_Boot07.bmd",
+          "sha256": "0f8e799827c1c3dcf207778b550eb9ed3d4fa89db9567bd314b6c24a799488bc"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/68/new_Glove07.bmd",
+          "sha256": "9454dd07cbd31aab9cba55d505d7f1c2a566e5024ced1a62e478337521a8d8cc"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/68/new_Helm07.bmd",
+          "sha256": "158e3e06d9cd2d1432f900c9d42a2034541b950a6c3d556a3caa65c1a75a9bf8"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/68/new_Pant07.bmd",
+          "sha256": "e9dcf4b29054ace82c8682510dcac12db0b5fc2473fbe16a80e9f0b0a912e9b7"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/LuckyItem/68/new_Armor07.bmd",
+          "mesh": 2,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/LuckyItem/68/new_Pant07.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 69,
+      "views": [
+        "family-069-front.png",
+        "family-069-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/69/new_Armor08.bmd",
+          "sha256": "46d4af7b5ea308bf268c744711a13b9db5a3e95d0f050919bea57c9fadeee2d4"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/69/new_Boot08.bmd",
+          "sha256": "3e87af776a840640142d2ab46b2c9861330ea1de24ab0e8f9e2659be9562dc67"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/69/new_Glove08.bmd",
+          "sha256": "59b8900bbc19e3ec34957c72b55f6394484b54742c60720a06f8b45b7a198259"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/69/new_Helm08.bmd",
+          "sha256": "c08e55724de987c22c18fb9d18866750e275df22f089e2447b70972a087f893a"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/69/new_Pant08.bmd",
+          "sha256": "dfd4ca3c54a9a682a432a8b03390e20d6939cf681bb81f6069455f6834d357a1"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/LuckyItem/69/new_Armor08.bmd",
+          "mesh": 1,
+          "texture": "hide_m.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/LuckyItem/69/new_Boot08.bmd",
+          "mesh": 1,
+          "texture": "hide_m.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/LuckyItem/69/new_Glove08.bmd",
+          "mesh": 1,
+          "texture": "hide_m.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/LuckyItem/69/new_Pant08.bmd",
+          "mesh": 2,
+          "texture": "hide_m.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 70,
+      "views": [
+        "family-070-front.png",
+        "family-070-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/70/new_Armor09.bmd",
+          "sha256": "3991a15e6ae4ceb411b46fec7e14961fcd611552eda69a51499bc84c0a41419c"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/70/new_Boot09.bmd",
+          "sha256": "661867c90aad2be8a5ca4b6954839a1523316c99f5c6e658d215b70eefe58052"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/70/new_Glove09.bmd",
+          "sha256": "6490fab8e9d0f40a46aeaa8812a2406d66b1f7a87a26cd61712557e41374a1dc"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/70/new_Helm09.bmd",
+          "sha256": "b2ba0aa40574a4bde7aba176dfa67b23fc2b8b7f708189f8f7a6873d49b82450"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/70/new_Pant09.bmd",
+          "sha256": "33999bbc1a8bcf36f51d8854d48dd966917ebe2317ecff8e25c48c325e107e44"
+        }
+      ],
+      "hidden_meshes_skipped": [],
+      "missing_textures": [],
+      "texture_fallbacks": [
+        {
+          "requested": "data/player/luckyitem/70/head helmet luck 40.jpg",
+          "archive_entry": "Data/Player/LuckyItem/65/head helmet Luck 40.OZJ",
+          "sha256": "7846292a497e0c46ec993b48d665e4acc315f798525d86873664dff584aaaf71",
+          "resolution": "verified_preloaded_name_fallback",
+          "source": "src/source/Data/DataHandler/LoadData.cpp:72-116"
+        }
+      ]
+    },
+    {
+      "item_number": 71,
+      "views": [
+        "family-071-front.png",
+        "family-071-rear.png"
+      ],
+      "render_semantics_version": 2,
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/71/new_Armor10.bmd",
+          "sha256": "9c70c7c969df27996d9878816de27b35e2bc38331fcc1aca9b7a485274fb7a99"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/71/new_Boot10.bmd",
+          "sha256": "a28874c2447d91c011a473c015a6a18995987cb8f435b7f2117af57284671ed8"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/LuckyItem/71/new_Glove10.bmd",
+          "sha256": "0bb74dac5ae89934e9eca6548bbf8569549d3c240f1e973b3b2f4612bd4bc1a2"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/71/new_Pant10.bmd",
+          "sha256": "90174df5f31de8d601042d6f8e48d7c3f42f9458e28501062821b6b2ec2df713"
+        }
+      ],
+      "hidden_meshes_skipped": [
+        {
+          "archive_entry": "Data/Player/LuckyItem/71/new_Armor10.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        },
+        {
+          "archive_entry": "Data/Player/LuckyItem/71/new_Pant10.bmd",
+          "mesh": 1,
+          "texture": "hide.jpg",
+          "source": "src/source/Render/Models/ZzzBMD.cpp:1317"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": []
+    },
+    {
+      "item_number": 72,
+      "views": [
+        "family-072-front.png",
+        "family-072-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/LuckyItem/72/new_Armor11.bmd",
+          "sha256": "8003d0d544f41cf382a94d7d76fc6ee2b510e7b01d7a4d68aa419cd1d1a6e6b5"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/LuckyItem/72/new_Boot11.bmd",
+          "sha256": "98ef49232e4ab0cd0d5ee7b2700add71a401c540057aad57721246efe2791196"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/LuckyItem/72/new_Helm11.bmd",
+          "sha256": "43cd3001bd34bb1f6849d8fd65645bd2663b8638bb9164171401a45129f5cbe2"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/LuckyItem/72/new_Pant11.bmd",
+          "sha256": "d900dd574081f4786e1dba64eba54e3e6a7fb9bc80081ec3f9e8f9ad65b660d6"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 73,
+      "views": [
+        "family-073-front.png",
+        "family-073-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/ArmorMale74.bmd",
+          "sha256": "a3942b1630c09255cea9be18eb22825b55f9e410831fab9aa9510fe32a544ac3"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/BootMale74.bmd",
+          "sha256": "cb024fbd8fa9e5f2c8c3a284c4cb7fc85ac5cbb47f70bddca158a8eef7c33db3"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/HelmMale74.bmd",
+          "sha256": "52a736f1813453cdf506020e2bcf42050aa4d32e6ebaab19f39d20589b5893c5"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/PantMale74.bmd",
+          "sha256": "43c66103f79d53650a2985dae42a27a410339ac1b41cee13a46f49b057e45dd0"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    },
+    {
+      "item_number": 74,
+      "views": [
+        "family-074-front.png",
+        "family-074-rear.png"
+      ],
+      "models": [
+        {
+          "part": "Armor",
+          "archive_entry": "Data/Player/Celestial_Armor.bmd",
+          "sha256": "d72e091f1c06e539bac078b61ca95375b448334cade51e9bf16d435c2f8c22ab"
+        },
+        {
+          "part": "Boots",
+          "archive_entry": "Data/Player/Celestial_Boots.bmd",
+          "sha256": "9d8019f8aae2bf04ea485ff27bc49befd8de1454453d0e942c8eb74dc45226a6"
+        },
+        {
+          "part": "Gloves",
+          "archive_entry": "Data/Player/Celestial_Gloves.bmd",
+          "sha256": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c"
+        },
+        {
+          "part": "Helm",
+          "archive_entry": "Data/Player/Celestial_Helm.bmd",
+          "sha256": "f298fdc1aa3533ef3aa16b394306f4e404807fd7a96ef89ae887b8e3cc416fee"
+        },
+        {
+          "part": "Pants",
+          "archive_entry": "Data/Player/Celestial_Pants.bmd",
+          "sha256": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599"
+        }
+      ],
+      "missing_textures": [],
+      "texture_fallbacks": [],
+      "dependency_audit": "Source resolution audit only; existing image was not rerendered."
+    }
+  ],
+  "missing_textures": [],
+  "validation": "Native BMD geometry and textures in bind pose; diagnostic Blender lighting, not ingame."
+}
