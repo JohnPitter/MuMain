@@ -1,0 +1,353 @@
+{
+  "status": "AUTHORED_ZEUS_ARMOR_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/zeus/design-spec.md",
+  "model_origin": "Original Zeus geometry on the audited native Class304 skeletons; single-influence rig binding, no native mesh reuse",
+  "native_rig": {
+    "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "565606ecdf899443f2e202cd522b91071abe4a00a77f92f9ae9106ed534e3de5",
+    "piece_sha256": {
+      "Armor": "6caf8c7c42e9304b319899855091c73f734655b4399e4f2b49f82f13a6421a11",
+      "Pant": "f96733d4807124a3a8dae8f0035493edb0769c3aa843bb58e43473abceafc9b8",
+      "Glove": "76b95e1063e13d802ab6b9e4f4fe68b14337e3ca6c52a076d9ab1f7f94cb8c1b",
+      "Boot": "a834c7688ca694403d91a6209dd7b6f0477c03b51c96b383a9d562971e96589c"
+    },
+    "used_bone_contract": {
+      "Armor": [
+        2,
+        3,
+        10,
+        17,
+        18,
+        25,
+        26,
+        27,
+        34,
+        35,
+        36
+      ],
+      "Pant": [
+        0,
+        2,
+        3,
+        4,
+        10,
+        11,
+        17
+      ],
+      "Glove": [
+        27,
+        28,
+        29,
+        36,
+        37,
+        38
+      ],
+      "Boot": [
+        4,
+        5,
+        11,
+        12
+      ]
+    }
+  },
+  "fit_anchors": {
+    "Armor": {
+      "2": [
+        0.0,
+        0.0,
+        109.9509
+      ],
+      "3": [
+        10.2815,
+        0.0,
+        109.9509
+      ],
+      "10": [
+        -10.2815,
+        -0.0,
+        109.9509
+      ],
+      "17": [
+        0.0,
+        0.0158,
+        113.5495
+      ],
+      "18": [
+        0.0,
+        0.0207,
+        133.351
+      ],
+      "25": [
+        -6.4773,
+        -0.0,
+        159.3605
+      ],
+      "26": [
+        -19.6104,
+        -0.0,
+        156.6983
+      ],
+      "27": [
+        -26.6162,
+        -0.0,
+        119.7257
+      ],
+      "34": [
+        6.4774,
+        -0.0,
+        159.3604
+      ],
+      "35": [
+        19.6105,
+        0.0,
+        156.6982
+      ],
+      "36": [
+        26.6162,
+        0.0,
+        119.7257
+      ]
+    },
+    "Pant": {
+      "0": [
+        0.0,
+        0.0,
+        109.9509
+      ],
+      "2": [
+        0.0,
+        0.0,
+        109.9509
+      ],
+      "3": [
+        10.2815,
+        0.0,
+        109.9509
+      ],
+      "4": [
+        10.2815,
+        -4.9348,
+        60.7674
+      ],
+      "10": [
+        -10.2815,
+        -0.0,
+        109.9509
+      ],
+      "11": [
+        -10.2816,
+        -4.9348,
+        60.7674
+      ],
+      "17": [
+        0.0,
+        0.0158,
+        113.5495
+      ]
+    },
+    "Glove": {
+      "27": [
+        -26.6162,
+        -0.0,
+        119.7257
+      ],
+      "28": [
+        -31.7294,
+        -0.6996,
+        92.7412
+      ],
+      "29": [
+        -35.4475,
+        -0.9369,
+        82.8391
+      ],
+      "36": [
+        26.6162,
+        0.0,
+        119.7257
+      ],
+      "37": [
+        31.7294,
+        -0.6996,
+        92.7412
+      ],
+      "38": [
+        35.4475,
+        -0.9368,
+        82.839
+      ]
+    },
+    "Boot": {
+      "4": [
+        10.2815,
+        -4.9348,
+        60.7674
+      ],
+      "5": [
+        10.2814,
+        0.0,
+        11.5839
+      ],
+      "11": [
+        -10.2816,
+        -4.9348,
+        60.7674
+      ],
+      "12": [
+        -10.2817,
+        0.0,
+        11.5839
+      ]
+    }
+  },
+  "triangle_budgets": {
+    "Armor": [
+      6280,
+      9400
+    ],
+    "Pant": [
+      4500,
+      6740
+    ],
+    "Glove": [
+      2400,
+      3610
+    ],
+    "Boot": [
+      3350,
+      5030
+    ]
+  },
+  "budget_justification": "Proportional (+/-20%) to the measured Poseidon lote pieces (armor 7842, pant 5620, glove 3004, boot 4192 triangles): the Zeus armor folds the concept shoulder fans into the cuirass (MU has no separate shoulder slot) and adds the native hip tassets, the pant adds the double-pointed faldon hanging from the root bone, gloves and boots mirror the measured scope of their Poseidon counterparts in the blue/platina language.",
+  "shared_source_sha256": {
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "export_skinned_bmd.py": "4ebeead43f021d9f905be927b36a66208f697972fea1f160806a6c18d1f21c05",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
+  },
+  "blend_sha256": "57df180159f15f78e36cddb6da4f71733d3bc16fa8a84de403c49b376341487d",
+  "pieces": {
+    "Armor": {
+      "file": "Zeus_Armor.bmd",
+      "meshes": 6,
+      "triangles": 8470,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 97,
+        "triangles": 8470,
+        "open_edges": 160,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0014040024574285344,
+      "sha256": "7378ba466738b171d705cc19a7d4945db19a2bed40203e34b737341a266ed77a",
+      "used_bones": [
+        2,
+        3,
+        10,
+        17,
+        18,
+        25,
+        26,
+        27,
+        34,
+        35,
+        36
+      ],
+      "roundtrip_max_error": 7.03614205121994e-07
+    },
+    "Pant": {
+      "file": "Zeus_Pant.bmd",
+      "meshes": 4,
+      "triangles": 5476,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 69,
+        "triangles": 5476,
+        "open_edges": 184,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.00432998974763958,
+      "sha256": "1e71bc6bda67ebef604b104a87bccdab2d49f3cd7b2a1efa0e560e32a4a5591f",
+      "used_bones": [
+        0,
+        2,
+        3,
+        4,
+        10,
+        11,
+        17
+      ],
+      "roundtrip_max_error": 8.940696716308594e-07
+    },
+    "Glove": {
+      "file": "Zeus_Glove.bmd",
+      "meshes": 3,
+      "triangles": 2708,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 58,
+        "triangles": 2708,
+        "open_edges": 128,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0023657239873537085,
+      "sha256": "c376a35bc00d809e896617225705003f32ab67d64422d81401bed2e981522400",
+      "used_bones": [
+        27,
+        28,
+        29,
+        36,
+        37,
+        38
+      ],
+      "roundtrip_max_error": 8.940696716308594e-07
+    },
+    "Boot": {
+      "file": "Zeus_Boot.bmd",
+      "meshes": 4,
+      "triangles": 3904,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 68,
+        "triangles": 3904,
+        "open_edges": 64,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.004330055983862097,
+      "sha256": "b63d4bc12fe619d3047d7b0d6347da72d98373e99ac174d91892b7418d09b8d9",
+      "used_bones": [
+        4,
+        5,
+        11,
+        12
+      ],
+      "roundtrip_max_error": 4.172325134277344e-07
+    }
+  }
+}

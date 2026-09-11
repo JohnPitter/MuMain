@@ -1,0 +1,25 @@
+{
+  "saved_blend_sha256": "57df180159f15f78e36cddb6da4f71733d3bc16fa8a84de403c49b376341487d",
+  "models": {
+    "Armor": {
+      "max_error": 7.03614205121994e-07,
+      "triangles": 8470,
+      "sha256": "7378ba466738b171d705cc19a7d4945db19a2bed40203e34b737341a266ed77a"
+    },
+    "Pant": {
+      "max_error": 8.940696716308594e-07,
+      "triangles": 5476,
+      "sha256": "1e71bc6bda67ebef604b104a87bccdab2d49f3cd7b2a1efa0e560e32a4a5591f"
+    },
+    "Glove": {
+      "max_error": 8.940696716308594e-07,
+      "triangles": 2708,
+      "sha256": "c376a35bc00d809e896617225705003f32ab67d64422d81401bed2e981522400"
+    },
+    "Boot": {
+      "max_error": 4.172325134277344e-07,
+      "triangles": 3904,
+      "sha256": "b63d4bc12fe619d3047d7b0d6347da72d98373e99ac174d91892b7418d09b8d9"
+    }
+  }
+}

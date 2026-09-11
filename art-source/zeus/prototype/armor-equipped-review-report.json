@@ -1,0 +1,79 @@
+{
+  "status": "ATTACHMENT_MATH_PREVIEW_NOT_INGAME",
+  "mannequin": "PREVIEW_fit_mannequin generic tubes; never exported",
+  "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+  "player_bones": 60,
+  "anchor_gates": {
+    "nearest_below": 20.0,
+    "farthest_below": 65.0,
+    "pose_shift_min": 3.0,
+    "pose_shifts": {
+      "Armor": 11.0018,
+      "Pant": 10.9556,
+      "Glove": 16.4986,
+      "Boot": 10.6428
+    }
+  },
+  "poses": [
+    {
+      "render": "Zeus_ArmorSet_equipped_front.png",
+      "clip": "PLAYER_STOP_SWORD",
+      "action": 4,
+      "frame": 0,
+      "view": "front"
+    },
+    {
+      "render": "Zeus_ArmorSet_equipped_side.png",
+      "clip": "PLAYER_WALK_SWORD",
+      "action": 17,
+      "frame": 3,
+      "view": "side"
+    }
+  ],
+  "fit_probes": [
+    {
+      "clip": "PLAYER_STOP_SWORD",
+      "frame": 0,
+      "vertex_anchor_distance": {
+        "Armor": {
+          "nearest": 4.397,
+          "farthest": 31.868
+        },
+        "Pant": {
+          "nearest": 1.4654,
+          "farthest": 42.631
+        },
+        "Glove": {
+          "nearest": 3.0107,
+          "farthest": 40.4317
+        },
+        "Boot": {
+          "nearest": 1.7336,
+          "farthest": 45.7094
+        }
+      }
+    },
+    {
+      "clip": "PLAYER_WALK_SWORD",
+      "frame": 3,
+      "vertex_anchor_distance": {
+        "Armor": {
+          "nearest": 4.397,
+          "farthest": 31.868
+        },
+        "Pant": {
+          "nearest": 1.4654,
+          "farthest": 42.631
+        },
+        "Glove": {
+          "nearest": 3.0107,
+          "farthest": 40.4317
+        },
+        "Boot": {
+          "nearest": 1.7336,
+          "farthest": 45.7094
+        }
+      }
+    }
+  ]
+}

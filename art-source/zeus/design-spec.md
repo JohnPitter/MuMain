@@ -16,8 +16,10 @@ bases nativas da evolução MG/Duel Master (`native-reference-audit.json`), estu
 do acabamento azul Legendary +15 Excellent
 (`research/legendary-excellent-blue.md`) e os **protótipos das duas armas**
 (Espada de Zeus e Bastão Celestial) com BMD de diagnóstico, renders e testes.
-Armaduras, capa, asas, pendant e anéis abaixo são **projeto**, não malhas
-concluídas.
+Na onda seguinte, as **4 peças de corpo** (Armadura com ombreiras incorporadas,
+Calça, Luvas e Botas) foram modeladas como protótipos autorais sobre o rig
+Class304, no molde Poseidon (build/verify/equipped + renders + testes). Capa,
+asas, pendant e anéis abaixo permanecem **projeto**, não malhas concluídas.
 
 ## Classe e requisitos de enquadramento
 
@@ -75,10 +77,10 @@ anexando pelo sistema padrão — é efeito de upgrade, não peça do set.
 
 | Definição | Silhueta e detalhes a construir | Vinculação / aceitação | Estado |
 | --- | --- | --- | --- |
-| Armadura (peitoral + ombreiras) | Peitoral facetado em “V” azul com canaletas de energia, ombreiras altas angulares incorporadas com fan de placas em ponta de raio, platina nos cunhos e esterno, escápulas em estrela | Ossos nativos 2/3/10/17/18/25/26/27/34/35/36 auditados no ArmorClass304 | Projeto |
-| Calça | Lamelas angulares azul/platina, quadril e traseira completos, faldão frontal curto em pontas duplas (visual da prancha) | Ossos 0/2/3/4/10/11/17 do PantClass304; nunca soldar faldão às pernas | Projeto |
-| Luvas | Dedos segmentados, guarda dorsal com cristal azul, canaletas elétricas platina; palma usável | Ossos 27/28/29/36/37/38 do GloveClass304; empunhadura de espada/bastão | Projeto |
-| Botas | Caneleira alta facetada, joelheira em ponta de raio, solado definido, platina nos recortes | Ossos 4/5/11/12 do BootClass304; flexão de pé/estribo | Projeto |
+| Armadura (peitoral + ombreiras) | Peitoral facetado em “V” azul com canaletas de energia, ombreiras altas angulares incorporadas com fan de placas em ponta de raio, platina nos cunhos e esterno, escápulas em estrela | Ossos nativos 2/3/10/17/18/25/26/27/34/35/36 auditados no ArmorClass304; 8.470 triângulos | Protótipo autoral BMD/Blender |
+| Calça | Lamelas angulares azul/platina, quadril e traseira completos, faldão frontal curto em pontas duplas (visual da prancha) no osso raiz 0, como no PantClass304 nativo | Ossos 0/2/3/4/10/11/17 do PantClass304; nunca soldar faldão às pernas; 5.476 triângulos | Protótipo autoral BMD/Blender |
+| Luvas | Dedos segmentados, guarda dorsal com cristal azul, canaletas elétricas platina; palma usável | Ossos 27/28/29/36/37/38 do GloveClass304; empunhadura de espada/bastão; 2.708 triângulos | Protótipo autoral BMD/Blender |
+| Botas | Caneleira alta facetada, joelheira em ponta de raio, solado definido, platina nos recortes | Ossos 4/5/11/12 do BootClass304; flexão de pé/estribo; 3.904 triângulos | Protótipo autoral BMD/Blender |
 | Capa | Capa longa azul com interior mais escuro, bordas platina, brasão de raio/estrela; “Capa (visão traseira)” da prancha | Precedente cloth `DarkLordRobe02` (1 osso + cloth runtime, ferragem no osso 19 — ver audit Poseidon); cloth é sistema separado | Projeto |
 | Espada de Zeus (arma principal) | Espada longa, lâmina azul celeste energética com núcleo emissivo e gume branco-platina, guarda em “V” de raio, punho envolto azul, pommel com estrela | Mão direita, osso 33 (`knife_gdf`); âncoras `Grip/Core/Tip`; **protótipo BMD/Blender nesta lane** | Protótipo autoral BMD/Blender |
 | Bastão Celestial (arma alternativa) | Cajado azul alto com ornamento estelar no topo, núcleo emissivo, anéis platina, ponta inferior acabada | Mão esquerda, osso 42 (`hand_bofdgne01`); âncoras `Grip/Core/Tip`; não é a espada reescalada | Protótipo autoral BMD/Blender |
@@ -131,18 +133,36 @@ mão esquerda) — ramo default de `CreateCharacterPointer`
 python art-source/zeus/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_armor.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_armor.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/zeus_armor_equipped.py
 python -m unittest discover -s art-source/zeus -p 'test_*.py' -v
 ```
 
-`build_zeus.py -- --skip-render` regenera sem renderizar. Saídas:
+`build_zeus.py -- --skip-render` e `build_zeus_armor.py -- --skip-render`
+regeneram sem renderizar. Saídas:
 
 - `prototype/zeus-weapons.blend`: coleções `Zeus Sword` e `Zeus Staff` (origem
   de pega compartilhada; habilitar as duas sobrepõe as alternativas).
+- `prototype/zeus-armor.blend`: coleções `Zeus Armor`, `Zeus Pant`, `Zeus
+  Glove` e `Zeus Boot` sobre os esqueletos Class304 congelados (51 ossos
+  preservados, 1 pose; skin de influência única por vértice; ossos usados =
+  distribuição nativa auditada: Armadura 2/3/10/17/18/25/26/27/34/35/36 —
+  incluindo os tassets de quadril nativos —, Calça 0/2/3/4/10/11/17, Luva
+  27/28/29/36/37/38, Bota 4/5/11/12).
 - `prototype/models/`: BMDs de diagnóstico **não instaláveis**.
-- `prototype/renders/`: 6 PNGs de estúdio (frente, lateral oblíqua 72°,
-  detalhe por arma) — renders Blender, não imagens do jogo.
+- `prototype/renders/`: 6 PNGs de estúdio por arma; frente/lado/costas por
+  peça de corpo (12) + 2 provas equipadas no mannequin com as matrizes reais
+  do `player.bmd` (`Zeus_ArmorSet_equipped_*`) — renders Blender, não imagens
+  do jogo.
 - `prototype/build-report.json` e `prototype/saved-roundtrip-report.json`:
-  orçamentos, âncoras, hashes e prova de roundtrip (gate 1e-6).
+  orçamentos, âncoras, hashes e prova de roundtrip (gate 1e-6) das armas.
+- `prototype/armor-build-report.json`, `armor-saved-roundtrip-report.json` e
+  `armor-equipped-review-report.json`: orçamentos das peças (bandas ±20% sobre
+  as medidas Poseidon: armadura 6.280–9.400, calça 4.500–6.740, luva
+  2.400–3.610, bota 3.350–5.030; justificativa registrada no relatório),
+  âncoras de encaixe por osso, roundtrip < 1e-6 e gates de prova equipada
+  (nearest < 20, farthest < 65, deslocamento entre poses ≥ 3).
 - `prototype/texture-dependencies.json`: os 3 atlases ausentes declarados.
 - `native-reference-audit.json`: proveniência, rigs e contratos nativos.
 
@@ -152,14 +172,12 @@ Nenhuma instalação em `Data/`, nenhum deploy, nenhuma alteração nas pastas
 
 ## Próximas ondas (não desta lane)
 
-1. Armaduras de corpo (4 peças) sobre o rig Class304 auditado, no molde
-   Poseidon (build/verify/equipped + renders).
-2. Capa com cloth e prova de colisão/vento; asas com esqueleto próprio.
-3. Pendant e anéis (modelos + ícones), pets não fazem parte do conceito Zeus.
-4. Atlases `Zeus_*` com bordas/frente/costas coerentes e UV final; remover o
+1. Capa com cloth e prova de colisão/vento; asas com esqueleto próprio.
+2. Pendant e anéis (modelos + ícones), pets não fazem parte do conceito Zeus.
+3. Atlases `Zeus_*` com bordas/frente/costas coerentes e UV final; remover o
    bloqueio de protótipo só após auditoria das dependências.
-5. Backend: IDs, requisitos, categoria, bônus/fases — **update 249 a reservar**
+4. Backend: IDs, requisitos, categoria, bônus/fases — **update 249 a reservar**
    na coordenação de ondas; nunca publicar conjunto incompleto como pronto.
-6. Integração/FX: aura, ataque, movimento e buff com orçamento de partículas,
+5. Integração/FX: aura, ataque, movimento e buff com orçamento de partículas,
    validação visual in-game frente/costas/inventário/chão e comparação com o
    Legendary +15 Excellent na mesma câmera.
