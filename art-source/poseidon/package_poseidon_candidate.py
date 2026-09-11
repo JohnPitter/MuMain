@@ -46,7 +46,9 @@ def collect_payload():
         payload[f'Data/Player/{name}.bmd'] = MODELS / f'{name}.bmd'
     for name in ITEM_MODELS:
         payload[f'Data/Item/{name}.bmd'] = MODELS / f'{name}.bmd'
-    for atlas in ATLASES:
+    for atlas in sorted(ATLASES.iterdir()):
+        if atlas.name not in ATLAS_NAMES:
+            raise ValueError(f'Unexpected file in atlas folder: {atlas.name}')
         payload[f'Data/Player/{atlas.name}'] = atlas
         payload[f'Data/Item/{atlas.name}'] = atlas
     return payload
