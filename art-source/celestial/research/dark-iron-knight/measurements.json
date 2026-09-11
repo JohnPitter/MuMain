@@ -1,0 +1,2046 @@
+{
+  "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-golden-20260911\\golden-base-downloaded.zip",
+  "archive_sha256": "10141413669b3e061a7082c4933cec4902f03f7540cf73e1526fa65442e426ed",
+  "models": [
+    {
+      "entry": "Data/Monster/Monster150.bmd",
+      "sha256": "188f8d281f96a6dcfbf61d84d0ea45e83ef54e247467a16c0f2cc2c0d6ac751a",
+      "meshes": [
+        {
+          "vertices": 540,
+          "polygon_records": 1034,
+          "triangles": 1034,
+          "normals": 671,
+          "texture": "icenight.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            17,
+            18,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            30,
+            31,
+            33,
+            40,
+            41,
+            42,
+            43,
+            46,
+            47,
+            48,
+            49,
+            52,
+            54,
+            56
+          ],
+          "uv_coordinates": 364,
+          "vertices_with_multiple_normal_indices": 140,
+          "geometry_sha256": "3c8cf823d1fd83e618314fbb62e97ed85521b9efe619e1bf8c74fe0bd6e8c792"
+        },
+        {
+          "vertices": 663,
+          "polygon_records": 1092,
+          "triangles": 1092,
+          "normals": 682,
+          "texture": "icenight2.jpg",
+          "used_bones": [
+            2,
+            4,
+            6,
+            10,
+            12,
+            21,
+            23,
+            25,
+            33,
+            38,
+            40,
+            41,
+            42,
+            43,
+            46,
+            47,
+            48,
+            49,
+            52,
+            54,
+            56
+          ],
+          "uv_coordinates": 358,
+          "vertices_with_multiple_normal_indices": 23,
+          "geometry_sha256": "de84517bafb6c65d1108a88ccaec07c3c753d02e70236001013574477f7d2394"
+        }
+      ],
+      "vertices": 1203,
+      "triangles": 2126,
+      "bone_count": 58,
+      "real_bone_count": 58,
+      "action_frames": [
+        8,
+        8,
+        8,
+        8,
+        9,
+        5,
+        12
+      ],
+      "action_locks": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "animated_bones": 58,
+      "rig_sha256": "13e06dc091f54f7a377cca8b56d8bdc5cd9fefbe092b095927a4d9e969789da6",
+      "geometry_sha256": "500fa3a3fc826d5fa4b515afc4490d32b68057a85a0a08a5979ad592f6b79ff8"
+    },
+    {
+      "entry": "Data/Monster/Monster209.bmd",
+      "sha256": "c67c060c927d0c98cb391a22e1f83809d25f0e9e4fe2985636a543fb8d57f433",
+      "meshes": [
+        {
+          "vertices": 540,
+          "polygon_records": 1034,
+          "triangles": 1034,
+          "normals": 671,
+          "texture": "ex01icenight.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            17,
+            18,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            30,
+            31,
+            33,
+            40,
+            41,
+            42,
+            43,
+            46,
+            47,
+            48,
+            49,
+            52,
+            54,
+            56
+          ],
+          "uv_coordinates": 364,
+          "vertices_with_multiple_normal_indices": 140,
+          "geometry_sha256": "f5525eb3c022c7d7f429fb618d2ac9f3d67d2fd48acfe9035f5a2f44be6e7c6b"
+        },
+        {
+          "vertices": 663,
+          "polygon_records": 1092,
+          "triangles": 1092,
+          "normals": 682,
+          "texture": "ex01icenight2.jpg",
+          "used_bones": [
+            2,
+            4,
+            6,
+            10,
+            12,
+            21,
+            23,
+            25,
+            33,
+            38,
+            40,
+            41,
+            42,
+            43,
+            46,
+            47,
+            48,
+            49,
+            52,
+            54,
+            56
+          ],
+          "uv_coordinates": 358,
+          "vertices_with_multiple_normal_indices": 23,
+          "geometry_sha256": "951d12246226b2cb0da9443628457cc481e93c3aa949be43349e099820b1ee0c"
+        }
+      ],
+      "vertices": 1203,
+      "triangles": 2126,
+      "bone_count": 58,
+      "real_bone_count": 58,
+      "action_frames": [
+        8,
+        8,
+        8,
+        8,
+        9,
+        5,
+        12
+      ],
+      "action_locks": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "animated_bones": 58,
+      "rig_sha256": "13e06dc091f54f7a377cca8b56d8bdc5cd9fefbe092b095927a4d9e969789da6",
+      "geometry_sha256": "d9ea43f3f8f3f49cd8d94cbf7a0253a68507aa3646a6acc24e399ba934b90967"
+    },
+    {
+      "entry": "Data/Item/Celestial_Pendant.bmd",
+      "sha256": "543966a6807d5009d6e1c7020aad58d78248ff27ede3c1f518d465bf6da72276",
+      "meshes": [
+        {
+          "vertices": 1117,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1271,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 376,
+          "vertices_with_multiple_normal_indices": 134,
+          "geometry_sha256": "4a45c69671c1f1220489bee6652843ec02690e4ef44cf64c9629326e4368dfed"
+        },
+        {
+          "vertices": 1127,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1307,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 387,
+          "vertices_with_multiple_normal_indices": 158,
+          "geometry_sha256": "b0a13c8c2f0f8b19a16ec2adebad63ccb1f9cd125992700ccbac18830eb54a1a"
+        },
+        {
+          "vertices": 265,
+          "polygon_records": 506,
+          "triangles": 506,
+          "normals": 344,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 143,
+          "vertices_with_multiple_normal_indices": 51,
+          "geometry_sha256": "62a7c462770c9176b2c3591a9e5b0d2f27ee3fa8a226e0dc98ee2ed29cfc3fdf"
+        },
+        {
+          "vertices": 1131,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 2070,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 490,
+          "vertices_with_multiple_normal_indices": 389,
+          "geometry_sha256": "e2ad9f7be3f1cb5829eb739b4f0526c15cbde773a36c7628c11966211600340f"
+        },
+        {
+          "vertices": 254,
+          "polygon_records": 474,
+          "triangles": 474,
+          "normals": 324,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 113,
+          "vertices_with_multiple_normal_indices": 42,
+          "geometry_sha256": "c936615f33b3a698858f4816449ae647c761b23c8adaf6ed15fdcbd1a1250ea2"
+        },
+        {
+          "vertices": 9,
+          "polygon_records": 14,
+          "triangles": 14,
+          "normals": 32,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 9,
+          "geometry_sha256": "41bd6d0d49cbc9abb67446b95e30cdf4de498b2797d4b8a5596a4110bc655811"
+        }
+      ],
+      "vertices": 3903,
+      "triangles": 7594,
+      "bone_count": 1,
+      "real_bone_count": 1,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "daf52898d2c6ac8815dc84e75be5f027e57aa21228d6a2c101a096e4c96bef7c",
+      "geometry_sha256": "ec1ac985a007613daea1e237211374c3e7bb47056b4d473312500316572a9a2b"
+    },
+    {
+      "entry": "Data/Item/Celestial_Ring.bmd",
+      "sha256": "bc49208efa3b68b6115b1cce5ed0bcc47ad98d73c2ae98b1e2ae8df3caabb46d",
+      "meshes": [
+        {
+          "vertices": 723,
+          "polygon_records": 1426,
+          "triangles": 1426,
+          "normals": 1320,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 475,
+          "vertices_with_multiple_normal_indices": 219,
+          "geometry_sha256": "dedf683534f8cfcad86dfd88346b3a4476a07db5ab1ae6013e568d74c8df4a16"
+        },
+        {
+          "vertices": 1122,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 2008,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 701,
+          "vertices_with_multiple_normal_indices": 346,
+          "geometry_sha256": "00bf6746bc167640a9dc2fef2dd76f5875175fd20a1265a0dbe611c4ce52eff4"
+        },
+        {
+          "vertices": 1130,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1248,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 445,
+          "vertices_with_multiple_normal_indices": 90,
+          "geometry_sha256": "ed4be4ec0a097f19fcd7ed3389aa6915759bfada4c37510c9eba8a5987507825"
+        },
+        {
+          "vertices": 174,
+          "polygon_records": 332,
+          "triangles": 332,
+          "normals": 184,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 109,
+          "vertices_with_multiple_normal_indices": 8,
+          "geometry_sha256": "64f4cee65b61092bb00eadc42921dee1dacb2a8e038a9776f582184b6b493b61"
+        },
+        {
+          "vertices": 9,
+          "polygon_records": 14,
+          "triangles": 14,
+          "normals": 32,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 9,
+          "geometry_sha256": "c843bd3f9c2e7c497655505723969b9ea1ad07d3aaf12fab76c4b5baf5d32b0e"
+        }
+      ],
+      "vertices": 3158,
+      "triangles": 6172,
+      "bone_count": 1,
+      "real_bone_count": 1,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "d5686b7fd1dce065cec97189acdd47883801869df31b667cf74d6046c6dc7db1",
+      "geometry_sha256": "7e7852b03424608699a521f933c48f1d256a4dcc39cd5f68f959d97791e67d4f"
+    },
+    {
+      "entry": "Data/Item/Celestial_Shield.bmd",
+      "sha256": "74933f78247bfbc34829ad7e650f3e8ddc180258269a9aff926b93318da9ccd0",
+      "meshes": [
+        {
+          "vertices": 405,
+          "polygon_records": 774,
+          "triangles": 774,
+          "normals": 1552,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 299,
+          "vertices_with_multiple_normal_indices": 405,
+          "geometry_sha256": "32857c68feabd470fd1e8d76413dbf35e615e24eb77b5fd21167fed119e1ef0e"
+        },
+        {
+          "vertices": 1151,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1861,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 1012,
+          "vertices_with_multiple_normal_indices": 330,
+          "geometry_sha256": "63e1ba451c616967456928e5718f7d12f9d31ee8dfe0805ac692540a59946973"
+        },
+        {
+          "vertices": 1130,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1236,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 1006,
+          "vertices_with_multiple_normal_indices": 102,
+          "geometry_sha256": "d5e4704477f27ee858a003b912a5558874505444b04b42815fcdfbfee3dadf0d"
+        },
+        {
+          "vertices": 1130,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1338,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 631,
+          "vertices_with_multiple_normal_indices": 120,
+          "geometry_sha256": "f5726549cb947b8929410b54abbe4246776c2e44ed424900f52208f9a98bdfa9"
+        },
+        {
+          "vertices": 559,
+          "polygon_records": 1092,
+          "triangles": 1092,
+          "normals": 619,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 471,
+          "vertices_with_multiple_normal_indices": 54,
+          "geometry_sha256": "4e3a1e38683276ccb2887c50d3b8bc93f3f82b7c5f3f2c3fd31a6d234c14db36"
+        },
+        {
+          "vertices": 18,
+          "polygon_records": 28,
+          "triangles": 28,
+          "normals": 64,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 18,
+          "geometry_sha256": "7f331d66c05d0bdce01b0214ff9e7b0dd6ed79f67b7454570ce8f96a0f163b9c"
+        }
+      ],
+      "vertices": 4393,
+      "triangles": 8494,
+      "bone_count": 1,
+      "real_bone_count": 1,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "001005c7311990a815d136687043b1562d0ad0a998e97dcabc6cf57ef3a3845a",
+      "geometry_sha256": "624e6039817fdb36c28609c25160c7e9343676a1b7036a87bb76a3ff24774580"
+    },
+    {
+      "entry": "Data/Item/Celestial_Staff.bmd",
+      "sha256": "35b30916ab1a7c0321fe3bbbc6c10c5fc89736892250425a1f778263bf27f93c",
+      "meshes": [
+        {
+          "vertices": 117,
+          "polygon_records": 182,
+          "triangles": 182,
+          "normals": 416,
+          "texture": "Celestial_Emissive.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 42,
+          "vertices_with_multiple_normal_indices": 117,
+          "geometry_sha256": "edd8492c8847c62c44274a1957c0efaacd5b2637b0c1e9589050e69d7e80fb1c"
+        },
+        {
+          "vertices": 688,
+          "polygon_records": 1360,
+          "triangles": 1360,
+          "normals": 1000,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 631,
+          "vertices_with_multiple_normal_indices": 136,
+          "geometry_sha256": "dbacbc44196fa361d08da3c340520dc69f24b239783238a63a287aa82984102b"
+        },
+        {
+          "vertices": 1106,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1250,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 238,
+          "vertices_with_multiple_normal_indices": 112,
+          "geometry_sha256": "6516e7a70730b07910d66b1efda44caeac4a2aa0153f3a6e3d57c6a14782eaf3"
+        },
+        {
+          "vertices": 1119,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1134,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 1109,
+          "vertices_with_multiple_normal_indices": 15,
+          "geometry_sha256": "344ac2330b239c98e55a0d957225f91bfee93985f7539f790398bfa6c4a67b56"
+        },
+        {
+          "vertices": 1120,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1542,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 721,
+          "vertices_with_multiple_normal_indices": 148,
+          "geometry_sha256": "9b384b583c701ff34f24472b0e146c65bfaea92b2b0761570472767bd084d334"
+        },
+        {
+          "vertices": 1137,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 2427,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 996,
+          "vertices_with_multiple_normal_indices": 504,
+          "geometry_sha256": "c127113c80a9c1962b1fcdf9183e32cc076aca64560dde5e60cfcc25e0dfb43c"
+        },
+        {
+          "vertices": 152,
+          "polygon_records": 280,
+          "triangles": 280,
+          "normals": 560,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 114,
+          "vertices_with_multiple_normal_indices": 144,
+          "geometry_sha256": "ed6a1e3bacbc23c04f009c89fda8a880204f9c08d2b96474b79d72cdc8af8f6a"
+        },
+        {
+          "vertices": 9,
+          "polygon_records": 14,
+          "triangles": 14,
+          "normals": 32,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 9,
+          "geometry_sha256": "8f8b02e1d23926e4b938910c4c0c10dbdd4b4e828f3e9f13bdea2090d2931bc3"
+        }
+      ],
+      "vertices": 5448,
+      "triangles": 10636,
+      "bone_count": 3,
+      "real_bone_count": 3,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "9b37c67c0bcf05f931e675ad26d0c89219f28dfe873f416656c8814bb6d1f24e",
+      "geometry_sha256": "66f3085a16cbbf1bb05b09744ae7618265850798900c75535e200ec400679275"
+    },
+    {
+      "entry": "Data/Item/Celestial_Wings.bmd",
+      "sha256": "b1eddd650dd7b4459676170036cbb5eb1063431a326b0b8fa62e1d5b210757f2",
+      "meshes": [
+        {
+          "vertices": 1176,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1176,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 1003,
+          "vertices_with_multiple_normal_indices": 0,
+          "geometry_sha256": "25d99e6ca3b122d30ceb4bec531122b5752d2e569cd7ed392a4efe61694ecc25"
+        },
+        {
+          "vertices": 1183,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1183,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 996,
+          "vertices_with_multiple_normal_indices": 0,
+          "geometry_sha256": "54bf6c95a0b557c197b82527ba5bf45e0d8424ecf3572ce1b01a2b8f206d7dfa"
+        },
+        {
+          "vertices": 1179,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1179,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            2,
+            3,
+            4
+          ],
+          "uv_coordinates": 987,
+          "vertices_with_multiple_normal_indices": 0,
+          "geometry_sha256": "5592a8e3171023036440fbfe2b959d1b62ca091e431963df9126f5f77132fc6a"
+        },
+        {
+          "vertices": 1176,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 4048,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 880,
+          "vertices_with_multiple_normal_indices": 1048,
+          "geometry_sha256": "80b9e3a21ec1367b1abb05a3e8784929715c3104127dac02d8179a868862ec6c"
+        },
+        {
+          "vertices": 496,
+          "polygon_records": 920,
+          "triangles": 920,
+          "normals": 1840,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            2,
+            3,
+            4
+          ],
+          "uv_coordinates": 372,
+          "vertices_with_multiple_normal_indices": 492,
+          "geometry_sha256": "31b1ee986f427105e86ae43606178dd119bbf924a3a26e472e67a143927909c9"
+        },
+        {
+          "vertices": 1155,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1405,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 1154,
+          "vertices_with_multiple_normal_indices": 250,
+          "geometry_sha256": "4181d66864d769b110a8b6ce22145a2ca9b5dfd4cbe0eb21b2084ae3b0ca0fac"
+        },
+        {
+          "vertices": 1163,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1418,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 1163,
+          "vertices_with_multiple_normal_indices": 255,
+          "geometry_sha256": "01a30cb2aac43290b93d54b8636b882bb6387b07c5139a25265c653dffbd80f4"
+        },
+        {
+          "vertices": 1162,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1407,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            26,
+            27
+          ],
+          "uv_coordinates": 1162,
+          "vertices_with_multiple_normal_indices": 245,
+          "geometry_sha256": "31c98d14abafd4ca8e208201b88539c007aec362f090ed1b4ae639ab62fe9cca"
+        },
+        {
+          "vertices": 1164,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1419,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            3,
+            4
+          ],
+          "uv_coordinates": 1162,
+          "vertices_with_multiple_normal_indices": 255,
+          "geometry_sha256": "53d596deca7a52e71f7e7a23920827618056870f6e10b7ad4114a260a3a8834e"
+        },
+        {
+          "vertices": 1219,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3039,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 1194,
+          "vertices_with_multiple_normal_indices": 800,
+          "geometry_sha256": "51a49bcd778b791b38a51ba67bd00a3fd97e76993951f43cc4f090f64c23d42b"
+        },
+        {
+          "vertices": 1262,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 4400,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0,
+            2,
+            3,
+            4,
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 1058,
+          "vertices_with_multiple_normal_indices": 1253,
+          "geometry_sha256": "3398989068c48d10d0150fbac70511fa572dc1040e2bfec0e77adcee3ea414b0"
+        },
+        {
+          "vertices": 1170,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3488,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0,
+            25,
+            26,
+            27
+          ],
+          "uv_coordinates": 793,
+          "vertices_with_multiple_normal_indices": 874,
+          "geometry_sha256": "64ddf739b1be6b9a29578c618c948b4bc5a6d50c53797c02d6eadb1305f638b4"
+        },
+        {
+          "vertices": 1170,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3563,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0,
+            2,
+            3,
+            4,
+            27
+          ],
+          "uv_coordinates": 843,
+          "vertices_with_multiple_normal_indices": 873,
+          "geometry_sha256": "5f69f132869198530397c270ab9da431420b880f2389d600960c385b860f456a"
+        },
+        {
+          "vertices": 763,
+          "polygon_records": 1508,
+          "triangles": 1508,
+          "normals": 791,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            0
+          ],
+          "uv_coordinates": 475,
+          "vertices_with_multiple_normal_indices": 22,
+          "geometry_sha256": "0a7821d7c424aaa95e234a6879f28438ccfb42fc95f2e68f9cc55ee12a9348f2"
+        },
+        {
+          "vertices": 27,
+          "polygon_records": 42,
+          "triangles": 42,
+          "normals": 96,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            0,
+            3,
+            26
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 27,
+          "geometry_sha256": "ef78fe1c39811e0fb2f6e81b9776a2b49f85de984ae4c92c322185e192586947"
+        }
+      ],
+      "vertices": 15465,
+      "triangles": 28870,
+      "bone_count": 48,
+      "real_bone_count": 48,
+      "action_frames": [
+        9
+      ],
+      "action_locks": [
+        true
+      ],
+      "animated_bones": 46,
+      "rig_sha256": "f5860c1161003020ba10fd0d3b94f55e65d01a6b794ad6cf31caa0fdfdb6c16b",
+      "geometry_sha256": "d340d18d2ae19e29a977c6cd65339b65abe6bdb24849123b3a34c578e29ec437"
+    },
+    {
+      "entry": "Data/Player/Celestial_Armor.bmd",
+      "sha256": "ae2af9809dd1e95401b723ea9bcfdcaa67cf2319d4cb2a05a878eb6228158883",
+      "meshes": [
+        {
+          "vertices": 1173,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3312,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            2,
+            17,
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 798,
+          "vertices_with_multiple_normal_indices": 799,
+          "geometry_sha256": "a5c658f12f97e2fb1900bcc49ea5952c25d70d0b8065f240b0e607ba33c14be1"
+        },
+        {
+          "vertices": 1071,
+          "polygon_records": 1980,
+          "triangles": 1980,
+          "normals": 2894,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            17,
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 709,
+          "vertices_with_multiple_normal_indices": 685,
+          "geometry_sha256": "8989fcd3696e6c597e3597108059b8de40a6eee489b148e7089d1d0ba8ac8e72"
+        },
+        {
+          "vertices": 1152,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 2656,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            17,
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 769,
+          "vertices_with_multiple_normal_indices": 624,
+          "geometry_sha256": "4d3a04dfcbef25ebfae13234995a4b5797f7a966c81c0414fac2a35165214864"
+        },
+        {
+          "vertices": 1120,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 2000,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            17,
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 736,
+          "vertices_with_multiple_normal_indices": 352,
+          "geometry_sha256": "7f51c233cae5acbbf90398ef444aeec0f7ea218322d68ee0132c9ce0c6ab60e4"
+        },
+        {
+          "vertices": 1167,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3997,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            17,
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 781,
+          "vertices_with_multiple_normal_indices": 1014,
+          "geometry_sha256": "a69cde9c32634e95f5f7dc4b815ced92d72b042f15c7bec28965b7e1f3a859cc"
+        },
+        {
+          "vertices": 419,
+          "polygon_records": 796,
+          "triangles": 796,
+          "normals": 1245,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 298,
+          "vertices_with_multiple_normal_indices": 296,
+          "geometry_sha256": "2da92ea0f9ed06fb34fb6d76d5bfee0a8f670f6cf1df94e06a6e4f99e3d6aea7"
+        },
+        {
+          "vertices": 36,
+          "polygon_records": 56,
+          "triangles": 56,
+          "normals": 128,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            18,
+            26,
+            35
+          ],
+          "uv_coordinates": 11,
+          "vertices_with_multiple_normal_indices": 36,
+          "geometry_sha256": "4cfd6a2147556e8f8f2f59f1d1dcb7bbecf3c46d48a89c21623387ab7194f2a7"
+        }
+      ],
+      "vertices": 6138,
+      "triangles": 11632,
+      "bone_count": 51,
+      "real_bone_count": 45,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "58dbec3ee902c185b7a1f731d0e31fb2f90ac1578dbe56030c2d870437f63e15",
+      "geometry_sha256": "0ea0af4fbc9a4397c0281b94278345c68b82a714ba4f8fad8938947fb853bb23"
+    },
+    {
+      "entry": "Data/Player/Celestial_Boots.bmd",
+      "sha256": "fe3444e6208311801d64c6d70d86858c224c5ca931856826f59058ca6b4ab924",
+      "meshes": [
+        {
+          "vertices": 1171,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 4404,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            4,
+            5,
+            11,
+            12
+          ],
+          "uv_coordinates": 259,
+          "vertices_with_multiple_normal_indices": 1169,
+          "geometry_sha256": "90bf6ac4aac0375f9ccf97fb929603640206bffda4c6cfcd6a4b4cd71f957b67"
+        },
+        {
+          "vertices": 207,
+          "polygon_records": 328,
+          "triangles": 328,
+          "normals": 400,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            4,
+            11
+          ],
+          "uv_coordinates": 65,
+          "vertices_with_multiple_normal_indices": 73,
+          "geometry_sha256": "6f311a7a3cbbdd615ff7d96dccb3de6aa7621e735ac85dc377d54263abde2b2b"
+        },
+        {
+          "vertices": 1143,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1699,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            4,
+            5,
+            11,
+            12
+          ],
+          "uv_coordinates": 626,
+          "vertices_with_multiple_normal_indices": 300,
+          "geometry_sha256": "e8e1f96cdb5752a83657add14b1ea84a9dcf5d2a6ef1f2b2ded4d40b7bc6814f"
+        },
+        {
+          "vertices": 1151,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1671,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            4,
+            5,
+            11,
+            12
+          ],
+          "uv_coordinates": 625,
+          "vertices_with_multiple_normal_indices": 296,
+          "geometry_sha256": "ac17c045b910b5a6363958b226f4abf2fcaf37f8afef4fd05acde09108213aad"
+        },
+        {
+          "vertices": 1128,
+          "polygon_records": 2184,
+          "triangles": 2184,
+          "normals": 3360,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            4,
+            11
+          ],
+          "uv_coordinates": 423,
+          "vertices_with_multiple_normal_indices": 824,
+          "geometry_sha256": "224b85b1b9683cbbe8a0fe9f9d1427a2a3725e33096e5ecfafcb93ca5050982a"
+        },
+        {
+          "vertices": 36,
+          "polygon_records": 56,
+          "triangles": 56,
+          "normals": 128,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            4,
+            11
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 36,
+          "geometry_sha256": "051a91cca2cb5e271896430ef94dd7fa3eba7d483103af65350194d36bfbe2ca"
+        }
+      ],
+      "vertices": 4836,
+      "triangles": 9168,
+      "bone_count": 51,
+      "real_bone_count": 45,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "58dbec3ee902c185b7a1f731d0e31fb2f90ac1578dbe56030c2d870437f63e15",
+      "geometry_sha256": "fd2f160a91d96137fcc080f5fb4737956625bac904557668c3e4ef7864665498"
+    },
+    {
+      "entry": "Data/Player/Celestial_Gloves.bmd",
+      "sha256": "77efd4a100fcc4c439ec4c0618552a3a0a7bb109b0796c8096718c750fb9f397",
+      "meshes": [
+        {
+          "vertices": 704,
+          "polygon_records": 1200,
+          "triangles": 1200,
+          "normals": 1680,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            27,
+            28,
+            29,
+            30,
+            31,
+            36,
+            37,
+            38,
+            39,
+            40
+          ],
+          "uv_coordinates": 258,
+          "vertices_with_multiple_normal_indices": 560,
+          "geometry_sha256": "170682959323bbd9b303b2249f55aa6854191725a2744880d3a839f5d8a62feb"
+        },
+        {
+          "vertices": 920,
+          "polygon_records": 1672,
+          "triangles": 1672,
+          "normals": 2400,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            27,
+            28,
+            29,
+            30,
+            31,
+            36,
+            37,
+            38,
+            39,
+            40
+          ],
+          "uv_coordinates": 442,
+          "vertices_with_multiple_normal_indices": 776,
+          "geometry_sha256": "ce336669b507a0191e9c839829000898989171c8f28b247840e69ac99f18a5cf"
+        },
+        {
+          "vertices": 18,
+          "polygon_records": 28,
+          "triangles": 28,
+          "normals": 64,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            27,
+            36
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 18,
+          "geometry_sha256": "bbf21804bb73543fb245af27742c0b143650d83a2f090c8bbe49f08b4b6f9c4c"
+        }
+      ],
+      "vertices": 1642,
+      "triangles": 2900,
+      "bone_count": 51,
+      "real_bone_count": 45,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "58dbec3ee902c185b7a1f731d0e31fb2f90ac1578dbe56030c2d870437f63e15",
+      "geometry_sha256": "f37db05f1e2e7f33c03220ee96bb82150a3984b8d25e407f5307ab690302b040"
+    },
+    {
+      "entry": "Data/Player/Celestial_Helm.bmd",
+      "sha256": "3e96319b37bc1e112655e7cd426d97b4b5e00249977661c2d1e42ebe1d387382",
+      "meshes": [
+        {
+          "vertices": 865,
+          "polygon_records": 1584,
+          "triangles": 1584,
+          "normals": 2943,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            20
+          ],
+          "uv_coordinates": 478,
+          "vertices_with_multiple_normal_indices": 754,
+          "geometry_sha256": "15389d7338b89ea81f9481a90c2c1d1c155f65f5cb1eb9128df763d6d70e70ae"
+        },
+        {
+          "vertices": 1156,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3030,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            20
+          ],
+          "uv_coordinates": 835,
+          "vertices_with_multiple_normal_indices": 742,
+          "geometry_sha256": "af1156f1fa308a4ebda4a2ce8339154fa0288c122bbee95a1e5010a5e70e9b4c"
+        },
+        {
+          "vertices": 42,
+          "polygon_records": 68,
+          "triangles": 68,
+          "normals": 48,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            20
+          ],
+          "uv_coordinates": 42,
+          "vertices_with_multiple_normal_indices": 6,
+          "geometry_sha256": "39fc99e8f2dc49d14e8aad34d4579577d149675593fb270137c452185326325b"
+        },
+        {
+          "vertices": 18,
+          "polygon_records": 28,
+          "triangles": 28,
+          "normals": 64,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            20
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 18,
+          "geometry_sha256": "a1df4e241fcd4c976b767760d3bab9d22d39b4d8db5b21a2d065750d7e7c5a6e"
+        }
+      ],
+      "vertices": 2081,
+      "triangles": 3880,
+      "bone_count": 51,
+      "real_bone_count": 45,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "58dbec3ee902c185b7a1f731d0e31fb2f90ac1578dbe56030c2d870437f63e15",
+      "geometry_sha256": "455792a46f98fc76ae417441671e5c6c30031fa6d3b621471e696a7e51eab779"
+    },
+    {
+      "entry": "Data/Player/Celestial_Pants.bmd",
+      "sha256": "d2e480f1e198fed26caadf74d8a3f73dbba47dc4f3182bdcef71431cfc4b8e1a",
+      "meshes": [
+        {
+          "vertices": 1165,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 3927,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            10,
+            11,
+            44,
+            45,
+            46,
+            48,
+            49,
+            50
+          ],
+          "uv_coordinates": 368,
+          "vertices_with_multiple_normal_indices": 1036,
+          "geometry_sha256": "59d0549437afc8e4663c4343692d2ff45bb50a1da3c290200937662bfebf7b6a"
+        },
+        {
+          "vertices": 82,
+          "polygon_records": 112,
+          "triangles": 112,
+          "normals": 82,
+          "texture": "Celestial_Gold.jpg",
+          "used_bones": [
+            3,
+            10
+          ],
+          "uv_coordinates": 36,
+          "vertices_with_multiple_normal_indices": 0,
+          "geometry_sha256": "ef41372fe5c2fd24ca64863299e243867c02d5a8ed3540b6ee50914e4802834e"
+        },
+        {
+          "vertices": 1137,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1317,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            44,
+            45,
+            46
+          ],
+          "uv_coordinates": 1137,
+          "vertices_with_multiple_normal_indices": 180,
+          "geometry_sha256": "46d405eb502f8289b793d30d830ccc70ab2c6e2aac663460858ae60d1deea8da"
+        },
+        {
+          "vertices": 1145,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1331,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            46,
+            48,
+            49,
+            50
+          ],
+          "uv_coordinates": 1145,
+          "vertices_with_multiple_normal_indices": 186,
+          "geometry_sha256": "3415454dac2a4507d47b11799b7e4b6ed7074005c059245befa0e5765a565aca"
+        },
+        {
+          "vertices": 1133,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 1247,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            44,
+            45,
+            46,
+            48,
+            49,
+            50
+          ],
+          "uv_coordinates": 1133,
+          "vertices_with_multiple_normal_indices": 114,
+          "geometry_sha256": "afa94158d92feee7310229475ec501ba3854d971041a12945e7daec48db48c5f"
+        },
+        {
+          "vertices": 1145,
+          "polygon_records": 2200,
+          "triangles": 2200,
+          "normals": 2023,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            3,
+            4,
+            10,
+            11,
+            44,
+            45,
+            46,
+            48,
+            49,
+            50
+          ],
+          "uv_coordinates": 876,
+          "vertices_with_multiple_normal_indices": 398,
+          "geometry_sha256": "c3a284bfdadc0a85a1c4262d36164b2d3b7974bd333c9252eb77264f36c5d4af"
+        },
+        {
+          "vertices": 406,
+          "polygon_records": 780,
+          "triangles": 780,
+          "normals": 792,
+          "texture": "Celestial_Ivory.jpg",
+          "used_bones": [
+            2,
+            49,
+            50
+          ],
+          "uv_coordinates": 272,
+          "vertices_with_multiple_normal_indices": 154,
+          "geometry_sha256": "16aca430d6a8cdc19f82fd6783c0634ddbf1760ad7f75eff5a8c8b65b37bf915"
+        },
+        {
+          "vertices": 9,
+          "polygon_records": 14,
+          "triangles": 14,
+          "normals": 32,
+          "texture": "Celestial_Sapphire.jpg",
+          "used_bones": [
+            2
+          ],
+          "uv_coordinates": 9,
+          "vertices_with_multiple_normal_indices": 9,
+          "geometry_sha256": "eb641d50361b3fd2f49cb67ecb2a768c224b3fd0d3ffadf8202cf567ad0c88ab"
+        }
+      ],
+      "vertices": 6222,
+      "triangles": 11906,
+      "bone_count": 51,
+      "real_bone_count": 45,
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "animated_bones": 0,
+      "rig_sha256": "58dbec3ee902c185b7a1f731d0e31fb2f90ac1578dbe56030c2d870437f63e15",
+      "geometry_sha256": "bb3f1fe93438d8a709736c3dea596b3ccfc4908069bb597ea6fbce8f501b38bc"
+    }
+  ],
+  "textures": [
+    {
+      "entry": "Data/Item/Celestial_Emissive.OZJ",
+      "sha256": "1e407dfc455a53d64726aca08fac46de882386f617a65aadeec27120438e8896",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Emissive.png",
+      "palette": [
+        {
+          "hex": "#020308",
+          "share": 0.2124,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#060B17",
+          "share": 0.2084,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#111D2F",
+          "share": 0.1913,
+          "label": "azul"
+        },
+        {
+          "hex": "#030710",
+          "share": 0.1412,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#82C8EE",
+          "share": 0.1252,
+          "label": "azul"
+        },
+        {
+          "hex": "#385976",
+          "share": 0.1214,
+          "label": "azul"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 2,
+        "luminance_p50": 15,
+        "luminance_p95": 198,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Item/Celestial_Gold.OZJ",
+      "sha256": "76c784ba4627a0a3441a6e9eb94cf0b2f11a6b69695206073516f82afb35c277",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Gold.png",
+      "palette": [
+        {
+          "hex": "#A88E54",
+          "share": 0.2033,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#AD9458",
+          "share": 0.1913,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#A48A51",
+          "share": 0.1745,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#A1874E",
+          "share": 0.1708,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#9C824A",
+          "share": 0.1596,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#BAA05F",
+          "share": 0.1004,
+          "label": "amarelo/ouro"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 129,
+        "luminance_p50": 141,
+        "luminance_p95": 161,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Item/Celestial_Ivory.OZJ",
+      "sha256": "305dd8765076b510dbe1afde10ce70fcf8f586ff23bc4b29acbd3e6debb99476",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Ivory.png",
+      "palette": [
+        {
+          "hex": "#EDE5D8",
+          "share": 0.2556,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#F0E8DB",
+          "share": 0.2073,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#EBE3D6",
+          "share": 0.1831,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#EEE6D9",
+          "share": 0.1401,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#E7DFD2",
+          "share": 0.1218,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#E9E1D4",
+          "share": 0.0921,
+          "label": "branco/prata"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 224,
+        "luminance_p50": 229,
+        "luminance_p95": 233,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Item/Celestial_Sapphire.OZJ",
+      "sha256": "c2ce3810d10768bc45e6eba2e4ab2c8c36417469fc2ba0be865c3154c1ff1649",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Sapphire.png",
+      "palette": [
+        {
+          "hex": "#0A1A4D",
+          "share": 0.2687,
+          "label": "azul"
+        },
+        {
+          "hex": "#14307A",
+          "share": 0.183,
+          "label": "azul"
+        },
+        {
+          "hex": "#0D205D",
+          "share": 0.1739,
+          "label": "azul"
+        },
+        {
+          "hex": "#10286E",
+          "share": 0.1526,
+          "label": "azul"
+        },
+        {
+          "hex": "#122C75",
+          "share": 0.1508,
+          "label": "azul"
+        },
+        {
+          "hex": "#21469F",
+          "share": 0.071,
+          "label": "azul"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 26,
+        "luminance_p50": 39,
+        "luminance_p95": 70,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Monster/ex01icenight.OZJ",
+      "sha256": "da9419cb6c8c173fdf779b4923737f9eb38abdd0aca00d7ca84a2c3d3996d2ed",
+      "width": 256,
+      "height": 256,
+      "preview": "ex01icenight.png",
+      "palette": [
+        {
+          "hex": "#080806",
+          "share": 0.2148,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#1D1C1B",
+          "share": 0.1984,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#2C2B29",
+          "share": 0.189,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#141412",
+          "share": 0.1461,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#525453",
+          "share": 0.1297,
+          "label": "cinza"
+        },
+        {
+          "hex": "#8C9696",
+          "share": 0.122,
+          "label": "cinza"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 2,
+        "luminance_p50": 32,
+        "luminance_p95": 162,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Monster/ex01icenight2.OZJ",
+      "sha256": "705c118a39a14fe3979dbb10e4efd9c8fee981413297eae98bf02122b40aff51",
+      "width": 256,
+      "height": 256,
+      "preview": "ex01icenight2.png",
+      "palette": [
+        {
+          "hex": "#020101",
+          "share": 0.2705,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#0B0A08",
+          "share": 0.2104,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#302E2B",
+          "share": 0.1468,
+          "label": "cinza"
+        },
+        {
+          "hex": "#151411",
+          "share": 0.1447,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#211F1C",
+          "share": 0.127,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#4F4E4C",
+          "share": 0.1005,
+          "label": "cinza"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 15,
+        "luminance_p95": 85,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Monster/ex01icenightlight.OZJ",
+      "sha256": "48522cde6490e1d798384c44160097571a4c11a2417d32e5043c9042492e09b0",
+      "width": 128,
+      "height": 128,
+      "preview": "ex01icenightlight.png",
+      "palette": [
+        {
+          "hex": "#000000",
+          "share": 0.8008,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010102",
+          "share": 0.0466,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010003",
+          "share": 0.0425,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010000",
+          "share": 0.0421,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010304",
+          "share": 0.0409,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#257C5A",
+          "share": 0.027,
+          "label": "verde"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 0,
+        "luminance_p95": 3,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Monster/icenight.OZJ",
+      "sha256": "3c3c129fb2484f2b6755a474a9ed0984da5b10581a8494339a4a2886f8eea543",
+      "width": 256,
+      "height": 256,
+      "preview": "icenight.png",
+      "palette": [
+        {
+          "hex": "#1E1E22",
+          "share": 0.2309,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#33343A",
+          "share": 0.2129,
+          "label": "cinza"
+        },
+        {
+          "hex": "#41424A",
+          "share": 0.1893,
+          "label": "cinza"
+        },
+        {
+          "hex": "#4E4F59",
+          "share": 0.1273,
+          "label": "cinza"
+        },
+        {
+          "hex": "#6D7180",
+          "share": 0.1222,
+          "label": "azul"
+        },
+        {
+          "hex": "#AEB7CB",
+          "share": 0.1174,
+          "label": "azul"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 21,
+        "luminance_p50": 64,
+        "luminance_p95": 192,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Monster/icenight2.OZJ",
+      "sha256": "72b8931fc45b66cb9bd0d7e928772983d193255490c775785bfbdf7dc5479423",
+      "width": 256,
+      "height": 256,
+      "preview": "icenight2.png",
+      "palette": [
+        {
+          "hex": "#070913",
+          "share": 0.2531,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#263145",
+          "share": 0.2189,
+          "label": "azul"
+        },
+        {
+          "hex": "#40556C",
+          "share": 0.1525,
+          "label": "azul"
+        },
+        {
+          "hex": "#6F8694",
+          "share": 0.1461,
+          "label": "azul"
+        },
+        {
+          "hex": "#5A6979",
+          "share": 0.1179,
+          "label": "azul"
+        },
+        {
+          "hex": "#96A7AB",
+          "share": 0.1116,
+          "label": "cinza"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 70,
+        "luminance_p95": 172,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Monster/icenightlight.OZJ",
+      "sha256": "41ec186aae1f29b96aed120e928c8e6671ef234584abf45f5a3e602cad6077e0",
+      "width": 128,
+      "height": 128,
+      "preview": "icenightlight.png",
+      "palette": [
+        {
+          "hex": "#000000",
+          "share": 0.8256,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#000102",
+          "share": 0.0499,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010000",
+          "share": 0.0412,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010003",
+          "share": 0.0298,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010807",
+          "share": 0.0293,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#2D966E",
+          "share": 0.0242,
+          "label": "verde"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 0,
+        "luminance_p95": 3,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Player/Celestial_Gold.OZJ",
+      "sha256": "76c784ba4627a0a3441a6e9eb94cf0b2f11a6b69695206073516f82afb35c277",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Gold.png",
+      "palette": [
+        {
+          "hex": "#A88E54",
+          "share": 0.2033,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#AD9458",
+          "share": 0.1913,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#A48A51",
+          "share": 0.1745,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#A1874E",
+          "share": 0.1708,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#9C824A",
+          "share": 0.1596,
+          "label": "amarelo/ouro"
+        },
+        {
+          "hex": "#BAA05F",
+          "share": 0.1004,
+          "label": "amarelo/ouro"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 129,
+        "luminance_p50": 141,
+        "luminance_p95": 161,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Player/Celestial_Ivory.OZJ",
+      "sha256": "305dd8765076b510dbe1afde10ce70fcf8f586ff23bc4b29acbd3e6debb99476",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Ivory.png",
+      "palette": [
+        {
+          "hex": "#EDE5D8",
+          "share": 0.2556,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#F0E8DB",
+          "share": 0.2073,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#EBE3D6",
+          "share": 0.1831,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#EEE6D9",
+          "share": 0.1401,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#E7DFD2",
+          "share": 0.1218,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#E9E1D4",
+          "share": 0.0921,
+          "label": "branco/prata"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 224,
+        "luminance_p50": 229,
+        "luminance_p95": 233,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Player/Celestial_Sapphire.OZJ",
+      "sha256": "c2ce3810d10768bc45e6eba2e4ab2c8c36417469fc2ba0be865c3154c1ff1649",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Sapphire.png",
+      "palette": [
+        {
+          "hex": "#0A1A4D",
+          "share": 0.2687,
+          "label": "azul"
+        },
+        {
+          "hex": "#14307A",
+          "share": 0.183,
+          "label": "azul"
+        },
+        {
+          "hex": "#0D205D",
+          "share": 0.1739,
+          "label": "azul"
+        },
+        {
+          "hex": "#10286E",
+          "share": 0.1526,
+          "label": "azul"
+        },
+        {
+          "hex": "#122C75",
+          "share": 0.1508,
+          "label": "azul"
+        },
+        {
+          "hex": "#21469F",
+          "share": 0.071,
+          "label": "azul"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 26,
+        "luminance_p50": 39,
+        "luminance_p95": 70,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    }
+  ],
+  "comparison": {
+    "native_triangles": 2126,
+    "celestial_ten_files_triangles": 101252,
+    "celestial_armor_triangles": 39486,
+    "native_geometry_identical": false,
+    "native_rig_identical": true,
+    "native_mesh_field_equality": [
+      {
+        "points": false,
+        "faces": true,
+        "normal_vectors": false,
+        "normal_indices": true,
+        "texcoords": true
+      },
+      {
+        "points": false,
+        "faces": true,
+        "normal_vectors": false,
+        "normal_indices": true,
+        "texcoords": true
+      }
+    ]
+  },
+  "validation": {
+    "archive_unchanged": true,
+    "source_assets_written": false,
+    "textures_decoded": 13
+  }
+}

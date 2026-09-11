@@ -1,5 +1,10 @@
 # Celestial — revisão dourada de 11/09/2026
 
+> Histórico da primeira publicação dourada. O acabamento atual foi substituído
+> por [ouro Golden e cinza metálico](METAL.md). Os renders compartilhados foram
+> regenerados para essa revisão posterior; as afirmações de texturas intactas
+> abaixo descrevem exclusivamente a primeira publicação.
+
 ## Direção visual
 
 Atende ao retorno do usuário após o teste da revisão Ultimate: grandes superfícies

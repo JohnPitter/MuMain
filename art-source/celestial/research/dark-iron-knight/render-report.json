@@ -1,0 +1,32 @@
+{
+  "models": [
+    {
+      "entry": "Data/Monster/Monster150.bmd",
+      "sha256": "188f8d281f96a6dcfbf61d84d0ea45e83ef54e247467a16c0f2cc2c0d6ac751a",
+      "action": 0,
+      "frame": 0,
+      "views": [
+        "monster150-texture-front.png",
+        "monster150-texture-rear.png",
+        "monster150-clay-front.png",
+        "monster150-wire-front.png"
+      ]
+    },
+    {
+      "entry": "Data/Monster/Monster209.bmd",
+      "sha256": "c67c060c927d0c98cb391a22e1f83809d25f0e9e4fe2985636a543fb8d57f433",
+      "action": 0,
+      "frame": 0,
+      "views": [
+        "monster209-texture-front.png",
+        "monster209-texture-rear.png",
+        "monster209-clay-front.png",
+        "monster209-wire-front.png"
+      ]
+    }
+  ],
+  "source_assets_written": false,
+  "native_normals_preserved": true,
+  "mu_runtime_passes_reproduced": false,
+  "note": "Textura sem luz mostra a pintura original; clay/wire usam luz neutra. N\u00e3o s\u00e3o capturas do jogo."
+}

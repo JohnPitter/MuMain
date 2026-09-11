@@ -3,24 +3,24 @@
     "max_error": 7.152557373046875e-07,
     "triangles": 10636,
     "model_sha256": "35b30916ab1a7c0321fe3bbbc6c10c5fc89736892250425a1f778263bf27f93c",
-    "blend_sha256": "8842edbf591c65d963dd30e665e8647e012a89a3611ac9ccf74446963ec136a3"
+    "blend_sha256": "4fc7f9736151fbc35215621e22d5e0476815e0f9a7c9eddccb3abce367596f35"
   },
   "Shield": {
     "max_error": 4.76837158203125e-07,
     "triangles": 8494,
     "model_sha256": "74933f78247bfbc34829ad7e650f3e8ddc180258269a9aff926b93318da9ccd0",
-    "blend_sha256": "8842edbf591c65d963dd30e665e8647e012a89a3611ac9ccf74446963ec136a3"
+    "blend_sha256": "4fc7f9736151fbc35215621e22d5e0476815e0f9a7c9eddccb3abce367596f35"
   },
   "Ring": {
     "max_error": 2.384185791015625e-07,
     "triangles": 6172,
     "model_sha256": "bc49208efa3b68b6115b1cce5ed0bcc47ad98d73c2ae98b1e2ae8df3caabb46d",
-    "blend_sha256": "8842edbf591c65d963dd30e665e8647e012a89a3611ac9ccf74446963ec136a3"
+    "blend_sha256": "4fc7f9736151fbc35215621e22d5e0476815e0f9a7c9eddccb3abce367596f35"
   },
   "Pendant": {
     "max_error": 9.238719940185547e-07,
     "triangles": 7594,
     "model_sha256": "543966a6807d5009d6e1c7020aad58d78248ff27ede3c1f518d465bf6da72276",
-    "blend_sha256": "8842edbf591c65d963dd30e665e8647e012a89a3611ac9ccf74446963ec136a3"
+    "blend_sha256": "4fc7f9736151fbc35215621e22d5e0476815e0f9a7c9eddccb3abce367596f35"
   }
 }

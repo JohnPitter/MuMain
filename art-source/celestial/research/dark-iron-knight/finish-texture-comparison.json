@@ -1,0 +1,212 @@
+{
+  "baseline_archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-golden-20260911\\golden-base-downloaded.zip",
+  "baseline_archive_sha256": "10141413669b3e061a7082c4933cec4902f03f7540cf73e1526fa65442e426ed",
+  "materials": [
+    {
+      "baseline": {
+        "entry": "Data/Item/Celestial_Gold.OZJ",
+        "sha256": "76c784ba4627a0a3441a6e9eb94cf0b2f11a6b69695206073516f82afb35c277",
+        "width": 512,
+        "height": 512,
+        "preview": "Celestial_Gold.png",
+        "palette": [
+          {
+            "hex": "#A88E54",
+            "share": 0.2033,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#AD9458",
+            "share": 0.1913,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#A48A51",
+            "share": 0.1745,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#A1874E",
+            "share": 0.1708,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#9C824A",
+            "share": 0.1596,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#BAA05F",
+            "share": 0.1004,
+            "label": "amarelo/ouro"
+          }
+        ],
+        "statistics": {
+          "luminance_p05": 129,
+          "luminance_p50": 141,
+          "luminance_p95": 161,
+          "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+        }
+      },
+      "current": {
+        "path": "C:/_wt-celestial-client/art-source/celestial/textures/Celestial_Gold.jpg",
+        "sha256": "04bc75b20050bc5b89f68bf919b29b2cd30295e7568f809382aa00dd444c653c",
+        "bytes": 145676,
+        "format": "JPEG",
+        "mode": "RGB",
+        "width": 512,
+        "height": 512,
+        "palette": [
+          {
+            "hex": "#C58C16",
+            "share": 0.2594,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#A77212",
+            "share": 0.1901,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#D1991D",
+            "share": 0.164,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#EBB022",
+            "share": 0.1527,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#DEA01A",
+            "share": 0.1259,
+            "label": "amarelo/ouro"
+          },
+          {
+            "hex": "#F9CF34",
+            "share": 0.1078,
+            "label": "amarelo/ouro"
+          }
+        ],
+        "statistics": {
+          "luminance_p05": 83,
+          "luminance_p50": 156,
+          "luminance_p95": 209,
+          "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+        },
+        "unchanged_after_read": true
+      },
+      "comparison": {
+        "baseline_luminance_p95_p05": 32,
+        "current_luminance_p95_p05": 126,
+        "contrast_span_ratio": 3.9375
+      }
+    },
+    {
+      "baseline": {
+        "entry": "Data/Item/Celestial_Ivory.OZJ",
+        "sha256": "305dd8765076b510dbe1afde10ce70fcf8f586ff23bc4b29acbd3e6debb99476",
+        "width": 512,
+        "height": 512,
+        "preview": "Celestial_Ivory.png",
+        "palette": [
+          {
+            "hex": "#EDE5D8",
+            "share": 0.2556,
+            "label": "branco/prata"
+          },
+          {
+            "hex": "#F0E8DB",
+            "share": 0.2073,
+            "label": "branco/prata"
+          },
+          {
+            "hex": "#EBE3D6",
+            "share": 0.1831,
+            "label": "branco/prata"
+          },
+          {
+            "hex": "#EEE6D9",
+            "share": 0.1401,
+            "label": "branco/prata"
+          },
+          {
+            "hex": "#E7DFD2",
+            "share": 0.1218,
+            "label": "branco/prata"
+          },
+          {
+            "hex": "#E9E1D4",
+            "share": 0.0921,
+            "label": "branco/prata"
+          }
+        ],
+        "statistics": {
+          "luminance_p05": 224,
+          "luminance_p50": 229,
+          "luminance_p95": 233,
+          "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+        }
+      },
+      "current": {
+        "path": "C:/_wt-celestial-client/art-source/celestial/textures/Celestial_Ivory.jpg",
+        "sha256": "e8ff633b7be8ee83d5aef49d3e903c71cf48bd231c75b9d8edd375c1ae4f6379",
+        "bytes": 127249,
+        "format": "JPEG",
+        "mode": "RGB",
+        "width": 512,
+        "height": 512,
+        "palette": [
+          {
+            "hex": "#616569",
+            "share": 0.2507,
+            "label": "cinza"
+          },
+          {
+            "hex": "#515558",
+            "share": 0.1856,
+            "label": "cinza"
+          },
+          {
+            "hex": "#686D70",
+            "share": 0.1598,
+            "label": "cinza"
+          },
+          {
+            "hex": "#73777A",
+            "share": 0.1548,
+            "label": "cinza"
+          },
+          {
+            "hex": "#6D7174",
+            "share": 0.1418,
+            "label": "cinza"
+          },
+          {
+            "hex": "#83878B",
+            "share": 0.1073,
+            "label": "cinza"
+          }
+        ],
+        "statistics": {
+          "luminance_p05": 63,
+          "luminance_p50": 106,
+          "luminance_p95": 153,
+          "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+        },
+        "unchanged_after_read": true
+      },
+      "comparison": {
+        "baseline_luminance_p95_p05": 9,
+        "current_luminance_p95_p05": 90,
+        "contrast_span_ratio": 10.0
+      }
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "image_writes": false,
+    "assets_modified": false
+  },
+  "interpretation": "A nova pintura amplia o contraste do bitmap. Não comprova alinhamento UV, densidade das gravuras, brilho ou desempenho no cliente real."
+}
