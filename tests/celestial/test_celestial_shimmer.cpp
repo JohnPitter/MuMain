@@ -89,16 +89,56 @@ TEST_CASE("Additive reflection and emissive passes premultiply fade once into RG
     }
 }
 
-TEST_CASE("Steel accents keep lower reflection energy than gold and are not emissive")
+TEST_CASE("Platinum accents use the two Kundun reflection families without gold tint")
 {
-    const auto steel = MaterialShimmer("Celestial_Ivory.jpg", 15, 1, 2);
-    CHECK(steel[0].Surface == ShimmerSurface::Metal);
-    CHECK(steel[1].Surface == ShimmerSurface::Chrome);
-    const auto metal = AdditiveLight(steel[0], 1);
-    const auto chrome = AdditiveLight(steel[1], 1);
-    for (std::size_t channel = 0; channel < metal.size(); ++channel)
-        CHECK(metal[channel] + chrome[channel] <= 0.333f);
-    CHECK(metal[2] - metal[0] < 0.02f);
+    const auto platinum = MaterialShimmer("Celestial_Ivory.jpg", 15, 1, 2);
+    CHECK(platinum[0].Surface == ShimmerSurface::Chrome4);
+    CHECK(platinum[1].Surface == ShimmerSurface::Chrome);
+    CHECK(platinum[0].Strength == doctest::Approx(0.9f));
+    CHECK(platinum[1].Strength == doctest::Approx(0.35f));
+    const auto sweep = AdditiveLight(platinum[0], 1);
+    const auto chrome = AdditiveLight(platinum[1], 1);
+    for (std::size_t channel = 0; channel < sweep.size(); ++channel)
+    {
+        CHECK(platinum[0].Color[channel] == 1.f);
+        CHECK(platinum[1].Color[channel] == 1.f);
+        CHECK(sweep[channel] + chrome[channel] <= 1.251f);
+    }
+}
+
+TEST_CASE("Platinum keeps animated reflection instead of emissive white fill")
+{
+    const auto base = MaterialShimmer("Celestial_Ivory.jpg", 0, 0, 2);
+    const auto otherPulse = MaterialShimmer("Celestial_Ivory.jpg", 0, 1, 2);
+    CHECK(base[0].Strength == doctest::Approx(0.65f));
+    CHECK(base[1].Strength == doctest::Approx(0.25f));
+    for (std::size_t pass = 0; pass < base.size(); ++pass)
+    {
+        CHECK(base[pass].Surface != ShimmerSurface::Emissive);
+        CHECK(base[pass].Strength == otherPulse[pass].Strength);
+    }
+}
+
+TEST_CASE("Platinum revision leaves every Golden upgrade and detail combination exact")
+{
+    for (int level = 0; level <= 15; ++level)
+    {
+        const float upgrade = static_cast<float>(level) / 15.f;
+        for (int detail = 1; detail <= 4; ++detail)
+        {
+            const auto gold = MaterialShimmer("Celestial_Gold.jpg", level, 0.5f, detail);
+            CHECK(gold[0].Surface == ShimmerSurface::Metal);
+            CHECK(gold[1].Surface == ShimmerSurface::Chrome);
+            CHECK(gold[0].Strength == 0.9f + upgrade * 0.1f);
+            CHECK(gold[1].Strength == (detail >= 2 ? 0.7f + upgrade * 0.3f : 0.f));
+            for (const auto& pass : gold)
+            {
+                CHECK(pass.Color[0] == 1.f);
+                CHECK(pass.Color[1] == 0.5f);
+                CHECK(pass.Color[2] == 0.f);
+            }
+        }
+    }
 }
 
 TEST_CASE("Gem and arcane emission remain confined to their original UV materials")

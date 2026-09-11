@@ -10,6 +10,7 @@ namespace Render::Items::Celestial
         Metal,
         Chrome,
         Emissive,
+        Chrome4,
     };
 
     struct Shimmer

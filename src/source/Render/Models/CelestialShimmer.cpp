@@ -10,15 +10,15 @@ namespace Render::Items::Celestial
         constexpr float MaximumUpgrade = 15;
         constexpr int FullMaterialDetail = 2;
         constexpr std::array<float, 3> GoldenMonsterTint = { 1.f, 0.5f, 0.f };
-        constexpr std::array<float, 3> SteelReflectionTint = { 0.60f, 0.62f, 0.64f };
+        constexpr std::array<float, 3> PlatinumReflectionTint = { 1.f, 1.f, 1.f };
         constexpr float GoldMetalBase = 0.90f;
         constexpr float GoldMetalUpgrade = 0.10f;
         constexpr float GoldChromeBase = 0.70f;
         constexpr float GoldChromeUpgrade = 0.30f;
-        constexpr float SteelMetalBase = 0.30f;
-        constexpr float SteelMetalUpgrade = 0.06f;
-        constexpr float SteelChromeBase = 0.12f;
-        constexpr float SteelChromeUpgrade = 0.04f;
+        constexpr float PlatinumSweepBase = 0.65f;
+        constexpr float PlatinumSweepUpgrade = 0.25f;
+        constexpr float PlatinumChromeBase = 0.25f;
+        constexpr float PlatinumChromeUpgrade = 0.10f;
 
         float UnitValue(float value)
         {
@@ -33,10 +33,10 @@ namespace Render::Items::Celestial
                 { GoldenMonsterTint, chrome, ShimmerSurface::Chrome } }};
         }
 
-        MaterialPasses SteelReflections(float upgrade)
+        MaterialPasses PlatinumReflections(float upgrade)
         {
-            return {{ { SteelReflectionTint, SteelMetalBase + upgrade * SteelMetalUpgrade, ShimmerSurface::Metal },
-                { SteelReflectionTint, SteelChromeBase + upgrade * SteelChromeUpgrade, ShimmerSurface::Chrome } }};
+            return {{ { PlatinumReflectionTint, PlatinumSweepBase + upgrade * PlatinumSweepUpgrade, ShimmerSurface::Chrome4 },
+                { PlatinumReflectionTint, PlatinumChromeBase + upgrade * PlatinumChromeUpgrade, ShimmerSurface::Chrome } }};
         }
     }
 
@@ -51,7 +51,7 @@ namespace Render::Items::Celestial
         if (detail < FullMaterialDetail)
             return {};
         if (texture == "Celestial_Ivory.jpg")
-            return SteelReflections(upgrade);
+            return PlatinumReflections(upgrade);
         if (texture == "Celestial_Sapphire.jpg")
             return {{ { { 0.20f, 0.52f, 1.f }, 0.08f + wave * 0.05f, ShimmerSurface::Emissive }, {} }};
         if (texture == "Celestial_Emissive.jpg")

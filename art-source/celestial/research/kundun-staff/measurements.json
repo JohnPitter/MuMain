@@ -1,0 +1,425 @@
+{
+  "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-golden-metal-20260911\\golden-metal-base-downloaded.zip",
+  "archive_sha256": "3600ab2fd60160fe9a835d0b1abc26f0620c4fa10699b8be22432f001719047f",
+  "item_group": 5,
+  "item_number": 11,
+  "model_symbol": "MODEL_STAFF_OF_KUNDUN",
+  "model": {
+    "entry": "Data/Item/Staff12.bmd",
+    "sha256": "5da22073e810b1e1d4f9c4ac0101aa3414d898ec55bb38264bbee17c35db7c39",
+    "meshes": [
+      {
+        "vertices": 66,
+        "polygon_records": 72,
+        "triangles": 72,
+        "normals": 64,
+        "texture": "kundunStic_R.jpg",
+        "used_bones": [
+          0
+        ],
+        "uv_coordinates": 33,
+        "vertices_with_multiple_normal_indices": 0,
+        "geometry_sha256": "bb9cbc7bcb3fd192e758cec275a9535c4ebbb7e6816dcb951d70b2ba57523d49"
+      },
+      {
+        "vertices": 442,
+        "polygon_records": 743,
+        "triangles": 743,
+        "normals": 460,
+        "texture": "kundunStic.jpg",
+        "used_bones": [
+          0
+        ],
+        "uv_coordinates": 166,
+        "vertices_with_multiple_normal_indices": 18,
+        "geometry_sha256": "842ae4636387536c0051c38f811ce4acba28679324db865752ee3be5611da699"
+      },
+      {
+        "vertices": 43,
+        "polygon_records": 78,
+        "triangles": 78,
+        "normals": 69,
+        "texture": "kundunStic2.jpg",
+        "used_bones": [
+          0
+        ],
+        "uv_coordinates": 29,
+        "vertices_with_multiple_normal_indices": 27,
+        "geometry_sha256": "436a9d2566e08169d6f736a1a5256a8756496bea31bc32c6a20ccfc7564b31b2"
+      }
+    ],
+    "vertices": 551,
+    "triangles": 893,
+    "bone_count": 9,
+    "real_bone_count": 9,
+    "action_frames": [
+      1
+    ],
+    "action_locks": [
+      false
+    ],
+    "animated_bones": 0,
+    "rig_sha256": "2b3ab64f35016bf9dd07d89b7cfccc95b47fb8ddb53a64f5e6af53014f4e0fd8",
+    "geometry_sha256": "5d31c3835c621e97d1bc8d9b8ddc6cf2b95b31bd7f476128f786ad887a6ddf3e",
+    "bones": [
+      {
+        "name": "Object03",
+        "parent": -1
+      },
+      {
+        "name": "Bone04",
+        "parent": 0
+      },
+      {
+        "name": "Bone01",
+        "parent": 0
+      },
+      {
+        "name": "Bone02",
+        "parent": 0
+      },
+      {
+        "name": "Bone03",
+        "parent": 0
+      },
+      {
+        "name": "Bone05",
+        "parent": 0
+      },
+      {
+        "name": "Bone06",
+        "parent": 0
+      },
+      {
+        "name": "Bone07",
+        "parent": 0
+      },
+      {
+        "name": "Bone08",
+        "parent": 0
+      }
+    ]
+  },
+  "textures": [
+    {
+      "entry": "Data/Item/kundunStic_R.OZJ",
+      "sha256": "f2d2c8b9d165555de067b29e8488069c055a822602b85c2ea0c776f527fb29b0",
+      "width": 32,
+      "height": 64,
+      "preview": "kundunStic_R.png",
+      "palette": [
+        {
+          "hex": "#000000",
+          "share": 0.5376,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010001",
+          "share": 0.1372,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#2D98AC",
+          "share": 0.0942,
+          "label": "ciano"
+        },
+        {
+          "hex": "#000002",
+          "share": 0.0928,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#195660",
+          "share": 0.082,
+          "label": "ciano"
+        },
+        {
+          "hex": "#020606",
+          "share": 0.0562,
+          "label": "preto/escuro"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 0,
+        "luminance_p95": 118,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Item/kundunStic.OZJ",
+      "sha256": "3f3610ca19ba638fe19a73ae3a48baaa1917d1f8b7225632ba19928a398a5737",
+      "width": 64,
+      "height": 128,
+      "preview": "kundunStic.png",
+      "palette": [
+        {
+          "hex": "#0B0D17",
+          "share": 0.2115,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#3D4058",
+          "share": 0.1965,
+          "label": "azul"
+        },
+        {
+          "hex": "#2E3044",
+          "share": 0.1925,
+          "label": "azul"
+        },
+        {
+          "hex": "#222333",
+          "share": 0.1722,
+          "label": "azul"
+        },
+        {
+          "hex": "#1A1B29",
+          "share": 0.1388,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#797A92",
+          "share": 0.0884,
+          "label": "azul"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 8,
+        "luminance_p50": 42,
+        "luminance_p95": 133,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Item/kundunStic2.OZJ",
+      "sha256": "894e0935dfecde436919491d907df7c1661f018417b937622336134db9a284c1",
+      "width": 32,
+      "height": 64,
+      "preview": "kundunStic2.png",
+      "palette": [
+        {
+          "hex": "#010103",
+          "share": 0.2241,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#3D405C",
+          "share": 0.2231,
+          "label": "azul"
+        },
+        {
+          "hex": "#0E0E18",
+          "share": 0.1597,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#666990",
+          "share": 0.1538,
+          "label": "azul"
+        },
+        {
+          "hex": "#1D1E2F",
+          "share": 0.1274,
+          "label": "azul"
+        },
+        {
+          "hex": "#AEB3CE",
+          "share": 0.1118,
+          "label": "azul"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 47,
+        "luminance_p95": 189,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Effect/Chrome01.OZJ",
+      "sha256": "a9cf898433a4489f52bc851ac6375ec1f7a433752b521461229119f70a52c056",
+      "width": 64,
+      "height": 64,
+      "preview": "Chrome01.png",
+      "palette": [
+        {
+          "hex": "#050505",
+          "share": 0.2444,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#1E1E1E",
+          "share": 0.2271,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#303030",
+          "share": 0.1506,
+          "label": "cinza"
+        },
+        {
+          "hex": "#404040",
+          "share": 0.1433,
+          "label": "cinza"
+        },
+        {
+          "hex": "#5E5E5E",
+          "share": 0.1255,
+          "label": "cinza"
+        },
+        {
+          "hex": "#ADADAD",
+          "share": 0.1091,
+          "label": "cinza"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 43,
+        "luminance_p95": 179,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Effect/Chrome02.OZJ",
+      "sha256": "a0e34b6c9befcea8589898c070425a3299b1a65c1434cbfd0829b28b9e2da362",
+      "width": 64,
+      "height": 64,
+      "preview": "Chrome02.png",
+      "palette": [
+        {
+          "hex": "#01050B",
+          "share": 0.2043,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#1E8CAC",
+          "share": 0.1843,
+          "label": "ciano"
+        },
+        {
+          "hex": "#061C32",
+          "share": 0.1812,
+          "label": "azul"
+        },
+        {
+          "hex": "#093756",
+          "share": 0.156,
+          "label": "azul"
+        },
+        {
+          "hex": "#6AE8F2",
+          "share": 0.1423,
+          "label": "ciano"
+        },
+        {
+          "hex": "#DDFCF7",
+          "share": 0.1318,
+          "label": "branco/prata"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 61,
+        "luminance_p95": 247,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Effect/Shiny01.OZJ",
+      "sha256": "202030777d1830956bcc8ab991b7386947eaa501367496c4b9048588b8c4ad2b",
+      "width": 16,
+      "height": 16,
+      "preview": "Shiny01.png",
+      "palette": [
+        {
+          "hex": "#000000",
+          "share": 0.6133,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#010101",
+          "share": 0.1367,
+          "label": "preto/escuro"
+        },
+        {
+          "hex": "#FFFFFF",
+          "share": 0.125,
+          "label": "branco/prata"
+        },
+        {
+          "hex": "#AEAEAE",
+          "share": 0.0586,
+          "label": "cinza"
+        },
+        {
+          "hex": "#323232",
+          "share": 0.0469,
+          "label": "cinza"
+        },
+        {
+          "hex": "#F0F0F0",
+          "share": 0.0195,
+          "label": "branco/prata"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 0,
+        "luminance_p50": 0,
+        "luminance_p95": 255,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    },
+    {
+      "entry": "Data/Item/Celestial_Ivory.OZJ",
+      "sha256": "f75cd7e9d6916e5da48318dc0a0e486f76fa17e5391323ca32e31d590759d9eb",
+      "width": 512,
+      "height": 512,
+      "preview": "Celestial_Ivory.png",
+      "palette": [
+        {
+          "hex": "#616569",
+          "share": 0.2507,
+          "label": "cinza"
+        },
+        {
+          "hex": "#515558",
+          "share": 0.1856,
+          "label": "cinza"
+        },
+        {
+          "hex": "#686D70",
+          "share": 0.1598,
+          "label": "cinza"
+        },
+        {
+          "hex": "#73777A",
+          "share": 0.1548,
+          "label": "cinza"
+        },
+        {
+          "hex": "#6D7174",
+          "share": 0.1418,
+          "label": "cinza"
+        },
+        {
+          "hex": "#83878B",
+          "share": 0.1073,
+          "label": "cinza"
+        }
+      ],
+      "statistics": {
+        "luminance_p05": 63,
+        "luminance_p50": 106,
+        "luminance_p95": 153,
+        "note": "Valores de cinza PIL por pixel do atlas inteiro; não medem luz do renderer nem área visível por UV."
+      }
+    }
+  ],
+  "validation": {
+    "archive_unchanged": true,
+    "original_assets_modified": false,
+    "decoded_copies_only": true
+  }
+}

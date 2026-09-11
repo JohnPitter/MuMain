@@ -30,6 +30,7 @@ namespace Render::Items::Celestial
             {
             case ShimmerSurface::Metal: return RENDER_METAL;
             case ShimmerSurface::Chrome: return RENDER_CHROME;
+            case ShimmerSurface::Chrome4: return RENDER_CHROME4;
             case ShimmerSurface::Emissive: return RENDER_TEXTURE;
             }
             return RENDER_TEXTURE;
@@ -41,6 +42,7 @@ namespace Render::Items::Celestial
             {
             case ShimmerSurface::Metal: return BITMAP_SHINY;
             case ShimmerSurface::Chrome: return BITMAP_CHROME;
+            case ShimmerSurface::Chrome4: return BITMAP_CHROME2;
             case ShimmerSurface::Emissive: return -1;
             }
             return -1;
