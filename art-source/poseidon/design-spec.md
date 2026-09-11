@@ -25,10 +25,23 @@ montaria negra no rig DarkHorse (60 ossos, as sete ações nativas preservadas
 bit a bit por exportador multi-ação próprio, prova de deformação quadro a
 quadro em stand/galope/earthshake) e Águia Imperial no rig DarkSpirit
 (77 ossos, quatro ações nativas, prova em fly/flying/escape) — com roundtrip
-abaixo de 1e-6 e vinte e dois renders de inspeção. Acessórios restantes e efeitos
-abaixo são **projeto**, não malhas concluídas. O aspecto final depende de
+abaixo de 1e-6 e vinte e dois renders de inspeção. Sexta etapa (consolidação
+2026-09-11): as três lanes de arte (atlases, manto, pets) mescladas na branch
+`feat/poseidon-integration` e **as 13 peças são "protótipo autoral
+texturizado"** — todas renderizam com os quatro atlas definitivos autorados
+(Preto Abissal = massa, Dourado Real = frisos/estrutura, Azul Oceânico =
+cristais/runas, Branco Perolado = brilho da ferragem do manto, no acabamento
+**branco platina aprovado**: master P95−P05 166, JPEG do jogo 164, tint
+neutro #545156/#d7d3d4/#faf8f6). Os BMDs reconstruídos ficaram byte-idênticos
+aos das lanes (a texturização é só material/UV) e o manto declara o tecido de
+campo cheio esticado na grade 0..1 do cloth procedural. Efeitos e acessórios
+abaixo continuam **projeto**. O aspecto final depende de
 escultura/texturas, ajuste de equipamento e aprovação visual no cliente; não existe
 promessa de identidade pixel a pixel.
+
+**Onda 3 (parent):** a integração C++, IDs de item, instalação em `Data/` e
+deploy são a onda seguinte do parent — nada deste diretório instala textura
+ou modelo no cliente.
 
 ## Arquitetura de arte
 
@@ -75,19 +88,19 @@ fossem a aparência nova. Os modelos nativos documentam rig e comportamento apen
 
 | Peça | Silhueta e detalhes a construir | Vinculação / aceitação | Estado |
 | --- | --- | --- | --- |
-| Elmo | Coroa fechada em tridente, lâmina central longa, cristal axial, sobrancelhas angulares, nuca articulada negra com borda ouro | Esqueleto Player/Lord Emperor; rosto sem atravessar viseira; inspeção 360° | Protótipo autoral BMD/Blender |
-| Armadura | Peitoral negro anatômico, losango azul no esterno, nervuras douradas em ondas; ombreiras assimétricas com fan de penas/placas e guarda curva; escápulas ornamentadas | Pesos rígidos MU nos ossos nativos; testes braços elevados, montaria e costas sem manto | Protótipo autoral BMD/Blender |
-| Calças | Lamelas estreitas, faixas de metal segmentadas sobre tecido escuro, quadril e traseira completos | Articulação de joelho/quadril; não soldar faldão às duas pernas | Protótipo autoral BMD/Blender |
-| Luvas | Dedos segmentados, garras discretas, guarda dorsal, filetes nas juntas; palma usável | Empunhadura de tridente/cetro e rédea; dedos não viram bloco | Protótipo autoral BMD/Blender |
-| Botas | Caneleira curva, tornozelo encaixado, calcanhar recortado e sabaton segmentado com solado | Flexão do pé, estribo e traseira; sem esfera no calcanhar ou cubo branco | Protótipo autoral BMD/Blender |
-| Manto | Tecido preto longo com abertura inferior, bordas douradas sinuosas e brasão de tridente; ponte de ombro e fechos metálicos | Cloth do Lord Emperor separado da ferragem BMD; colisão com torso/cavalo e vento | Protótipo autoral BMD/Blender (ferragem; tecido é cloth do runtime — `cape-cloth-contract.md`) |
-| Tridente | Três lâminas altas independentes, vazios entre pontas, cristal oceânico central, canaletas ouro, haste delgada e ponteira | Alternativa longa de arma; âncora de pega e FX próprias; classificação funcional pendente | Protótipo autoral BMD/Blender |
-| Cetro oceânico | Coroa mais baixa/larga, garras em onda e núcleo azul; não é apenas o tridente reescalado | Alternativa ao tridente, não par obrigatório; compatibilidade de cetro DL a validar | Protótipo autoral BMD/Blender |
-| Pendant | Marca de tridente dourada em pedestal negro, losango azul, corrente fina | Ícone e malha independentes; aparição no corpo depende de suporte posterior | Protótipo autoral BMD/Blender |
-| Anel das Marés (esquerdo) | Aro negro com bordas ouro, assento arredondado, ondas em volta da gota azul e bolhas de espuma | Modelo/ícone próprio; sem efeito de transformação implícito | Protótipo autoral BMD/Blender |
-| Anel do Imperador (direito) | Aro facetado com coroa de cinco pontas e losango azul angular; par distinto do anterior, sem repetir malha | Segundo anel e ícone próprios; diferenças estéticas sem números aprovados | Protótipo autoral BMD/Blender |
-| Cavalo negro metálico | Barda articulada negra/ouro, crista na testa/pescoço, joias azuis, cascos metálicos, cauda em faixas | Rig DarkHorse; preservar locomoção/ataque e sela/posição do cavaleiro | Protótipo autoral BMD/Blender |
-| Águia Imperial | Penas negras em camadas com borda ouro, cristal peitoral, olho azul e garras reais | Rig DarkSpirit separado do personagem; voo, retorno e ataque em prova futura | Protótipo autoral BMD/Blender |
+| Elmo | Coroa fechada em tridente, lâmina central longa, cristal axial, sobrancelhas angulares, nuca articulada negra com borda ouro | Esqueleto Player/Lord Emperor; rosto sem atravessar viseira; inspeção 360° | Protótipo autoral texturizado (BMD/Blender) |
+| Armadura | Peitoral negro anatômico, losango azul no esterno, nervuras douradas em ondas; ombreiras assimétricas com fan de penas/placas e guarda curva; escápulas ornamentadas | Pesos rígidos MU nos ossos nativos; testes braços elevados, montaria e costas sem manto | Protótipo autoral texturizado (BMD/Blender) |
+| Calças | Lamelas estreitas, faixas de metal segmentadas sobre tecido escuro, quadril e traseira completos | Articulação de joelho/quadril; não soldar faldão às duas pernas | Protótipo autoral texturizado (BMD/Blender) |
+| Luvas | Dedos segmentados, garras discretas, guarda dorsal, filetes nas juntas; palma usável | Empunhadura de tridente/cetro e rédea; dedos não viram bloco | Protótipo autoral texturizado (BMD/Blender) |
+| Botas | Caneleira curva, tornozelo encaixado, calcanhar recortado e sabaton segmentado com solado | Flexão do pé, estribo e traseira; sem esfera no calcanhar ou cubo branco | Protótipo autoral texturizado (BMD/Blender) |
+| Manto | Tecido preto longo com abertura inferior, bordas douradas sinuosas e brasão de tridente; ponte de ombro e fechos metálicos | Cloth do Lord Emperor separado da ferragem BMD; colisão com torso/cavalo e vento | Protótipo autoral texturizado (BMD/Blender) (ferragem; tecido é cloth do runtime — `cape-cloth-contract.md`) |
+| Tridente | Três lâminas altas independentes, vazios entre pontas, cristal oceânico central, canaletas ouro, haste delgada e ponteira | Alternativa longa de arma; âncora de pega e FX próprias; classificação funcional pendente | Protótipo autoral texturizado (BMD/Blender) |
+| Cetro oceânico | Coroa mais baixa/larga, garras em onda e núcleo azul; não é apenas o tridente reescalado | Alternativa ao tridente, não par obrigatório; compatibilidade de cetro DL a validar | Protótipo autoral texturizado (BMD/Blender) |
+| Pendant | Marca de tridente dourada em pedestal negro, losango azul, corrente fina | Ícone e malha independentes; aparição no corpo depende de suporte posterior | Protótipo autoral texturizado (BMD/Blender) |
+| Anel das Marés (esquerdo) | Aro negro com bordas ouro, assento arredondado, ondas em volta da gota azul e bolhas de espuma | Modelo/ícone próprio; sem efeito de transformação implícito | Protótipo autoral texturizado (BMD/Blender) |
+| Anel do Imperador (direito) | Aro facetado com coroa de cinco pontas e losango azul angular; par distinto do anterior, sem repetir malha | Segundo anel e ícone próprios; diferenças estéticas sem números aprovados | Protótipo autoral texturizado (BMD/Blender) |
+| Cavalo negro metálico | Barda articulada negra/ouro, crista na testa/pescoço, joias azuis, cascos metálicos, cauda em faixas | Rig DarkHorse; preservar locomoção/ataque e sela/posição do cavaleiro | Protótipo autoral texturizado (BMD/Blender) |
+| Águia Imperial | Penas negras em camadas com borda ouro, cristal peitoral, olho azul e garras reais | Rig DarkSpirit separado do personagem; voo, retorno e ataque em prova futura | Protótipo autoral texturizado (BMD/Blender) |
 
 São 13 definições visuais planejadas, incluindo duas alternativas de arma e os
 dois pets. Isso não define regras de equipar simultaneamente, drop ou comércio.
@@ -188,6 +201,9 @@ python art-source/poseidon/generate_poseidon_atlases.py  # --check prova determi
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_legs_hands_equipped.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_jewels.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_jewels.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_cape_build.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_cape.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_cape_equipped.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/inspect_poseidon_uvs.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_mount.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_mount.py

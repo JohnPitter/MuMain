@@ -137,7 +137,7 @@
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "ba2e30af5cd801e1e4ed2533342e6556754bcae6bf8ac833b09ad538171d530f",
+  "blend_sha256": "4c58aa5f0f8fc1a1dcc3389172b2a617f7ef5ed61a952fb52b7c4795b694b88c",
   "pieces": {
     "Helm": {
       "file": "Poseidon_Helm.bmd",

@@ -33,7 +33,7 @@
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "070883d715342d4e948a5f40ae0fa8e307fb7427773ed620b9ac9981c5c20576",
+  "blend_sha256": "2035391e323b9f98c2df9a67c82afe258d09e34cc202991e4c3b9c8a34c3c3fc",
   "pieces": {
     "Pendant": {
       "file": "Poseidon_Pendant.bmd",

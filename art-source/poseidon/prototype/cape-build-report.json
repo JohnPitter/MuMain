@@ -142,7 +142,7 @@
     "poseidon_shapes.py": "616fc9397be96e1688ff720b2ac2c3aa0a5565f7e335358d94c32b2a534c9b56",
     "poseidon_armor_shapes.py": "ff1ad0ea3541d6b80464f95776cf20757ed37912ae3402d926acc28581f205bd"
   },
-  "blend_sha256": "9566ad082cafebf3cf16c4649ca5debd09cbf1b6d7f825c91acdc8868fc12bef",
+  "blend_sha256": "ee806085163ececd507f3a5667d6f20ae28d6cb8fe992a7a3ef4d4a0e302bf29",
   "piece": {
     "file": "Poseidon_Cape.bmd",
     "meshes": 7,
