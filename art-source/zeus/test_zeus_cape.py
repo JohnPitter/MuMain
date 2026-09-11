@@ -245,11 +245,19 @@ class ZeusCapeTests(unittest.TestCase):
                        'SKIN_CLASS_DARK_LORD', 'SKIN_CLASS_LORDEMPEROR',
                        'SKIN_CLASS_DARK', 'bCloak'):
             self.assertIn(needle, study, needle)
-        # The source evidence itself: the gate and the skirt-skin dependency.
+        # The source evidence: since the integration wave the gate policy lives
+        # in the pure Character::Cloth header (which opens the gate for the
+        # Duel Master through its CLASS_DARK base) and RenderCharacter calls it.
         character = (ROOT.parents[1] / 'src' / 'source' / 'Engine' / 'Object' /
                      'ZzzCharacter.cpp').read_text(encoding='utf-8-sig', errors='replace')
-        self.assertIn('c->Class == CLASS_DARK || gCharacterManager.GetBaseClass(c->Class) == CLASS_DARK_LORD',
-                      character)
+        self.assertIn('Character::Cloth::ClassOpensCloakGate(c->Class)', character)
+        gate = (ROOT.parents[1] / 'src' / 'source' / 'Character' / 'ClothGate.h'
+                ).read_text(encoding='utf-8-sig', errors='replace')
+        for needle in ('case CLASS_DUELMASTER: return CLASS_DARK;',
+                       'case CLASS_LORDEMPEROR: return CLASS_DARK_LORD;',
+                       'case CLASS_TEMPLENIGHT: return CLASS_RAGEFIGHTER;',
+                       'base == CLASS_DARK || base == CLASS_DARK_LORD || base == CLASS_RAGEFIGHTER'):
+            self.assertIn(needle, gate, needle)
         self.assertIn('static_cast<int>(MODEL_BODY_ARMOR) + SKIN_CLASS_LORDEMPEROR', character)
         manager = (ROOT.parents[1] / 'src' / 'source' / 'Character' / 'CharacterManager.cpp'
                    ).read_text(encoding='utf-8-sig', errors='replace')

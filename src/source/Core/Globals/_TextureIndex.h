@@ -51,7 +51,12 @@ enum
 
     BITMAP_ROBE_BEGIN,
     BITMAP_ROBE,
-    BITMAP_ROBE_END = BITMAP_ROBE_BEGIN + 15,
+    // +16 (was +15): the cape-cloth window was exhausted (native capes on
+    // +6/+9/+10, small capes on +7/+8, monsters on +3/+5/+6, side hair on
+    // +4, Poseidon fabric on +11/+12/+13); the authored Zeus cape fabric
+    // takes the new last slot (+14). Indexes after the window are map keys
+    // referenced by name, so the shift is internal-only.
+    BITMAP_ROBE_END = BITMAP_ROBE_BEGIN + 16,
 
     BITMAP_HIDE,
 

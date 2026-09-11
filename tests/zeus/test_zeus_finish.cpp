@@ -46,7 +46,9 @@ TEST_CASE("The approved platina keeps a neutral tint without any gold or blue ca
         for (std::size_t channel = 0; channel < pass.Color.size(); ++channel)
             CHECK(pass.Color[channel] == 1.f);
         const auto light = AdditiveLight(pass, 1);
-        CHECK(light[0] + light[1] + light[2] == doctest::Approx(3.f).epsilon(0.01));
+        // Neutral tint: every channel identical, scaled only by the strength.
+        CHECK(light[0] == doctest::Approx(light[1]));
+        CHECK(light[1] == doctest::Approx(light[2]));
     }
 }
 

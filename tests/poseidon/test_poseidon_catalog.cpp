@@ -39,7 +39,9 @@ TEST_CASE("E7 v2 accepts the Poseidon category and keeps it distinct from Ultima
 
 TEST_CASE("E7 v2 still rejects unknown categories")
 {
-    for (const auto category : {3, 4, 0xFF})
+    // 3 became a valid category with the Zeus set (update 249); anything
+    // above it is still rejected.
+    for (const auto category : {4, 0xFF})
     {
         auto packet = PoseidonPacket;
         packet[9] = static_cast<std::uint8_t>(category);

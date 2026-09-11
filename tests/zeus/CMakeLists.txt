@@ -10,9 +10,7 @@ mu_add_test(
 
 mu_add_test(
     NAME test_zeus_finish
-    SOURCES
-        test_zeus_finish.cpp
-        ../../src/source/Render/Models/ZeusFinish.cpp
+    SOURCES test_zeus_finish.cpp
 )
 
 mu_add_test(

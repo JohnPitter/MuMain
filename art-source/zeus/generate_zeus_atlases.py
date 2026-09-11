@@ -469,7 +469,11 @@ def build_all(force=False, check=False):
                 if not paths[key].exists():
                     raise ValueError(f'Missing atlas artifact: {paths[key]}')
             expected = render_master(role)
-            if digest(paths['master']) != hashlib.sha256(png_bytes(expected)).hexdigest():
+            # The determinism contract is the pixel content: the PNG container
+            # byte stream drifts across Pillow builds (system zlib variant)
+            # while the decoded masters stay identical, so compare decoded RGB.
+            committed = Image.open(paths['master']).convert('RGB')
+            if committed.tobytes() != expected.convert('RGB').tobytes():
                 raise ValueError(f'Master drifts from its deterministic source: {paths["master"]}')
             game = expected.resize((GAME_SIZE, GAME_SIZE), Image.Resampling.LANCZOS)
             buffer = io.BytesIO()

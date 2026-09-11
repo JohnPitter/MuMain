@@ -1,5 +1,8 @@
 #include "doctest.h"
 
+#include <windows.h>
+#include <map>
+#include "Core/Globals/_define.h"
 #include "Character/ClothGate.h"
 
 // Proves the bCloak class gate (RenderCharacter, ZzzCharacter.cpp) keeps its

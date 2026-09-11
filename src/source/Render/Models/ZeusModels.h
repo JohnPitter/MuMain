@@ -11,12 +11,13 @@ namespace Render::Items::Zeus
 {
     // Cape cloth fabric slot. The native Dark Lord capes own BITMAP_ROBE+6
     // (shoulder caps), +9 (main cape) and +10 (side panels), the Poseidon cape
-    // owns +11/+12/+13; the Zeus cape points its grades at the last free slot
-    // of the BITMAP_ROBE window (BITMAP_ROBE_END = BITMAP_ROBE_BEGIN + 15) so
-    // the authored storm-blue fabric never leaks into any other cape and no
-    // native/authored cape can recolor the Zeus cloth. All Zeus cloth grades
-    // share the single authored fabric atlas (Zeus_Blue); the Platina and
-    // Emissive atlases only dress the rigid BMD harness meshes.
+    // owns +11/+12/+13; with side hair on +4 and the monster robes on
+    // +3/+5/+6 the window was exhausted, so the Zeus cape fabric takes the
+    // new last slot the widened window provides (BITMAP_ROBE_END moved from
+    // +15 to +16; bitmap indexes are name-keyed map entries, internal-only).
+    // All Zeus cloth grades share the single authored fabric atlas
+    // (Zeus_Blue); the Platina and Emissive atlases only dress the rigid BMD
+    // harness meshes, so no authored fabric ever shares a cape slot.
     constexpr int CapeClothFabricSlot = BITMAP_ROBE + 14;
 
     // Same neck-base anchor bone as MODEL_CAPE_OF_EMPEROR/MODEL_CAPE_OF_OVERRULE
