@@ -26,7 +26,8 @@ namespace UI::Items::EquipmentTooltip
         Strings CurrentStrings()
         {
             using namespace I18N::Game;
-            return { CelestialBonusTitle, CelestialBonusRequired, CelestialBonusUpgrade,
+            using Character::Equipment::Category;
+            Strings strings{ CelestialBonusTitle, CelestialBonusRequired, CelestialBonusUpgrade,
                 CelestialBonusActive, CelestialBonusInactive, CelestialBonusUnknown,
                 CelestialBonusCondition, CelestialBonusRecoveryNote, CelestialBonusLimitsNote,
                 { L"", CelestialBonusDamage, CelestialBonusDefense, CelestialBonusHealth, CelestialBonusMana,
@@ -36,6 +37,12 @@ namespace UI::Items::EquipmentTooltip
                 { L"", L"%", CelestialBonusPercentagePoints },
                 CelestialPhaseStatus, CelestialPhaseTemplate,
                 { CelestialPhaseArmor, CelestialPhaseWeapons, CelestialPhaseAccessories }, CelestialPhaseCondition };
+            if (Character::Equipment::GetCatalog().ItemCategory == Category::Poseidon)
+            {
+                strings.Title = PoseidonSetTitle;
+                strings.PhaseLabels = { PoseidonPhaseArmor, PoseidonPhaseJewels, PoseidonPhaseComplete };
+            }
+            return strings;
         }
 
         int Color(LineRole role)
@@ -79,21 +86,23 @@ namespace UI::Items::EquipmentTooltip
         return true;
     }
 
-    int AppendHint(int itemType, int textIndex)
-    {
-        constexpr int HintLines = 2;
-        if (!Character::Equipment::GetCatalog().Contains(itemType) || Hero == nullptr
-            || textIndex < 0 || textIndex > LegacyLineCapacity - HintLines)
+        int AppendHint(int itemType, int textIndex)
+        {
+            constexpr int HintLines = 2;
+            if (!Character::Equipment::GetCatalog().Contains(itemType) || Hero == nullptr
+                || textIndex < 0 || textIndex > LegacyLineCapacity - HintLines)
+                return textIndex;
+            const auto& state = Hero->ServerEquipment;
+            const auto strings = CurrentStrings();
+            const auto status = BuildStatus(state, strings);
+            swprintf_s(TextList[textIndex], L"%ls", status.Text.data());
+            TextListColor[textIndex] = state.HasCelestialAura() ? TEXT_COLOR_GREEN : TEXT_COLOR_GRAY;
+            TextBold[textIndex++] = false;
+            swprintf_s(TextList[textIndex], L"%ls", Character::Equipment::GetCatalog().ItemCategory
+                == Character::Equipment::Category::Poseidon
+                ? I18N::Game::PoseidonBonusShiftHint : I18N::Game::CelestialBonusShiftHint);
+            TextListColor[textIndex] = TEXT_COLOR_YELLOW;
+            TextBold[textIndex++] = false;
             return textIndex;
-        const auto& state = Hero->ServerEquipment;
-        const auto strings = CurrentStrings();
-        const auto status = BuildStatus(state, strings);
-        swprintf_s(TextList[textIndex], L"%ls", status.Text.data());
-        TextListColor[textIndex] = state.HasCelestialAura() ? TEXT_COLOR_GREEN : TEXT_COLOR_GRAY;
-        TextBold[textIndex++] = false;
-        swprintf_s(TextList[textIndex], L"%ls", I18N::Game::CelestialBonusShiftHint);
-        TextListColor[textIndex] = TEXT_COLOR_YELLOW;
-        TextBold[textIndex++] = false;
-        return textIndex;
-    }
+        }
 }

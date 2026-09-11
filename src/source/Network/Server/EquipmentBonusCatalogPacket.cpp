@@ -13,6 +13,8 @@ namespace Network::Equipment
         constexpr std::size_t BonusSize = 6;
         constexpr std::size_t PhaseSize = 3;
         constexpr std::uint16_t MaximumItemType = 8191;
+        // Server class numbers (e.g. 17 = Lord Emperor); 0xFF is unset noise.
+        constexpr std::uint8_t MaximumRequiredClass = 0x7F;
         constexpr float MaximumDisplayValue = 1'000'000;
 
         std::size_t ReadHeader(std::span<const std::uint8_t> packet, Character::Equipment::BonusCatalog& catalog)
@@ -29,7 +31,7 @@ namespace Network::Equipment
             if (packet[4] == 1)
                 return LegacyHeaderSize;
             if (packet[4] != 2 || packet.size() < PhasedHeaderSize
-                || packet[9] > static_cast<unsigned>(Category::Ultimate) || packet[12] > 3
+                || packet[9] > static_cast<unsigned>(Category::Poseidon) || packet[12] > MaximumRequiredClass
                 || packet[13] > MaximumBonusPhases)
                 return 0;
             catalog.ItemCategory = static_cast<Category>(packet[9]);

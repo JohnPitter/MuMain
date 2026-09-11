@@ -13212,4 +13212,9 @@
   <data name="CelestialPhaseWeapons" xml:space="preserve"><value>+ staff and shield</value></data>
   <data name="CelestialPhaseAccessories" xml:space="preserve"><value>+ wings, pendant and two rings</value></data>
   <data name="CelestialPhaseCondition" xml:space="preserve"><value>Values: active / total. Cumulative stages; usable pieces.</value></data>
+  <data name="PoseidonSetTitle" xml:space="preserve"><value>Poseidon Set — full bonuses</value></data>
+  <data name="PoseidonBonusShiftHint" xml:space="preserve"><value>[Shift] View Poseidon set bonuses</value></data>
+  <data name="PoseidonPhaseArmor" xml:space="preserve"><value>crown, cuirass, pants, gloves and boots</value></data>
+  <data name="PoseidonPhaseJewels" xml:space="preserve"><value>+ pendant and two rings</value></data>
+  <data name="PoseidonPhaseComplete" xml:space="preserve"><value>+ cape, one weapon, mount and eagle</value></data>
 </root>

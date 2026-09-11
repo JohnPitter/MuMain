@@ -13287,4 +13287,9 @@
   <data name="CelestialPhaseWeapons" xml:space="preserve"><value>+ cajado e escudo</value></data>
   <data name="CelestialPhaseAccessories" xml:space="preserve"><value>+ asas, pendant e dois anéis</value></data>
   <data name="CelestialPhaseCondition" xml:space="preserve"><value>Valores: ativo / total. Fases cumulativas; peças utilizáveis.</value></data>
+  <data name="PoseidonSetTitle" xml:space="preserve"><value>Conjunto Poseidon — bônus completos</value></data>
+  <data name="PoseidonBonusShiftHint" xml:space="preserve"><value>[Shift] Ver bônus do conjunto Poseidon</value></data>
+  <data name="PoseidonPhaseArmor" xml:space="preserve"><value>coroa, peitoral, calça, luvas e botas</value></data>
+  <data name="PoseidonPhaseJewels" xml:space="preserve"><value>+ pendant e dois anéis</value></data>
+  <data name="PoseidonPhaseComplete" xml:space="preserve"><value>+ manto, uma arma, montaria e águia</value></data>
 </root>
