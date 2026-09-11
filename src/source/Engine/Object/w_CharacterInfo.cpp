@@ -85,6 +85,7 @@ void CHARACTER::Initialize()
     Damage = 0;
     Hit = 0;
     MoveSpeed = 0;
+    ServerEquipment = {};
 
     Action = 0;
     ExtendStateTime = 0;

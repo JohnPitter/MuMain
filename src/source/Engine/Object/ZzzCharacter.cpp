@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "Render/Models/CelestialModels.h"
 #include "Render/Models/HelmetAppearance.h"
+#include "Character/CharacterMovementEffects.h"
 #include <execution>
 #include <algorithm>
 #include <span>
@@ -178,8 +179,8 @@ static  float   g_fStopTime = 0.f;
 
 namespace
 {
-    constexpr int CELESTIAL_SET_EFFECT_MINIMUM_LEVEL = 10;
     constexpr int CELESTIAL_SET_EFFECT_INTERVAL = 8;
+    constexpr int CELESTIAL_SET_EFFECT_RENDER_LEVEL = 2;
     constexpr int CELESTIAL_SET_ROOT_BONE = 0;
     constexpr float CELESTIAL_SET_AURA_HEIGHT = 75.0f;
     constexpr float CELESTIAL_SET_AURA_SCALE = 1.6f;
@@ -187,18 +188,12 @@ namespace
     constexpr float CELESTIAL_SET_AURA_GREEN = 0.78f;
     constexpr float CELESTIAL_SET_AURA_BLUE = 0.28f;
 
-    bool IsCelestialArmorSet(const CHARACTER* character)
-    {
-        return character->BodyPart[BODYPART_HELM].Type == MODEL_CELESTIAL_HELM
-            && character->BodyPart[BODYPART_ARMOR].Type == MODEL_CELESTIAL_ARMOR
-            && character->BodyPart[BODYPART_PANTS].Type == MODEL_CELESTIAL_PANTS
-            && character->BodyPart[BODYPART_GLOVES].Type == MODEL_CELESTIAL_GLOVES
-            && character->BodyPart[BODYPART_BOOTS].Type == MODEL_CELESTIAL_BOOTS;
-    }
-
     void RenderCelestialSetAura(const CHARACTER* character, OBJECT* object, BMD* model)
     {
-        if (EquipmentLevelSet < CELESTIAL_SET_EFFECT_MINIMUM_LEVEL || !IsCelestialArmorSet(character) || !rand_fps_check(CELESTIAL_SET_EFFECT_INTERVAL))
+        if (!character->ServerEquipment.HasCelestialAura()
+            || g_pOption->GetRenderLevel() < CELESTIAL_SET_EFFECT_RENDER_LEVEL
+            || g_isCharacterBuff(object, eBuff_Cloaking)
+            || !rand_fps_check(CELESTIAL_SET_EFFECT_INTERVAL))
         {
             return;
         }
@@ -6402,6 +6397,27 @@ void MoveCharacterVisual(CHARACTER* c, OBJECT* o)
     }
 }
 
+namespace
+{
+    float ApplyCharacterMovementEffects(CHARACTER* character, float speed)
+    {
+        using namespace Character::Movement;
+        constexpr float RunningThreshold = 40.0f;
+        std::uint8_t effects = Character::Movement::None;
+        OBJECT* object = &character->Object;
+        if (g_isCharacterBuff(object, eDeBuff_Freeze))
+            effects |= Frozen;
+        if (g_isCharacterBuff(object, eDeBuff_BlowOfDestruction))
+            effects |= DestructionSlow;
+        if (g_isCharacterBuff(object, eBuff_CursedTempleQuickness))
+        {
+            character->Run = RunningThreshold;
+            effects |= TempleQuickness;
+        }
+        return ApplyEffects(speed, character->ServerEquipment, effects);
+    }
+}
+
 float CharacterMoveSpeed(CHARACTER* c)
 {
     OBJECT* o = &c->Object;
@@ -6416,7 +6432,9 @@ float CharacterMoveSpeed(CHARACTER* c)
         {
             c->Run = 40;
             Speed = 8;
-            return Speed;
+            return c->ServerEquipment.Known
+                ? Character::Movement::ApplyEffects(Speed, c->ServerEquipment, Character::Movement::None)
+                : Speed;
         }
 
         if (c->Helper.Type == MODEL_HORN_OF_FENRIR && !c->SafeZone && !isholyitem)
@@ -6471,22 +6489,7 @@ float CharacterMoveSpeed(CHARACTER* c)
     }
 #endif// GUILD_WAR_EVENT
 
-    if (g_isCharacterBuff((&c->Object), eDeBuff_Freeze))
-    {
-        Speed *= 0.5f;
-    }
-    else if (g_isCharacterBuff((&c->Object), eDeBuff_BlowOfDestruction))
-    {
-        Speed *= 0.33f;
-    }
-
-    if (g_isCharacterBuff((&c->Object), eBuff_CursedTempleQuickness))
-    {
-        c->Run = 40;
-        Speed = 20;
-    }
-
-    return Speed;
+    return ApplyCharacterMovementEffects(c, Speed);
 }
 
 void MoveCharacterPosition(CHARACTER* c)
@@ -11110,6 +11113,8 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
             DeleteEffect(MODEL_SWELL_OF_MAGICPOWER_BUFF_EFF, o, 0);
         }
 
+        RenderCelestialSetAura(c, o, b);
+
         if (gMapManager.InChaosCastle() == false)
         {
             if (c->ExtendState)
@@ -11145,7 +11150,6 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
                         CreateSprite(BITMAP_LIGHT, Position, 1.3f, Light, o);
                     }
                 }
-                RenderCelestialSetAura(c, o, b);
                 if ((c->BodyPart[BODYPART_BOOTS].Type >= MODEL_DRAGON_KNIGHT_BOOTS && c->BodyPart[BODYPART_BOOTS].Type <= MODEL_SUNLIGHT_BOOTS)
                     || c->BodyPart[BODYPART_BOOTS].Type == MODEL_AURA_BOOTS)
                 {
@@ -11686,19 +11690,7 @@ void DeleteCharacter(int Key)
         OBJECT* o = &c->Object;
         if (o->Live && c->Key == Key)
         {
-            o->Live = false;
-
-            BoneManager::UnregisterBone(c);
-
-            for (int j = 0; j < MAX_MOUNTS; j++)
-            {
-                OBJECT* b = &Mounts[j];
-                if (b->Live && b->Owner == o)
-                    b->Live = false;
-            }
-            DeletePet(c);
-            DeleteCloth(c, o);
-            DeleteParts(c);
+            DeleteCharacter(c, o);
             return;
         }
     }
@@ -11707,6 +11699,7 @@ void DeleteCharacter(int Key)
 void DeleteCharacter(CHARACTER* c, OBJECT* o)
 {
     o->Live = false;
+    c->ServerEquipment = {};
 
     BoneManager::UnregisterBone(c);
 
@@ -12241,6 +12234,18 @@ void CreateCharacterPointer(CHARACTER* c, int Type, unsigned char PositionX, uns
     }
 }
 
+namespace
+{
+    CHARACTER* FinishScopedCharacter(CHARACTER* character, int key)
+    {
+        OBJECT* object = &character->Object;
+        g_CharacterClearBuff(object);
+        character->ServerEquipment = {};
+        character->Key = key;
+        return character;
+    }
+}
+
 CHARACTER* CreateCharacter(int Key, int Type, unsigned char PositionX, unsigned char PositionY, float Rotation)
 {
     for (int i = 0; i < MAX_CHARACTERS_CLIENT; i++)
@@ -12250,8 +12255,7 @@ CHARACTER* CreateCharacter(int Key, int Type, unsigned char PositionX, unsigned 
         if (o->Live && c->Key == Key)
         {
             CreateCharacterPointer(c, Type, PositionX, PositionY, Rotation);
-            g_CharacterClearBuff(o);
-            return c;
+            return FinishScopedCharacter(c, Key);
         }
     }
 
@@ -12276,9 +12280,7 @@ CHARACTER* CreateCharacter(int Key, int Type, unsigned char PositionX, unsigned 
             DeleteCloth(c, o);
             DeleteParts(c);
             CreateCharacterPointer(c, Type, PositionX, PositionY, Rotation);
-            g_CharacterClearBuff(o);
-            c->Key = Key;
-            return c;
+            return FinishScopedCharacter(c, Key);
         }
     }
 
@@ -12293,9 +12295,7 @@ CHARACTER* CreateCharacter(int Key, int Type, unsigned char PositionX, unsigned 
             DeleteCloth(c, o);
             DeleteParts(c);
             CreateCharacterPointer(c, Type, PositionX, PositionY, Rotation);
-            g_CharacterClearBuff(o);
-            c->Key = Key;
-            return c;
+            return FinishScopedCharacter(c, Key);
         }
     }
 

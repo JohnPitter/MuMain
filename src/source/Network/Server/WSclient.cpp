@@ -28,6 +28,8 @@
 #include "I18N/All.h"
 #include "Character/CharacterTitle.h"
 #include "Character/VipStatus.h"
+#include "Network/Server/EquipmentStatePacket.h"
+#include "Network/Server/EquipmentStateReceiver.h"
 
 #include "Audio/DSPlaySound.h"
 #include "Audio/VoiceChat.h"
@@ -13759,6 +13761,54 @@ static void ReceiveChannelWarpList(const BYTE* ReceiveBuffer, int32_t Size)
     g_hasChannelWarpList = true;
 }
 
+namespace
+{
+    enum CharacterExtensionSubCode
+    {
+        ChannelWarps = 0xE9,
+        OwnedTitles = 0xEA,
+        VisibleTitle = 0xEB,
+        VipBadge = 0xEC,
+        Changelog = 0xED,
+        WeddingProposal = 0xEE,
+        MaintenanceNotice = 0xEF,
+    };
+
+    bool ReceiveCharacterExtension(int subcode, std::span<const BYTE> packet)
+    {
+        const auto size = static_cast<int32_t>(packet.size());
+        switch (subcode)
+        {
+        case Network::Equipment::StateSubCode:
+            Network::Equipment::ReceiveState(packet);
+            return true;
+        case ChannelWarps:
+            ReceiveChannelWarpList(packet.data(), size);
+            return true;
+        case OwnedTitles:
+            CharacterTitle::ReceiveOwned(packet.data(), size);
+            return true;
+        case VisibleTitle:
+            CharacterTitle::ReceiveAppearance(packet.data(), size);
+            return true;
+        case VipBadge:
+            VipStatus::ReceiveStatus(packet.data(), size);
+            return true;
+        case Changelog:
+            ReceiveChangelog(packet.data(), size);
+            return true;
+        case WeddingProposal:
+            ReceiveWeddingRequest(packet.data(), size);
+            return true;
+        case MaintenanceNotice:
+            ReceiveMaintenance(packet.data(), size);
+            return true;
+        default:
+            return false;
+        }
+    }
+}
+
 static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
 {
     auto received_span = std::span<const BYTE>(ReceiveBuffer, Size);
@@ -13918,38 +13968,11 @@ static void ProcessPacket(const BYTE* ReceiveBuffer, int32_t Size)
 
         g_ConsoleDebug->Write(MCD_RECEIVE, L"Recv [0xF3][0x%02x]", subcode);
 
+        if (ReceiveCharacterExtension(subcode, received_span))
+            break;
+
         switch (subcode)
         {
-        case 0xE9:
-            ReceiveChannelWarpList(ReceiveBuffer, Size);
-            break;
-        case 0xEA:
-            CharacterTitle::ReceiveOwned(ReceiveBuffer, Size);
-            break;
-        case 0xEB:
-            CharacterTitle::ReceiveAppearance(ReceiveBuffer, Size);
-            break;
-        case 0xEC:
-            VipStatus::ReceiveStatus(ReceiveBuffer, Size);
-            break;
-        case 0xED:
-            // LuxView in-game changelog ("Novidades"): the login push carries the
-            // newest entries; the same sub-code answers a "show all" request.
-            ReceiveChangelog(ReceiveBuffer, Size);
-            break;
-        case 0xEE:
-            // LuxView wedding proposal: dedicated packet (carries the proponent's
-            // name) so the Yes/No dialog shows wedding wording instead of the
-            // party invite text. The answer still goes out as the party invite
-            // response; the server routes it by the WeddingRequest state.
-            ReceiveWeddingRequest(ReceiveBuffer, Size);
-            break;
-        case 0xEF:
-            // LuxView maintenance notice: the login push carries the active
-            // "Manutenção" message; the window shows once per login while the
-            // notice is on.
-            ReceiveMaintenance(ReceiveBuffer, Size);
-            break;
         case 0x00: //receive characters list
             ReceiveCharacterListExtended(ReceiveBuffer, Size);
             break;

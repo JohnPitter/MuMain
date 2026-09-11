@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Utilities/SpinLock.h"
+#include "Character/EquipmentState.h"
 
 typedef struct _PATH_t
 {
@@ -184,6 +185,7 @@ public:
     int        Damage;
     int        Hit;
     WORD        MoveSpeed;
+    Character::Equipment::State ServerEquipment;
     WORD        AttackSpeed;
     WORD        MagicSpeed;
 
