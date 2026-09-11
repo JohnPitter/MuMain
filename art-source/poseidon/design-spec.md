@@ -12,8 +12,11 @@ Entregue nesta etapa: projeto completo, auditoria das bases nativas, duas armas
 autorais editáveis, BMD de diagnóstico, seis renders e verificações de integridade.
 Segundo lote entregue: elmo, peitoral e botas autorais sobre o esqueleto nativo
 Class305 auditado, com exportação BMD diagnóstica, provas de roundtrip, prova
-equipada no rig do player e onze renders de inspeção. Manto, acessórios, pets e
-efeitos abaixo são **projeto**, não malhas concluídas. O aspecto final depende de
+equipada no rig do player e onze renders de inspeção. Terceiro lote entregue:
+calças e luvas autorais na mesma disciplina (ossos exatamente os das peças
+nativas correspondentes, roundtrip abaixo de 1e-6, prova equipada e dezoito
+renders de inspeção no conjunto). Manto, acessórios, pets e efeitos abaixo são
+**projeto**, não malhas concluídas. O aspecto final depende de
 escultura/texturas, ajuste de equipamento e aprovação visual no cliente; não existe
 promessa de identidade pixel a pixel.
 
@@ -53,8 +56,8 @@ fossem a aparência nova. Os modelos nativos documentam rig e comportamento apen
 | --- | --- | --- | --- |
 | Elmo | Coroa fechada em tridente, lâmina central longa, cristal axial, sobrancelhas angulares, nuca articulada negra com borda ouro | Esqueleto Player/Lord Emperor; rosto sem atravessar viseira; inspeção 360° | Protótipo autoral BMD/Blender |
 | Armadura | Peitoral negro anatômico, losango azul no esterno, nervuras douradas em ondas; ombreiras assimétricas com fan de penas/placas e guarda curva; escápulas ornamentadas | Pesos rígidos MU nos ossos nativos; testes braços elevados, montaria e costas sem manto | Protótipo autoral BMD/Blender |
-| Calças | Lamelas estreitas, faixas de metal segmentadas sobre tecido escuro, quadril e traseira completos | Articulação de joelho/quadril; não soldar faldão às duas pernas | Projeto |
-| Luvas | Dedos segmentados, garras discretas, guarda dorsal, filetes nas juntas; palma usável | Empunhadura de tridente/cetro e rédea; dedos não viram bloco | Projeto |
+| Calças | Lamelas estreitas, faixas de metal segmentadas sobre tecido escuro, quadril e traseira completos | Articulação de joelho/quadril; não soldar faldão às duas pernas | Protótipo autoral BMD/Blender |
+| Luvas | Dedos segmentados, garras discretas, guarda dorsal, filetes nas juntas; palma usável | Empunhadura de tridente/cetro e rédea; dedos não viram bloco | Protótipo autoral BMD/Blender |
 | Botas | Caneleira curva, tornozelo encaixado, calcanhar recortado e sabaton segmentado com solado | Flexão do pé, estribo e traseira; sem esfera no calcanhar ou cubo branco | Protótipo autoral BMD/Blender |
 | Manto | Tecido preto longo com abertura inferior, bordas douradas sinuosas e brasão de tridente; ponte de ombro e fechos metálicos | Cloth do Lord Emperor separado da ferragem BMD; colisão com torso/cavalo e vento | Projeto |
 | Tridente | Três lâminas altas independentes, vazios entre pontas, cristal oceânico central, canaletas ouro, haste delgada e ponteira | Alternativa longa de arma; âncora de pega e FX próprias; classificação funcional pendente | Protótipo autoral BMD/Blender |
@@ -130,7 +133,11 @@ explícita: renomear BMD não ativa o cloth automaticamente.
    junto ao rig de Lord Emperor; aprovar família visual antes de multiplicar peças.
    Entregues como protótipos autorais skinados no rig Class305 (ossos 18/20 no
    elmo, 17/18/25/26/27/34/35/36 no peitoral, 4/5/11/12 nas botas); aprovação
-   visual e atlases próprios continuam pendentes.
+   visual e atlases próprios continuam pendentes. Terceiro lote no mesmo molde:
+   calças nos ossos nativos 2/3/4/10/11/17/44 (cintura, quadril, coxas, joelhos e
+   o osso Bone02 do faldão frontal livre, nunca soldado às pernas) e luvas nos
+   ossos 27/28/29/36/37/38 (antebraço, mão e Finger0 de cada braço; os dedos
+   extras do esqueleto continuam sem uso, como no nativo).
 3. Construir peças restantes, manto com cloth e pets, sem trocar esqueletos por
    primitivas. Provar poses preservadas e meshes dentro dos limites do cliente.
 4. Produzir atlas próprios e UV finais com bordas/frente/costas coerentes;
@@ -151,6 +158,9 @@ python art-source/poseidon/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_armor.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_armor.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_armor_equipped.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_legs_hands.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_legs_hands.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_legs_hands_equipped.py
 python -m unittest discover -s art-source/poseidon -p 'test_*.py' -v
 ```
 
@@ -167,6 +177,12 @@ frente/lado/costas em `prototype/renders/` e a prova equipada
 `player.bmd` junto a um mannequin neutro de prévia — reconstrução de matemática de
 encaixe, não captura in-game.
 
+As calças e luvas (`build_poseidon_legs_hands.py`) seguem o mesmo desenho: coleções
+`Poseidon Pant` e `Poseidon Glove` em `prototype/poseidon-legs-hands.blend`, BMDs
+diagnósticos `Poseidon_{Pant,Glove}.bmd`, seis vistas de inspeção, prova equipada
+(`poseidon_legs_hands_equipped.py`) e relatórios próprios — sem tocar em
+`texture-dependencies.json`, que continua descrevendo apenas os três atlas pendentes.
+
 - `prototype/poseidon-weapons.blend`: malhas 3D, materiais e estúdio.
 - `prototype/models/`: BMD de diagnóstico **não instaláveis**.
 - `prototype/renders/`: seis PNGs de estúdio (frontal, lateral oblíqua a 72° e
@@ -178,6 +194,13 @@ encaixe, não captura in-game.
 - `prototype/armor-build-report.json`: orçamentos, ossos usados, âncoras e prova.
 - `prototype/armor-saved-roundtrip-report.json`: roundtrip das peças reabrindo o Blender.
 - `prototype/equipped-review-report.json`: prova de encaixe no rig do player.
+- `prototype/poseidon-legs-hands.blend`: calças e luvas sobre o rig auditado.
+- `prototype/legs-hands-build-report.json`: orçamentos justificados, ossos usados
+  (contrato medido nos nativos), âncoras e prova.
+- `prototype/legs-hands-saved-roundtrip-report.json`: roundtrip das duas peças
+  reabrindo o Blender salvo.
+- `prototype/legs-hands-equipped-review-report.json`: prova de encaixe das calças e
+  luvas no rig do player, com deslocamento mínimo entre as poses parada/caminhada.
 - `native-reference-audit.json`: proveniência/rigs e contratos nativos verificados.
 
 Nenhuma imagem de textura foi criada por Pillow nem houve alteração de arquivos

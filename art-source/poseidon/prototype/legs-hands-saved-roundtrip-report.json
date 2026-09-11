@@ -1,0 +1,15 @@
+{
+  "saved_blend_sha256": "0b0cf3f8fe852060c15bdf32ca54a7f87a0b750da20312125fe303610a323821",
+  "models": {
+    "Pant": {
+      "max_error": 5.960464477539062e-07,
+      "triangles": 5620,
+      "sha256": "8863bea9bd83b9acd329bfc77e21247a18974743bbed0729f3c78d4f8b66cb15"
+    },
+    "Glove": {
+      "max_error": 8.940696716308594e-07,
+      "triangles": 3004,
+      "sha256": "690065a6c5987f5ee310ad2b29b90716d91d83d5eb83980ad637aea20d48c24c"
+    }
+  }
+}

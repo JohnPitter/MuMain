@@ -1,0 +1,61 @@
+{
+  "status": "ATTACHMENT_MATH_PREVIEW_NOT_INGAME",
+  "mannequin": "PREVIEW_fit_mannequin generic tubes; never exported",
+  "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+  "player_bones": 60,
+  "anchor_gates": {
+    "nearest_below": 20.0,
+    "farthest_below": 65.0,
+    "pose_shift_min": 3.0,
+    "pose_shifts": {
+      "Pant": 10.4424,
+      "Glove": 16.5583
+    }
+  },
+  "poses": [
+    {
+      "render": "Poseidon_LegsHands_equipped_front.png",
+      "clip": "PLAYER_STOP_SWORD",
+      "action": 4,
+      "frame": 0,
+      "view": "front"
+    },
+    {
+      "render": "Poseidon_LegsHands_equipped_side.png",
+      "clip": "PLAYER_WALK_SWORD",
+      "action": 17,
+      "frame": 3,
+      "view": "side"
+    }
+  ],
+  "fit_probes": [
+    {
+      "clip": "PLAYER_STOP_SWORD",
+      "frame": 0,
+      "vertex_anchor_distance": {
+        "Pant": {
+          "nearest": 1.4763,
+          "farthest": 44.6011
+        },
+        "Glove": {
+          "nearest": 3.0107,
+          "farthest": 40.4317
+        }
+      }
+    },
+    {
+      "clip": "PLAYER_WALK_SWORD",
+      "frame": 3,
+      "vertex_anchor_distance": {
+        "Pant": {
+          "nearest": 1.4763,
+          "farthest": 44.6011
+        },
+        "Glove": {
+          "nearest": 3.0107,
+          "farthest": 40.4317
+        }
+      }
+    }
+  ]
+}

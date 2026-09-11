@@ -1,0 +1,186 @@
+{
+  "status": "AUTHORED_LEGS_HANDS_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/poseidon/design-spec.md",
+  "model_origin": "Original Poseidon geometry on the audited native Class305 skeletons; single-influence rig binding, no native mesh reuse",
+  "native_rig": {
+    "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "5987bc37b1c6670971caa6d4d785f812a8aa16e6ac3e7e24e15e6f4cc9cba88e",
+    "piece_sha256": {
+      "Pant": "6b23f5398e4c3db8020b7b1219594b4e97f279d815d66e2910f5e6d372a5ead8",
+      "Glove": "7aa48e8c953cd806deae6978f73992af1f1473c78f42efb71772eb458c7c74b2"
+    },
+    "used_bone_contract": {
+      "Pant": [
+        2,
+        3,
+        4,
+        10,
+        11,
+        17,
+        44
+      ],
+      "Glove": [
+        27,
+        28,
+        29,
+        36,
+        37,
+        38
+      ]
+    }
+  },
+  "fit_anchors": {
+    "Pant": {
+      "2": [
+        0.0,
+        0.0,
+        109.9509
+      ],
+      "3": [
+        10.2815,
+        0.0,
+        109.9509
+      ],
+      "4": [
+        10.2815,
+        -4.9348,
+        60.7674
+      ],
+      "10": [
+        -10.2815,
+        -0.0,
+        109.9509
+      ],
+      "11": [
+        -10.2816,
+        -4.9348,
+        60.7674
+      ],
+      "17": [
+        0.0,
+        0.0158,
+        113.5495
+      ],
+      "44": [
+        0.0,
+        -11.1929,
+        125.4618
+      ]
+    },
+    "Glove": {
+      "27": [
+        -26.6162,
+        -0.0,
+        119.7257
+      ],
+      "28": [
+        -31.7294,
+        -0.6996,
+        92.7412
+      ],
+      "29": [
+        -35.4475,
+        -0.9369,
+        82.8391
+      ],
+      "36": [
+        26.6162,
+        0.0,
+        119.7257
+      ],
+      "37": [
+        31.7294,
+        -0.6996,
+        92.7412
+      ],
+      "38": [
+        35.4475,
+        -0.9368,
+        82.839
+      ]
+    }
+  },
+  "triangle_budgets": {
+    "Pant": [
+      4000,
+      6600
+    ],
+    "Glove": [
+      2600,
+      5200
+    ]
+  },
+  "budget_justification": "Proportional to the measured lote 2 pieces (boot 4192, armor 7842, helm 3484 triangles): pants dress both legs plus waist, fauld and free-hanging skirt, landing between boot and armor; gloves are complete pairs of the smallest worn pieces with segmented claw fingers, just above the helm floor.",
+  "shared_source_sha256": {
+    "armor_surfaces.py": "d49c5bff7c946180898560fe6a25ab2b83048dde21a7aec660ec35bfa4ab66b3",
+    "celestial_geometry.py": "34317a45d74bc178d36e0a798b7063915104450189e093dc9368fd70bb9b16c6",
+    "export_prop_bmd.py": "26f65f4fb05fca889691773b23f2aa5bf6400f546648864fc0bb79abb752af9a",
+    "export_skinned_bmd.py": "ac24d213e19d2d818d9e2f8e531483fb151903b6b1e88dda0b01126b13db6e58",
+    "import_native_reference.py": "dcc96c75f200c64e88f8d9e0a16dbc25c614dd1b5d70f585b091d6f692b4a80e",
+    "inspect_bmd_rig.py": "d3aa1c409faa8b0e2af71e74f7dc296b532cdda08529ca245195658e8712647a",
+    "verify_prop_roundtrip.py": "d5cb7895952bd240eef0aec7ed2b378945cadd79bc22952e63c859695e3b63f5"
+  },
+  "blend_sha256": "0b0cf3f8fe852060c15bdf32ca54a7f87a0b750da20312125fe303610a323821",
+  "pieces": {
+    "Pant": {
+      "file": "Poseidon_Pant.bmd",
+      "meshes": 4,
+      "triangles": 5620,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 67,
+        "triangles": 5620,
+        "open_edges": 184,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0003240017633367851,
+      "sha256": "8863bea9bd83b9acd329bfc77e21247a18974743bbed0729f3c78d4f8b66cb15",
+      "used_bones": [
+        2,
+        3,
+        4,
+        10,
+        11,
+        17,
+        44
+      ],
+      "roundtrip_max_error": 5.960464477539062e-07
+    },
+    "Glove": {
+      "file": "Poseidon_Glove.bmd",
+      "meshes": 4,
+      "triangles": 3004,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 58,
+        "triangles": 3004,
+        "open_edges": 128,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0023657239873537085,
+      "sha256": "690065a6c5987f5ee310ad2b29b90716d91d83d5eb83980ad637aea20d48c24c",
+      "used_bones": [
+        27,
+        28,
+        29,
+        36,
+        37,
+        38
+      ],
+      "roundtrip_max_error": 8.940696716308594e-07
+    }
+  }
+}
