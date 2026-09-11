@@ -1,0 +1,95 @@
+{
+  "status": "ACTION_MATH_PREVIEW_NOT_INGAME",
+  "model_sha256": "d9deabf088a819a7770e0e59d94984e046cca9ed8e343ed85914034724e34977",
+  "pose_tolerance": 0.0002,
+  "action_evidence": {
+    "0": "fly",
+    "1": "flying",
+    "2": "stand",
+    "3": "escape"
+  },
+  "used_bone_contract": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    10,
+    11,
+    12,
+    14,
+    15,
+    18,
+    19,
+    22,
+    26,
+    30,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    41,
+    42,
+    45,
+    46,
+    49,
+    53,
+    57,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    69,
+    70,
+    71,
+    72,
+    74,
+    75
+  ],
+  "proofs": [
+    {
+      "action": 0,
+      "name": "fly",
+      "proof": "fly",
+      "frames": 6,
+      "render_frame": 2,
+      "checked_vertices": 18402,
+      "maximum_error": 6.635407938689788e-05,
+      "renders": [
+        "Poseidon_Imperial_Eagle_action_fly_side.png",
+        "Poseidon_Imperial_Eagle_action_fly_front.png"
+      ]
+    },
+    {
+      "action": 1,
+      "name": "flying",
+      "proof": "flying",
+      "frames": 4,
+      "render_frame": 2,
+      "checked_vertices": 12268,
+      "maximum_error": 5.554283057617583e-05,
+      "renders": [
+        "Poseidon_Imperial_Eagle_action_flying_side.png",
+        "Poseidon_Imperial_Eagle_action_flying_front.png"
+      ]
+    },
+    {
+      "action": 3,
+      "name": "escape",
+      "proof": "escape",
+      "frames": 4,
+      "render_frame": 2,
+      "checked_vertices": 12268,
+      "maximum_error": 0.00012789195720092934,
+      "renders": [
+        "Poseidon_Imperial_Eagle_action_escape_side.png",
+        "Poseidon_Imperial_Eagle_action_escape_front.png"
+      ]
+    }
+  ]
+}

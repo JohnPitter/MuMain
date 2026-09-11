@@ -1,0 +1,181 @@
+{
+  "status": "AUTHORED_EAGLE_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/poseidon/design-spec.md",
+  "model_origin": "Original Poseidon geometry on the audited native darkspirit skeleton; single-influence rig binding, no native mesh reuse, full 4-action animation block preserved bit-for-bit",
+  "native_rig": {
+    "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "5987bc37b1c6670971caa6d4d785f812a8aa16e6ac3e7e24e15e6f4cc9cba88e",
+    "member": "Data/Skill/darkspirit.bmd",
+    "model_sha256": "c557e89336e5e1731cccdc36ea1142769596404f260a471df7b7e7fc0221cd4c",
+    "bones": 77,
+    "action_frames": [
+      6,
+      4,
+      4,
+      4
+    ],
+    "action_names": {
+      "0": "fly",
+      "1": "flying",
+      "2": "stand",
+      "3": "escape"
+    },
+    "action_evidence": "src/source/GameLogic/Pets/CSPetSystem.cpp: PET_FLY->0, PET_FLYING/PET_STAND_START->1, PET_STAND->2 (locked), PET_ESCAPE->3.",
+    "used_bone_contract": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      10,
+      11,
+      12,
+      14,
+      15,
+      18,
+      19,
+      22,
+      26,
+      30,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      41,
+      42,
+      45,
+      46,
+      49,
+      53,
+      57,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      69,
+      70,
+      71,
+      72,
+      74,
+      75
+    ]
+  },
+  "design_decisions": {
+    "contract": "DarkSpirit pet rig per design-spec \"Rig DarkSpirit separado do personagem\"; not a shoulder ornament (task decision documented)",
+    "effect_bones": "crest 7/8/9 and tail tip 76 stay unused (animated without any native mesh binding - the effect-bone pattern)"
+  },
+  "triangle_budget": [
+    3000,
+    6000
+  ],
+  "budget_justification": {
+    "body_breast": "Three black body sweeps with gold breast edge and ocean crystal.",
+    "head_crest": "Head sweep, hooked gold beak, blue eyes, crest and cheek feathers.",
+    "wings": "Two layered wings: arm shells plus ~58 feathers with gold coverts.",
+    "tail": "Black tail fan with a gold vane pair on the native tail chain.",
+    "legs": "Feathered thighs, gold rings, gold feet and real talons."
+  },
+  "shared_source_sha256": {
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
+  },
+  "blend_sha256": "5ab022d6494c9d2048419378b7e3f2342b0835929dc28d21d83b3d08a61ab8e6",
+  "pieces": {
+    "Poseidon_Imperial_Eagle": {
+      "file": "Poseidon_Imperial_Eagle.bmd",
+      "meshes": 5,
+      "triangles": 5774,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 77,
+      "actions": 4,
+      "action_frames": [
+        6,
+        4,
+        4,
+        4
+      ],
+      "topology": {
+        "objects": 90,
+        "triangles": 5774,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0004799886970688337,
+      "sha256": "d9deabf088a819a7770e0e59d94984e046cca9ed8e343ed85914034724e34977",
+      "used_bones": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        10,
+        11,
+        12,
+        14,
+        15,
+        18,
+        19,
+        22,
+        26,
+        30,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        41,
+        42,
+        45,
+        46,
+        49,
+        53,
+        57,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        69,
+        70,
+        71,
+        72,
+        74,
+        75
+      ],
+      "roundtrip_max_error": 7.748603820800781e-07,
+      "action_names": {
+        "0": "fly",
+        "1": "flying",
+        "2": "stand",
+        "3": "escape"
+      },
+      "action_evidence": "src/source/GameLogic/Pets/CSPetSystem.cpp: PET_FLY->0, PET_FLYING/PET_STAND_START->1, PET_STAND->2 (locked), PET_ESCAPE->3.",
+      "part_triangles": {
+        "body_breast": 634,
+        "head_crest": 604,
+        "wings": 3312,
+        "tail": 560,
+        "legs": 664
+      }
+    }
+  }
+}
