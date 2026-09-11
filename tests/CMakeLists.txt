@@ -78,5 +78,6 @@ add_subdirectory(voice)
 
 add_subdirectory(celestial)
 add_subdirectory(poseidon)
+add_subdirectory(zeus)
 add_subdirectory(startup)
 

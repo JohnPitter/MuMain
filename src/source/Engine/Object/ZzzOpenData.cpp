@@ -86,6 +86,13 @@ namespace
             g_ErrorReport.Write(L"[Celestial] Authored wings failed to load. Repair client assets.\r\n");
     }
 
+    void LoadZeusWings()
+    {
+        gLoadData.AccessModel(MODEL_ZEUS_WINGS, L"Data\\Item\\", L"Zeus_Wings", -1);
+        if (!Models[MODEL_ZEUS_WINGS].m_bCompletedAlloc)
+            g_ErrorReport.Write(L"[Zeus] Authored wings failed to load. Repair client assets.\r\n");
+    }
+
     void LoadPoseidonArmor()
     {
         constexpr const wchar_t* directory = L"Data\\Player\\";
@@ -122,6 +129,41 @@ namespace
         {
             if (!Models[model].m_bCompletedAlloc)
                 g_ErrorReport.Write(L"[Poseidon] Authored prop failed to load: %d. Repair client assets.\r\n", model);
+        }
+    }
+
+    void LoadZeusArmor()
+    {
+        constexpr const wchar_t* directory = L"Data\\Player\\";
+        gLoadData.AccessModel(MODEL_ZEUS_ARMOR, directory, L"Zeus_Armor", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_PANTS, directory, L"Zeus_Pant", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_GLOVES, directory, L"Zeus_Glove", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_BOOTS, directory, L"Zeus_Boot", -1);
+        constexpr int models[] = {MODEL_ZEUS_ARMOR, MODEL_ZEUS_PANTS,
+            MODEL_ZEUS_GLOVES, MODEL_ZEUS_BOOTS};
+        for (const int model : models)
+        {
+            if (!Models[model].m_bCompletedAlloc)
+                g_ErrorReport.Write(L"[Zeus] Authored armor failed to load: %d. Repair client assets.\r\n", model);
+        }
+    }
+
+    void LoadZeusProps()
+    {
+        constexpr const wchar_t* directory = L"Data\\Item\\";
+        gLoadData.AccessModel(MODEL_ZEUS_SWORD, directory, L"Zeus_Sword", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_STAFF, directory, L"Zeus_Staff", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_CAPE, directory, L"Zeus_Cape", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_PENDANT, directory, L"Zeus_Pendant", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_STORM_RING, directory, L"Zeus_Ring_Storm", -1);
+        gLoadData.AccessModel(MODEL_ZEUS_WISDOM_RING, directory, L"Zeus_Ring_Wisdom", -1);
+        constexpr int models[] = {MODEL_ZEUS_SWORD, MODEL_ZEUS_STAFF,
+            MODEL_ZEUS_CAPE, MODEL_ZEUS_PENDANT, MODEL_ZEUS_STORM_RING,
+            MODEL_ZEUS_WISDOM_RING};
+        for (const int model : models)
+        {
+            if (!Models[model].m_bCompletedAlloc)
+                g_ErrorReport.Write(L"[Zeus] Authored prop failed to load: %d. Repair client assets.\r\n", model);
         }
     }
 
@@ -415,6 +457,7 @@ void OpenPlayers()
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_BOOTS, L"Data\\Player\\", L"BootMale74", -1);
     LoadCelestialArmor();
     LoadPoseidonArmor();
+    LoadZeusArmor();
 
     {
         auto* pCloth = new CPhysicsClothMesh[1];
@@ -567,6 +610,9 @@ void OpenPlayerTextures()
     LoadBitmap(L"Item\\Poseidon_Gold.jpg", BITMAP_ROBE + 11);
     LoadBitmap(L"Item\\Poseidon_Black.jpg", BITMAP_ROBE + 12);
     LoadBitmap(L"Item\\Poseidon_Pearl.jpg", BITMAP_ROBE + 13);
+    // Authored Zeus cape cloth fabric: the last free slot of the BITMAP_ROBE
+    // window, beside the native (+6/+9/+10) and Poseidon (+11/+12/+13) grades.
+    LoadBitmap(L"Item\\Zeus_Blue.jpg", BITMAP_ROBE + 14);
 
     int nIndex;
 
@@ -739,6 +785,10 @@ void OpenPlayerTextures()
     gLoadData.OpenTexture(MODEL_POSEIDON_PANTS, L"Player\\");
     gLoadData.OpenTexture(MODEL_POSEIDON_GLOVES, L"Player\\");
     gLoadData.OpenTexture(MODEL_POSEIDON_BOOTS, L"Player\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_ARMOR, L"Player\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_PANTS, L"Player\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_GLOVES, L"Player\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_BOOTS, L"Player\\");
 }
 
 void OpenItems()
@@ -844,6 +894,7 @@ void OpenItems()
 
     LoadCelestialProps();
     LoadPoseidonProps();
+    LoadZeusProps();
 
     g_ChangeRingMgr->LoadItemModel();
 
@@ -1172,6 +1223,7 @@ void OpenItems()
         ::gLoadData.AccessModel(MODEL_WING + i, L"Data\\Item\\", L"Wing", i + 1);
 
     LoadCelestialWings();
+    LoadZeusWings();
 
     gLoadData.AccessModel(MODEL_BOOK_OF_SAHAMUTT, L"Data\\Item\\", L"Book_of_Sahamutt");
     gLoadData.AccessModel(MODEL_BOOK_OF_NEIL, L"Data\\Item\\", L"Book_of_Neil");
@@ -1518,6 +1570,13 @@ void OpenItemTextures()
     gLoadData.OpenTexture(MODEL_POSEIDON_EMPEROR_RING, L"Item\\");
     gLoadData.OpenTexture(MODEL_POSEIDON_HORSE_ITEM, L"Item\\");
     gLoadData.OpenTexture(MODEL_POSEIDON_EAGLE_ITEM, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_SWORD, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_STAFF, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_WINGS, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_CAPE, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_PENDANT, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_STORM_RING, L"Item\\");
+    gLoadData.OpenTexture(MODEL_ZEUS_WISDOM_RING, L"Item\\");
 
     for (int i = 21; i <= 28; ++i)
         gLoadData.OpenTexture(MODEL_HELPER + i, L"Item\\");
