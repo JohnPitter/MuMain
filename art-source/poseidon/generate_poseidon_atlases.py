@@ -1,9 +1,9 @@
-"""Author the definitive Poseidon atlases: Black, Gold and Blue.
+"""Author the definitive Poseidon atlases: Black, Gold, Blue and Pearl.
 
-Deterministic Pillow source for the three atlas files the prototype BMDs
-reference (``Poseidon_Black.jpg``, ``Poseidon_Gold.jpg``, ``Poseidon_Blue.jpg``),
-closing the ``texture-dependencies.json`` contract with authored, regenerable
-art instead of the provisional flat PBR materials.
+Deterministic Pillow source for the four atlas files the prototype BMDs
+reference (``Poseidon_Black.jpg``, ``Poseidon_Gold.jpg``, ``Poseidon_Blue.jpg``
+and ``Poseidon_Pearl.jpg``), closing the ``texture-dependencies.json`` contract
+with authored, regenerable art instead of the provisional flat PBR materials.
 
 Design language follows ``design-spec.md`` and the sampled concept palette
 (``scratchpad/concept-manto-poseidon-dark-20260911.png``, swatch panel):
@@ -16,6 +16,14 @@ Design language follows ``design-spec.md`` and the sampled concept palette
   bead rows — and a tall P95-P05 contrast span like ``golden-metal``.
 - **Azul Oceânico** (gems/runes/energy): legible ocean energy — glow cores,
   engraved lozenge lattice and angular rune strokes over a deep blue field.
+- **Branco Perolado** (cape ferragem gleam): the owner-approved platinum-white
+  finish — soft polished white metal, neutral tint. Tone anchors are the
+  sampled ``white-platina`` values (shadow ``#545156``, mid ``#d7d3d4``,
+  highlight ``#faf8f6``) that already passed visual approval on the Celestial
+  round; the relief stays on the soft end of the grammar (satin swells, pearl
+  bead rows, silk sheen) and, like every Poseidon master, covers the whole
+  field so it also reads correctly stretched across the procedural cloth grid
+  UV 0..1 (the ``dl_redwings02.tga`` role in ``cape-cloth-contract.md``).
 
 The UV layout (``prototype/uv-region-report.json``) is a per-component planar
 projection covering the whole 0-1 square, so each component samples the entire
@@ -23,9 +31,8 @@ atlas: masters are full-field engraved finishes, exactly like the Celestial
 masters, not spatially partitioned charts. Masters are 1024 px (detail headroom
 that survives the game downsample); the game export is 512 JPEG RGB q95, packed
 as OZJ (24-byte zero header + JPEG) with the same wrapper the Celestial
-pipeline uses. ``Branco Perolado`` exists in the concept as accessory/gleam;
-the five modeled pieces own only the three declared roles, so pearl is carried
-as the highlight anchor of Blue/Gold and recorded for future accessory pieces.
+pipeline uses. ``Branco Perolado`` is the fourth declared role: cape ferragem
+gleam (gem tips, clasps, chain bosses) and the future cloth accent.
 
 Usage::
 
@@ -69,8 +76,13 @@ ANCHORS = {
     'Black': dict(shadow='#08080a', mid='#111114', highlight='#3b4150'),
     'Gold': dict(shadow='#503418', mid='#d8a066', highlight='#f7e3b4'),
     'Blue': dict(shadow='#0a2f66', mid='#3684dd', highlight='#d8efff'),
+    # Owner rule (2026-09-11): the pearl white uses the approved platinum-white
+    # finish. Anchors are the white-platina sampled tones
+    # (art-source/celestial/textures/masters/white-platina/generate_white_platina.py):
+    # high contrast, neutral tint, no cream drift.
+    'Pearl': dict(shadow='#545156', mid='#d7d3d4', highlight='#faf8f6'),
 }
-SEEDS = {'Black': 20260911, 'Gold': 20260912, 'Blue': 20260913}
+SEEDS = {'Black': 20260911, 'Gold': 20260912, 'Blue': 20260913, 'Pearl': 20260914}
 TAU = math.tau
 
 
@@ -269,13 +281,46 @@ def blue_master():
     return engrave(height, strength=0.24, offset=3)
 
 
-BUILDERS = {'Black': black_master, 'Gold': gold_master, 'Blue': blue_master}
+def pearl_master():
+    """Approved platinum-white finish: soft polished metal, neutral tint.
+
+    The white-platina round proved that an engraved relief under the platina
+    anchors yields a tall contrast span (its master P95-P05 166, game 154).
+    Pearl keeps those exact anchors but the relief is the soft end of the
+    grammar — satin swells, pearl bead rows and silk sheen — so gem tips and
+    clasps read as polished pearl, and the same field survives being stretched
+    across a cloth grid 0..1 without visible tiling seams.
+    """
+    size = MASTER_SIZE
+    swells = value_noise(size, 3, SEEDS['Pearl'], octaves=3, gain=0.6)
+    sheen = value_noise(size, 48, SEEDS['Pearl'] + 1, octaves=2, gain=0.5)
+    crests = ridges(size, 5, size / 2.9, 22, phase=0.5, thickness=5, seed=SEEDS['Pearl'])
+    pearls = beads(size, 4, size / 9.0, radius=10)
+    height = combine((swells, 1.0), (pearls, 0.75), (crests, 0.6), (sheen, 0.22), size=size)
+    height = height.filter(ImageFilter.GaussianBlur(0.5))
+    height = engrave(height, strength=0.4, offset=3)
+    # Smoothstep S-curve: value noise concentrates midtones, and the approved
+    # platinum-white span (P95-P05 130+) needs real mass at both tails. The
+    # curve keeps the percentile normalization (anchors still land exactly).
+    return height.point(lambda v: int(255 * (v / 255) ** 2 * (3 - 2 * v / 255)))
+
+
+BUILDERS = {'Black': black_master, 'Gold': gold_master, 'Blue': blue_master,
+            'Pearl': pearl_master}
 
 
 # ------------------------------------------------------------------ pipeline
+# The approved white-platina finish stretches the height field between its own
+# P05 and P95 so the palette anchors land exactly on the 5th/95th percentile
+# (that is how the platina masters reached span 166/154). The three armor
+# atlases keep the original P02/P98 window; Pearl uses the approved window.
+NORMALIZE_FRACTIONS = {'Pearl': (0.05, 0.95)}
+
+
 def render_master(role):
     """Deterministic master: normalize the height field, then palette colorize."""
-    return colorize(normalize(BUILDERS[role]()), ANCHORS[role])
+    lo, hi = NORMALIZE_FRACTIONS.get(role, (0.02, 0.98))
+    return colorize(normalize(BUILDERS[role](), lo, hi), ANCHORS[role])
 
 
 def colorize(height, anchors):
@@ -362,7 +407,8 @@ def build_atlas(role, force):
 def palette_panel(artworks):
     """Reference panel: master thumbnails plus the four concept swatches."""
     tile, pad, label_h = 300, 24, 46
-    width = pad * 4 + tile * 3
+    count = len(artworks)
+    width = pad * (count + 1) + tile * count
     height = pad + tile + label_h + 34 * 5 + pad
     panel = Image.new('RGB', (width, height), '#0b0d12')
     draw = ImageDraw.Draw(panel)
@@ -382,7 +428,7 @@ def palette_panel(artworks):
     rows = [('Dourado Real', 'estrutura / detalhes', '#d8a066'),
             ('Preto Abissal', 'armadura / manto', '#111114'),
             ('Azul Oceanico', 'energia / runas', '#3684dd'),
-            ('Branco Perolado', 'acessorios / brilho (pecas futuras)', '#e5e5ec')]
+            ('Branco Perolado', 'ferragem do manto / brilho (branco platina aprovado)', '#e5e5ec')]
     top = pad + 34 + tile + label_h + 18
     for index, (name, role, hexcolor) in enumerate(rows):
         y = top + index * 34
