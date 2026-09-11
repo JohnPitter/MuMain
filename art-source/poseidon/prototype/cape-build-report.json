@@ -1,0 +1,146 @@
+{
+  "status": "AUTHORED_CAPE_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/poseidon/design-spec.md",
+  "cloth_contract": "art-source/poseidon/cape-cloth-contract.md",
+  "model_origin": "Original Poseidon cape geometry authored in the player bind world space; single-influence binding to the native cape bone \"collar\" through the reconstructed RenderLinkObject matrix, no native mesh reuse",
+  "native_contract": {
+    "member": "Data/Item/DarkLordRobe02.bmd",
+    "native_sha256": "36e033c9db84dfc9febda70f74748d96a0b8d89f2acc15d569cb15f376383807",
+    "bone": "collar",
+    "bones": 1,
+    "pose_frames": [
+      1
+    ],
+    "native_meshes": 3,
+    "native_triangles": 192,
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "5987bc37b1c6670971caa6d4d785f812a8aa16e6ac3e7e24e15e6f4cc9cba88e"
+  },
+  "link_math": {
+    "bone": 19,
+    "m1_rotation": [
+      0,
+      90,
+      0
+    ],
+    "m1_translation": [
+      -47,
+      -7,
+      0
+    ],
+    "m2_rotation": [
+      145,
+      0,
+      275
+    ],
+    "m2_translation": [
+      0,
+      10,
+      -30
+    ],
+    "source": "ZzzCharacter.cpp RenderLinkObject MODEL_CAPE_OF_EMPEROR branch"
+  },
+  "player_anchor": {
+    "bone": 19,
+    "translation": [
+      0.0001,
+      -0.013,
+      156.3243
+    ]
+  },
+  "cape_root_translation": [
+    0.8421,
+    1.735,
+    79.8802
+  ],
+  "triangle_budget": {
+    "low": 8000,
+    "high": 12000,
+    "justification": "Long cape with collar, gold crests and seven rigid pointed panels; the fabric mass itself stays procedural cloth, so the ferragem alone carries the detail."
+  },
+  "cloth_coordination": {
+    "main_grid_pin": "bone 19 anchor (0, 8, 10), top row 0.6 x 180 wide",
+    "rigid_panel_plane_y": 34.0,
+    "collision_spheres": "bones 17 (r 25-27) and 2 (r 30) kept clear"
+  },
+  "texture_dependencies": [
+    {
+      "texture": "Poseidon_Black.jpg",
+      "material_role": "Black",
+      "linear_rgb": [
+        0.023,
+        0.032,
+        0.044
+      ],
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    },
+    {
+      "texture": "Poseidon_Gold.jpg",
+      "material_role": "Gold",
+      "linear_rgb": [
+        0.72,
+        0.4,
+        0.105
+      ],
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    },
+    {
+      "texture": "Poseidon_Blue.jpg",
+      "material_role": "Blue",
+      "linear_rgb": [
+        0.009,
+        0.21,
+        0.48
+      ],
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    },
+    {
+      "texture": "Poseidon_Pearl.jpg",
+      "material_role": "Pearl",
+      "linear_rgb": [
+        0.824,
+        0.796,
+        0.812
+      ],
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    }
+  ],
+  "shared_source_sha256": {
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "export_skinned_bmd.py": "4ebeead43f021d9f905be927b36a66208f697972fea1f160806a6c18d1f21c05",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b",
+    "poseidon_materials.py": "709b126885f7da3e3267899d082377a40be7c039f195ede7d0c4ca17d49ace89",
+    "poseidon_shapes.py": "616fc9397be96e1688ff720b2ac2c3aa0a5565f7e335358d94c32b2a534c9b56",
+    "poseidon_armor_shapes.py": "ff1ad0ea3541d6b80464f95776cf20757ed37912ae3402d926acc28581f205bd"
+  },
+  "blend_sha256": "69e33a7686cc9e3ae43a52624cc11754fb1aec47be820bd5fc45ceece8be07ea",
+  "piece": {
+    "file": "Poseidon_Cape.bmd",
+    "meshes": 7,
+    "triangles": 8786,
+    "textures": [
+      "Poseidon_Black.jpg",
+      "Poseidon_Blue.jpg",
+      "Poseidon_Gold.jpg",
+      "Poseidon_Pearl.jpg"
+    ],
+    "bones": 1,
+    "topology": {
+      "objects": 125,
+      "triangles": 8786,
+      "open_edges": 144,
+      "nonmanifold_components": []
+    },
+    "minimum_triangle_area": 0.0006841439847867378,
+    "sha256": "ed8569cff60d91f73f46dea4a8295c959ded4432c70216fc6537ab8ef7cdb068",
+    "used_bones": [
+      0
+    ],
+    "roundtrip_max_error": 8.046627044677734e-07
+  }
+}
