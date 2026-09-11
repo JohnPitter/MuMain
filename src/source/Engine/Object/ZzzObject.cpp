@@ -7,6 +7,8 @@
 #include "Render/Models/CelestialModels.h"
 #include "Render/Models/CelestialAppearance.h"
 #include "Render/Models/PoseidonModels.h"
+#include "Render/Models/ZeusModels.h"
+#include "Render/Models/ZeusFinish.h"
 #include "Render/Shaders/ItemSpecularShader.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -52,6 +54,11 @@ static bool IsRenderableModelType(int Type);
 
 namespace
 {
+    // The Celestial and Poseidon sets are exempt from the classic Excellent
+    // overlay. The Zeus set deliberately is NOT: its finish profile adopts the
+    // classic overlay on purpose (research/legendary-excellent-blue.md) and
+    // avoids the generic upgrade pipeline through its own branch in
+    // RenderPartObjectEffect instead.
     bool CanRenderLegacyGradeTint(OBJECT* object, int modelType)
     {
         return !Render::Items::Celestial::IsAuthoredEquipment(modelType)
@@ -9716,6 +9723,8 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
     case MODEL_WINGS_OF_HEAVEN:
     case MODEL_CAPE_OF_OVERRULE:
     case MODEL_POSEIDON_CAPE:
+    case MODEL_ZEUS_WINGS:
+    case MODEL_ZEUS_CAPE:
     case MODEL_WINGS_OF_SATAN:Level = 0; break;
     case MODEL_ORB_OF_TWISTING_SLASH:Level = 9; break;
     case MODEL_ORB_OF_SUMMONING:Level = 0; break;
@@ -10447,6 +10456,20 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
         {
             VectorCopy(Light, b->BodyLight);
             RenderPartObjectBody(b, o, Type, Alpha, RenderType);
+        }
+        // Authored Zeus renders with the Legendary-blue finish profile: the
+        // celeste specular tint only on the authored blue atlas, neutral on
+        // the approved platina, faint emission on the storm channels
+        // (art-source/zeus/research/legendary-excellent-blue.md). This branch
+        // keeps Zeus out of the generic upgrade pipeline (no duplicated
+        // chrome pass), but the Zeus models are deliberately NOT exempt from
+        // CanRenderLegacyGradeTint below, so the classic Excellent overlay
+        // still runs for Excellent-flagged pieces.
+        else if (Render::Items::Zeus::IsEquipment(Type))
+        {
+            VectorCopy(Light, b->BodyLight);
+            RenderPartObjectBody(b, o, Type, Alpha, RenderType);
+            Render::Items::Zeus::RenderMaterialAccents(b, o, Level, Alpha);
         }
         else if (Level < 3 || o->Type == MODEL_ZEN)
         {
