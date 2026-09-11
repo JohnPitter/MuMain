@@ -1,5 +1,9 @@
 # Celestial — ouro Golden e cinza metálico
 
+> Revisão posterior: os detalhes cinza ganharam [reflexo platinado inspirado no
+> Kundun](research/kundun-platinum.md), sem trocar atlas ou ouro. Ver o changelog
+> operacional para a publicação mais recente; o registro Golden Metal abaixo é histórico.
+
 Revisão de 11/09/2026 após o retorno do usuário de que a primeira paleta dourada
 ainda estava opaca. Esta revisão substitui o acabamento descrito em [GOLDEN.md](GOLDEN.md).
 A classe Grand Master, nível 400, Ultimate, opções individuais e fases do conjunto

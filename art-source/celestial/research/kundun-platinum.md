@@ -1,6 +1,6 @@
 # Celestial — detalhes platinados com referência no Kundun Staff
 
-Revisão local de 11/09/2026, sobre `f4c443b8`. Escopo desta etapa: **somente o acabamento de `Celestial_Ivory.jpg`**; o nome continua por compatibilidade. Ouro, pedras, halo, texturas, malhas, UVs, rig, animações e opções de item não são alterados. Não houve build, deploy ou execução do jogo por esta subtask.
+Revisão de 11/09/2026, commit `535a9b4f`, sobre `f4c443b8`. Escopo: **somente o acabamento de `Celestial_Ivory.jpg`**; o nome continua por compatibilidade. Ouro, pedras, halo, texturas, malhas, UVs, rig, animações e opções de item não são alterados. Publicada somente em Testes, conforme registro ao final; nenhum jogo foi iniciado ou encerrado pelo agente.
 
 ## Referência real, não uma suposta cor “Excellent prata”
 
@@ -44,4 +44,12 @@ O único novo case em cada mapeamento do adaptador é `Chrome4 → RENDER_CHROME
 
 Os testes em [test_celestial_shimmer.cpp](C:/_wt-celestial-client/tests/celestial/test_celestial_shimmer.cpp) verificam as famílias CHROME4/CHROME, branco neutro, força/fade limitado e ausência de emissão sólida. O novo teste de regressão compara **exatamente** o perfil dourado para todos os níveis 0–15 e qualidades 1–4. Os testes já existentes continuam cobrindo ouro no +0/+15, qualidade desligada, gems, halo e entradas não finitas.
 
-Próxima validação: compilar e executar os testes na tarefa principal, preparar o pacote cliente-only e comparar o detalhe com um Kundun Staff Excellent +15 dentro do mesmo mapa/câmera. O resultado ainda não foi aprovado visualmente ingame; os dois passes escolhidos não reproduzem todas as máscaras, UVs, geometria, camada bronze e oscilação Excellent do staff original.
+Build Release incremental aprovado sem warnings de compilador, 41 casos CTest aprovados com fixtures reais .NET. Ouro exatamente preservado em16níveis×4qualidades; candidato auditado com os17assets byte-idênticos à base Golden Metal. Próxima validação: o usuário comparar o detalhe com um Kundun Staff Excellent +15 dentro do mesmo mapa/câmera. Os dois passes escolhidos não reproduzem todas as máscaras, UVs, geometria, camada bronze e oscilação Excellent do staff original.
+
+## Publicação e passagem de contexto
+
+Somente em Testes, 11/09/2026 16:20:59 UTC: base `openmu-assets/celestial-test-platinum-20260911.zip`, SHA256 `6d769784a07cf4f7d7a3cb76353bd15f1c80282c475ba2fe2ea4a4e8080f6c42`. Só Main mudou;13.836outras entradas preservadas. Main SHA256 `3d59dfa6d4bfc259c4cd985c582c3414b90a3b92904a0ef7277b8a3af96eda02`.
+
+API autenticada conferida às16:22:40UTC: base inteira efetivamente baixada e19arquivos protegidos corretos após o overlay. Produção, DB, baú, servidor e instalação local não alterados; base anteriorGoldenMetal3600ab2f…719047f conservada para retorno. Recibos em `C:/Users/joaop/Desenvolvimento/openmu/scratchpad/celestial-platinum-20260911`.
+
+Resumo completo para continuidade: [CONTINUIDADE_CELESTIAL_POSEIDON.md](C:/Users/joaop/Desenvolvimento/openmu/CONTINUIDADE_CELESTIAL_POSEIDON.md). O Poseidon segue como protótipo separado. **Entrega do launcher validada; fidelidade e desempenho ingame ainda pendentes.**

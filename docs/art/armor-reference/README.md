@@ -9,6 +9,7 @@ jogadores ou foram testados dentro do jogo.
 
 **Complementos posteriores ao snapshot:** [Golden e Dark Iron Knight](../../../art-source/celestial/research/dark-iron-knight.md),
 [passes metálicos e efeitos Golden](../../../art-source/celestial/research/golden-runtime.md),
+[Kundun e platinado](../../../art-source/celestial/research/kundun-platinum.md),
 [acabamento atual do Celestial](../../../art-source/celestial/METAL.md) e
 [início do Poseidon / Lord Emperor](../../../art-source/poseidon/design-spec.md).
 O catálogo e o índice de efeitos abaixo preservam a revisão original da varredura;
