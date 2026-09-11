@@ -8,29 +8,54 @@ namespace Render::Items::Celestial
     namespace
     {
         constexpr float MaximumUpgrade = 15;
+        constexpr int FullMaterialDetail = 2;
+        constexpr std::array<float, 3> GoldenMonsterTint = { 1.f, 0.5f, 0.f };
+        constexpr std::array<float, 3> SteelReflectionTint = { 0.60f, 0.62f, 0.64f };
+        constexpr float GoldMetalBase = 0.90f;
+        constexpr float GoldMetalUpgrade = 0.10f;
+        constexpr float GoldChromeBase = 0.70f;
+        constexpr float GoldChromeUpgrade = 0.30f;
+        constexpr float SteelMetalBase = 0.30f;
+        constexpr float SteelMetalUpgrade = 0.06f;
+        constexpr float SteelChromeBase = 0.12f;
+        constexpr float SteelChromeUpgrade = 0.04f;
 
         float UnitValue(float value)
         {
             return std::isfinite(value) ? std::clamp(value, 0.f, 1.f) : 0.f;
         }
+
+        MaterialPasses GoldenReflections(float upgrade, int detail)
+        {
+            const float chrome = detail >= FullMaterialDetail
+                ? GoldChromeBase + upgrade * GoldChromeUpgrade : 0.f;
+            return {{ { GoldenMonsterTint, GoldMetalBase + upgrade * GoldMetalUpgrade, ShimmerSurface::Metal },
+                { GoldenMonsterTint, chrome, ShimmerSurface::Chrome } }};
+        }
+
+        MaterialPasses SteelReflections(float upgrade)
+        {
+            return {{ { SteelReflectionTint, SteelMetalBase + upgrade * SteelMetalUpgrade, ShimmerSurface::Metal },
+                { SteelReflectionTint, SteelChromeBase + upgrade * SteelChromeUpgrade, ShimmerSurface::Chrome } }};
+        }
     }
 
-    Shimmer MaterialShimmer(std::string_view texture, int level, float pulse, int detail)
+    MaterialPasses MaterialShimmer(std::string_view texture, int level, float pulse, int detail)
     {
         if (detail <= 0)
             return {};
         const float upgrade = std::clamp(static_cast<float>(level), 0.f, MaximumUpgrade) / MaximumUpgrade;
         const float wave = UnitValue(pulse);
         if (texture == "Celestial_Gold.jpg")
-            return { { 1.f, 0.62f, 0.12f }, 0.16f + upgrade * 0.08f + wave * 0.025f, false };
-        if (detail < 2)
+            return GoldenReflections(upgrade, detail);
+        if (detail < FullMaterialDetail)
             return {};
         if (texture == "Celestial_Ivory.jpg")
-            return { { 1.f, 0.98f, 0.93f }, 0.025f + upgrade * 0.015f + wave * 0.01f, false };
+            return SteelReflections(upgrade);
         if (texture == "Celestial_Sapphire.jpg")
-            return { { 0.20f, 0.52f, 1.f }, 0.08f + wave * 0.05f, true };
+            return {{ { { 0.20f, 0.52f, 1.f }, 0.08f + wave * 0.05f, ShimmerSurface::Emissive }, {} }};
         if (texture == "Celestial_Emissive.jpg")
-            return { { 1.f, 0.56f, 0.08f }, 0.12f + upgrade * 0.05f + wave * 0.03f, true };
+            return {{ { { 1.f, 0.56f, 0.08f }, 0.12f + upgrade * 0.05f + wave * 0.03f, ShimmerSurface::Emissive }, {} }};
         return {};
     }
 
