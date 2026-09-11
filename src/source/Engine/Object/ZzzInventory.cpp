@@ -20,6 +20,8 @@
 #include "Audio/DSPlaySound.h"
 #include "I18N/All.h"
 #include "UI/Items/EquipmentTooltip.h"
+#include "UI/Items/UltimateItemTitle.h"
+#include "Character/EquipmentRequirements.h"
 
 #include "Scenes/SceneCore.h"
 
@@ -2697,6 +2699,8 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }
     }
 
+    if (UI::Items::UltimateTitle::TryFormat(ip->Type, Level, TextList[TextNum]))
+        Color = TEXT_COLOR_YELLOW;
     TextListColor[TextNum] = Color; TextBold[TextNum] = true; TextNum++;
     mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
 
@@ -4842,15 +4846,16 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         }
     }
 
-    if (ip->RequireLevel && ip->Type != ITEM_LOCHS_FEATHER)
+    const auto requiredLevel = Character::Equipment::DisplayLevel(ip->Type, ip->RequireLevel);
+    if (requiredLevel && ip->Type != ITEM_LOCHS_FEATHER)
     {
-        mu_swprintf(TextList[TextNum], I18N::Game::MinimumLevelRequirementD, ip->RequireLevel);
-        if (CharacterAttribute->Level < ip->RequireLevel)
+        mu_swprintf(TextList[TextNum], I18N::Game::MinimumLevelRequirementD, requiredLevel);
+        if (CharacterAttribute->Level < requiredLevel)
         {
             TextListColor[TextNum] = TEXT_COLOR_RED;
             TextBold[TextNum] = false;
             TextNum++;
-            mu_swprintf(TextList[TextNum], I18N::Game::LackingD, ip->RequireLevel - CharacterAttribute->Level);
+            mu_swprintf(TextList[TextNum], I18N::Game::LackingD, requiredLevel - CharacterAttribute->Level);
             TextListColor[TextNum] = TEXT_COLOR_RED;
             TextBold[TextNum] = false;
             TextNum++;
@@ -5034,7 +5039,8 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
 
     if (IsRequireClassRenderItem(ip->Type))
     {
-        RequireClass(p);
+        auto requirements = Character::Equipment::DisplayRequirements(ip->Type);
+        RequireClass(&requirements);
     }
 
     if (ip->Type >= MODEL_BOOTS - MODEL_ITEM && ip->Type < MODEL_BOOTS + MAX_ITEM_INDEX - MODEL_ITEM)
@@ -5954,6 +5960,8 @@ void RenderRepairInfo(int sx, int sy, ITEM* ip, bool Sell)
                 mu_swprintf(TextList[TextNum], L"%ls +%d", p->Name, Level);
         }
     }
+    if (UI::Items::UltimateTitle::TryFormat(ip->Type, Level, TextList[TextNum]))
+        Color = TEXT_COLOR_YELLOW;
     TextListColor[TextNum] = Color; TextBold[TextNum] = true; TextNum++;
     mu_swprintf(TextList[TextNum], L"\n"); TextNum++; SkipNum++;
 

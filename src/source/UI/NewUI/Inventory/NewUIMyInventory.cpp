@@ -2,6 +2,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Character/EquipmentRequirements.h"
 #include "UI/NewUI/Inventory/NewUIMyInventory.h"
 #include "UI/NewUI/NewUISystem.h"
 #include "I18N/All.h"
@@ -210,22 +211,9 @@ bool CNewUIMyInventory::IsEquipable(int iIndex, ITEM* pItem) const
         return false;
 
     const ITEM_ATTRIBUTE* pItemAttr = &ItemAttribute[pItem->Type];
-    bool bEquipable = false;
-    if (pItemAttr->RequireClass[gCharacterManager.GetBaseClass(Hero->Class)])
-        bEquipable = true;
-
-    else if (gCharacterManager.GetBaseClass(Hero->Class) == CLASS_DARK && pItemAttr->RequireClass[CLASS_WIZARD]
-        && pItemAttr->RequireClass[CLASS_KNIGHT])
-        bEquipable = true;
-
-    const BYTE byFirstClass = gCharacterManager.GetBaseClass(Hero->Class);
-    const BYTE byStepClass = gCharacterManager.GetStepClass(Hero->Class);
-    if (pItemAttr->RequireClass[byFirstClass] > byStepClass)
-    {
-        return false;
-    }
-
-    if (bEquipable == false)
+    bool bEquipable = Character::Equipment::MatchesDisplayedClass(pItem->Type,
+        gCharacterManager.GetBaseClass(Hero->Class), gCharacterManager.GetStepClass(Hero->Class));
+    if (!bEquipable)
         return false;
 
     bEquipable = false;
@@ -326,7 +314,7 @@ bool CNewUIMyInventory::IsEquipable(int iIndex, ITEM* pItem) const
         return false;
     if (pItem->RequireCharisma > wCharisma)
         return false;
-    if (pItem->RequireLevel > wLevel)
+    if (Character::Equipment::DisplayLevel(pItem->Type, pItem->RequireLevel) > wLevel)
         return false;
 
     if (pItem->Type == ITEM_DARK_RAVEN_ITEM)

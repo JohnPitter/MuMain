@@ -5,6 +5,7 @@
 #include "Render/Textures/ZzzOpenglUtil.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Render/Models/CelestialModels.h"
+#include "Render/Models/CelestialAppearance.h"
 #include "Render/Shaders/ItemSpecularShader.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -47,61 +48,6 @@
 #include "Engine/Object/CullingConstants.h"
 
 static bool IsRenderableModelType(int Type);
-
-namespace
-{
-    void RenderCelestialWingSurface(BMD* model, OBJECT* object)
-    {
-        glColor3fv(model->BodyLight);
-        model->RenderBody(RENDER_TEXTURE, object->Alpha, object->BlendMesh,
-                          object->BlendMeshLight, object->BlendMeshTexCoordU,
-                          object->BlendMeshTexCoordV, object->HiddenMesh);
-    }
-
-    void RenderCelestialHaloGlow(BMD* model, OBJECT* object)
-    {
-        constexpr float maximumDistance = 1200.f;
-        if (model->NumBones <= Render::Items::Celestial::WingHaloBone
-            || g_pOption->GetRenderLevel() == 0 || object->Distance > maximumDistance)
-            return;
-
-        constexpr float pulseSpeed = 0.002f;
-        constexpr float rotationSpeed = 0.025f;
-        constexpr float haloScale = 0.55f;
-        const float pulse = 0.75f + 0.25f * sinf(WorldTime * pulseSpeed);
-        vec3_t origin = {0.f, 0.f, 0.f};
-        vec3_t position;
-        vec3_t light = {0.4f * pulse, 0.28f * pulse, 0.1f * pulse};
-        model->TransformPosition(BoneTransform[Render::Items::Celestial::WingHaloBone],
-                                 origin, position, true);
-        CreateSprite(BITMAP_SHINY + 1, position, haloScale, light, object,
-                     WorldTime * rotationSpeed);
-    }
-
-    void RenderCelestialMaterialAccents(BMD* model, OBJECT* object, int level, float alpha)
-    {
-        constexpr int shimmerMinimumLevel = 7;
-        constexpr float shimmerMaximumDistance = 1200.0f;
-        constexpr float shimmerStrength = 0.18f;
-        if (level < shimmerMinimumLevel || g_pOption->GetRenderLevel() == 0
-            || object->Distance > shimmerMaximumDistance)
-            return;
-
-        vec3_t originalLight;
-        VectorCopy(model->BodyLight, originalLight);
-        for (int mesh = 0; mesh < model->NumMeshs; ++mesh)
-        {
-            if (strcmp(model->Textures[mesh].FileName, "Celestial_Gold.jpg") != 0)
-                continue;
-
-            Vector(0.8f, 0.68f, 0.4f, model->BodyLight);
-            model->RenderMesh(mesh, RENDER_CHROME | RENDER_BRIGHT,
-                              alpha * shimmerStrength, -1, shimmerStrength,
-                              object->BlendMeshTexCoordU, object->BlendMeshTexCoordV);
-        }
-        VectorCopy(originalLight, model->BodyLight);
-    }
-}
 
 // DevEditor function declarations
 #ifdef _EDITOR
@@ -7197,7 +7143,7 @@ void RenderPartObjectBody(BMD* b, OBJECT* o, int Type, float Alpha, int RenderTy
     }
     else if (Type == MODEL_CELESTIAL_WINGS)
     {
-        RenderCelestialWingSurface(b, o);
+        Render::Items::Celestial::RenderWingSurface(b, o);
     }
     else if (Type == MODEL_DIVINE_SWORD_OF_ARCHANGEL)
     {
@@ -10425,7 +10371,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
     }
     else if (Type == MODEL_CELESTIAL_WINGS)
     {
-        RenderCelestialHaloGlow(b, o);
+        Render::Items::Celestial::RenderHaloGlow(b, o);
     }
 
     if (!o->EnableShadow)
@@ -10479,7 +10425,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
         {
             VectorCopy(Light, b->BodyLight);
             RenderPartObjectBody(b, o, Type, Alpha, RenderType);
-            RenderCelestialMaterialAccents(b, o, Level, Alpha);
+            Render::Items::Celestial::RenderMaterialAccents(b, o, Level, Alpha);
         }
         else if (Level < 3 || o->Type == MODEL_ZEN)
         {

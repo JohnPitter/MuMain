@@ -7,11 +7,58 @@ namespace Network::Equipment
 {
     namespace
     {
-        constexpr std::size_t HeaderSize = 9;
+        constexpr std::size_t LegacyHeaderSize = 9;
+        constexpr std::size_t PhasedHeaderSize = 14;
         constexpr std::size_t MemberSize = 3;
         constexpr std::size_t BonusSize = 6;
+        constexpr std::size_t PhaseSize = 3;
         constexpr std::uint16_t MaximumItemType = 8191;
         constexpr float MaximumDisplayValue = 1'000'000;
+
+        std::size_t ReadHeader(std::span<const std::uint8_t> packet, Character::Equipment::BonusCatalog& catalog)
+        {
+            using namespace Character::Equipment;
+            if (packet.size() < LegacyHeaderSize || packet[0] != 0xC1 || packet[1] != packet.size()
+                || packet[2] != 0xF3 || packet[3] != CatalogSubCode
+                || packet[6] > MaximumCatalogEntries || packet[7] > MaximumCatalogEntries || packet[8] > 15)
+                return 0;
+            catalog.RequiredItems = packet[5];
+            catalog.MemberCount = packet[6];
+            catalog.BonusCount = packet[7];
+            catalog.MinimumUpgrade = packet[8];
+            if (packet[4] == 1)
+                return LegacyHeaderSize;
+            if (packet[4] != 2 || packet.size() < PhasedHeaderSize
+                || packet[9] > static_cast<unsigned>(Category::Ultimate) || packet[12] > 3
+                || packet[13] > MaximumBonusPhases)
+                return 0;
+            catalog.ItemCategory = static_cast<Category>(packet[9]);
+            catalog.RequiredLevel = static_cast<std::uint16_t>(packet[10] | (packet[11] << 8));
+            catalog.RequiredClass = packet[12];
+            catalog.PhaseCount = packet[13];
+            if (catalog.MemberCount > 0 && catalog.PhaseCount == 0)
+                return 0;
+            if (catalog.MemberCount == 0 && (catalog.RequiredLevel != 0 || catalog.RequiredClass != 0
+                || catalog.ItemCategory != Category::Normal || catalog.PhaseCount != 0))
+                return 0;
+            return PhasedHeaderSize;
+        }
+
+        bool ReadPhases(std::span<const std::uint8_t> data, Character::Equipment::BonusCatalog& catalog)
+        {
+            const auto allMembers = static_cast<std::uint16_t>((1u << catalog.MemberCount) - 1);
+            Character::Equipment::BonusPhase previous;
+            for (std::size_t index = 0; index < catalog.PhaseCount; ++index)
+            {
+                const auto row = data.subspan(index * PhaseSize, PhaseSize);
+                const auto mask = static_cast<std::uint16_t>(row[0] | (row[1] << 8));
+                if (mask == 0 || (mask & ~allMembers) != 0 || (mask & previous.MemberMask) != previous.MemberMask
+                    || mask == previous.MemberMask || row[2] <= previous.Percent || row[2] > 100)
+                    return false;
+                previous = catalog.Phases[index] = { mask, row[2] };
+            }
+            return catalog.PhaseCount == 0 || (previous.MemberMask == allMembers && previous.Percent == 100);
+        }
 
         bool ReadMembers(std::span<const std::uint8_t> data, Character::Equipment::BonusCatalog& catalog)
         {
@@ -55,22 +102,18 @@ namespace Network::Equipment
     std::optional<Character::Equipment::BonusCatalog> DecodeCatalog(std::span<const std::uint8_t> packet)
     {
         using namespace Character::Equipment;
-        if (packet.size() < HeaderSize || packet[0] != 0xC1 || packet[1] != packet.size()
-            || packet[2] != 0xF3 || packet[3] != CatalogSubCode || packet[4] != 1
-            || packet[6] > MaximumCatalogEntries || packet[7] > MaximumCatalogEntries || packet[8] > 15)
-            return std::nullopt;
-
         BonusCatalog catalog;
+        const auto headerSize = ReadHeader(packet, catalog);
+        if (headerSize == 0)
+            return std::nullopt;
         catalog.Known = true;
-        catalog.RequiredItems = packet[5];
-        catalog.MemberCount = packet[6];
-        catalog.BonusCount = packet[7];
-        catalog.MinimumUpgrade = packet[8];
         const auto memberBytes = MemberSize * catalog.MemberCount;
-        if (packet.size() != HeaderSize + memberBytes + BonusSize * catalog.BonusCount
+        const auto bonusBytes = BonusSize * catalog.BonusCount;
+        if (packet.size() != headerSize + memberBytes + bonusBytes + PhaseSize * catalog.PhaseCount
             || (catalog.MemberCount == 0) != (catalog.BonusCount == 0)
-            || !ReadMembers(packet.subspan(HeaderSize, memberBytes), catalog)
-            || !ReadBonuses(packet.subspan(HeaderSize + memberBytes), catalog))
+            || !ReadMembers(packet.subspan(headerSize, memberBytes), catalog)
+            || !ReadBonuses(packet.subspan(headerSize + memberBytes, bonusBytes), catalog)
+            || !ReadPhases(packet.subspan(headerSize + memberBytes + bonusBytes), catalog))
             return std::nullopt;
         return catalog;
     }

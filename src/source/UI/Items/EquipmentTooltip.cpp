@@ -33,7 +33,9 @@ namespace UI::Items::EquipmentTooltip
                   CelestialBonusAttackSpeed, CelestialBonusMagicSpeed, CelestialBonusMovement,
                   CelestialBonusIgnoreDefense, CelestialBonusCriticalChance, CelestialBonusHealthRecovery,
                   CelestialBonusManaRecovery, CelestialBonusElementalProtection },
-                { L"", L"%", CelestialBonusPercentagePoints } };
+                { L"", L"%", CelestialBonusPercentagePoints },
+                CelestialPhaseStatus, CelestialPhaseTemplate,
+                { CelestialPhaseArmor, CelestialPhaseWeapons, CelestialPhaseAccessories }, CelestialPhaseCondition };
         }
 
         int Color(LineRole role)
@@ -85,7 +87,8 @@ namespace UI::Items::EquipmentTooltip
             return textIndex;
         const auto& state = Hero->ServerEquipment;
         const auto strings = CurrentStrings();
-        swprintf_s(TextList[textIndex], L"%ls", state.Known ? (state.HasCelestialAura() ? strings.Active : strings.Inactive) : strings.Unknown);
+        const auto status = BuildStatus(state, strings);
+        swprintf_s(TextList[textIndex], L"%ls", status.Text.data());
         TextListColor[textIndex] = state.HasCelestialAura() ? TEXT_COLOR_GREEN : TEXT_COLOR_GRAY;
         TextBold[textIndex++] = false;
         swprintf_s(TextList[textIndex], L"%ls", I18N::Game::CelestialBonusShiftHint);

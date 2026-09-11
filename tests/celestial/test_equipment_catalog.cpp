@@ -216,13 +216,23 @@ TEST_CASE("Catalog emitted by dotnet carries all ten definitions and twelve real
     std::ifstream input(fixture, std::ios::binary);
     REQUIRE(input.good());
     const std::vector<std::uint8_t> bytes{ std::istreambuf_iterator<char>(input), {} };
-    REQUIRE(bytes.size() == 111);
+    REQUIRE(bytes.size() == 125);
     const auto catalog = Network::Equipment::DecodeCatalog(bytes);
     REQUIRE(catalog.has_value());
     CHECK(catalog->RequiredItems == 11);
     CHECK(catalog->MemberCount == 10);
     CHECK(catalog->BonusCount == 12);
     CHECK(catalog->MinimumUpgrade == 0);
+    CHECK(catalog->ItemCategory == Character::Equipment::Category::Ultimate);
+    CHECK(catalog->RequiredLevel == 400);
+    CHECK(catalog->RequiredClass == 3);
+    CHECK(catalog->PhaseCount == 3);
+    CHECK(catalog->Phases[0].MemberMask == 0x007C);
+    CHECK(catalog->Phases[1].MemberMask == 0x007F);
+    CHECK(catalog->Phases[2].MemberMask == 0x03FF);
+    CHECK(catalog->Phases[0].Percent == 30);
+    CHECK(catalog->Phases[1].Percent == 60);
+    CHECK(catalog->Phases[2].Percent == 100);
     unsigned quantity = 0;
     for (std::size_t index = 0; index < catalog->MemberCount; ++index)
         quantity += catalog->Members[index].Quantity;
@@ -242,4 +252,77 @@ TEST_CASE("Catalog emitted by dotnet carries all ten definitions and twelve real
     std::array<Line, UI::Items::EquipmentTooltip::MaximumTooltipLines> lines{};
     CHECK(BuildLines(*catalog, { true, true, 1.15f }, Text, lines) == 18);
     CHECK(std::wstring_view(lines[11].Text.data()) == L"Crítico: +10 p.p.");
+}
+
+namespace
+{
+    constexpr std::array<std::uint8_t, 26> UltimatePacket{
+        0xC1, 26, 0xF3, 0xE7, 2, 2, 1, 1, 0, 1, 0x90, 1, 3, 1,
+        0xC8, 0x1A, 2, 1, 1, 0, 0, 0x70, 0x41, 1, 0, 100
+    };
+
+    Strings PhaseText()
+    {
+        auto text = Text;
+        text.PhaseStatus = L"Ativo: %u%%";
+        text.PhaseTemplate = L"Fase %u: %u%% %ls";
+        text.PhaseLabels = { L"armadura", L"+ armas", L"+ acessórios" };
+        text.PhaseCondition = L"Ativo / total";
+        return text;
+    }
+}
+
+TEST_CASE("Ultimate metadata fixes presentation without changing unrelated or legacy items")
+{
+    const auto catalog = Network::Equipment::DecodeCatalog(UltimatePacket);
+    REQUIRE(catalog.has_value());
+    for (unsigned legacyLevel : { 0u, 400u, 420u, 460u, 480u })
+    {
+        CHECK(catalog->DisplayLevel(6856, legacyLevel) == 400);
+        CHECK(catalog->DisplayLevel(5 * 512 + 10, legacyLevel) == legacyLevel);
+    }
+    CHECK(catalog->IsUltimate(6856));
+    CHECK_FALSE(catalog->IsUltimate(5 * 512 + 10));
+    CHECK_FALSE(Network::Equipment::DecodeCatalog(MinimalPacket)->IsUltimate(6856));
+    for (std::size_t size = 0; size < UltimatePacket.size(); ++size)
+        CHECK_FALSE(Network::Equipment::DecodeCatalog(std::span(UltimatePacket).first(size)));
+}
+
+TEST_CASE("Phased metadata rejects invalid category class masks and incomplete stages")
+{
+    for (auto index : { 9, 12, 13, 23, 24, 25 })
+    {
+        auto packet = UltimatePacket;
+        packet[index] = 0xFF;
+        CHECK_FALSE(Network::Equipment::DecodeCatalog(packet));
+    }
+    auto packet = UltimatePacket;
+    packet[25] = 30;
+    CHECK_FALSE(Network::Equipment::DecodeCatalog(packet));
+    packet = UltimatePacket;
+    packet[23] = 0;
+    CHECK_FALSE(Network::Equipment::DecodeCatalog(packet));
+}
+
+TEST_CASE("Phased tooltip scales every server bonus and shows cumulative milestones")
+{
+    auto catalog = *Network::Equipment::DecodeCatalog(UltimatePacket);
+    catalog.PhaseCount = 3;
+    catalog.Phases = { Character::Equipment::BonusPhase{ 1, 30 }, { 3, 60 }, { 7, 100 } };
+    std::array<Line, UI::Items::EquipmentTooltip::MaximumTooltipLines> lines{};
+    for (auto percent : { 0, 30, 60, 100 })
+    {
+        const Character::Equipment::State state{ true, percent > 0, 1.f, static_cast<std::uint8_t>(percent) };
+        CHECK(BuildLines(catalog, state, PhaseText(), lines) == 10);
+        for (std::size_t index = 0; index < catalog.PhaseCount; ++index)
+            CHECK((lines[3 + index].Role == LineRole::Active) == (percent >= catalog.Phases[index].Percent));
+    }
+    BuildLines(catalog, { true, true, 1.045f, 30 }, PhaseText(), lines);
+    CHECK(std::wstring_view(lines[2].Text.data()) == L"Ativo: 30%");
+    CHECK(std::wstring_view(lines[6].Text.data()) == L"Dano: +4.5% / +15%");
+    BuildLines(catalog, { true, true, 1.09f, 60 }, PhaseText(), lines);
+    CHECK(std::wstring_view(lines[6].Text.data()) == L"Dano: +9% / +15%");
+    BuildLines(catalog, {}, PhaseText(), lines);
+    CHECK(std::wstring_view(lines[2].Text.data()) == Text.Unknown);
+    CHECK(std::wstring_view(lines[6].Text.data()) == L"Dano: +0% / +15%");
 }

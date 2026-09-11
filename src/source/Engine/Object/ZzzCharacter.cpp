@@ -203,6 +203,8 @@ namespace
         vec3_t light;
         Vector(0.0f, 0.0f, CELESTIAL_SET_AURA_HEIGHT, localPosition);
         Vector(CELESTIAL_SET_AURA_RED, CELESTIAL_SET_AURA_GREEN, CELESTIAL_SET_AURA_BLUE, light);
+        const float phase = character->ServerEquipment.ActivePercent() / 100.f;
+        VectorScale(light, (0.45f + 0.55f * phase) * object->Alpha, light);
         model->TransformPosition(object->BoneTransform[CELESTIAL_SET_ROOT_BONE], localPosition, worldPosition, true);
         CreateSprite(BITMAP_LIGHT, worldPosition, CELESTIAL_SET_AURA_SCALE, light, object);
     }

@@ -1,4 +1,43 @@
-# Celestial: bônus, movimento e consulta (candidato local)
+# Celestial Ultimate: fases, requisitos e consulta
+
+## Revisão Ultimate
+
+Celestial é uma categoria Ultimate exclusiva, exibida com título dourado. Os
+itens existentes conservam Excellent, Luck, Harmony, adicionais e sockets.
+Somente Grand Master, nível400, pode usá-los. Os requisitos recebidos do servidor
+substituem os incrementos legados de nível Excellent e +0–+15 apenas nestas peças.
+
+Os bônus do conjunto são cumulativos, mas não se somam duas vezes:
+
+| Equipamento utilizável | Parcela dos bônus completos |
+|---|---:|
+| Elmo, armadura, calça, luvas e botas | 30% |
+| As cinco peças + cajado e escudo | 60% |
+| Os sete itens + asas, pendant e dois anéis | 100% |
+
+Por exemplo, dano+15% do conjunto completo passa a+4,5% na primeira fase e+9%
+na segunda. Atributos individuais e opções de cada item são independentes.
+Retirar/quebrar uma peça reduz o conjunto à maior fase ainda válida. Asas e
+joias sozinhas não pulam as fases anteriores. O servidor continua autoritativo.
+
+O Shift mostra o percentual confirmado, as três fases e todos os valores como
+**ativo / total**. O cliente aceita E7/E8v1 anteriores e a versãov2 com metadados
+Ultimate, requisitos, fases e percentual ativo. Sem estado válido, não presume
+bônus pela aparência nem pelos itens do baú. O catálogo é limpo ao trocar de sessão.
+
+O brilho próprio agora existe no+0, sem exigir flags Excellent: reflexo dourado
+mais forte, marfim moderado e emissão controlada nas gemas/filamentos. Efeitos
+respeitam distância, nível gráfico, transparência e Cloaking; não alteram combate.
+As botas receberam panturrilha, tornozelo, calcanhar e sola detalhados, preservando
+o esqueleto e as sequências de animação nativas. Prévia de Blender não comprova
+o brilho do renderizador MU; a revisão requer inspeção pessoal ingame.
+
+Para os testes cruzados v2, usar os arquivos reais.NET
+`celestial-equipment-state-v2.bin` e `celestial-equipment-catalog-v2.bin` nas
+variáveis `CELESTIAL_PACKET_FIXTURE`/`CELESTIAL_CATALOG_FIXTURE`. Testar também
+`test_celestial_shimmer`. O teste de limpeza de personagens não chama WinMain.
+
+## Comportamento da versão anterior (v1)
 
 As onze peças usam elegibilidade calculada pelo servidor. A aura não depende
 de upgrade +10 nem apenas das cinco peças de armadura. Uma peça ausente ou

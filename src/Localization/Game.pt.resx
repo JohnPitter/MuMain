@@ -13280,4 +13280,11 @@
   <data name="CelestialBonusElementalProtection" xml:space="preserve"><value>Redução de dano elemental direto</value></data>
   <data name="CelestialBonusPercentagePoints" xml:space="preserve"><value> p.p.</value></data>
   <data name="CelestialBonusShiftHint" xml:space="preserve"><value>[Shift] Ver bônus do conjunto Celestial</value></data>
+  <data name="Ultimate" xml:space="preserve"><value>Ultimate</value></data>
+  <data name="CelestialPhaseStatus" xml:space="preserve"><value>Seu conjunto: %u%% dos bônus ativos</value></data>
+  <data name="CelestialPhaseTemplate" xml:space="preserve"><value>Fase %u — %u%%: %ls</value></data>
+  <data name="CelestialPhaseArmor" xml:space="preserve"><value>elmo, armadura, calça, luvas e botas</value></data>
+  <data name="CelestialPhaseWeapons" xml:space="preserve"><value>+ cajado e escudo</value></data>
+  <data name="CelestialPhaseAccessories" xml:space="preserve"><value>+ asas, pendant e dois anéis</value></data>
+  <data name="CelestialPhaseCondition" xml:space="preserve"><value>Valores: ativo / total. Fases cumulativas; peças utilizáveis.</value></data>
 </root>

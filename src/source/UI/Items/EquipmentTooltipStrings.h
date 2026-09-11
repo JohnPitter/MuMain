@@ -17,5 +17,9 @@ namespace UI::Items::EquipmentTooltip
         const wchar_t* LimitsNote;
         std::array<const wchar_t*, 13> Labels;
         std::array<const wchar_t*, 3> Units;
+        const wchar_t* PhaseStatus = nullptr;
+        const wchar_t* PhaseTemplate = nullptr;
+        std::array<const wchar_t*, 3> PhaseLabels{};
+        const wchar_t* PhaseCondition = nullptr;
     };
 }

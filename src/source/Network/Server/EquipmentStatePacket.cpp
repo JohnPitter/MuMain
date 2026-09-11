@@ -9,7 +9,8 @@ namespace Network::Equipment
     {
         constexpr std::uint8_t Header = 0xC1;
         constexpr std::uint8_t Group = 0xF3;
-        constexpr std::uint8_t Version = 1;
+        constexpr std::uint8_t LegacyVersion = 1;
+        constexpr std::uint8_t PhasedVersion = 2;
         constexpr std::uint8_t CelestialFlag = 1;
         constexpr unsigned ByteBits = 8;
 
@@ -29,8 +30,13 @@ namespace Network::Equipment
 
     std::optional<StateUpdate> DecodeState(std::span<const std::uint8_t> packet)
     {
-        if (packet.size() != StatePacketSize || packet[0] != Header || packet[1] != StatePacketSize
-            || packet[2] != Group || packet[3] != StateSubCode || packet[4] != Version)
+        if (packet.size() < StatePacketSize || packet[0] != Header || packet[1] != packet.size()
+            || packet[2] != Group || packet[3] != StateSubCode)
+            return std::nullopt;
+
+        const bool legacy = packet[4] == LegacyVersion && packet.size() == StatePacketSize;
+        const bool phased = packet[4] == PhasedVersion && packet.size() == PhasedStatePacketSize;
+        if (!legacy && !phased)
             return std::nullopt;
 
         const auto flags = packet[7];
@@ -38,9 +44,14 @@ namespace Network::Equipment
         if ((flags & ~CelestialFlag) != 0 || !std::isfinite(factor) || factor <= 0)
             return std::nullopt;
 
+        const bool active = (flags & CelestialFlag) != 0;
+        const std::uint8_t percent = phased ? packet[16] : (active ? 100 : 0);
+        if (percent > 100 || (percent > 0) != active)
+            return std::nullopt;
+
         StateUpdate update;
         update.CharacterId = static_cast<std::uint16_t>((packet[5] << ByteBits) | packet[6]);
-        update.Equipment = { true, (flags & CelestialFlag) != 0, factor };
+        update.Equipment = { true, active, factor, percent };
         update.AttackSpeed = ReadLittleShort(packet.subspan(12, sizeof(std::uint16_t)));
         update.MagicSpeed = ReadLittleShort(packet.subspan(14, sizeof(std::uint16_t)));
         return update;

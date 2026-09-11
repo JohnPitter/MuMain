@@ -13205,4 +13205,11 @@
   <data name="CelestialBonusElementalProtection" xml:space="preserve"><value>Direct elemental damage reduction</value></data>
   <data name="CelestialBonusPercentagePoints" xml:space="preserve"><value> pp</value></data>
   <data name="CelestialBonusShiftHint" xml:space="preserve"><value>[Shift] View Celestial set bonuses</value></data>
+  <data name="Ultimate" xml:space="preserve"><value>Ultimate</value></data>
+  <data name="CelestialPhaseStatus" xml:space="preserve"><value>Your set: %u%% of bonuses active</value></data>
+  <data name="CelestialPhaseTemplate" xml:space="preserve"><value>Stage %u — %u%%: %ls</value></data>
+  <data name="CelestialPhaseArmor" xml:space="preserve"><value>helm, armor, pants, gloves and boots</value></data>
+  <data name="CelestialPhaseWeapons" xml:space="preserve"><value>+ staff and shield</value></data>
+  <data name="CelestialPhaseAccessories" xml:space="preserve"><value>+ wings, pendant and two rings</value></data>
+  <data name="CelestialPhaseCondition" xml:space="preserve"><value>Values: active / total. Cumulative stages; usable pieces.</value></data>
 </root>

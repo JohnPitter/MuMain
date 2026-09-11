@@ -20,3 +20,10 @@ mu_add_test(
         ../../src/source/Character/EquipmentCatalogCache.cpp
         ../../src/source/UI/Items/EquipmentTooltipContent.cpp
 )
+
+mu_add_test(
+    NAME test_celestial_shimmer
+    SOURCES
+        test_celestial_shimmer.cpp
+        ../../src/source/Render/Models/CelestialShimmer.cpp
+)

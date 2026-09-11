@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "I18N/All.h"
+#include "Character/EquipmentRequirements.h"
 
 #include <codecvt>
 #include <sstream>
@@ -715,20 +716,24 @@ void CalcDefense(ITEM* ip, ITEM_ATTRIBUTE* p)
     }
 }
 
+namespace
+{
+    int LegacyRequirementItemLevel(const ITEM* item, const ITEM_ATTRIBUTE* definition)
+    {
+        constexpr int ExcellentIncrease = 25;
+        constexpr int AncientIncrease = 30;
+        if (item->ExcellentFlags > 0)
+            return definition->Level + ExcellentIncrease;
+        if (item->AncientDiscriminator > 0)
+            return definition->Level + AncientIncrease;
+        return definition->Level;
+    }
+}
+
 void CalcRequirements(ITEM* ip, ITEM_ATTRIBUTE* p)
 {
     bool isExcellent = ip->ExcellentFlags > 0;
-    bool isAncientItem = ip->AncientDiscriminator > 0;
-    int ItemLevel = p->Level;
-
-    if (isExcellent)
-    {
-        ItemLevel = p->Level + 25;
-    }
-    else if (isAncientItem)
-    {
-        ItemLevel = p->Level + 30;
-    }
+    const int ItemLevel = LegacyRequirementItemLevel(ip, p);
 
     int addValue = 4;
 
@@ -855,6 +860,7 @@ void CalcRequirements(ITEM* ip, ITEM_ATTRIBUTE* p)
     {
         ip->RequireLevel += 20;
     }
+    ip->RequireLevel = static_cast<WORD>(Character::Equipment::DisplayLevel(ip->Type, ip->RequireLevel));
 }
 
 void CalcWingOptions(ITEM* ip)
@@ -2212,26 +2218,9 @@ bool IsRequireEquipItem(ITEM* pItem)
         return false;
     }
 
-    ITEM_ATTRIBUTE* pItemAttr = &ItemAttribute[pItem->Type];
-
-    bool bEquipable = false;
-
-    if (pItemAttr->RequireClass[gCharacterManager.GetBaseClass(Hero->Class)]) {
-        bEquipable = true;
-    }
-    else if (gCharacterManager.GetBaseClass(Hero->Class) == CLASS_DARK && pItemAttr->RequireClass[CLASS_WIZARD]
-        && pItemAttr->RequireClass[CLASS_KNIGHT]) {
-        bEquipable = true;
-    }
-
-    BYTE byFirstClass = gCharacterManager.GetBaseClass(Hero->Class);
-    BYTE byStepClass = gCharacterManager.GetStepClass(Hero->Class);
-    if (pItemAttr->RequireClass[byFirstClass] > byStepClass)
-    {
-        return false;
-    }
-
-    if (bEquipable == false)
+    const bool bEquipable = Character::Equipment::MatchesDisplayedClass(pItem->Type,
+        gCharacterManager.GetBaseClass(Hero->Class), gCharacterManager.GetStepClass(Hero->Class));
+    if (!bEquipable)
         return false;
 
     WORD wStrength = CharacterAttribute->Strength + CharacterAttribute->AddStrength;
@@ -2268,7 +2257,7 @@ bool IsRequireEquipItem(ITEM* pItem)
         return false;
     if (pItem->RequireCharisma > wCharisma)
         return false;
-    if (pItem->RequireLevel > wLevel)
+    if (Character::Equipment::DisplayLevel(pItem->Type, pItem->RequireLevel) > wLevel)
         return false;
 
     if (pItem->Type == ITEM_DARK_RAVEN_ITEM)

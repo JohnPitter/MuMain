@@ -11,4 +11,14 @@ namespace Character::Equipment
                 return true;
         return false;
     }
+
+    bool BonusCatalog::IsUltimate(int itemType) const
+    {
+        return ItemCategory == Category::Ultimate && Contains(itemType);
+    }
+
+    unsigned BonusCatalog::DisplayLevel(int itemType, unsigned legacyLevel) const
+    {
+        return RequiredLevel > 0 && Contains(itemType) ? RequiredLevel : legacyLevel;
+    }
 }

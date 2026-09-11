@@ -8,6 +8,7 @@
 
 namespace UI::Items::EquipmentTooltip
 {
+    Line BuildStatus(const Character::Equipment::State& state, const Strings& strings);
     std::size_t BuildLines(const Character::Equipment::BonusCatalog& catalog,
         const Character::Equipment::State& state, const Strings& strings, std::span<Line> lines);
 }
