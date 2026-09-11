@@ -1,5 +1,52 @@
 # Celestial Ultimate: fases, requisitos e consulta
 
+## Conjunto Herdeiro de Zeus (Duel Master)
+
+O terceiro conjunto autoral segue a mesma mecânica de categoria intrínseca,
+com categoria própria (3) no catálogo E7 v2 e identidade visual própria no
+tooltip ("Conjunto Zeus"). Exclusivo **Duel Master** (classe 13, evolução do
+Magic Gladiator), nível 400. Os 11 itens e seus IDs no servidor:
+
+| Item | ID | Modelo do cliente |
+|---|---|---|
+| Espada de Zeus | 0/36 | `Data/Item/Zeus_Sword.bmd` |
+| Bastão Celestial | 5/38 | `Data/Item/Zeus_Staff.bmd` |
+| Armadura (ombreiras incorporadas) | 8/76 | `Data/Player/Zeus_Armor.bmd` |
+| Calça | 9/76 | `Data/Player/Zeus_Pant.bmd` |
+| Luvas | 10/76 | `Data/Player/Zeus_Glove.bmd` |
+| Botas | 11/76 | `Data/Player/Zeus_Boot.bmd` |
+| Asas Celestiais | 12/53 | `Data/Item/Zeus_Wings.bmd` |
+| Capa da Tempestade | 12/54 | `Data/Item/Zeus_Cape.bmd` (tecido gerado pelo cloth do runtime) |
+| Pendant / Anel da Tempestade / Anel da Sabedoria | 13/207–209 | `Data/Item/Zeus_Pendant/Ring_Storm/Ring_Wisdom.bmd` |
+
+Fases cumulativas do catálogo (9 instâncias contadas; bastão e capa existem
+como itens fora da contagem): 30% com armadura, calça, luvas e botas; 60% com
+pendant e os dois anéis; 100% com espada e asas. O Shift usa o formato comum;
+a categoria 3 troca título e rótulos de fase — nenhum bônus é inventado no
+cliente.
+
+A capa tem **slot de textura de cloth próprio** (`BITMAP_ROBE+14` com o atlas
+`Zeus_Blue`): os mantos nativos ficam em `ROBE+6/+9/+10` e o Poseidon em
+`ROBE+11/12/13`. O portão de cloth do cliente foi aberto à família
+`CLASS_DARK` (Magic Gladiator e Duel Master) com case próprio: capa principal
+no osso 19 no molde do Manto do Imperador mais dois painéis laterais — **sem
+saia** (a saia segue exclusiva das skins DL/LE) e sem capas de ombro (a gola
+autoral cobre a linha presa). DL/LE/RageFighter mantêm o comportamento de
+sempre (prova em `test_zeus_cloth_gate`).
+
+O acabamento segue o perfil **Legendary-azul**
+(`art-source/zeus/research/legendary-excellent-blue.md`): specularTint celeste
+`(0.10, 0.45, 1.00)` só nos materiais azuis, tint neutro no branco platina
+aprovado, emissão fraca nas canaletas de tempestade, e o overlay Excellent
+clássico **mantido de propósito** (diferença documentada frente ao
+Celestial/Poseidon). Sem halo, sem brilho no chão; FX de aura/rastro/buff
+ficam para a onda final.
+
+Para a conferência contra o emissor .NET, definir `ZEUS_CATALOG_FIXTURE` com
+`zeus-equipment-catalog-v2.bin` gerado nos testes do OpenMU. Candidato de
+distribuição: `art-source/zeus/package_zeus_candidate.py` (11 BMDs + 3 atlas
+OZJ nas pastas Player e Item + Main; sem DLL de conexão).
+
 ## Conjunto Poseidon (Lord Emperor)
 
 O segundo conjunto autoral usa a mesma mecânica de categoria intrínseca do
