@@ -65,6 +65,11 @@ catálogo maior mantém 34 referências canônicas fora da pasta esperada, separ
 em [coverage.md](coverage.md); algumas têm candidatos compartilhados, outras ainda
 precisam de confirmação. Não são automaticamente 34 erros do jogo.
 
+As 13 cópias RAR encontradas também foram conferidas por hash e listagem:
+um conteúdo distinto, com três tabelas TXT da loja e nenhuma entrada visual
+identificada. A [auditoria suplementar](archive-audit.json) conserva a evidência;
+o scanner padrão continua sem suporte genérico a RAR/7z.
+
 O índice de efeitos varreu 949 fontes de C++, com 386 arquivos indexados e 39.973
 registros. É um **índice lexical abrangente**, incluindo NPCs e monstros, não um
 grafo causal completo. Uma chamada perto do nome de um item não comprova que se

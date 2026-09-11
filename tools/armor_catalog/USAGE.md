@@ -35,6 +35,17 @@ python tools/armor_catalog/verify_catalog.py --output docs/art/armor-reference
 
 As pastas `node_modules`, `.git`, `ThirdParty` e `.nuget` ficam fora da descoberta. Arquivos RAR/7z são listados como não inspecionados; ZIPs sem equipamentos são registrados. Modelos de NPC/cenário fora de `Data/Player` e `Data/Item` são listados à parte quando o nome parece uma peça de armadura. Na árvore `client-assets`, só foi encontrado `Data/Local/ServerList.bmd`, que não é equipamento.
 
+### Auditoria pontual dos RAR pendentes
+
+Em 11/09/2026, as 13 ocorrências `unsupported_archive_format` do catálogo congelado foram conferidas separadamente. Todas são cópias idênticas de `Data/InGameShopScript/512.2011.006.rar`, com 11.654 bytes e SHA256 `8214e0619dc1c3e2fe56af009b05832c280e7257d4f3c693b0e02e1005b90cf1`. A listagem de cabeçalhos com `C:/Windows/System32/tar.exe` retornou três arquivos (`IBSCategory.txt`, `IBSPackage.txt`, `IBSProduct.txt`) e um diretório. Não há entradas de malha BMD, textura, arquivo compactado interno ou recurso visual/efeito identificáveis nessa listagem. O conteúdo das tabelas não foi extraído, executado ou interpretado.
+
+A evidência, os 13 caminhos e a versão da ferramenta estão em [archive-audit.json](../../docs/art/armor-reference/archive-audit.json). É um complemento pontual: o scanner padrão continua sem suporte a RAR/7z, e `catalog.json`, seu status de descoberta e as contagens de 45 bases/20.555 ocorrências BMD permanecem intactos. Para repetir a listagem de uma cópia:
+
+```powershell
+Get-FileHash -Algorithm SHA256 -LiteralPath 'C:/_wt-celestial-client/src/bin/Data/InGameShopScript/512.2011.006.rar'
+& C:/Windows/System32/tar.exe -tf 'C:/_wt-celestial-client/src/bin/Data/InGameShopScript/512.2011.006.rar'
+```
+
 O mapeamento de arquivos acompanha os carregadores do cliente desta revisão; a atualização de regras do carregador exige revisar os testes correspondentes. Nomes do ZIP canônico não são usados para renomear malhas antigas: cada variante mantém nome embutido, caminho de origem e hash próprios. A interpretação de estilo visual exige as pranchas 3D e não deve ser deduzida apenas pelo nome do item.
 
 Os hashes e campos medidos são reproduzíveis para as mesmas entradas. Os relatórios não validam login, disponibilidade para jogadores, animação dentro do cliente ou configuração persistida da VPS.

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-11",
+  "scope": "supplemental_header_listing_of_frozen_unsupported_archives",
+  "source_catalog": "catalog.json",
+  "source_catalog_sha256": "047bee73904a3e68a16aa97930296591177e7d1bd7626b66e260e796b7d28467",
+  "source_revision": "0d227a0d91867cdffdef1a094998bc3effffffa3",
+  "discovery_status": "unsupported_archive_format",
+  "catalog_regenerated": false,
+  "assets_written": false,
+  "entry_payloads_extracted": false,
+  "entry_payloads_executed": false,
+  "entry_payloads_decoded": false,
+  "tool": {
+    "path": "C:/Windows/System32/tar.exe",
+    "sha256": "4e598a8cec84af779e3377442fce2b94b976f614ed4c6e5a665e19308fd1e379",
+    "version": "bsdtar 3.8.8 - libarchive 3.8.8 zlib/1.2.13.1-motley liblzma/5.8.1 bz2lib/1.0.8 libzstd/1.5.7 cng/2.0 libb2/bundled",
+    "arguments": ["-tf", "<representative_path>"],
+    "metadata_arguments": ["-tvf", "<representative_path>"]
+  },
+  "summary": {
+    "archive_occurrences_checked": 13,
+    "distinct_archive_sha256": 1,
+    "distinct_archives_listed": 1,
+    "listing_failures": 0,
+    "file_entries": 3,
+    "directory_entries": 1,
+    "visual_asset_entries_identified": 0,
+    "nested_archive_entries": 0,
+    "classification": "in_game_shop_text_tables_by_entry_names",
+    "conclusion": "As 13 cópias são idênticas. A listagem contém somente três arquivos TXT de catálogo da loja e um diretório; não há entradas de malha BMD, textura ou recurso visual/efeito identificáveis. A inspeção de cabeçalhos não interpreta o conteúdo das tabelas."
+  },
+  "archives": [
+    {
+      "sha256": "8214e0619dc1c3e2fe56af009b05832c280e7257d4f3c693b0e02e1005b90cf1",
+      "bytes": 11654,
+      "copies": 13,
+      "representative_path": "C:/_wt-celestial-client/out/build/windows-x64/src/Release/Data/InGameShopScript/512.2011.006.rar",
+      "paths": [
+        "C:/_wt-celestial-client/out/build/windows-x64/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/_wt-celestial-client/out/build/windows-x64-startup-fix/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/_wt-celestial-client/src/bin/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/out/build/tests/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/out/build/windows-x64/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/out/build/windows-x64-asan/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/out/build/windows-x86/src/Debug/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/out/build/windows-x86/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/out/build/windows-x86-asan/src/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/src/bin/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/MuMain/src/build/Release/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/teste-launcher/Game/Data/InGameShopScript/512.2011.006.rar",
+        "C:/Users/joaop/Desenvolvimento/openmu/teste-launcher/Game2/Data/InGameShopScript/512.2011.006.rar"
+      ],
+      "listing_exit_code": 0,
+      "metadata_listing_exit_code": 0,
+      "entries": [
+        {"path": "512.2011.006/IBSCategory.txt", "type": "file", "uncompressed_bytes": 536},
+        {"path": "512.2011.006/IBSPackage.txt", "type": "file", "uncompressed_bytes": 34108},
+        {"path": "512.2011.006/IBSProduct.txt", "type": "file", "uncompressed_bytes": 61434},
+        {"path": "512.2011.006", "type": "directory", "uncompressed_bytes": 0}
+      ]
+    }
+  ]
+}
