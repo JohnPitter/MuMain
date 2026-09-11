@@ -14,3 +14,12 @@ mu_add_test(
         test_zeus_finish.cpp
         ../../src/source/Render/Models/ZeusFinish.cpp
 )
+
+mu_add_test(
+    NAME test_zeus_catalog
+    SOURCES
+        test_zeus_catalog.cpp
+        ../../src/source/Network/Server/EquipmentBonusCatalogPacket.cpp
+        ../../src/source/Character/EquipmentBonusCatalog.cpp
+        ../../src/source/Character/EquipmentCatalogCache.cpp
+)

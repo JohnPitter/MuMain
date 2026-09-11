@@ -31,7 +31,7 @@ namespace Network::Equipment
             if (packet[4] == 1)
                 return LegacyHeaderSize;
             if (packet[4] != 2 || packet.size() < PhasedHeaderSize
-                || packet[9] > static_cast<unsigned>(Category::Poseidon) || packet[12] > MaximumRequiredClass
+                || packet[9] > static_cast<unsigned>(Category::Zeus) || packet[12] > MaximumRequiredClass
                 || packet[13] > MaximumBonusPhases)
                 return 0;
             catalog.ItemCategory = static_cast<Category>(packet[9]);

@@ -13217,4 +13217,9 @@
   <data name="PoseidonPhaseArmor" xml:space="preserve"><value>crown, cuirass, pants, gloves and boots</value></data>
   <data name="PoseidonPhaseJewels" xml:space="preserve"><value>+ pendant and two rings</value></data>
   <data name="PoseidonPhaseComplete" xml:space="preserve"><value>+ cape, one weapon, mount and eagle</value></data>
+  <data name="ZeusSetTitle" xml:space="preserve"><value>Zeus Set — full bonuses</value></data>
+  <data name="ZeusBonusShiftHint" xml:space="preserve"><value>[Shift] View Zeus set bonuses</value></data>
+  <data name="ZeusPhaseArmor" xml:space="preserve"><value>armor, pants, gloves and boots</value></data>
+  <data name="ZeusPhaseJewels" xml:space="preserve"><value>+ pendant and two rings</value></data>
+  <data name="ZeusPhaseComplete" xml:space="preserve"><value>+ sword and wings</value></data>
 </root>

@@ -42,6 +42,11 @@ namespace UI::Items::EquipmentTooltip
                 strings.Title = PoseidonSetTitle;
                 strings.PhaseLabels = { PoseidonPhaseArmor, PoseidonPhaseJewels, PoseidonPhaseComplete };
             }
+            else if (Character::Equipment::GetCatalog().ItemCategory == Category::Zeus)
+            {
+                strings.Title = ZeusSetTitle;
+                strings.PhaseLabels = { ZeusPhaseArmor, ZeusPhaseJewels, ZeusPhaseComplete };
+            }
             return strings;
         }
 
@@ -99,8 +104,9 @@ namespace UI::Items::EquipmentTooltip
             TextListColor[textIndex] = state.HasCelestialAura() ? TEXT_COLOR_GREEN : TEXT_COLOR_GRAY;
             TextBold[textIndex++] = false;
             swprintf_s(TextList[textIndex], L"%ls", Character::Equipment::GetCatalog().ItemCategory
-                == Character::Equipment::Category::Poseidon
-                ? I18N::Game::PoseidonBonusShiftHint : I18N::Game::CelestialBonusShiftHint);
+                == Character::Equipment::Category::Poseidon ? I18N::Game::PoseidonBonusShiftHint
+                : Character::Equipment::GetCatalog().ItemCategory == Character::Equipment::Category::Zeus
+                ? I18N::Game::ZeusBonusShiftHint : I18N::Game::CelestialBonusShiftHint);
             TextListColor[textIndex] = TEXT_COLOR_YELLOW;
             TextBold[textIndex++] = false;
             return textIndex;

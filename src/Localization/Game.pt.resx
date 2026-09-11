@@ -13292,4 +13292,9 @@
   <data name="PoseidonPhaseArmor" xml:space="preserve"><value>coroa, peitoral, calça, luvas e botas</value></data>
   <data name="PoseidonPhaseJewels" xml:space="preserve"><value>+ pendant e dois anéis</value></data>
   <data name="PoseidonPhaseComplete" xml:space="preserve"><value>+ manto, uma arma, montaria e águia</value></data>
+  <data name="ZeusSetTitle" xml:space="preserve"><value>Conjunto Zeus — bônus completos</value></data>
+  <data name="ZeusBonusShiftHint" xml:space="preserve"><value>[Shift] Ver bônus do conjunto Zeus</value></data>
+  <data name="ZeusPhaseArmor" xml:space="preserve"><value>armadura, calça, luvas e botas</value></data>
+  <data name="ZeusPhaseJewels" xml:space="preserve"><value>+ pendant e dois anéis</value></data>
+  <data name="ZeusPhaseComplete" xml:space="preserve"><value>+ espada e asas</value></data>
 </root>
