@@ -6,6 +6,7 @@
 #include "Render/Models/ZzzBMD.h"
 #include "Render/Models/CelestialModels.h"
 #include "Render/Models/CelestialAppearance.h"
+#include "Render/Models/PoseidonModels.h"
 #include "Render/Shaders/ItemSpecularShader.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -54,6 +55,7 @@ namespace
     bool CanRenderLegacyGradeTint(OBJECT* object, int modelType)
     {
         return !Render::Items::Celestial::IsAuthoredEquipment(modelType)
+            && !Render::Items::Poseidon::IsEquipment(modelType)
             && !g_isCharacterBuff(object, eDeBuff_Harden)
             && !g_isCharacterBuff(object, eBuff_Cloaking)
             && !g_isCharacterBuff(object, eDeBuff_CursedTempleRestraint);
@@ -9713,6 +9715,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
     case MODEL_WING:
     case MODEL_WINGS_OF_HEAVEN:
     case MODEL_CAPE_OF_OVERRULE:
+    case MODEL_POSEIDON_CAPE:
     case MODEL_WINGS_OF_SATAN:Level = 0; break;
     case MODEL_ORB_OF_TWISTING_SLASH:Level = 9; break;
     case MODEL_ORB_OF_SUMMONING:Level = 0; break;
@@ -10437,6 +10440,13 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
             VectorCopy(Light, b->BodyLight);
             RenderPartObjectBody(b, o, Type, Alpha, RenderType);
             Render::Items::Celestial::RenderMaterialAccents(b, o, Level, Alpha);
+        }
+        // Authored Poseidon renders clean texturized: no legacy grade tint and
+        // no shimmer passes in this wave (set FX are a later wave).
+        else if (Render::Items::Poseidon::IsEquipment(Type))
+        {
+            VectorCopy(Light, b->BodyLight);
+            RenderPartObjectBody(b, o, Type, Alpha, RenderType);
         }
         else if (Level < 3 || o->Type == MODEL_ZEN)
         {

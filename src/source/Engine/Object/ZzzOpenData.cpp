@@ -86,6 +86,45 @@ namespace
             g_ErrorReport.Write(L"[Celestial] Authored wings failed to load. Repair client assets.\r\n");
     }
 
+    void LoadPoseidonArmor()
+    {
+        constexpr const wchar_t* directory = L"Data\\Player\\";
+        gLoadData.AccessModel(MODEL_POSEIDON_HELM, directory, L"Poseidon_Helm", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_ARMOR, directory, L"Poseidon_Armor", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_PANTS, directory, L"Poseidon_Pant", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_GLOVES, directory, L"Poseidon_Glove", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_BOOTS, directory, L"Poseidon_Boot", -1);
+        constexpr int models[] = {MODEL_POSEIDON_HELM, MODEL_POSEIDON_ARMOR,
+            MODEL_POSEIDON_PANTS, MODEL_POSEIDON_GLOVES, MODEL_POSEIDON_BOOTS};
+        for (const int model : models)
+        {
+            if (!Models[model].m_bCompletedAlloc)
+                g_ErrorReport.Write(L"[Poseidon] Authored armor failed to load: %d. Repair client assets.\r\n", model);
+        }
+    }
+
+    void LoadPoseidonProps()
+    {
+        constexpr const wchar_t* directory = L"Data\\Item\\";
+        gLoadData.AccessModel(MODEL_POSEIDON_TRIDENT, directory, L"Poseidon_Trident", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_SCEPTER, directory, L"Poseidon_Scepter", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_CAPE, directory, L"Poseidon_Cape", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_PENDANT, directory, L"Poseidon_Pendant", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_TIDES_RING, directory, L"Poseidon_RingTide", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_EMPEROR_RING, directory, L"Poseidon_RingEmperor", -1);
+        // Installed for later pet/mount integration only; no pet logic in this wave.
+        gLoadData.AccessModel(MODEL_POSEIDON_HORSE_ITEM, directory, L"Poseidon_Black_Mount", -1);
+        gLoadData.AccessModel(MODEL_POSEIDON_EAGLE_ITEM, directory, L"Poseidon_Imperial_Eagle", -1);
+        constexpr int models[] = {MODEL_POSEIDON_TRIDENT, MODEL_POSEIDON_SCEPTER,
+            MODEL_POSEIDON_CAPE, MODEL_POSEIDON_PENDANT, MODEL_POSEIDON_TIDES_RING,
+            MODEL_POSEIDON_EMPEROR_RING, MODEL_POSEIDON_HORSE_ITEM, MODEL_POSEIDON_EAGLE_ITEM};
+        for (const int model : models)
+        {
+            if (!Models[model].m_bCompletedAlloc)
+                g_ErrorReport.Write(L"[Poseidon] Authored prop failed to load: %d. Repair client assets.\r\n", model);
+        }
+    }
+
     constexpr DWORD kStartupLoadingFrameIntervalMs = 33;
     constexpr DWORD kStartupLoadingStageCount = 11;
 
@@ -375,6 +414,7 @@ void OpenPlayers()
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_PANTS, L"Data\\Player\\", L"PantMale74", -1);
     gLoadData.AccessModel(MODEL_PHOENIX_SOUL_BOOTS, L"Data\\Player\\", L"BootMale74", -1);
     LoadCelestialArmor();
+    LoadPoseidonArmor();
 
     {
         auto* pCloth = new CPhysicsClothMesh[1];
@@ -521,6 +561,12 @@ void OpenPlayerTextures()
     LoadBitmap(L"Item\\msword03.tga", BITMAP_ROBE + 8);
     LoadBitmap(L"Item\\dl_redwings02.tga", BITMAP_ROBE + 9);
     LoadBitmap(L"Item\\dl_redwings03.tga", BITMAP_ROBE + 10);
+    // Authored Poseidon cape cloth fabric (LoadBitmap resolves the .jpg name
+    // against the packaged .OZJ). Dedicated slots: the native capes keep
+    // ROBE+6/+9/+10, the Poseidon cape grades use ROBE+11/+12/+13.
+    LoadBitmap(L"Item\\Poseidon_Gold.jpg", BITMAP_ROBE + 11);
+    LoadBitmap(L"Item\\Poseidon_Black.jpg", BITMAP_ROBE + 12);
+    LoadBitmap(L"Item\\Poseidon_Pearl.jpg", BITMAP_ROBE + 13);
 
     int nIndex;
 
@@ -688,6 +734,11 @@ void OpenPlayerTextures()
     gLoadData.OpenTexture(MODEL_CELESTIAL_PANTS, L"Player\\");
     gLoadData.OpenTexture(MODEL_CELESTIAL_GLOVES, L"Player\\");
     gLoadData.OpenTexture(MODEL_CELESTIAL_BOOTS, L"Player\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_HELM, L"Player\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_ARMOR, L"Player\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_PANTS, L"Player\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_GLOVES, L"Player\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_BOOTS, L"Player\\");
 }
 
 void OpenItems()
@@ -792,6 +843,7 @@ void OpenItems()
         gLoadData.AccessModel(MODEL_HELPER + i + 8, L"Data\\Item\\", L"Ring", i + 1);
 
     LoadCelestialProps();
+    LoadPoseidonProps();
 
     g_ChangeRingMgr->LoadItemModel();
 
@@ -1458,6 +1510,14 @@ void OpenItemTextures()
     gLoadData.OpenTexture(MODEL_CELESTIAL_SHIELD, L"Item\\");
     gLoadData.OpenTexture(MODEL_CELESTIAL_RING, L"Item\\");
     gLoadData.OpenTexture(MODEL_CELESTIAL_PENDANT, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_TRIDENT, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_SCEPTER, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_CAPE, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_PENDANT, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_TIDES_RING, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_EMPEROR_RING, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_HORSE_ITEM, L"Item\\");
+    gLoadData.OpenTexture(MODEL_POSEIDON_EAGLE_ITEM, L"Item\\");
 
     for (int i = 21; i <= 28; ++i)
         gLoadData.OpenTexture(MODEL_HELPER + i, L"Item\\");
