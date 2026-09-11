@@ -49,6 +49,17 @@
 
 static bool IsRenderableModelType(int Type);
 
+namespace
+{
+    bool CanRenderLegacyGradeTint(OBJECT* object, int modelType)
+    {
+        return !Render::Items::Celestial::IsAuthoredEquipment(modelType)
+            && !g_isCharacterBuff(object, eDeBuff_Harden)
+            && !g_isCharacterBuff(object, eBuff_Cloaking)
+            && !g_isCharacterBuff(object, eDeBuff_CursedTempleRestraint);
+    }
+}
+
 // DevEditor function declarations
 #ifdef _EDITOR
 extern "C" bool DevEditor_ShouldShowItemCullSphere();
@@ -10631,9 +10642,7 @@ void RenderPartObjectEffect(OBJECT* o, int Type, vec3_t Light, float Alpha, int 
             return;
         }
 
-        if (!g_isCharacterBuff(o, eDeBuff_Harden) && !g_isCharacterBuff(o, eBuff_Cloaking)
-            && !g_isCharacterBuff(o, eDeBuff_CursedTempleRestraint)
-            )
+        if (CanRenderLegacyGradeTint(o, Type))
         {
             if ((ExcellentFlags & 63) > 0 && (o->Type<MODEL_WING || o->Type>MODEL_WINGS_OF_DARKNESS) && o->Type != MODEL_CAPE_OF_LORD
                 && (o->Type<MODEL_WING_OF_STORM || o->Type>MODEL_WING_OF_DIMENSION)

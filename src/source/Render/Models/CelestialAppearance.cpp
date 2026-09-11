@@ -15,6 +15,7 @@ namespace Render::Items::Celestial
     {
         constexpr float EffectMaximumDistance = 1200.f;
         constexpr float PulseSpeed = 0.002f;
+        constexpr int UnlitTextureMesh = -2;
     }
 
     void RenderWingSurface(BMD* model, OBJECT* object)
@@ -33,10 +34,12 @@ namespace Render::Items::Celestial
             return;
         constexpr float RotationSpeed = 0.025f;
         constexpr float HaloScale = 0.7f;
-        const float pulse = object->Alpha * (0.85f + 0.15f * sinf(WorldTime * PulseSpeed));
+        const float pulse = 0.5f + 0.5f * sinf(WorldTime * PulseSpeed);
+        const auto tint = HaloLight(pulse, object->Alpha, g_pOption->GetRenderLevel());
         vec3_t origin = { 0.f, 0.f, 0.f };
         vec3_t position;
-        vec3_t light = { 0.65f * pulse, 0.48f * pulse, 0.22f * pulse };
+        vec3_t light;
+        VectorCopy(tint.data(), light);
         model->TransformPosition(BoneTransform[WingHaloBone], origin, position, true);
         CreateSprite(BITMAP_SHINY + 1, position, HaloScale, light, object, WorldTime * RotationSpeed);
     }
@@ -57,13 +60,13 @@ namespace Render::Items::Celestial
             const auto shimmer = MaterialShimmer(model->Textures[mesh].FileName, level, pulse, detail);
             if (shimmer.Strength == 0.f)
                 continue;
-            VectorCopy(shimmer.Color.data(), model->BodyLight);
+            const auto light = AdditiveLight(shimmer, alpha);
+            VectorCopy(light.data(), model->BodyLight);
+            glColor3fv(model->BodyLight);
             const int surface = shimmer.Emissive ? RENDER_TEXTURE : RENDER_CHROME;
-            const float intensity = alpha * shimmer.Strength;
-            if (shimmer.Emissive)
-                VectorScale(model->BodyLight, intensity, model->BodyLight);
-            model->RenderMesh(mesh, surface | RENDER_BRIGHT, shimmer.Emissive ? 1.f : intensity, -1,
-                shimmer.Strength, object->BlendMeshTexCoordU, object->BlendMeshTexCoordV);
+            const int blendMesh = shimmer.Emissive ? UnlitTextureMesh : -1;
+            model->RenderMesh(mesh, surface | RENDER_BRIGHT, 1.f, blendMesh,
+                1.f, object->BlendMeshTexCoordU, object->BlendMeshTexCoordV);
         }
         VectorCopy(originalLight, model->BodyLight);
         glColor3fv(originalLight);

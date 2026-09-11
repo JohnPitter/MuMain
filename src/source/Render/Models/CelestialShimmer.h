@@ -13,4 +13,6 @@ namespace Render::Items::Celestial
     };
 
     Shimmer MaterialShimmer(std::string_view texture, int level, float pulse, int detail);
+    std::array<float, 3> AdditiveLight(const Shimmer& shimmer, float alpha);
+    std::array<float, 3> HaloLight(float pulse, float alpha, int detail);
 }
