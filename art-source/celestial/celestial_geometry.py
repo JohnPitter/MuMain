@@ -6,20 +6,15 @@ import bpy
 import bmesh
 from mathutils import Vector
 from mathutils.geometry import tessellate_polygon
+from celestial_palette import MATERIALS
 
 ROOT = Path(__file__).resolve().parent
 TAU = math.tau
 
 
 def materials():
-    palette = {
-        'Gold': ((0.83, 0.49, 0.12), 0.78, 0.23),
-        'Ivory': ((0.92, 0.9, 0.8), 0.38, 0.25),
-        'Sapphire': ((0.035, 0.54, 0.95), 0.35, 0.18),
-        'Emissive': ((1.0, 0.83, 0.43), 0.25, 0.22),
-    }
     result = {}
-    for name, (color, metal, roughness) in palette.items():
+    for name, (color, metal, roughness) in MATERIALS.items():
         mat = bpy.data.materials.new(f'Celestial_{name}.jpg')
         mat.use_nodes = True
         mat.diffuse_color = (*color, 1)

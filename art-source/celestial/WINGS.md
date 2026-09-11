@@ -1,5 +1,9 @@
 # Celestial: asas próprias, animação e montagem em revisão
 
+Estado mais recente: [revisão dourada de 11/09/2026](GOLDEN.md). Penas principais
+douradas, detalhes claros, movimento preservado. As seções abaixo são históricas;
+vídeos/imagens isolados antigos não representam a paleta nova.
+
 **Candidato local, não publicado e ainda não idêntico ao conceito.** As imagens
 e vídeos são renderizações das malhas reais no Blender, não capturas do MU.
 

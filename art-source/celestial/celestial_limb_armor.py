@@ -20,28 +20,28 @@ def trousers(m):
 
 def waist(m):
     loft('Pants / articulated hip girdle', [((0, 0, 100), 15, 10),
-         ((0, 0, 112), 17, 11), ((0, 0, 119), 13, 9)], m['Ivory'])
-    ellipse('Pants / waist band', (0, 0, 115), ((15, 0, 0), (0, 10, 0)), m['Gold'], 1, 32)
+         ((0, 0, 112), 17, 11), ((0, 0, 119), 13, 9)], m['Base'])
+    ellipse('Pants / waist band', (0, 0, 115), ((15, 0, 0), (0, 10, 0)), m['Trim'], 1, 32)
     gem('Pants / belt star', (0, -12, 113), (3.1, 1.2, 5.7), m['Sapphire'])
     for side in (-1, 1):
         plate('Pants / hip fauld', [(side * 11, 116), (side * 24, 112),
-              (side * 23, 91), (side * 15, 96)], (-6, 5), m['Gold'])
+              (side * 23, 91), (side * 15, 96)], (-6, 5), m['Trim'])
 
 
 def thigh_plate(m, side):
     segment_shell('Pants / thigh casing', ((side * 10.3, 0, 109), (side * 10.3, -4.9, 64)),
-                  [(0, 10, 10), (.3, 10.5, 10), (.7, 8, 8), (1, 7, 7)], m['Ivory'])
+                  [(0, 10, 10), (.3, 10.5, 10), (.7, 8, 8), (1, 7, 7)], m['Base'])
     for i in range(3):
         outline = [(side * 4, 108 - i * 11), (side * 18, 106 - i * 11),
                    (side * 16, 91 - i * 9), (side * 11, 86 - i * 9), (side * 6, 93 - i * 10)]
-        plate('Pants / overlapping cuisse', outline, (-9 - i * .6, 1.8), m['Ivory'])
-        rim('Pants / cuisse edge', outline, -9.5 - i * .6, m['Gold'], .5)
+        plate('Pants / overlapping cuisse', outline, (-9 - i * .6, 1.8), m['Base'])
+        rim('Pants / cuisse edge', outline, -9.5 - i * .6, m['Trim'], .5)
 
 
 def knee(m, side):
     diamond = [(side * 10.3, 78), (side * 19, 67), (side * 10.3, 56), (side * 2, 67)]
-    plate('Pants / knee couter', diamond, (-13, 2.6), m['Gold'])
-    gem('Pants / knee ivory inlay', (side * 10.3, -15.2, 67), (3.5, 1, 6.5), m['Ivory'])
+    plate('Pants / knee couter', diamond, (-13, 2.6), m['Trim'])
+    gem('Pants / knee ivory inlay', (side * 10.3, -15.2, 67), (3.5, 1, 6.5), m['Base'])
 
 
 def tabards(m, front):
@@ -53,12 +53,12 @@ def tabards(m, front):
                 samples = ((.5, t), (.5 + direction * .38, t + .03),
                            (.5 + direction * .43, t + .12), (.5, t + .13))
                 path = [panel_point(u, v, (side, front), .6) for u, v in samples]
-                scroll('Pants / branching acanthus embroidery', path, .38, m['Gold'])
+                scroll('Pants / branching acanthus embroidery', path, .38, m['Trim'])
         for i in range(4):
             t = .12 + i * .2
             controls = [panel_point(u, v, (side, front), 1.0) for u, v in
                         ((.5, t + .13), (.15, t + .10), (.13, t + .03), (.4, t))]
-            feather('Pants / pointed embroidery leaf', controls, (1.4, .25, 6), m['Gold'])
+            feather('Pants / pointed embroidery leaf', controls, (1.4, .25, 6), m['Trim'])
 
 
 def panel_point(u, t, sides, lift=0):
@@ -85,9 +85,9 @@ def tabard_surface(m, side, front):
     boundary += [r * columns for r in range(rows - 2, 0, -1)]
     for a, b in zip(boundary, boundary[1:] + boundary[:1]):
         faces.append((a, count + a, count + b, b))
-    mesh('Pants / draped split tabard', vertices, faces, m['Ivory'])
+    mesh('Pants / draped split tabard', vertices, faces, m['Base'])
     edge = [(top[i][0], top[i][1] + front * .3, top[i][2]) for i in boundary]
-    tube('Pants / continuous tabard edge', edge + edge[:1], .5, m['Gold'], 6)
+    tube('Pants / continuous tabard edge', edge + edge[:1], .5, m['Trim'], 6)
 
 
 def gloves(m):
@@ -100,16 +100,16 @@ def gloves(m):
 
 def vambrace(m, side):
     segment_shell('Gloves / shaped vambrace', ((side * 25.5, 0, 128), (side * 31.7, -.7, 93)),
-                  [(0, 7.8, 8), (.25, 8, 7.5), (.65, 5, 5), (1, 4.5, 4.2)], m['Ivory'])
+                  [(0, 7.8, 8), (.25, 8, 7.5), (.65, 5, 5), (1, 4.5, 4.2)], m['Base'])
     outline = [(side * 26, 132), (side * 34, 122), (side * 36, 106),
                (side * 31, 98), (side * 25, 113), (side * 20, 122)]
-    plate('Gloves / raised forearm plate', outline, (-6, 2), m['Ivory'])
-    rim('Gloves / forearm bezel', outline, -6.6, m['Gold'], .55)
+    plate('Gloves / raised forearm plate', outline, (-6, 2), m['Base'])
+    rim('Gloves / forearm bezel', outline, -6.6, m['Trim'], .55)
     gem('Gloves / blue forearm inset', (side * 27, -8, 121), (2.1, 1, 5.3), m['Sapphire'])
     for i in range(2):
         feather('Gloves / outer gilded blade', [(side * 31, 0, 100 + i * 5),
                 (side * 41, -2, 110 + i * 5), (side * 39, 0, 122 + i * 4),
-                (side * 36, 0, 136 + i * 3)], (1.7, .5), m['Gold'])
+                (side * 36, 0, 136 + i * 3)], (1.7, .5), m['Trim'])
     for i in range(3):
         controls = [(side * 31, -9, 102 + i * 5), (side * 27, -10, 112 + i * 4),
                     (side * 21, -9, 114 + i * 4), (side * 22, -8, 122 + i * 4)]
@@ -119,13 +119,13 @@ def vambrace(m, side):
 def hand_plate(m, side):
     outline = [(side * 28, 96), (side * 36, 95), (side * 41, 85),
                (side * 38, 80), (side * 31, 83)]
-    plate('Gloves / metacarpal plate', outline, (-3, 3), m['Ivory'])
-    rim('Gloves / hand gold edge', outline, -3.5, m['Gold'], .45)
+    plate('Gloves / metacarpal plate', outline, (-3, 3), m['Base'])
+    rim('Gloves / hand gold edge', outline, -3.5, m['Trim'], .45)
     for i in range(4):
         tube('Gloves / knuckle ridge', [(side * (31 + i * 1.8), -5.5, 88),
-             (side * (33 + i * 1.8), -5.5, 84)], .38, m['Gold'], 6)
+             (side * (33 + i * 1.8), -5.5, 84)], .38, m['Trim'], 6)
     tube('Gloves / thumb armor', [(side * 30, -1, 91), (side * 28, -5, 88),
-         (side * 29, -6, 84)], [1.5, 1.5, .8], m['Ivory'], 8)
+         (side * 29, -6, 84)], [1.5, 1.5, .8], m['Base'], 8)
 
 
 def fingers(m, side, segment):
@@ -133,9 +133,9 @@ def fingers(m, side, segment):
         x = side * (33 + i * 1.9 + segment * .7)
         z = 84 - segment * 3.5 - abs(i - 1.5) * .6
         tube('Gloves / articulated finger scale', [(x, -1.5, z), (x + side * .7, -1.5, z - 3.3)],
-             [1, .8], m['Ivory'], 6)
+             [1, .8], m['Base'], 6)
         tube('Gloves / finger gold rim', [(x + side * .1, -2.5, z - .6),
-             (x + side * .6, -2.5, z - 1.2)], .22, m['Gold'], 5)
+             (x + side * .6, -2.5, z - 1.2)], .22, m['Trim'], 5)
 
 
 BUILDERS = {'Pants': trousers, 'Gloves': gloves, 'Boots': boots}

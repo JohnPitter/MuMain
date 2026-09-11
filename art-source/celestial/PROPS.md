@@ -1,5 +1,9 @@
 # Celestial: acessórios próprios em revisão
 
+Estado mais recente: [revisão dourada de 11/09/2026](GOLDEN.md). Cajado, escudo,
+pendant e anel seguem a paleta ouro com relevos claros; veja ali quais prévias
+foram atualizadas. As observações abaixo registram a etapa original.
+
 Este lote reconstrói cajado, escudo, anel e pendant. Não contém a armadura final,
 não constitui aprovação de fidelidade ao conceito e ainda não foi validado
 no cliente do jogo. As duas unidades do anel usam a mesma malha.

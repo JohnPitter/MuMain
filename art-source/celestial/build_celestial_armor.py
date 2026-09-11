@@ -18,6 +18,7 @@ from armor_surfaces import add_skin
 from build_celestial_props import frame_camera, setup_scene
 from celestial_cuirass import armor, helmet
 from celestial_geometry import collection, materials
+from celestial_palette import construction_palette
 from celestial_limb_armor import BUILDERS
 from export_skinned_bmd import ExportSpec, export
 from import_native_reference import create_rig, world_matrices
@@ -70,7 +71,7 @@ def main():
     source = Path(args[0])
     (OUTPUT / 'Data' / 'Player').mkdir(parents=True, exist_ok=True)
     scene = setup_scene()
-    palette = materials()
+    palette = construction_palette(materials())
     model, player = inspect(source / 'ArmorMale74.bmd', True), inspect(source / 'player.bmd', True)
     bind = world_matrices(model, 0)
     rig = create_rig(model, bind)

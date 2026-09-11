@@ -3,16 +3,16 @@
     "max_error": 2.774326048893272e-07,
     "triangles": 3880,
     "minimum_triangle_area": 9.738038583166992e-05,
-    "model_sha256": "f298fdc1aa3533ef3aa16b394306f4e404807fd7a96ef89ae887b8e3cc416fee",
-    "blend_sha256": "0a30f2156c1ddfe9a4d74eacbc2ceb112a7276c16b1a91d7680764a898463292",
+    "model_sha256": "3e96319b37bc1e112655e7cd426d97b4b5e00249977661c2d1e42ebe1d387382",
+    "blend_sha256": "773778fbf66186d9bc1cca40e88a2287cda4cb5294528299a07433fed48a4515",
     "rear_reliefs": 21
   },
   "Armor": {
     "max_error": 8.940696716308594e-07,
     "triangles": 11632,
     "minimum_triangle_area": 9.28432052958629e-05,
-    "model_sha256": "d72e091f1c06e539bac078b61ca95375b448334cade51e9bf16d435c2f8c22ab",
-    "blend_sha256": "0a30f2156c1ddfe9a4d74eacbc2ceb112a7276c16b1a91d7680764a898463292",
+    "model_sha256": "ae2af9809dd1e95401b723ea9bcfdcaa67cf2319d4cb2a05a878eb6228158883",
+    "blend_sha256": "773778fbf66186d9bc1cca40e88a2287cda4cb5294528299a07433fed48a4515",
     "rear_reliefs": 48,
     "curved_front_plates": 4
   },
@@ -20,22 +20,22 @@
     "max_error": 3.5762786865234375e-07,
     "triangles": 11906,
     "minimum_triangle_area": 0.0002099653880241214,
-    "model_sha256": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599",
-    "blend_sha256": "0a30f2156c1ddfe9a4d74eacbc2ceb112a7276c16b1a91d7680764a898463292"
+    "model_sha256": "d2e480f1e198fed26caadf74d8a3f73dbba47dc4f3182bdcef71431cfc4b8e1a",
+    "blend_sha256": "773778fbf66186d9bc1cca40e88a2287cda4cb5294528299a07433fed48a4515"
   },
   "Gloves": {
     "max_error": 1.1362135410308838e-07,
     "triangles": 2900,
     "minimum_triangle_area": 8.35671454469512e-05,
-    "model_sha256": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c",
-    "blend_sha256": "0a30f2156c1ddfe9a4d74eacbc2ceb112a7276c16b1a91d7680764a898463292"
+    "model_sha256": "77efd4a100fcc4c439ec4c0618552a3a0a7bb109b0796c8096718c750fb9f397",
+    "blend_sha256": "773778fbf66186d9bc1cca40e88a2287cda4cb5294528299a07433fed48a4515"
   },
   "Boots": {
     "max_error": 5.960464477539062e-07,
     "triangles": 9168,
     "minimum_triangle_area": 7.53286585017082e-05,
-    "model_sha256": "9d8019f8aae2bf04ea485ff27bc49befd8de1454453d0e942c8eb74dc45226a6",
-    "blend_sha256": "0a30f2156c1ddfe9a4d74eacbc2ceb112a7276c16b1a91d7680764a898463292",
+    "model_sha256": "fe3444e6208311801d64c6d70d86858c224c5ca931856826f59058ca6b4ab924",
+    "blend_sha256": "773778fbf66186d9bc1cca40e88a2287cda4cb5294528299a07433fed48a4515",
     "closed_sabatons": 2,
     "anatomical_parts": {
       "anatomical_sabaton": 2,

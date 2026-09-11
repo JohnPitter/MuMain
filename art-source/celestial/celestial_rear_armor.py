@@ -12,7 +12,7 @@ def crown_back(palette):
                         (side * (3 + index * 5), -7 + index * 4, 202 - index * 3)]
             inlaid_leaf('Helm / occipital crown lamella', controls, (2.7, .65), palette)
         scroll('Helm / engraved nape scroll', [(side * 1, -17, 163), (side * 11, -20, 164),
-               (side * 14, -19, 174), (side * 7, -20, 177)], .42, palette['Gold'])
+               (side * 14, -19, 174), (side * 7, -20, 177)], .42, palette['Trim'])
         inlaid_leaf('Helm / nape blade', [(side * 10, -11, 178), (side * 15, -10, 170),
                     (side * 13, -10, 158), (side * 9, -9, 154)], (2.1, .5), palette)
     inlaid_leaf('Helm / sagittal crest', [(0, -18, 164), (0, -23, 181),
@@ -27,9 +27,9 @@ def backplate(palette):
         edged_plate('Armor / scapular shield', outline, (-12, 3), palette)
         dorsal_leaves(palette, side)
         scroll('Armor / dorsal acanthus', [(side * 3, -16, 132), (side * 17, -17, 134),
-               (side * 20, -15, 149), (side * 11, -16, 150)], .5, palette['Gold'])
+               (side * 20, -15, 149), (side * 11, -16, 150)], .5, palette['Trim'])
         scroll('Armor / lumbar scroll', [(side * 1, -10, 111), (side * 10, -7.5, 116),
-               (side * 11, -8, 126), (side * 7, -10.5, 127)], .45, palette['Gold'])
+               (side * 11, -8, 126), (side * 7, -10.5, 127)], .45, palette['Trim'])
     for index in range(4):
         z = 151 - index * 10
         depth = -17 + index * 1.4
@@ -37,7 +37,7 @@ def backplate(palette):
                    (0, z - 12), (-3.7 + index * .4, z - 2)]
         edged_plate('Armor / articulated dorsal keel', outline, (depth, 1.1), palette)
     diamond = [(0, 156), (2.5, 151), (0, 146), (-2.5, 151)]
-    rim('Armor / dorsal jewel setting', diamond, -18.2, palette['Gold'], .4)
+    rim('Armor / dorsal jewel setting', diamond, -18.2, palette['Trim'], .4)
     gem('Armor / dorsal jewel', (0, -19, 151), (1.9, 1.0, 4), palette['Sapphire'])
 
 
@@ -55,4 +55,4 @@ def shoulder_back(palette, side):
     for index in range(3):
         controls = [(side * 24, -8, 146 - index * 7), (side * 32, -10, 145 - index * 7),
                     (side * 33, -7, 136 - index * 7), (side * 27, -6, 129 - index * 7)]
-        feather('Armor / rear arm lamella', controls, (2.2, .5, 8), palette['Gold'])
+        feather('Armor / rear arm lamella', controls, (2.2, .5, 8), palette['Trim'])

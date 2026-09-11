@@ -14,6 +14,7 @@ from mathutils import Vector
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from celestial_geometry import collection, materials
+from celestial_palette import construction_palette
 from celestial_props import BUILDERS
 from export_prop_bmd import export
 from inspect_bmd_rig import inspect
@@ -90,7 +91,7 @@ def verify_export(collection, name, path):
 def main():
     (OUTPUT / 'Data' / 'Item').mkdir(parents=True, exist_ok=True)
     scene = setup_scene()
-    palette = materials()
+    palette = construction_palette(materials())
     groups, reports = {}, []
     for name, builder in BUILDERS.items():
         groups[name] = collection('Celestial ' + name, lambda b=builder: b(palette))

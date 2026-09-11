@@ -14,17 +14,17 @@ def scroll(name, controls, width, material):
 
 def inlaid_leaf(name, controls, dimensions, palette):
     width, thickness = dimensions
-    feather(name + ' / gold frame', controls, (width, thickness, 8), palette['Gold'])
+    feather(name + ' / gold frame', controls, (width, thickness, 8), palette['Trim'])
     inner = [Vector(point) + Vector((0, -thickness - .1, 0)) for point in controls]
-    feather(name + ' / ivory enamel', inner, (width * .43, .18, 8), palette['Ivory'])
+    feather(name + ' / ivory enamel', inner, (width * .43, .18, 8), palette['Base'])
 
 
 def edged_plate(name, outline, shape, palette):
     depth, rise = shape
-    outer = plate(name + ' / gold border', outline, (depth, rise), palette['Gold'])
+    outer = plate(name + ' / gold border', outline, (depth, rise), palette['Trim'])
     center = sum((Vector(point) for point in outline), Vector((0, 0))) / len(outline)
     inner = [center + (Vector(point) - center) * .76 for point in outline]
-    plate(name + ' / ivory enamel', inner, (depth - rise * .3 - .25, rise * .76), palette['Ivory'])
+    plate(name + ' / ivory enamel', inner, (depth - rise * .3 - .25, rise * .76), palette['Base'])
     return outer
 
 
@@ -39,7 +39,7 @@ def chest_relief(palette, side):
         z = 130 - index * 10
         controls = [(side * 2, -13, z - 9), (side * 10, -15, z - 5),
                     (side * 14, -13, z + 3), (side * 7, -13, z + 5)]
-        scroll('Armor / abdominal acanthus', controls, .65, palette['Gold'])
+        scroll('Armor / abdominal acanthus', controls, .65, palette['Trim'])
     inlaid_leaf('Armor / gorget petal', [(side * 2, -12, 153), (side * 7, -12, 157),
                 (side * 10, -8, 160), (side * 9, -5, 164)], (2, .5), palette)
 

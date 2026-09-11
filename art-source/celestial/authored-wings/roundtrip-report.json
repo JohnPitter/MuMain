@@ -2,8 +2,8 @@
   "max_geometry_error": 5.662441253662109e-07,
   "minimum_triangle_area": 0.00014501984297793672,
   "unchanged_armor_files": 5,
-  "model_sha256": "ec9d30497f835b8de076958794d86784bea06425563ecdb6de256709f972c21e",
-  "blend_sha256": "850f8a8bc4cb74e213cc23550cba5a4bf3afd0e24f4efa1e6c0cb5f5242a0be8",
+  "model_sha256": "b1eddd650dd7b4459676170036cbb5eb1063431a326b0b8fa62e1d5b210757f2",
+  "blend_sha256": "fbfddcf2bd7b89a2bc61766d1f08b17b3ac51044032474046773450f744964bc",
   "max_pose_error": 0.00010950241160894259,
   "checked_vertices": 138141,
   "keyframes": 9

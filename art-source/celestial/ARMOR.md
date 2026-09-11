@@ -1,5 +1,9 @@
 # Celestial: armadura própria em revisão
 
+Estado mais recente: [revisão dourada de 11/09/2026](GOLDEN.md), com base ouro,
+frisos claros, integridade das animações e identificação das prévias atuais.
+As seções abaixo preservam a evolução histórica das malhas.
+
 As cinco peças agora têm geometria própria. Nenhum triângulo de Phoenix Soul,
 Venom Mist ou outro equipamento nativo é usado nos BMD deste lote. O esqueleto
 e as poses do personagem são referências de encaixe, não aprovação visual.

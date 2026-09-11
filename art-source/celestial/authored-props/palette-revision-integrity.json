@@ -1,0 +1,112 @@
+{
+  "Data/Player/Celestial_Helm.bmd": {
+    "triangles": 3880,
+    "old_sha256": "f298fdc1aa3533ef3aa16b394306f4e404807fd7a96ef89ae887b8e3cc416fee",
+    "new_sha256": "3e96319b37bc1e112655e7cd426d97b4b5e00249977661c2d1e42ebe1d387382",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Player/Celestial_Armor.bmd": {
+    "triangles": 11632,
+    "old_sha256": "d72e091f1c06e539bac078b61ca95375b448334cade51e9bf16d435c2f8c22ab",
+    "new_sha256": "ae2af9809dd1e95401b723ea9bcfdcaa67cf2319d4cb2a05a878eb6228158883",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Player/Celestial_Pants.bmd": {
+    "triangles": 11906,
+    "old_sha256": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599",
+    "new_sha256": "d2e480f1e198fed26caadf74d8a3f73dbba47dc4f3182bdcef71431cfc4b8e1a",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Player/Celestial_Gloves.bmd": {
+    "triangles": 2900,
+    "old_sha256": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c",
+    "new_sha256": "77efd4a100fcc4c439ec4c0618552a3a0a7bb109b0796c8096718c750fb9f397",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Player/Celestial_Boots.bmd": {
+    "triangles": 9168,
+    "old_sha256": "9d8019f8aae2bf04ea485ff27bc49befd8de1454453d0e942c8eb74dc45226a6",
+    "new_sha256": "fe3444e6208311801d64c6d70d86858c224c5ca931856826f59058ca6b4ab924",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Item/Celestial_Staff.bmd": {
+    "triangles": 10636,
+    "old_sha256": "5ac97450a5ae8f3c979647b1bb20693286e9aa1b451eb4be01112b023125ffbb",
+    "new_sha256": "35b30916ab1a7c0321fe3bbbc6c10c5fc89736892250425a1f778263bf27f93c",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Item/Celestial_Shield.bmd": {
+    "triangles": 8494,
+    "old_sha256": "ddfbacdf436e946918f1475736d81ce8d5d77593156d993e2eda421328b7ab6b",
+    "new_sha256": "74933f78247bfbc34829ad7e650f3e8ddc180258269a9aff926b93318da9ccd0",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  },
+  "Data/Item/Celestial_Pendant.bmd": {
+    "triangles": 7594,
+    "old_sha256": "7d983077eeaceb138daf39762da727197456e2de5afbf8e9dc085ff59ef2af14",
+    "new_sha256": "543966a6807d5009d6e1c7020aad58d78248ff27ede3c1f518d465bf6da72276",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 9.238719940185547e-07,
+    "changed_uv_triangles": 567,
+    "uv_tolerance": 1e-06
+  },
+  "Data/Item/Celestial_Ring.bmd": {
+    "triangles": 6172,
+    "old_sha256": "27f799ad23178a4f86e7d37d02ec040206a1d9458ae022f55174b8584c4dc01e",
+    "new_sha256": "bc49208efa3b68b6115b1cce5ed0bcc47ad98d73c2ae98b1e2ae8df3caabb46d",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 2.384185791015625e-07,
+    "changed_uv_triangles": 811,
+    "uv_tolerance": 1e-06
+  },
+  "Data/Item/Celestial_Wings.bmd": {
+    "triangles": 28870,
+    "old_sha256": "ec9d30497f835b8de076958794d86784bea06425563ecdb6de256709f972c21e",
+    "new_sha256": "b1eddd650dd7b4459676170036cbb5eb1063431a326b0b8fa62e1d5b210757f2",
+    "geometry_uv_normals_preserved": true,
+    "rig_and_animation_preserved": true,
+    "geometry_normals_winding_exact": true,
+    "maximum_uv_error": 0.0,
+    "changed_uv_triangles": 0,
+    "uv_tolerance": 0.0
+  }
+}

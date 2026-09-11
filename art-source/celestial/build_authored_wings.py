@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 from armor_surfaces import add_skin
 from build_celestial_props import setup_scene
 from celestial_geometry import collection, materials
+from celestial_palette import construction_palette
 from celestial_wing_geometry import wings
 from export_skinned_bmd import ExportSpec, export
 from import_native_reference import create_rig, world_matrices
@@ -51,7 +52,7 @@ def main():
     bind = world_matrices(model, 0)
     (OUTPUT / 'Data' / 'Item').mkdir(parents=True, exist_ok=True)
     scene = setup_scene()
-    palette = materials()
+    palette = construction_palette(materials())
     rig = create_rig(model, bind)
     rig.name = 'CelestialWingRig'
     group = collection('Celestial Wings', lambda: wings(palette, bind))
