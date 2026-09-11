@@ -68,3 +68,13 @@ O candidato contém Main e os 17 assets Celestial. Não contém o catálogo Item
 base completa nem DLL de conexão. Preservar a DLL publicada e as melhorias não
 relacionadas ao montar a distribuição final. Nenhuma publicação faz parte
 desta validação local. A fidelidade ao conceito e o desempenho seguem pendentes.
+
+## Diagnóstico de fechamento antes da seleção
+
+Se o cliente de testes fechar logo após o carregamento, preserve `MuError.log`
+da pasta desse cliente. As linhas `[Startup]` registram a última etapa da entrada;
+no Windows/MSVC uma falha nativa durante essa transição registra também módulo,
+código e deslocamento para análise com os símbolos do mesmo executável.
+O diagnóstico não grava senhas, pacotes, dumps de memória nem altera os itens.
+Não impede o fechamento nem representa correção da causa. A confirmação de
+inicialização e aparência continua dependendo do teste pessoal no jogo.

@@ -22,6 +22,7 @@
 #include "Core/Input/Input.h"
 #include "Network/Server/WSclient.h"
 #include "Core/Utilities/Log/muConsoleDebug.h"
+#include "Core/Utilities/Log/StartupDiagnostics.h"
 #include "I18N/All.h"
 #include "Engine/Object/ZzzCharacter.h"
 #include "UI/Legacy/UIControls.h"
@@ -272,20 +273,8 @@ void MoveCamera()
     MoveCharacterCamera(Position, g_loginCamera.currentPosition, g_loginCamera.currentAngle);
 }
 
-void CreateLogInScene()
+static void InitializeLoginInput()
 {
-    EnableMainRender = true;
-    gMapManager.WorldActive = WD_73NEW_LOGIN_SCENE;
-
-    gMapManager.LoadWorld(gMapManager.WorldActive);
-
-    OpenLogoSceneData();
-
-    CUIMng::Instance().CreateLoginScene();
-
-    CurrentProtocolState = REQUEST_JOIN_SERVER;
-    CreateSocket(szServerIpAddress, g_ServerPort);
-
     GuildInputEnable = false;
     TabInputEnable = false;
     GoldInputEnable = false;
@@ -302,6 +291,25 @@ void CreateLogInScene()
     }
     InputNumber = 2;
     InputTextHide[1] = 1;
+}
+
+void CreateLogInScene()
+{
+    using Core::Diagnostics::StartupCheckpoint;
+    StartupCheckpoint(L"login.begin");
+    EnableMainRender = true;
+    gMapManager.WorldActive = WD_73NEW_LOGIN_SCENE;
+    gMapManager.LoadWorld(gMapManager.WorldActive);
+    StartupCheckpoint(L"login.logo");
+    OpenLogoSceneData();
+    StartupCheckpoint(L"login.ui");
+    CUIMng::Instance().CreateLoginScene();
+    StartupCheckpoint(L"login.connection");
+    CurrentProtocolState = REQUEST_JOIN_SERVER;
+    CreateSocket(szServerIpAddress, g_ServerPort);
+    StartupCheckpoint(L"login.input");
+    InitializeLoginInput();
+    StartupCheckpoint(L"login.camera");
 
     // FIX: Enable tour mode with offset correction
     // Tour mode waypoints work well for movement, but need position offset
@@ -313,8 +321,10 @@ void CreateLogInScene()
 
     g_fMULogoAlpha = 0;
 
+    StartupCheckpoint(L"login.audio");
     ::PlayMp3(MUSIC_LOGIN_THEME);
 
+    StartupCheckpoint(L"login.ready");
     g_ErrorReport.Write(L"> Login Scene init success.\r\n");
 }
 
@@ -323,7 +333,7 @@ void NewMoveLogInScene()
     if (!InitLogIn)
     {
         InitLogIn = true;
-        CreateLogInScene();
+        Core::Diagnostics::RunStartup(CreateLogInScene);
     }
 
     if (!CUIMng::Instance().m_CreditWin.IsShow())

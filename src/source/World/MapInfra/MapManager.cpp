@@ -21,6 +21,7 @@
 #include "GameLogic/Events/w_CursedTemple.h"
 #include "Network/Server/WSclient.h"
 #include "I18N/All.h"
+#include "Core/Utilities/Log/StartupDiagnostics.h"
 
 
 CMapManager gMapManager;
@@ -1186,31 +1187,45 @@ void CMapManager::Load() // OK
     }
 }
 
+namespace
+{
+    void ResetWorldDirection()
+    {
+        g_Direction.Init();
+        g_Direction.HeroFallingDownInit();
+        g_Direction.DeleteMonster();
+        M39Kanturu3rd::Kanturu3rdInit();
+        g_Direction.m_CKanturu.m_iKanturuState = 0;
+        g_Direction.m_CKanturu.m_iMayaState = 0;
+        g_Direction.m_CKanturu.m_iNightmareState = 0;
+    }
+}
+
 void CMapManager::LoadWorld(int Map)
 {
+    using Core::Diagnostics::StartupCheckpoint;
     if (Map == 32 && this->WorldActive == 32)
     {
         Map = this->WorldActive = 9;
     }
 
+    StartupCheckpoint(L"world.release-objects");
     this->DeleteObjects();
+    StartupCheckpoint(L"world.release-npcs");
     DeleteNpcs();
+    StartupCheckpoint(L"world.release-monsters");
     DeleteMonsters();
     if (SceneFlag != CHARACTER_SCENE)
     {
+        StartupCheckpoint(L"world.clear-items");
         ClearItems();
+        StartupCheckpoint(L"world.clear-characters");
         ClearCharacters(HeroKey);
     }
+    StartupCheckpoint(L"world.reset-direction");
     RemoveAllShopTitleExceptHero();
-
-    g_Direction.Init();
-    g_Direction.HeroFallingDownInit();
-    g_Direction.DeleteMonster();
-    M39Kanturu3rd::Kanturu3rdInit();
-    g_Direction.m_CKanturu.m_iKanturuState = 0;
-    g_Direction.m_CKanturu.m_iMayaState = 0;
-    g_Direction.m_CKanturu.m_iNightmareState = 0;
-
+    ResetWorldDirection();
+    StartupCheckpoint(L"world.load-models");
     this->Load();
 
     wchar_t FileName[64];
@@ -1239,6 +1254,7 @@ void CMapManager::LoadWorld(int Map)
     mu_swprintf(WorldName, L"World%d", iMapWorld);
     mu_swprintf(FileName, L"Data\\%ls\\EncTerrain%d.map", WorldName, iMapWorld);
 
+    StartupCheckpoint(L"world.terrain-mapping");
     int iResult = OpenTerrainMapping(FileName);
 
     if (iMapWorld != iResult && -1 != iResult)
@@ -1255,6 +1271,7 @@ void CMapManager::LoadWorld(int Map)
     if (this->WorldActive == WD_73NEW_LOGIN_SCENE)
     {
         mu_swprintf(FileName, L"Data\\%ls\\CWScript%d.cws", WorldName, iMapWorld);
+        StartupCheckpoint(L"world.camera-script");
         CCameraMove::GetInstancePtr()->LoadCameraWalkScript(FileName);
     }
 
@@ -1303,6 +1320,7 @@ void CMapManager::LoadWorld(int Map)
         {
             mu_swprintf(FileName, L"Data\\%ls\\EncTerrain%d.att", WorldName, iMapWorld);
         }
+    StartupCheckpoint(L"world.terrain-attributes");
     iResult = OpenTerrainAttribute(FileName);
     if (this->WorldActive == WD_39KANTURU_3RD)
     {
@@ -1321,6 +1339,7 @@ void CMapManager::LoadWorld(int Map)
 
     mu_swprintf(FileName, L"Data\\%ls\\EncTerrain%d.obj", WorldName, iMapWorld);
 
+    StartupCheckpoint(L"world.objects");
     iResult = OpenObjectsEnc(FileName);
     if (iMapWorld != iResult && -1 != iResult)
     {
@@ -1333,6 +1352,7 @@ void CMapManager::LoadWorld(int Map)
         return;
     }
 
+    StartupCheckpoint(L"world.terrain-height");
     mu_swprintf(FileName, L"%ls\\TerrainHeight.bmp", WorldName);
     if (IsTerrainHeightExtMap(this->WorldActive) == true)
     {
@@ -1375,6 +1395,7 @@ void CMapManager::LoadWorld(int Map)
             mu_swprintf(FileName, L"%ls\\TerrainLight.jpg", WorldName);
         }
 
+    StartupCheckpoint(L"world.terrain-textures");
     OpenTerrainLight(FileName);
 
     if (CreateWaterTerrain(this->WorldActive) == false)

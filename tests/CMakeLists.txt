@@ -77,4 +77,5 @@ add_subdirectory(wire)
 add_subdirectory(voice)
 
 add_subdirectory(celestial)
+add_subdirectory(startup)
 
