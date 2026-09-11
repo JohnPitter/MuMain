@@ -13257,4 +13257,27 @@
   <data name="MaintenanceTitle" xml:space="preserve"><value>Manutenção</value></data>
   <data name="MaintenanceOk" xml:space="preserve"><value>OK</value></data>
   <data name="WeddingProposalRequest" xml:space="preserve"><value>%ls pediu você em casamento. Aceitar?</value></data>
+  <data name="CelestialBonusTitle" xml:space="preserve"><value>Conjunto Celestial — bônus completos</value></data>
+  <data name="CelestialBonusRequired" xml:space="preserve"><value>Requer %u equipamentos utilizáveis</value></data>
+  <data name="CelestialBonusUpgrade" xml:space="preserve"><value>Upgrade mínimo por peça: +%u</value></data>
+  <data name="CelestialBonusActive" xml:space="preserve"><value>Seu conjunto: ativo</value></data>
+  <data name="CelestialBonusInactive" xml:space="preserve"><value>Seu conjunto: inativo</value></data>
+  <data name="CelestialBonusUnknown" xml:space="preserve"><value>Aguardando estado do servidor</value></data>
+  <data name="CelestialBonusCondition" xml:space="preserve"><value>Exige todas as peças, incluindo acessórios.</value></data>
+  <data name="CelestialBonusRecoveryNote" xml:space="preserve"><value>Recuperação não altera poções ou curas.</value></data>
+  <data name="CelestialBonusLimitsNote" xml:space="preserve"><value>Bônus sujeitos aos limites do servidor.</value></data>
+  <data name="CelestialBonusDamage" xml:space="preserve"><value>Dano</value></data>
+  <data name="CelestialBonusDefense" xml:space="preserve"><value>Defesa</value></data>
+  <data name="CelestialBonusHealth" xml:space="preserve"><value>Vida máxima</value></data>
+  <data name="CelestialBonusMana" xml:space="preserve"><value>Mana máxima</value></data>
+  <data name="CelestialBonusAttackSpeed" xml:space="preserve"><value>Velocidade de ataque</value></data>
+  <data name="CelestialBonusMagicSpeed" xml:space="preserve"><value>Velocidade de magia</value></data>
+  <data name="CelestialBonusMovement" xml:space="preserve"><value>Velocidade de movimento</value></data>
+  <data name="CelestialBonusIgnoreDefense" xml:space="preserve"><value>Chance de ignorar defesa</value></data>
+  <data name="CelestialBonusCriticalChance" xml:space="preserve"><value>Chance de crítico</value></data>
+  <data name="CelestialBonusHealthRecovery" xml:space="preserve"><value>Taxa de recuperação de vida</value></data>
+  <data name="CelestialBonusManaRecovery" xml:space="preserve"><value>Taxa de recuperação de mana</value></data>
+  <data name="CelestialBonusElementalProtection" xml:space="preserve"><value>Redução de dano elemental direto</value></data>
+  <data name="CelestialBonusPercentagePoints" xml:space="preserve"><value> p.p.</value></data>
+  <data name="CelestialBonusShiftHint" xml:space="preserve"><value>[Shift] Ver bônus do conjunto Celestial</value></data>
 </root>

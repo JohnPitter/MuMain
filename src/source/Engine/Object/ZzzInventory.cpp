@@ -19,6 +19,7 @@
 #include "Render/Effects/ZzzEffect.h"
 #include "Audio/DSPlaySound.h"
 #include "I18N/All.h"
+#include "UI/Items/EquipmentTooltip.h"
 
 #include "Scenes/SceneCore.h"
 
@@ -2127,9 +2128,25 @@ void GetSpecialOptionText(int Type, wchar_t* Text, WORD Option, BYTE Value, int 
     }
 }
 
+namespace
+{
+    void ResetItemTooltip()
+    {
+        TextNum = 0;
+        SkipNum = 0;
+        std::fill(std::begin(TextListColor), std::end(TextListColor), 0);
+        std::fill(std::begin(TextBold), std::end(TextBold), 0);
+        for (auto& line : TextList)
+            line[0] = L'\0';
+    }
+}
+
 void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bItemTextListBoxUse)
 {
     if (ip->Type == -1)
+        return;
+
+    if (!bItemTextListBoxUse && UI::Items::EquipmentTooltip::TryRenderDetails(ip->Type, sx, sy))
         return;
 
     tm* ExpireTime;
@@ -2143,14 +2160,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
     }
 
     ITEM_ATTRIBUTE* p = &ItemAttribute[ip->Type];
-    TextNum = 0;
-    SkipNum = 0;
-
-    ZeroMemory(TextListColor, 20 * sizeof(int));
-    for (int i = 0; i < 30; i++)
-    {
-        TextList[i][0] = 0;
-    }
+    ResetItemTooltip();
 
     if (!Sell && (ip->Type == ITEM_DARK_HORSE_ITEM || ip->Type == ITEM_DARK_RAVEN_ITEM))
     {
@@ -5634,6 +5644,7 @@ void RenderItemInfo(int sx, int sy, ITEM* ip, bool Sell, int Inventype, bool bIt
         TextNum = g_csItemOption.RenderSetOptionListInItem(ip, TextNum, bThisisEquippedItem);
 
         TextNum = g_SocketItemMgr.AttachToolTipForSocketItem(ip, TextNum);
+        TextNum = UI::Items::EquipmentTooltip::AppendHint(ip->Type, TextNum);
 
         SIZE TextSize = { 0, 0 };
         float fRateY = g_fScreenRate_y;

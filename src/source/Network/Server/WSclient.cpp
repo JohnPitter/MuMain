@@ -30,6 +30,9 @@
 #include "Character/VipStatus.h"
 #include "Network/Server/EquipmentStatePacket.h"
 #include "Network/Server/EquipmentStateReceiver.h"
+#include "Network/Server/EquipmentBonusCatalogPacket.h"
+#include "Network/Server/EquipmentBonusCatalogReceiver.h"
+#include "Character/EquipmentCatalogCache.h"
 
 #include "Audio/DSPlaySound.h"
 #include "Audio/VoiceChat.h"
@@ -1317,15 +1320,19 @@ void LogSafeCastSizeMismatch(const char* packet_type, std::size_t received, std:
         static_cast<unsigned>(received), static_cast<unsigned>(expected));
 }
 
+namespace
+{
+    void ResetCharacterInfoSession()
+    {
+        MouseLButton = false;
+        CharacterAttribute->Ability = 0;
+        std::fill(std::begin(CharacterAttribute->AbilityTime), std::end(CharacterAttribute->AbilityTime), 0);
+        Character::Equipment::ResetCatalog();
+    }
+}
+
 BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
 {
-    MouseLButton = false;
-
-    CharacterAttribute->Ability = 0;
-    CharacterAttribute->AbilityTime[0] = 0;
-    CharacterAttribute->AbilityTime[1] = 0;
-    CharacterAttribute->AbilityTime[2] = 0;
-
     auto const Data = safe_cast<PRECEIVE_JOIN_MAP_SERVER_EXTENDED>(
         ReceiveBuffer, "PRECEIVE_JOIN_MAP_SERVER_EXTENDED");
     if (Data == nullptr)
@@ -1334,6 +1341,7 @@ BOOL ReceiveJoinMapServer(std::span<const BYTE> ReceiveBuffer)
         return false;
     }
 
+    ResetCharacterInfoSession();
     CharacterAttribute->Experience = ntoh64(Data->CurrentExperience);
     CharacterAttribute->NextExperience = ntoh64(Data->ExperienceForNextLevel);
     CharacterAttribute->LevelUpPoint = Data->LevelUpPoint;
@@ -13779,6 +13787,9 @@ namespace
         const auto size = static_cast<int32_t>(packet.size());
         switch (subcode)
         {
+        case Network::Equipment::CatalogSubCode:
+            Network::Equipment::ReceiveCatalog(packet);
+            return true;
         case Network::Equipment::StateSubCode:
             Network::Equipment::ReceiveState(packet);
             return true;

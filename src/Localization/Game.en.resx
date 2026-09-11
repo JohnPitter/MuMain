@@ -13182,4 +13182,27 @@
   <data name="MaintenanceTitle" xml:space="preserve"><value>Maintenance</value></data>
   <data name="MaintenanceOk" xml:space="preserve"><value>OK</value></data>
   <data name="WeddingProposalRequest" xml:space="preserve"><value>%ls proposed marriage to you. Accept?</value></data>
+  <data name="CelestialBonusTitle" xml:space="preserve"><value>Celestial set — complete bonuses</value></data>
+  <data name="CelestialBonusRequired" xml:space="preserve"><value>Requires %u usable equipped items</value></data>
+  <data name="CelestialBonusUpgrade" xml:space="preserve"><value>Minimum upgrade per piece: +%u</value></data>
+  <data name="CelestialBonusActive" xml:space="preserve"><value>Your set: active</value></data>
+  <data name="CelestialBonusInactive" xml:space="preserve"><value>Your set: inactive</value></data>
+  <data name="CelestialBonusUnknown" xml:space="preserve"><value>Waiting for server state</value></data>
+  <data name="CelestialBonusCondition" xml:space="preserve"><value>Requires every piece, including accessories.</value></data>
+  <data name="CelestialBonusRecoveryNote" xml:space="preserve"><value>Recovery does not change potions or heals.</value></data>
+  <data name="CelestialBonusLimitsNote" xml:space="preserve"><value>Server limits still apply.</value></data>
+  <data name="CelestialBonusDamage" xml:space="preserve"><value>Damage</value></data>
+  <data name="CelestialBonusDefense" xml:space="preserve"><value>Defense</value></data>
+  <data name="CelestialBonusHealth" xml:space="preserve"><value>Maximum health</value></data>
+  <data name="CelestialBonusMana" xml:space="preserve"><value>Maximum mana</value></data>
+  <data name="CelestialBonusAttackSpeed" xml:space="preserve"><value>Attack speed</value></data>
+  <data name="CelestialBonusMagicSpeed" xml:space="preserve"><value>Magic speed</value></data>
+  <data name="CelestialBonusMovement" xml:space="preserve"><value>Movement speed</value></data>
+  <data name="CelestialBonusIgnoreDefense" xml:space="preserve"><value>Defense ignore chance</value></data>
+  <data name="CelestialBonusCriticalChance" xml:space="preserve"><value>Critical hit chance</value></data>
+  <data name="CelestialBonusHealthRecovery" xml:space="preserve"><value>Health recovery rate</value></data>
+  <data name="CelestialBonusManaRecovery" xml:space="preserve"><value>Mana recovery rate</value></data>
+  <data name="CelestialBonusElementalProtection" xml:space="preserve"><value>Direct elemental damage reduction</value></data>
+  <data name="CelestialBonusPercentagePoints" xml:space="preserve"><value> pp</value></data>
+  <data name="CelestialBonusShiftHint" xml:space="preserve"><value>[Shift] View Celestial set bonuses</value></data>
 </root>

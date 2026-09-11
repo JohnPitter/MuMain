@@ -10,3 +10,13 @@ mu_add_test(
         ../../src/source/Network/Server/EquipmentStatePacket.cpp
         ../../src/source/Character/CharacterMovementEffects.cpp
 )
+
+mu_add_test(
+    NAME test_equipment_catalog
+    SOURCES
+        test_equipment_catalog.cpp
+        ../../src/source/Network/Server/EquipmentBonusCatalogPacket.cpp
+        ../../src/source/Character/EquipmentBonusCatalog.cpp
+        ../../src/source/Character/EquipmentCatalogCache.cpp
+        ../../src/source/UI/Items/EquipmentTooltipContent.cpp
+)
