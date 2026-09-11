@@ -1,0 +1,20 @@
+{
+  "saved_blend_sha256": "a1d4a6b8ae69842a93669b32693092b821f6446aa51b0fe528bc6faf76f3c212",
+  "models": {
+    "Helm": {
+      "max_error": 6.183981895446777e-07,
+      "triangles": 3484,
+      "sha256": "6c9ff52ce25097e51cfb113545324908780f09b56f04e0f4ac91bb0bf376d746"
+    },
+    "Armor": {
+      "max_error": 8.508213795721531e-07,
+      "triangles": 7842,
+      "sha256": "ea71dae4fd921d91444f3cc7d1579d41127860ecbe9075f1319512ceb199faaa"
+    },
+    "Boot": {
+      "max_error": 8.046627044677734e-07,
+      "triangles": 4192,
+      "sha256": "d9d8235dd3d8037744ffcf70a23faad1dd5bd5c87771b50150d5f327099ff069"
+    }
+  }
+}

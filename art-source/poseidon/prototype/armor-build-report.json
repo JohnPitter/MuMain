@@ -1,0 +1,223 @@
+{
+  "status": "AUTHORED_ARMOR_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/poseidon/design-spec.md",
+  "model_origin": "Original Poseidon geometry on the audited native Class305 skeletons; single-influence rig binding, no native mesh reuse",
+  "native_rig": {
+    "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "5987bc37b1c6670971caa6d4d785f812a8aa16e6ac3e7e24e15e6f4cc9cba88e",
+    "piece_sha256": {
+      "Helm": "99cbd4f17711de4c91e3d3d50712c317e29e91ab123a35339357fd95478efd25",
+      "Armor": "965044ccdfb1015369d9153835e9cee735ea5ebbfa1f6f5829539eb3c9590936",
+      "Boot": "3bc5d7d4d2571b5b9f2bb284bfc7bf06d74a9659812edf84d6f28278fb158112"
+    },
+    "used_bone_contract": {
+      "Helm": [
+        18,
+        20
+      ],
+      "Armor": [
+        17,
+        18,
+        25,
+        26,
+        27,
+        34,
+        35,
+        36
+      ],
+      "Boot": [
+        4,
+        5,
+        11,
+        12
+      ]
+    }
+  },
+  "fit_anchors": {
+    "Helm": {
+      "18": [
+        0.0,
+        0.0207,
+        133.351
+      ],
+      "20": [
+        0.0001,
+        -0.1542,
+        164.4989
+      ]
+    },
+    "Armor": {
+      "17": [
+        0.0,
+        0.0158,
+        113.5495
+      ],
+      "18": [
+        0.0,
+        0.0207,
+        133.351
+      ],
+      "25": [
+        -6.4773,
+        -0.0,
+        159.3605
+      ],
+      "26": [
+        -19.6104,
+        -0.0,
+        156.6983
+      ],
+      "27": [
+        -26.6162,
+        -0.0,
+        119.7257
+      ],
+      "34": [
+        6.4774,
+        -0.0,
+        159.3604
+      ],
+      "35": [
+        19.6105,
+        0.0,
+        156.6982
+      ],
+      "36": [
+        26.6162,
+        0.0,
+        119.7257
+      ]
+    },
+    "Boot": {
+      "4": [
+        10.2815,
+        -4.9348,
+        60.7674
+      ],
+      "5": [
+        10.2814,
+        0.0,
+        11.5839
+      ],
+      "11": [
+        -10.2816,
+        -4.9348,
+        60.7674
+      ],
+      "12": [
+        -10.2817,
+        0.0,
+        11.5839
+      ]
+    }
+  },
+  "triangle_budgets": {
+    "Helm": [
+      2200,
+      6200
+    ],
+    "Armor": [
+      3200,
+      8200
+    ],
+    "Boot": [
+      2600,
+      6600
+    ]
+  },
+  "shared_source_sha256": {
+    "armor_surfaces.py": "d49c5bff7c946180898560fe6a25ab2b83048dde21a7aec660ec35bfa4ab66b3",
+    "celestial_geometry.py": "34317a45d74bc178d36e0a798b7063915104450189e093dc9368fd70bb9b16c6",
+    "export_prop_bmd.py": "26f65f4fb05fca889691773b23f2aa5bf6400f546648864fc0bb79abb752af9a",
+    "export_skinned_bmd.py": "ac24d213e19d2d818d9e2f8e531483fb151903b6b1e88dda0b01126b13db6e58",
+    "import_native_reference.py": "dcc96c75f200c64e88f8d9e0a16dbc25c614dd1b5d70f585b091d6f692b4a80e",
+    "inspect_bmd_rig.py": "d3aa1c409faa8b0e2af71e74f7dc296b532cdda08529ca245195658e8712647a",
+    "verify_prop_roundtrip.py": "d5cb7895952bd240eef0aec7ed2b378945cadd79bc22952e63c859695e3b63f5"
+  },
+  "blend_sha256": "a1d4a6b8ae69842a93669b32693092b821f6446aa51b0fe528bc6faf76f3c212",
+  "pieces": {
+    "Helm": {
+      "file": "Poseidon_Helm.bmd",
+      "meshes": 4,
+      "triangles": 3484,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 40,
+        "triangles": 3484,
+        "open_edges": 30,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.004330114818247048,
+      "sha256": "6c9ff52ce25097e51cfb113545324908780f09b56f04e0f4ac91bb0bf376d746",
+      "used_bones": [
+        18,
+        20
+      ],
+      "roundtrip_max_error": 6.183981895446777e-07
+    },
+    "Armor": {
+      "file": "Poseidon_Armor.bmd",
+      "meshes": 6,
+      "triangles": 7842,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 63,
+        "triangles": 7842,
+        "open_edges": 172,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0004200254904049144,
+      "sha256": "ea71dae4fd921d91444f3cc7d1579d41127860ecbe9075f1319512ceb199faaa",
+      "used_bones": [
+        17,
+        18,
+        25,
+        26,
+        27,
+        34,
+        35,
+        36
+      ],
+      "roundtrip_max_error": 8.508213795721531e-07
+    },
+    "Boot": {
+      "file": "Poseidon_Boot.bmd",
+      "meshes": 4,
+      "triangles": 4192,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 51,
+      "topology": {
+        "objects": 54,
+        "triangles": 4192,
+        "open_edges": 64,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.00040495753163867157,
+      "sha256": "d9d8235dd3d8037744ffcf70a23faad1dd5bd5c87771b50150d5f327099ff069",
+      "used_bones": [
+        4,
+        5,
+        11,
+        12
+      ],
+      "roundtrip_max_error": 8.046627044677734e-07
+    }
+  }
+}

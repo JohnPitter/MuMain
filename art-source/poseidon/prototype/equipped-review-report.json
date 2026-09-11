@@ -1,0 +1,66 @@
+{
+  "status": "ATTACHMENT_MATH_PREVIEW_NOT_INGAME",
+  "mannequin": "PREVIEW_fit_mannequin generic tubes; never exported",
+  "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+  "player_bones": 60,
+  "anchor_gates": {
+    "nearest_below": 20.0,
+    "farthest_below": 65.0,
+    "boot_pose_shift_min": 3.0,
+    "boot_pose_shift": 11.4357
+  },
+  "poses": [
+    {
+      "render": "Poseidon_ArmorSet_equipped_front.png",
+      "clip": "PLAYER_STOP_SWORD",
+      "action": 4,
+      "frame": 0,
+      "view": "front"
+    },
+    {
+      "render": "Poseidon_ArmorSet_equipped_side.png",
+      "clip": "PLAYER_WALK_SWORD",
+      "action": 17,
+      "frame": 3,
+      "view": "side"
+    }
+  ],
+  "fit_probes": [
+    {
+      "clip": "PLAYER_STOP_SWORD",
+      "frame": 0,
+      "vertex_anchor_distance": {
+        "Helm": {
+          "nearest": 8.704,
+          "farthest": 53.5406
+        },
+        "Armor": {
+          "nearest": 0.7836,
+          "farthest": 41.7836
+        },
+        "Boot": {
+          "nearest": 1.9005,
+          "farthest": 45.7094
+        }
+      }
+    },
+    {
+      "clip": "PLAYER_WALK_SWORD",
+      "frame": 3,
+      "vertex_anchor_distance": {
+        "Helm": {
+          "nearest": 8.704,
+          "farthest": 53.5406
+        },
+        "Armor": {
+          "nearest": 0.7836,
+          "farthest": 41.7836
+        },
+        "Boot": {
+          "nearest": 1.9005,
+          "farthest": 45.7094
+        }
+      }
+    }
+  ]
+}

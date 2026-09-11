@@ -10,9 +10,12 @@ escritos na imagem. Nada foi publicado, inserido em conta ou conectado ao launch
 
 Entregue nesta etapa: projeto completo, auditoria das bases nativas, duas armas
 autorais editáveis, BMD de diagnóstico, seis renders e verificações de integridade.
-Armaduras, manto, acessórios, pets e efeitos abaixo são **projeto**, não malhas
-concluídas. O aspecto final depende de escultura/texturas, ajuste de equipamento e
-aprovação visual no cliente; não existe promessa de identidade pixel a pixel.
+Segundo lote entregue: elmo, peitoral e botas autorais sobre o esqueleto nativo
+Class305 auditado, com exportação BMD diagnóstica, provas de roundtrip, prova
+equipada no rig do player e onze renders de inspeção. Manto, acessórios, pets e
+efeitos abaixo são **projeto**, não malhas concluídas. O aspecto final depende de
+escultura/texturas, ajuste de equipamento e aprovação visual no cliente; não existe
+promessa de identidade pixel a pixel.
 
 ## Arquitetura de arte
 
@@ -48,11 +51,11 @@ fossem a aparência nova. Os modelos nativos documentam rig e comportamento apen
 
 | Peça | Silhueta e detalhes a construir | Vinculação / aceitação | Estado |
 | --- | --- | --- | --- |
-| Elmo | Coroa fechada em tridente, lâmina central longa, cristal axial, sobrancelhas angulares, nuca articulada negra com borda ouro | Esqueleto Player/Lord Emperor; rosto sem atravessar viseira; inspeção 360° | Projeto |
-| Armadura | Peitoral negro anatômico, losango azul no esterno, nervuras douradas em ondas; ombreiras assimétricas com fan de penas/placas e guarda curva; escápulas ornamentadas | Pesos rígidos MU nos ossos nativos; testes braços elevados, montaria e costas sem manto | Projeto |
+| Elmo | Coroa fechada em tridente, lâmina central longa, cristal axial, sobrancelhas angulares, nuca articulada negra com borda ouro | Esqueleto Player/Lord Emperor; rosto sem atravessar viseira; inspeção 360° | Protótipo autoral BMD/Blender |
+| Armadura | Peitoral negro anatômico, losango azul no esterno, nervuras douradas em ondas; ombreiras assimétricas com fan de penas/placas e guarda curva; escápulas ornamentadas | Pesos rígidos MU nos ossos nativos; testes braços elevados, montaria e costas sem manto | Protótipo autoral BMD/Blender |
 | Calças | Lamelas estreitas, faixas de metal segmentadas sobre tecido escuro, quadril e traseira completos | Articulação de joelho/quadril; não soldar faldão às duas pernas | Projeto |
 | Luvas | Dedos segmentados, garras discretas, guarda dorsal, filetes nas juntas; palma usável | Empunhadura de tridente/cetro e rédea; dedos não viram bloco | Projeto |
-| Botas | Caneleira curva, tornozelo encaixado, calcanhar recortado e sabaton segmentado com solado | Flexão do pé, estribo e traseira; sem esfera no calcanhar ou cubo branco | Projeto |
+| Botas | Caneleira curva, tornozelo encaixado, calcanhar recortado e sabaton segmentado com solado | Flexão do pé, estribo e traseira; sem esfera no calcanhar ou cubo branco | Protótipo autoral BMD/Blender |
 | Manto | Tecido preto longo com abertura inferior, bordas douradas sinuosas e brasão de tridente; ponte de ombro e fechos metálicos | Cloth do Lord Emperor separado da ferragem BMD; colisão com torso/cavalo e vento | Projeto |
 | Tridente | Três lâminas altas independentes, vazios entre pontas, cristal oceânico central, canaletas ouro, haste delgada e ponteira | Alternativa longa de arma; âncora de pega e FX próprias; classificação funcional pendente | Protótipo autoral BMD/Blender |
 | Cetro oceânico | Coroa mais baixa/larga, garras em onda e núcleo azul; não é apenas o tridente reescalado | Alternativa ao tridente, não par obrigatório; compatibilidade de cetro DL a validar | Protótipo autoral BMD/Blender |
@@ -125,6 +128,9 @@ explícita: renomear BMD não ativa o cloth automaticamente.
    comparação de triângulos, normais e UV com erro máximo permitido de `2e-5`.
 2. **Próximo lote artístico:** elmo/peitoral/bota, apresentados frente/costas/lado
    junto ao rig de Lord Emperor; aprovar família visual antes de multiplicar peças.
+   Entregues como protótipos autorais skinados no rig Class305 (ossos 18/20 no
+   elmo, 17/18/25/26/27/34/35/36 no peitoral, 4/5/11/12 nas botas); aprovação
+   visual e atlases próprios continuam pendentes.
 3. Construir peças restantes, manto com cloth e pets, sem trocar esqueletos por
    primitivas. Provar poses preservadas e meshes dentro dos limites do cliente.
 4. Produzir atlas próprios e UV finais com bordas/frente/costas coerentes;
@@ -142,6 +148,9 @@ A partir da raiz deste worktree, com Blender 4.2:
 python art-source/poseidon/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_armor.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_armor.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_armor_equipped.py
 python -m unittest discover -s art-source/poseidon -p 'test_*.py' -v
 ```
 
@@ -150,6 +159,14 @@ As duas coleções são `Poseidon Trident` e `Poseidon Scepter`; a primeira fica
 por padrão e a outra pode ser habilitada para edição. Ambas compartilham a origem
 de pega, portanto habilitá-las simultaneamente superpõe as alternativas.
 
+As peças de armadura (`build_poseidon_armor.py`) geram as coleções `Poseidon Helm`,
+`Poseidon Armor` e `Poseidon Boot` em `prototype/poseidon-armor.blend`, os BMDs
+diagnósticos `Poseidon_{Helm,Armor,Boot}.bmd` em `prototype/models/`, as vistas
+frente/lado/costas em `prototype/renders/` e a prova equipada
+(`poseidon_armor_equipped.py`) posa os BMDs exportados com as matrizes do próprio
+`player.bmd` junto a um mannequin neutro de prévia — reconstrução de matemática de
+encaixe, não captura in-game.
+
 - `prototype/poseidon-weapons.blend`: malhas 3D, materiais e estúdio.
 - `prototype/models/`: BMD de diagnóstico **não instaláveis**.
 - `prototype/renders/`: seis PNGs de estúdio (frontal, lateral oblíqua a 72° e
@@ -157,6 +174,10 @@ de pega, portanto habilitá-las simultaneamente superpõe as alternativas.
 - `prototype/build-report.json`: contagens, hashes e prova durante geração.
 - `prototype/saved-roundtrip-report.json`: prova reabrindo o Blender salvo.
 - `prototype/texture-dependencies.json`: atlas pendentes explicitamente declarados.
+- `prototype/poseidon-armor.blend`: elmo, peitoral e botas sobre o rig auditado.
+- `prototype/armor-build-report.json`: orçamentos, ossos usados, âncoras e prova.
+- `prototype/armor-saved-roundtrip-report.json`: roundtrip das peças reabrindo o Blender.
+- `prototype/equipped-review-report.json`: prova de encaixe no rig do player.
 - `native-reference-audit.json`: proveniência/rigs e contratos nativos verificados.
 
 Nenhuma imagem de textura foi criada por Pillow nem houve alteração de arquivos
