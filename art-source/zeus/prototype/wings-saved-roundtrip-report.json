@@ -1,0 +1,10 @@
+{
+  "saved_blend_sha256": "4ff647a2ee4bb15d5daf9631bbce6afe271532568cd75fdf952208e4c5f3ee31",
+  "max_geometry_error": 7.152557373046875e-07,
+  "max_pose_error": 0.00010950241160894259,
+  "checked_vertices": 77346,
+  "keyframes": 9,
+  "minimum_triangle_area": 0.0003082363136560385,
+  "triangles": 16004,
+  "sha256": "ddfdd88ee4e0664fc7a722373cc29ae8da9545096a9d567f57c4200e1433b4ce"
+}

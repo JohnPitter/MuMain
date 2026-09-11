@@ -1,0 +1,36 @@
+{
+  "saved_blend_sha256": "cf3c2eba56339ddffc023b8a83af79c81aaf8409a1fc4372f9baaf2da367bfe7",
+  "models": {
+    "Pendant": {
+      "max_error": 5.960464477539062e-07,
+      "triangles": 1862,
+      "contract_bone": "Tube04",
+      "anchors": {
+        "ChainTop": 0.0887,
+        "Frame": 0.6,
+        "Eye": 0.19
+      },
+      "sha256": "63ab6f35bbdf7c3c1c744a48949e2c66344b67ae55b973d12698b91bd1baaa18"
+    },
+    "Ring_Storm": {
+      "max_error": 4.063952019350836e-07,
+      "triangles": 1890,
+      "contract_bone": "Tube01",
+      "anchors": {
+        "Band": 1.1538,
+        "Gem": 1.12
+      },
+      "sha256": "140788de74ec2729df96a530c370a72717c8595f3a37b449f32d0acc99a3cfa5"
+    },
+    "Ring_Wisdom": {
+      "max_error": 3.0919909477233887e-07,
+      "triangles": 2408,
+      "contract_bone": "Tube01",
+      "anchors": {
+        "Band": 0.8062,
+        "Gem": 0.27
+      },
+      "sha256": "6b8728240e8965fce9a358bbd0844ffdda4bcf6f24850ee8beb21b6826cbc475"
+    }
+  }
+}

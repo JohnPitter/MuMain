@@ -18,8 +18,12 @@ do acabamento azul Legendary +15 Excellent
 (Espada de Zeus e Bastão Celestial) com BMD de diagnóstico, renders e testes.
 Na onda seguinte, as **4 peças de corpo** (Armadura com ombreiras incorporadas,
 Calça, Luvas e Botas) foram modeladas como protótipos autorais sobre o rig
-Class304, no molde Poseidon (build/verify/equipped + renders + testes). Capa,
-asas, pendant e anéis abaixo permanecem **projeto**, não malhas concluídas.
+Class304, no molde Poseidon (build/verify/equipped + renders + testes). A onda
+atual entregou **asas, pendant e anéis** como protótipos autorais: as Asas
+Celestiais sobre o esqueleto Wing44 congelado (47 ossos, flap de 9 quadros
+preservado e provado em ≥2 poses) e as três joias nos contratos Necklace02/
+Ring02 (1 osso estático cada, nome nativo preservado). A capa abaixo permanece
+**projeto**, não malha concluída.
 
 ## Classe e requisitos de enquadramento
 
@@ -84,10 +88,10 @@ anexando pelo sistema padrão — é efeito de upgrade, não peça do set.
 | Capa | Capa longa azul com interior mais escuro, bordas platina, brasão de raio/estrela; “Capa (visão traseira)” da prancha | Precedente cloth `DarkLordRobe02` (1 osso + cloth runtime, ferragem no osso 19 — ver audit Poseidon); cloth é sistema separado | Projeto |
 | Espada de Zeus (arma principal) | Espada longa, lâmina azul celeste energética com núcleo emissivo e gume branco-platina, guarda em “V” de raio, punho envolto azul, pommel com estrela | Mão direita, osso 33 (`knife_gdf`); âncoras `Grip/Core/Tip`; **protótipo BMD/Blender nesta lane** | Protótipo autoral BMD/Blender |
 | Bastão Celestial (arma alternativa) | Cajado azul alto com ornamento estelar no topo, núcleo emissivo, anéis platina, ponta inferior acabada | Mão esquerda, osso 42 (`hand_bofdgne01`); âncoras `Grip/Core/Tip`; não é a espada reescalada | Protótipo autoral BMD/Blender |
-| Asas Celestiais | Asas em placas facetadas azul/platina com pontas de raio (painel “Asas do Set”: detalhe esquerdo/central/direito) | Precedente de contrato: asas autorais do Celestial sobre esqueleto `Wing44` (47 ossos, ação de 9 quadros, osso 47 = halo) — consultado em `art-source/celestial/WINGS.md`, sem copiar malha | Projeto |
-| Pendant Olho de Zeus | Cristal azul em moldura estelar platina com pupila de raio, corrente fina (subtítulo da prancha: “Olho da Tempestade”) | Modelo/ícone próprios; precedentes Necklace02/Ring02 auditados; aparição no corpo depende de suporte posterior | Projeto |
-| Anel da Tempestade | Aro platina com faísca angular e cristal azul alongado | Modelo/ícone próprios; sem efeito de transformação implícito | Projeto |
-| Anel da Sabedoria | Aro com ornamento circular tipo coroa de estrela e cristal menor; par distinto do anterior sem duplicar geometria | Modelo/ícone próprios | Projeto |
+| Asas Celestiais | Leque de lâminas facetadas azul celeste com espinhos e pontas platina, canaletas de tempestade emissivas em zigzag, cobertura de bases, borda inferior em pontas e crista de estrela de 8 pontas com gema coração no osso raiz | Esqueleto Wing44 congelado (47 ossos, nomes/índices/hierarquia exatos, flap de 9 quadros com trava de raiz preservado); pele de influência única nos ossos 0, 1–5 e 24–28; flap provado em 3 poses nativas (erro < 1,1e-4, laço fechado); 16.004 triângulos | Protótipo autoral BMD/Blender |
+| Pendant Olho de Zeus | Amuleto com gema-olho azul celeste (íris emissiva e pupila platina) em moldura estelar platina de 8 pontas, raios laterais em zigzag, argola e corrente fina | Contrato Necklace02 exato: 1 osso estático `Tube04`, 1 quadro sem trava, tudo no osso raiz; 1.862 triângulos; âncoras ChainTop/Frame/Eye registradas | Protótipo autoral BMD/Blender |
+| Anel da Tempestade | Aro platina com dois filetes gravados e canaletas emissivas, coroa de garras, raio em degraus com cristal azul alongado e faísca emissiva no topo | Contrato Ring02 exato: 1 osso estático `Tube01`, 1 quadro sem trava; 1.890 triângulos; silhueta alta (38,6 de envergadura vertical); âncoras Band/Gem | Protótipo autoral BMD/Blender |
+| Anel da Sabedoria | Aro platina irmão do anterior com coroa circular de 8 pontas estelares, pérolas azuis e gema redonda com núcleo emissivo | Contrato Ring02 exato: 1 osso estático `Tube01`, 1 quadro sem trava; 2.408 triângulos; silhueta larga (27,3 de envergadura horizontal, distinta da Tempestade); âncoras Band/Gem | Protótipo autoral BMD/Blender |
 
 São **11 definições** (4 corpo + capa + 2 armas + asas + pendant + 2 anéis).
 “Rosto/Cabelo” não conta como item. Escudo não aparece na prancha e não foi
@@ -136,11 +140,16 @@ python art-source/zeus/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_armor.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_armor.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/zeus_armor_equipped.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_wings.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_wings.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_jewels.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_jewels.py
 python -m unittest discover -s art-source/zeus -p 'test_*.py' -v
 ```
 
-`build_zeus.py -- --skip-render` e `build_zeus_armor.py -- --skip-render`
-regeneram sem renderizar. Saídas:
+`build_zeus.py -- --skip-render`, `build_zeus_armor.py -- --skip-render`,
+`build_zeus_wings.py -- --skip-render` e `build_zeus_jewels.py --
+--skip-render` regeneram sem renderizar. Saídas:
 
 - `prototype/zeus-weapons.blend`: coleções `Zeus Sword` e `Zeus Staff` (origem
   de pega compartilhada; habilitar as duas sobrepõe as alternativas).
@@ -163,6 +172,21 @@ regeneram sem renderizar. Saídas:
   2.400–3.610, bota 3.350–5.030; justificativa registrada no relatório),
   âncoras de encaixe por osso, roundtrip < 1e-6 e gates de prova equipada
   (nearest < 20, farthest < 65, deslocamento entre poses ≥ 3).
+- `prototype/zeus-wings.blend` (coleção `Zeus Wings` sobre o rig Wing44),
+  `wings-build-report.json` e `wings-saved-roundtrip-report.json`: orçamento
+  12.000–20.000 (medido: 16.004 triângulos em 9 malhas), esqueleto de 47 ossos
+  vs. ZIP congelado, roundtrip < 1e-6, flap de 9 quadros provado
+  (frames 0/4/8, erro ≤ 1,1e-4, 94% dos vértices em movimento, laço fechado) e
+  prova equipada no mannequin via osso 47 do player + offset Z 15
+  (precedente RenderLinkObject).
+- `prototype/zeus-jewels.blend` (coleções `Zeus Pendant`, `Zeus Ring_Storm`,
+  `Zeus Ring_Wisdom`), `jewels-build-report.json` e
+  `jewels-saved-roundtrip-report.json`: orçamentos (pendant 1.700–3.200,
+  anéis 1.600–2.800; medido 1.862/1.890/2.408), contratos Tube04/Tube01,
+  roundtrip < 1e-6, âncoras Band/Gem/ChainTop/Frame/Eye provadas na superfície
+  exportada e silhuetas Tempestade (alta) vs. Sabedoria (larga) distintas.
+- `prototype/renders/`: asas frente/lado/costas + 2 poses de flap + vista
+  equipada no mannequin; pendant e anéis frente/lado/detalhe.
 - `prototype/texture-dependencies.json`: os 3 atlases ausentes declarados.
 - `native-reference-audit.json`: proveniência, rigs e contratos nativos.
 
@@ -172,12 +196,15 @@ Nenhuma instalação em `Data/`, nenhum deploy, nenhuma alteração nas pastas
 
 ## Próximas ondas (não desta lane)
 
-1. Capa com cloth e prova de colisão/vento; asas com esqueleto próprio.
-2. Pendant e anéis (modelos + ícones), pets não fazem parte do conceito Zeus.
+1. Capa com cloth e prova de colisão/vento (única definição ainda em projeto).
+2. Ícones de inventário do pendant e dos anéis; as aparições no corpo dependem
+   de suporte posterior do cliente.
 3. Atlases `Zeus_*` com bordas/frente/costas coerentes e UV final; remover o
    bloqueio de protótipo só após auditoria das dependências.
 4. Backend: IDs, requisitos, categoria, bônus/fases — **update 249 a reservar**
    na coordenação de ondas; nunca publicar conjunto incompleto como pronto.
 5. Integração/FX: aura, ataque, movimento e buff com orçamento de partículas,
    validação visual in-game frente/costas/inventário/chão e comparação com o
-   Legendary +15 Excellent na mesma câmera.
+   Legendary +15 Excellent na mesma câmera; para as asas, validar o flap
+   (9 quadros), o link pelo osso 47 e interpenetrações com o torso em todas
+   as ações do player.

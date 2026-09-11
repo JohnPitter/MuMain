@@ -1,0 +1,166 @@
+{
+  "status": "AUTHORED_ZEUS_JEWELS_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/zeus/design-spec.md",
+  "model_origin": "Original Zeus jewel geometry on the audited Necklace02/Ring02 contracts (one static root bone each, native names preserved); rigid single-bone binding, no native mesh reuse",
+  "native_contract": {
+    "pendant": "Data/Item/Necklace02.bmd (bone Tube04)",
+    "rings": "Data/Item/Ring02.bmd (bone Tube01)",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "565606ecdf899443f2e202cd522b91071abe4a00a77f92f9ae9106ed534e3de5"
+  },
+  "triangle_budgets": {
+    "Pendant": [
+      1700,
+      3200
+    ],
+    "Ring_Storm": [
+      1600,
+      2800
+    ],
+    "Ring_Wisdom": [
+      1600,
+      2800
+    ]
+  },
+  "budget_justification": "Inventory-scale jewel precedent from the measured Poseidon small pieces (glove 3004 triangles): the pendant adds the star frame, chain and eye gems, each ring shares the band grammar but carries its own crown, all inside a +/-20% band around 1.6-3.2k triangles. Native Necklace02/Ring02 are 82/50-triangle placeholders; readable authored jewels need real mass.",
+  "shared_source_sha256": {
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "export_skinned_bmd.py": "4ebeead43f021d9f905be927b36a66208f697972fea1f160806a6c18d1f21c05",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
+  },
+  "blend_sha256": "cf3c2eba56339ddffc023b8a83af79c81aaf8409a1fc4372f9baaf2da367bfe7",
+  "jewels": {
+    "Pendant": {
+      "file": "Zeus_Pendant.bmd",
+      "meshes": 3,
+      "triangles": 1862,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 1,
+      "topology": {
+        "objects": 18,
+        "triangles": 1862,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0186395977670876,
+      "sha256": "63ab6f35bbdf7c3c1c744a48949e2c66344b67ae55b973d12698b91bd1baaa18",
+      "contract_bone": "Tube04",
+      "used_bones": [
+        0
+      ],
+      "extents": [
+        29.41,
+        6.1,
+        37.0
+      ],
+      "anchors": {
+        "ChainTop": [
+          0,
+          0,
+          24.8
+        ],
+        "Frame": [
+          0,
+          0,
+          0
+        ],
+        "Eye": [
+          0,
+          -2.0,
+          0
+        ]
+      },
+      "roundtrip_max_error": 5.960464477539062e-07
+    },
+    "Ring_Storm": {
+      "file": "Zeus_Ring_Storm.bmd",
+      "meshes": 3,
+      "triangles": 1890,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 1,
+      "topology": {
+        "objects": 14,
+        "triangles": 1890,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.029906141981583274,
+      "sha256": "140788de74ec2729df96a530c370a72717c8595f3a37b449f32d0acc99a3cfa5",
+      "contract_bone": "Tube01",
+      "used_bones": [
+        0
+      ],
+      "extents": [
+        17.39,
+        4.7,
+        38.64
+      ],
+      "anchors": {
+        "Band": [
+          0,
+          4,
+          4.5
+        ],
+        "Gem": [
+          0,
+          2.6,
+          19.0
+        ]
+      },
+      "roundtrip_max_error": 4.063952019350836e-07
+    },
+    "Ring_Wisdom": {
+      "file": "Zeus_Ring_Wisdom.bmd",
+      "meshes": 4,
+      "triangles": 2408,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "bones": 1,
+      "topology": {
+        "objects": 25,
+        "triangles": 2408,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.00031498837979468885,
+      "sha256": "6b8728240e8965fce9a358bbd0844ffdda4bcf6f24850ee8beb21b6826cbc475",
+      "contract_bone": "Tube01",
+      "used_bones": [
+        0
+      ],
+      "extents": [
+        27.3,
+        5.9,
+        36.89
+      ],
+      "anchors": {
+        "Band": [
+          0,
+          4,
+          4.5
+        ],
+        "Gem": [
+          0,
+          1.8,
+          11.1
+        ]
+      },
+      "roundtrip_max_error": 3.0919909477233887e-07
+    }
+  }
+}
