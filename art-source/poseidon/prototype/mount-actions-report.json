@@ -1,0 +1,87 @@
+{
+  "status": "ACTION_MATH_PREVIEW_NOT_INGAME",
+  "model_sha256": "19bb6c0f14531e777eae1c686db6375602fdb558e682304bec6d4c620b464622",
+  "pose_tolerance": 0.0002,
+  "action_evidence": {
+    "0": "stand",
+    "1": "gallop",
+    "2": "rider_strike",
+    "3": "earthshake",
+    "4": "reserved",
+    "5": "idle1",
+    "6": "idle2"
+  },
+  "used_bone_contract": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    28,
+    31,
+    32,
+    33,
+    34,
+    37,
+    38,
+    39,
+    40,
+    42,
+    44,
+    45,
+    46,
+    47,
+    48,
+    50,
+    51,
+    52,
+    53,
+    54,
+    56,
+    57,
+    58
+  ],
+  "proofs": [
+    {
+      "action": 0,
+      "name": "stand",
+      "proof": "stand",
+      "frames": 7,
+      "render_frame": 3,
+      "checked_vertices": 61040,
+      "maximum_error": 8.011431900984714e-05,
+      "renders": [
+        "Poseidon_Black_Mount_action_stand_side.png",
+        "Poseidon_Black_Mount_action_stand_front.png"
+      ]
+    },
+    {
+      "action": 1,
+      "name": "gallop",
+      "proof": "gallop",
+      "frames": 7,
+      "render_frame": 3,
+      "checked_vertices": 61040,
+      "maximum_error": 0.00011108975474073594,
+      "renders": [
+        "Poseidon_Black_Mount_action_gallop_side.png",
+        "Poseidon_Black_Mount_action_gallop_front.png"
+      ]
+    },
+    {
+      "action": 3,
+      "name": "earthshake",
+      "proof": "earthshake",
+      "frames": 10,
+      "render_frame": 6,
+      "checked_vertices": 87200,
+      "maximum_error": 0.0001392364501953125,
+      "renders": [
+        "Poseidon_Black_Mount_action_earthshake_side.png",
+        "Poseidon_Black_Mount_action_earthshake_front.png"
+      ]
+    }
+  ]
+}

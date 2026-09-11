@@ -19,8 +19,14 @@ renders de inspeção no conjunto). Quarto lote entregue: pendant Tridente Real 
 os dois anéis distintos do painel ITENS ADICIONAIS (Anel das Marés à esquerda,
 Anel do Imperador à direita - dois modelos autorais, nunca um anel equipado duas
 vezes) como itens rígidos no contrato nativo de item auditado, BMDs diagnósticos,
-roundtrip abaixo de 1e-6 e nove renders de inspeção. Manto, acessórios restantes,
-pets e efeitos abaixo são **projeto**, não malhas concluídas. O aspecto final depende de
+roundtrip abaixo de 1e-6 e nove renders de inspeção. Quinto lote entregue: os
+dois pets autorais —
+montaria negra no rig DarkHorse (60 ossos, as sete ações nativas preservadas
+bit a bit por exportador multi-ação próprio, prova de deformação quadro a
+quadro em stand/galope/earthshake) e Águia Imperial no rig DarkSpirit
+(77 ossos, quatro ações nativas, prova em fly/flying/escape) — com roundtrip
+abaixo de 1e-6 e vinte e dois renders de inspeção. Acessórios restantes e efeitos
+abaixo são **projeto**, não malhas concluídas. O aspecto final depende de
 escultura/texturas, ajuste de equipamento e aprovação visual no cliente; não existe
 promessa de identidade pixel a pixel.
 
@@ -80,8 +86,8 @@ fossem a aparência nova. Os modelos nativos documentam rig e comportamento apen
 | Pendant | Marca de tridente dourada em pedestal negro, losango azul, corrente fina | Ícone e malha independentes; aparição no corpo depende de suporte posterior | Protótipo autoral BMD/Blender |
 | Anel das Marés (esquerdo) | Aro negro com bordas ouro, assento arredondado, ondas em volta da gota azul e bolhas de espuma | Modelo/ícone próprio; sem efeito de transformação implícito | Protótipo autoral BMD/Blender |
 | Anel do Imperador (direito) | Aro facetado com coroa de cinco pontas e losango azul angular; par distinto do anterior, sem repetir malha | Segundo anel e ícone próprios; diferenças estéticas sem números aprovados | Protótipo autoral BMD/Blender |
-| Cavalo negro metálico | Barda articulada negra/ouro, crista na testa/pescoço, joias azuis, cascos metálicos, cauda em faixas | Rig DarkHorse; preservar locomoção/ataque e sela/posição do cavaleiro | Projeto |
-| Águia Imperial | Penas negras em camadas com borda ouro, cristal peitoral, olhar azul e garras reais | Rig DarkSpirit separado do personagem; voo, retorno e ataque em prova futura | Projeto |
+| Cavalo negro metálico | Barda articulada negra/ouro, crista na testa/pescoço, joias azuis, cascos metálicos, cauda em faixas | Rig DarkHorse; preservar locomoção/ataque e sela/posição do cavaleiro | Protótipo autoral BMD/Blender |
+| Águia Imperial | Penas negras em camadas com borda ouro, cristal peitoral, olho azul e garras reais | Rig DarkSpirit separado do personagem; voo, retorno e ataque em prova futura | Protótipo autoral BMD/Blender |
 
 São 13 definições visuais planejadas, incluindo duas alternativas de arma e os
 dois pets. Isso não define regras de equipar simultaneamente, drop ou comércio.
@@ -183,6 +189,12 @@ python art-source/poseidon/generate_poseidon_atlases.py  # --check prova determi
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_jewels.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_jewels.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/inspect_poseidon_uvs.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_mount.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_mount.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_mount_actions.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_eagle.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_eagle.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_eagle_actions.py
 python -m unittest discover -s art-source/poseidon -p 'test_*.py' -v
 ```
 
@@ -242,6 +254,17 @@ diagnósticos `Poseidon_{Pant,Glove}.bmd`, seis vistas de inspeção, prova equi
   em espaço item, contrato do item nativo e prova de geração.
 - `prototype/jewels-saved-roundtrip-report.json`: roundtrip dos três BMDs
   reabrindo o Blender salvo.
+- `prototype/poseidon-mount.blend` e `prototype/poseidon-eagle.blend`: pets autorais
+  sobre os rigs DarkHorse/DarkSpirit auditados (coleções `Poseidon Black Mount` e
+  `Poseidon Imperial Eagle`).
+- `prototype/models/Poseidon_{Black_Mount,Imperial_Eagle}.bmd`: BMDs de diagnóstico
+  **não instaláveis** com o bloco de animação nativo completo (7 e 4 ações).
+- `prototype/mount-build-report.json` / `eagle-build-report.json`: orçamentos por
+  parte, ossos usados, contrato de ações com evidência de código e prova.
+- `prototype/mount-saved-roundtrip-report.json` / `eagle-saved-roundtrip-report.json`:
+  roundtrip reabrindo o Blender salvo.
+- `prototype/mount-actions-report.json` / `eagle-actions-report.json`: prova de
+  deformação quadro a quadro nas ações nativas provadas, com renders.
 - `native-reference-audit.json`: proveniência/rigs e contratos nativos verificados.
 
 As imagens de textura são geradas por Pillow em script determinístico

@@ -1,0 +1,177 @@
+{
+  "status": "AUTHORED_MOUNT_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/poseidon/design-spec.md",
+  "model_origin": "Original Poseidon geometry on the audited native DarkHorse skeleton; single-influence rig binding, no native mesh reuse, full 7-action animation block preserved bit-for-bit",
+  "native_rig": {
+    "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "5987bc37b1c6670971caa6d4d785f812a8aa16e6ac3e7e24e15e6f4cc9cba88e",
+    "member": "Data/Skill/DarkHorse.bmd",
+    "model_sha256": "b92437f6f8b6c555d0aaffb1f2d888f78e4341a7a580df662c610cd5031438c5",
+    "bones": 60,
+    "action_frames": [
+      7,
+      7,
+      6,
+      10,
+      41,
+      51,
+      31
+    ],
+    "action_names": {
+      "0": "stand",
+      "1": "gallop",
+      "2": "rider_strike",
+      "3": "earthshake",
+      "4": "reserved",
+      "5": "idle1",
+      "6": "idle2"
+    },
+    "action_evidence": "src/source/Engine/AI/GOBoid.cpp MODEL_DARK_HORSE branch: PLAYER_ATTACK_DARKHORSE->3, PLAYER_RUN_RIDE_HORSE->1, PLAYER_ATTACK_RIDE_STRIKE..RIDE_ATTACK_MAGIC->2, PLAYER_IDLE1_DARKHORSE->5, PLAYER_IDLE2_DARKHORSE->6, default->0; action 4 is not referenced by the mount branch.",
+    "used_bone_contract": [
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      28,
+      31,
+      32,
+      33,
+      34,
+      37,
+      38,
+      39,
+      40,
+      42,
+      44,
+      45,
+      46,
+      47,
+      48,
+      50,
+      51,
+      52,
+      53,
+      54,
+      56,
+      57,
+      58
+    ]
+  },
+  "design_decisions": {
+    "mounted_lance": "not modeled: the design-spec horse row defines no mounted weapon; set weapons are the hand-held Tridente/Cetro",
+    "eagle_contract": "see poseidon_eagle_rig.py: DarkSpirit pet rig per design-spec, not a shoulder ornament"
+  },
+  "triangle_budget": [
+    15000,
+    30000
+  ],
+  "budget_justification": {
+    "barrel_rump_chest": "Four banded quarters of the body; the largest single mass (bones 17-20).",
+    "flank_bard_caparison": "Scalloped bard panels and riding cloth per flank with rune jewels.",
+    "breastplate": "Triple-point sea breastplate with gold blades and ocean gem.",
+    "neck_crest": "Two neck bands, withers/mane crest fins and gold scale rows.",
+    "head_bard": "Head tube, wrapping chamfron, chin medallion and ear fins.",
+    "saddle_girth": "Rider saddle, cantle, pommel arc and girth on the native saddle band.",
+    "tail": "Three armored tail links with gold rings and a bladed tip.",
+    "legs": "Four barded legs: pauldrons, haunches, sleeves, shoes with fetlock crowns."
+  },
+  "shared_source_sha256": {
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
+  },
+  "blend_sha256": "a288a8cf2fc98bc1ddce660a05b1301286f9886adda9a463d13d09531064cd95",
+  "pieces": {
+    "Poseidon_Black_Mount": {
+      "file": "Poseidon_Black_Mount.bmd",
+      "meshes": 9,
+      "triangles": 16664,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "bones": 60,
+      "actions": 7,
+      "action_frames": [
+        7,
+        7,
+        6,
+        10,
+        41,
+        51,
+        31
+      ],
+      "topology": {
+        "objects": 184,
+        "triangles": 16664,
+        "open_edges": 46,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.03897145373845015,
+      "sha256": "19bb6c0f14531e777eae1c686db6375602fdb558e682304bec6d4c620b464622",
+      "used_bones": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        28,
+        31,
+        32,
+        33,
+        34,
+        37,
+        38,
+        39,
+        40,
+        42,
+        44,
+        45,
+        46,
+        47,
+        48,
+        50,
+        51,
+        52,
+        53,
+        54,
+        56,
+        57,
+        58
+      ],
+      "roundtrip_max_error": 6.461448265326908e-07,
+      "action_names": {
+        "0": "stand",
+        "1": "gallop",
+        "2": "rider_strike",
+        "3": "earthshake",
+        "4": "reserved",
+        "5": "idle1",
+        "6": "idle2"
+      },
+      "action_evidence": "src/source/Engine/AI/GOBoid.cpp MODEL_DARK_HORSE branch: PLAYER_ATTACK_DARKHORSE->3, PLAYER_RUN_RIDE_HORSE->1, PLAYER_ATTACK_RIDE_STRIKE..RIDE_ATTACK_MAGIC->2, PLAYER_IDLE1_DARKHORSE->5, PLAYER_IDLE2_DARKHORSE->6, default->0; action 4 is not referenced by the mount branch.",
+      "part_triangles": {
+        "barrel_rump_chest": 1704,
+        "flank_bard_caparison": 1784,
+        "breastplate": 962,
+        "neck_crest": 810,
+        "head_bard": 1262,
+        "saddle_girth": 1160,
+        "tail": 1522,
+        "legs": 7460
+      }
+    }
+  }
+}
