@@ -31,6 +31,7 @@ from export_skinned_bmd import ExportSpec, export
 from inspect_bmd_rig import inspect
 from verify_prop_roundtrip import compare
 from zeus_cape_materials import create_cape_materials
+from zeus_materials import atlas_dependencies
 from zeus_cape_preview import render_cape, studio
 from zeus_cape_rig import (cape_bind, decoded_skinned_triangles,
                            digest, load_cape_rig)
@@ -121,9 +122,7 @@ def _bound_cape(materials):
 
 
 def write_reports(output, report, rig, shared_hashes):
-    textures = [dict(texture=f'Zeus_{role}.jpg', material_role=role)
-                for role in ('Blue', 'Platina', 'Emissive')]
-    dependencies = [dict(item, status='MISSING_ATLAS_NOT_FOR_CLIENT') for item in textures]
+    dependencies = atlas_dependencies()
     report_doc = dict(status='AUTHORED_CAPE_PROTOTYPE_PREVIEW_ONLY',
                       renderer='Blender Cycles / AgX, not MU runtime',
                       design_reference='art-source/zeus/design-spec.md',

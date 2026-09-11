@@ -114,7 +114,7 @@ class ZeusPrototypeTests(unittest.TestCase):
         dependencies = json.loads((self.output / 'texture-dependencies.json').read_text())
         self.assertEqual({d['texture'] for d in dependencies},
                          {'Zeus_Blue.jpg', 'Zeus_Platina.jpg', 'Zeus_Emissive.jpg'})
-        self.assertTrue(all(d['status'] == 'MISSING_ATLAS_NOT_FOR_CLIENT' for d in dependencies))
+        self.assertTrue(all(d['status'] == 'AUTHORED_ATLAS_REGENERABLE' for d in dependencies))
         self.assertFalse((self.output / 'Data').exists())
 
     def test_render_evidence_covers_every_view(self):

@@ -9,7 +9,7 @@
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "0c3748416156953fc6b738654e02e5efe9c26e58753404792c6079bb1cc6bc31",
+  "blend_sha256": "aebe0d1ada59328e9dff852f7e88c2ed5097b482a59dd550a2ff803c6e1efbcd",
   "models": {
     "Sword": {
       "file": "Zeus_Sword.bmd",
@@ -24,7 +24,7 @@
         "Zeus_Emissive.jpg",
         "Zeus_Platina.jpg"
       ],
-      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "status": "PROTOTYPE_NOT_INSTALLABLE_INTEGRATION_PENDING",
       "topology": {
         "objects": 48,
         "polygons": 3041,
@@ -46,7 +46,7 @@
         "Zeus_Emissive.jpg",
         "Zeus_Platina.jpg"
       ],
-      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "status": "PROTOTYPE_NOT_INSTALLABLE_INTEGRATION_PENDING",
       "topology": {
         "objects": 51,
         "polygons": 3271,

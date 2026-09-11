@@ -198,7 +198,7 @@ class ZeusCapeTests(unittest.TestCase):
         self.assertEqual(link['bone'], LINK_BONE)
         dependencies = self.build['texture_dependencies']
         self.assertEqual({item['texture'] for item in dependencies}, ATLASES)
-        self.assertTrue(all(item['status'] == 'MISSING_ATLAS_NOT_FOR_CLIENT'
+        self.assertTrue(all(item['status'] == 'AUTHORED_ATLAS_REGENERABLE'
                             for item in dependencies))
         self.assertFalse((self.output / 'Data').exists())
         self.assertFalse((self.output / 'Zeus_Blue.jpg').exists())

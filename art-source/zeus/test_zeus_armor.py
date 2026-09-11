@@ -129,7 +129,7 @@ class ZeusArmorTests(unittest.TestCase):
                          {name: list(bones) for name, bones in USED_BONES.items()})
         dependencies = json.loads((self.output / 'texture-dependencies.json').read_text())
         self.assertEqual(len(dependencies), 3)
-        self.assertTrue(all(item['status'] == 'MISSING_ATLAS_NOT_FOR_CLIENT' for item in dependencies))
+        self.assertTrue(all(item['status'] == 'AUTHORED_ATLAS_REGENERABLE' for item in dependencies))
         self.assertFalse((self.output / 'Data').exists())
 
     def test_equipped_preview_follows_the_player_rig(self):

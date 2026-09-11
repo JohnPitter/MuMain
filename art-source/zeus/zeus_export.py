@@ -32,4 +32,4 @@ def export_weapon(collection, name, destination):
     destination.write_bytes(result)
     return dict(file=destination.name, mesh_count=len(meshes), bones=3, action_frames=[1],
                 triangles=sum(map(len, grouped.values())), textures=sorted(grouped),
-                status='PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES')
+                status='PROTOTYPE_NOT_INSTALLABLE_INTEGRATION_PENDING')

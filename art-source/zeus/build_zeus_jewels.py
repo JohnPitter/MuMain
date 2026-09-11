@@ -29,7 +29,7 @@ from verify_prop_roundtrip import compare
 from zeus_armor_preview import point_at, studio
 from zeus_armor_rig import decoded_skinned_triangles
 from zeus_jewels_shapes import ANCHORS, BUILDERS
-from zeus_materials import PALETTE, create_materials
+from zeus_materials import atlas_dependencies, create_materials
 
 JEWELS = (('Pendant', 'Tube04'), ('Ring_Storm', 'Tube01'), ('Ring_Wisdom', 'Tube01'))
 # Measured against the Poseidon precedent lane: jewels are inventory-scale
@@ -171,10 +171,8 @@ def render_jewels(collections, output):
 
 
 def write_reports(output, reports, shared_hashes):
-    (output / 'texture-dependencies.json').write_text(json.dumps(
-        [dict(texture=f'Zeus_{role}.jpg', material_role=role,
-              status='MISSING_ATLAS_NOT_FOR_CLIENT', linear_rgb=list(values[0]))
-         for role, values in PALETTE.items()], indent=2), encoding='utf-8')
+    (output / 'texture-dependencies.json').write_text(
+        json.dumps(atlas_dependencies(), indent=2), encoding='utf-8')
     document = dict(status='AUTHORED_ZEUS_JEWELS_PROTOTYPE_PREVIEW_ONLY',
                     renderer='Blender Cycles / AgX, not MU runtime',
                     design_reference='art-source/zeus/design-spec.md',

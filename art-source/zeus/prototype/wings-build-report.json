@@ -7,7 +7,7 @@
     "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
     "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
     "audit": "native-reference-audit.json",
-    "audit_sha256": "565606ecdf899443f2e202cd522b91071abe4a00a77f92f9ae9106ed534e3de5",
+    "audit_sha256": "c09a6e975f5a7b2e1c02fdc85805ad635f2b8652f73d0e2c931c29424936e4a6",
     "wing44_sha256": "c6e2aec2f52d6df93fedebd5d77a5cd47d5fd96a5b4b84b9a1be98f1781009a8",
     "bones": 47,
     "action_frames": [
@@ -102,7 +102,7 @@
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "4ff647a2ee4bb15d5daf9631bbce6afe271532568cd75fdf952208e4c5f3ee31",
+  "blend_sha256": "195f2a3e189e976e15ca7bfe8696d2d7bfaab981c43a8744587b1051c8c7ebb2",
   "wings": {
     "file": "Zeus_Wings.bmd",
     "meshes": 9,

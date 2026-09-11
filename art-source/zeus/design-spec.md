@@ -28,7 +28,13 @@ o set com a **capa**: ferragem rígida autoral no osso `collar` do precedente
 procedural do runtime e estudo do contrato em `cape-cloth-contract.md` —
 incluindo a descoberta de que o portão `bCloak` do cliente **não abre para o
 Duel Master** e precisará de case próprio na integração. Com isso as **11
-definições do set estão prototipadas**.
+definições do set estão prototipadas**. A onda dos **atlases definitivos**
+completou a autoria: `Zeus_Blue`/`Zeus_Platina`/`Zeus_Emissive` (masters 1024²
+determinísticos, jogo 512² JPEG, OZJ) com o platina aprovado do dono, relevo
+de raio gravado no azul, wiring dos três materiais nos 11 modelos (BMDs
+byte-idênticos, roundtrip < 1e-6), contrato
+`AUTHORED_ATLAS_REGENERABLE` com hashes e `test_zeus_atlases.py` — detalhes em
+"Atlases definitivos" abaixo.
 
 ## Classe e requisitos de enquadramento
 
@@ -63,10 +69,45 @@ e asas angelicais do Celestial. Preservar a estética clássica de MU: silhueta
 forte em câmera isométrica, massa legível no inventário, efeitos discretos que
 não escondam mãos/pés. Frente, costas e lados com detalhe real.
 
-Materiais de prévia são procedurais PBR provisionais; os atlases finais
-(`Zeus_Blue.jpg`, `Zeus_Platina.jpg`, `Zeus_Emissive.jpg`) **não existem ainda**
-e são declarados como dependência ausente. BMDs desta pasta são diagnósticos:
-**não copiar para um cliente** sem os atlases e a integração.
+Materiais são definitivos: os atlases autorais (`Zeus_Blue.jpg`,
+`Zeus_Platina.jpg`, `Zeus_Emissive.jpg`) foram **autorados e wireados em todos
+os 11 modelos** (ver "Atlases definitivos" abaixo); o acabamento do azul segue
+o perfil medido no estudo Legendary. BMDs desta pasta continuam sendo
+diagnósticos: **não copiar para um cliente** sem a integração (o bloqueio de
+protótipo só sai após a auditoria de dependências da onda de integração).
+
+## Atlases definitivos
+
+Os três papéis do set têm masters autorais determinísticos
+(`generate_zeus_atlases.py`, sementes fixas, gate `--check`):
+
+| Atlas | Papel | Acabamento | Contraste P95−P05 (master / jogo) |
+| --- | --- | --- | --- |
+| `Zeus_Blue.jpg` | massa celeste (dominante) | azul celeste moderadamente escuro com relevo gravado — zigzags de raio, chevrons "V", cunhas de ponta de raio, grão usinado; highlights claros pintados (o Legendary prova que os passes saturam o claro) | 153 / 154 |
+| `Zeus_Platina.jpg` | trims/detalhes | **branco platina aprovado** — âncoras `#545156/#d7d3d4/#faf8f6`, janela de normalização P05–P95, metal polido suave (satin, filetes de contas, sheen) | 166 / 163 |
+| `Zeus_Emissive.jpg` | canaletas de tempestade, gemas, runas | energia celeste legível: canaletas em zigzag brilhantes com halo, núcleos de brilho, runas angulares, estrelas de múltiplas pontas | 129 / 128 |
+
+- Paleta amostrada da prancha (2026-09-11): azul celeste principal `#328efa`,
+  massa `#3a62a0`, profundo `#16325e`, energia `#2579d8`, branco platinado
+  `#d7d3d4`/brilho `#faf8f6` (os dois últimos são as âncoras aprovadas do
+  white-platina — nenhum outro branco foi inventado).
+- Resoluções: masters 1024² PNG imutáveis e guardados por hash
+  (`textures/masters/`), jogo 512² JPEG RGB q95 4:4:4 (`textures/`) empacotado
+  em OZJ de 24 bytes zero + JPEG (`textures/ozj/`), mesmo contrato Celestial.
+- Gramática UV (`prototype/uv-region-report.json`): projeção planar por
+  componente cobrindo 0–1 — masters de campo cheio, não charts particionados;
+  os 11 modelos amostram os três atlases (prova por componente e por texcoords
+  decodadas do BMD).
+- `prototype/texture-dependencies.json` agora declara
+  `AUTHORED_ATLAS_REGENERABLE` com hashes master/JPEG/OZJ; a suíte
+  `test_zeus_atlases.py` cobre artefatos, contrato, bandas de contraste,
+  banda/âncoras do platina aprovado, mapa UV dos 11 modelos e determinismo via
+  subprocesso.
+- Com o wiring definitivo, os 11 BMDs reconstruídos ficaram **byte-idênticos**
+  aos da lane fundacional (só o shading mudou; roundtrip < 1e-6 mantido em
+  todos os relatórios saved-roundtrip).
+- Painel de referência: `prototype/renders/Zeus_atlas_palette.png`; composite
+  texturizado em `scratchpad/status-sets-20260911/zeus-full-textured-*.png`.
 
 ## Composição do set
 
@@ -146,6 +187,7 @@ mão esquerda) — ramo default de `CreateCharacterPointer`
 
 ```powershell
 python art-source/zeus/audit_native_references.py
+python art-source/zeus/generate_zeus_atlases.py   # gate de determinismo: --check
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_armor.py
@@ -158,6 +200,7 @@ python art-source/zeus/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_cape.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/zeus_cape_equipped.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_cape.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/inspect_zeus_uvs.py
 python -m unittest discover -s art-source/zeus -p 'test_*.py' -v
 ```
 
@@ -212,7 +255,13 @@ renderizar. Saídas:
   3, drift de rigidez ≤ 0,75, alcance < 135) e portões de classe documentados.
 - `cape-cloth-contract.md`: estudo do contrato de cloth para a integração
   (grades do runtime, link, `bCloak` por classe, portões de ID novo).
-- `prototype/texture-dependencies.json`: os 3 atlases ausentes declarados.
+- `prototype/texture-dependencies.json`: os 3 atlases como
+  `AUTHORED_ATLAS_REGENERABLE` com hashes master/JPEG/OZJ.
+- `textures/`: masters 1024² (`textures/masters/Zeus_*.png`), jogo 512² JPEG
+  (`textures/Zeus_*.jpg`), OZJ 24 bytes (`textures/ozj/Zeus_*.OZJ`) e
+  `atlas-report.json` (paleta, sementes, hashes, contrastes P95−P05).
+- `prototype/uv-region-report.json`: prova do layout UV planar 0–1 por
+  componente para os 11 modelos e do consumo de texcoords por atlas nos BMDs.
 - `native-reference-audit.json`: proveniência, rigs e contratos nativos
   (12 modelos, incluindo o precedente de capa `emperor_cape`).
 
@@ -227,8 +276,8 @@ Nenhuma instalação em `Data/`, nenhum deploy, nenhuma alteração nas pastas
    colisão/vento in-game — mapa completo em `cape-cloth-contract.md`.
 2. Ícones de inventário do pendant e dos anéis; as aparições no corpo dependem
    de suporte posterior do cliente.
-3. Atlases `Zeus_*` com bordas/frente/costas coerentes e UV final; remover o
-   bloqueio de protótipo só após auditoria das dependências.
+3. ~~Atlases `Zeus_*`~~ **Feito nesta lane** (masters definitivos + wiring nos
+   11 modelos); a integração C++/update 249 segue pendente — ver itens 4/5.
 4. Backend: IDs, requisitos, categoria, bônus/fases — **update 249 a reservar**
    na coordenação de ondas; nunca publicar conjunto incompleto como pronto.
 5. Integração/FX: aura, ataque, movimento e buff com orçamento de partículas,

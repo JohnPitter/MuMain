@@ -35,7 +35,7 @@ from verify_prop_roundtrip import compare
 from zeus_armor_equipped import clear_scene, mannequin, mannequin_material, surface_objects
 from zeus_armor_preview import point_at, studio
 from zeus_armor_rig import decoded_skinned_triangles, load_player_rig
-from zeus_materials import PALETTE, create_materials
+from zeus_materials import atlas_dependencies, create_materials
 from zeus_wings_rig import FLAP_FRAMES, USED_BONES, digest, load_wing_rig
 from zeus_wings_shapes import wings
 
@@ -212,10 +212,8 @@ def equipped_proof(palette_roles, gray):
 
 
 def write_reports(output, report, rig, shared_hashes):
-    (output / 'texture-dependencies.json').write_text(json.dumps(
-        [dict(texture=f'Zeus_{role}.jpg', material_role=role,
-              status='MISSING_ATLAS_NOT_FOR_CLIENT', linear_rgb=list(values[0]))
-         for role, values in PALETTE.items()], indent=2), encoding='utf-8')
+    (output / 'texture-dependencies.json').write_text(
+        json.dumps(atlas_dependencies(), indent=2), encoding='utf-8')
     document = dict(status='AUTHORED_ZEUS_WINGS_PROTOTYPE_PREVIEW_ONLY',
                     renderer='Blender Cycles / AgX, not MU runtime',
                     design_reference='art-source/zeus/design-spec.md',

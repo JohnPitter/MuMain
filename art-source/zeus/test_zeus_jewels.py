@@ -121,7 +121,7 @@ class ZeusJewelsTests(unittest.TestCase):
         self.assertEqual(self.build['native_contract']['audit_sha256'], audit_sha)
         dependencies = json.loads((self.output / 'texture-dependencies.json').read_text())
         self.assertEqual(len(dependencies), 3)
-        self.assertTrue(all(item['status'] == 'MISSING_ATLAS_NOT_FOR_CLIENT'
+        self.assertTrue(all(item['status'] == 'AUTHORED_ATLAS_REGENERABLE'
                             for item in dependencies))
         self.assertFalse((self.output / 'Data').exists())
         renders = self.output / 'renders'

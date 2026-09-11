@@ -7,7 +7,7 @@
     "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
     "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
     "audit": "native-reference-audit.json",
-    "audit_sha256": "565606ecdf899443f2e202cd522b91071abe4a00a77f92f9ae9106ed534e3de5",
+    "audit_sha256": "c09a6e975f5a7b2e1c02fdc85805ad635f2b8652f73d0e2c931c29424936e4a6",
     "piece_sha256": {
       "Armor": "6caf8c7c42e9304b319899855091c73f734655b4399e4f2b49f82f13a6421a11",
       "Pant": "f96733d4807124a3a8dae8f0035493edb0769c3aa843bb58e43473abceafc9b8",
@@ -231,7 +231,7 @@
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "57df180159f15f78e36cddb6da4f71733d3bc16fa8a84de403c49b376341487d",
+  "blend_sha256": "f041a064c45a60a1a5746ee912cbdfd5410cae16341b75be24224455bcfd24d8",
   "pieces": {
     "Armor": {
       "file": "Zeus_Armor.bmd",

@@ -17,7 +17,7 @@ from export_prop_bmd import triangle_groups
 from inspect_bmd_rig import inspect
 from verify_prop_roundtrip import compare, decoded_triangles
 from zeus_export import HAND_TRANSFORM, export_weapon
-from zeus_materials import PALETTE, create_materials
+from zeus_materials import atlas_dependencies, create_materials
 from zeus_preview import render_head, render_weapon, studio
 from zeus_shapes import sword, staff
 
@@ -57,10 +57,8 @@ def build_models(materials, output):
 
 
 def write_reports(output, reports, shared_hashes):
-    dependencies = [dict(texture=f'Zeus_{role}.jpg', material_role=role,
-                         status='MISSING_ATLAS_NOT_FOR_CLIENT', linear_rgb=list(values[0]))
-                    for role, values in PALETTE.items()]
-    (output / 'texture-dependencies.json').write_text(json.dumps(dependencies, indent=2), encoding='utf-8')
+    (output / 'texture-dependencies.json').write_text(
+        json.dumps(atlas_dependencies(), indent=2), encoding='utf-8')
     report = dict(status='AUTHORING_PROTOTYPE_ONLY', renderer='Blender Cycles / AgX, not MU runtime',
                   reference='concept-herdeiro-de-zeus-mg-20260911.png (sha256 7d5bd6e0370f792f06faa4048987433e163916ff3992e94762399c76b249d573)',
                   model_origin='Original Zeus geometry; generic shared primitives/encoder only',
