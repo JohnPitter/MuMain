@@ -29,6 +29,9 @@ MEMBERS = {
     'wing_skeleton_reference': 'Data/Item/Wing44.bmd',
     'native_pendant_reference': 'Data/Item/Necklace02.bmd',
     'native_ring_reference': 'Data/Item/Ring02.bmd',
+    # Cape of the Emperor: the audited cloth precedent (one "collar" bone,
+    # rigid ferragem only; fabric is procedural cloth in ZzzCharacter.cpp).
+    'emperor_cape': 'Data/Item/DarkLordRobe02.bmd',
 }
 SOURCE_EVIDENCE = {
     'src/source/Core/Globals/_enum.h': ['CLASS_DUELMASTER,', 'SKIN_CLASS_DUELMASTER,',

@@ -19,11 +19,16 @@ do acabamento azul Legendary +15 Excellent
 Na onda seguinte, as **4 peças de corpo** (Armadura com ombreiras incorporadas,
 Calça, Luvas e Botas) foram modeladas como protótipos autorais sobre o rig
 Class304, no molde Poseidon (build/verify/equipped + renders + testes). A onda
-atual entregou **asas, pendant e anéis** como protótipos autorais: as Asas
+seguinte entregou **asas, pendant e anéis** como protótipos autorais: as Asas
 Celestiais sobre o esqueleto Wing44 congelado (47 ossos, flap de 9 quadros
 preservado e provado em ≥2 poses) e as três joias nos contratos Necklace02/
-Ring02 (1 osso estático cada, nome nativo preservado). A capa abaixo permanece
-**projeto**, não malha concluída.
+Ring02 (1 osso estático cada, nome nativo preservado). A onda atual completou
+o set com a **capa**: ferragem rígida autoral no osso `collar` do precedente
+`DarkLordRobe02` (link do osso 19 reconstruído), tecido reservado ao cloth
+procedural do runtime e estudo do contrato em `cape-cloth-contract.md` —
+incluindo a descoberta de que o portão `bCloak` do cliente **não abre para o
+Duel Master** e precisará de case próprio na integração. Com isso as **11
+definições do set estão prototipadas**.
 
 ## Classe e requisitos de enquadramento
 
@@ -85,7 +90,7 @@ anexando pelo sistema padrão — é efeito de upgrade, não peça do set.
 | Calça | Lamelas angulares azul/platina, quadril e traseira completos, faldão frontal curto em pontas duplas (visual da prancha) no osso raiz 0, como no PantClass304 nativo | Ossos 0/2/3/4/10/11/17 do PantClass304; nunca soldar faldão às pernas; 5.476 triângulos | Protótipo autoral BMD/Blender |
 | Luvas | Dedos segmentados, guarda dorsal com cristal azul, canaletas elétricas platina; palma usável | Ossos 27/28/29/36/37/38 do GloveClass304; empunhadura de espada/bastão; 2.708 triângulos | Protótipo autoral BMD/Blender |
 | Botas | Caneleira alta facetada, joelheira em ponta de raio, solado definido, platina nos recortes | Ossos 4/5/11/12 do BootClass304; flexão de pé/estribo; 3.904 triângulos | Protótipo autoral BMD/Blender |
-| Capa | Capa longa azul com interior mais escuro, bordas platina, brasão de raio/estrela; “Capa (visão traseira)” da prancha | Precedente cloth `DarkLordRobe02` (1 osso + cloth runtime, ferragem no osso 19 — ver audit Poseidon); cloth é sistema separado | Projeto |
+| Capa | Capa longa azul (tecido = cloth do runtime) com gola alta facetada platinada de 12 gomos, cristas em ponta de raio, brasão central de estrela de 8 pontas com raio emissivo e seis caudas em ponta de raio com canaletas-runas e gemas celestiais; fechos estrelados à frente; “Capa (visão traseira)” da prancha | Precedente cloth `DarkLordRobe02` (auditado como `emperor_cape`): ferragem rígida no osso `collar` via link do osso 19 (`RenderLinkObject`), tecido é grade procedural do runtime; `bCloak`/saia dependem de skin DL/LE — capa no Duel Master exige case próprio (ver `cape-cloth-contract.md`); 7.986 triângulos, 1 osso | Protótipo autoral BMD/Blender |
 | Espada de Zeus (arma principal) | Espada longa, lâmina azul celeste energética com núcleo emissivo e gume branco-platina, guarda em “V” de raio, punho envolto azul, pommel com estrela | Mão direita, osso 33 (`knife_gdf`); âncoras `Grip/Core/Tip`; **protótipo BMD/Blender nesta lane** | Protótipo autoral BMD/Blender |
 | Bastão Celestial (arma alternativa) | Cajado azul alto com ornamento estelar no topo, núcleo emissivo, anéis platina, ponta inferior acabada | Mão esquerda, osso 42 (`hand_bofdgne01`); âncoras `Grip/Core/Tip`; não é a espada reescalada | Protótipo autoral BMD/Blender |
 | Asas Celestiais | Leque de lâminas facetadas azul celeste com espinhos e pontas platina, canaletas de tempestade emissivas em zigzag, cobertura de bases, borda inferior em pontas e crista de estrela de 8 pontas com gema coração no osso raiz | Esqueleto Wing44 congelado (47 ossos, nomes/índices/hierarquia exatos, flap de 9 quadros com trava de raiz preservado); pele de influência única nos ossos 0, 1–5 e 24–28; flap provado em 3 poses nativas (erro < 1,1e-4, laço fechado); 16.004 triângulos | Protótipo autoral BMD/Blender |
@@ -93,12 +98,13 @@ anexando pelo sistema padrão — é efeito de upgrade, não peça do set.
 | Anel da Tempestade | Aro platina com dois filetes gravados e canaletas emissivas, coroa de garras, raio em degraus com cristal azul alongado e faísca emissiva no topo | Contrato Ring02 exato: 1 osso estático `Tube01`, 1 quadro sem trava; 1.890 triângulos; silhueta alta (38,6 de envergadura vertical); âncoras Band/Gem | Protótipo autoral BMD/Blender |
 | Anel da Sabedoria | Aro platina irmão do anterior com coroa circular de 8 pontas estelares, pérolas azuis e gema redonda com núcleo emissivo | Contrato Ring02 exato: 1 osso estático `Tube01`, 1 quadro sem trava; 2.408 triângulos; silhueta larga (27,3 de envergadura horizontal, distinta da Tempestade); âncoras Band/Gem | Protótipo autoral BMD/Blender |
 
-São **11 definições** (4 corpo + capa + 2 armas + asas + pendant + 2 anéis).
-“Rosto/Cabelo” não conta como item. Escudo não aparece na prancha e não foi
-inventado. Efeitos da prancha (Aura Celestial, Lâmina de Raios, Rastro
-Celestial, Buff Ativo) são **exemplos ilustrativos** — FX reais são onda de
-integração com orçamento de partículas e opções gráficas, não promessa desta
-lane.
+São **11 definições** (4 corpo + capa + 2 armas + asas + pendant + 2 anéis) e
+**todas estão prototipadas** como BMD/Blender autorais nesta pasta — a lista de
+definições está completa. “Rosto/Cabelo” não conta como item. Escudo não aparece
+na prancha e não foi inventado. Efeitos da prancha (Aura Celestial, Lâmina de
+Raios, Rastro Celestial, Buff Ativo) são **exemplos ilustrativos** — FX reais
+são onda de integração com orçamento de partículas e opções gráficas, não
+promessa desta lane.
 
 ## Armas: regras de empunhadura do MG/Duel Master
 
@@ -122,8 +128,13 @@ mão esquerda) — ramo default de `CreateCharacterPointer`
 - Peças de corpo seguirão o esqueleto e ações do `player.bmd` (60 ossos,
   284 ações auditados); nada de animação local por peça. Provar parado,
   caminhada, corrida, ataque, skill, sentado/montado, morte antes de integrar.
-- Capa: ferragem rígida + cloth são sistemas distintos; bordas platina
-  acompanham a mesma malha de cloth (precedente Lord Emperor auditado).
+- Capa: ferragem rígida + cloth são sistemas distintos; o tecido não vai no
+  BMD (as pontas de raio do conceito são geometria rígida — grade de cloth
+  termina sempre em barra reta). O estudo `cape-cloth-contract.md` documenta
+  o contrato completo e a diferença de classe: o portão `bCloak` do cliente
+  só cria grades para bases DARK_LORD/RAGEFIGHTER (e o MG base, num ramo
+  genérico) — o Duel Master exige abrir o gate e um case próprio de cloth na
+  integração; saia é exclusiva das skins DL/LE e o set não a usa.
 - Brilho: perfil de runtime proposto no estudo
   `research/legendary-excellent-blue.md` — especular azul celeste só nos
   materiais azuis, tint neutro no branco platina, overlay Excellent clássico,
@@ -144,12 +155,16 @@ python art-source/zeus/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_wings.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_jewels.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_jewels.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/build_zeus_cape.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/zeus_cape_equipped.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/zeus/verify_zeus_cape.py
 python -m unittest discover -s art-source/zeus -p 'test_*.py' -v
 ```
 
 `build_zeus.py -- --skip-render`, `build_zeus_armor.py -- --skip-render`,
-`build_zeus_wings.py -- --skip-render` e `build_zeus_jewels.py --
---skip-render` regeneram sem renderizar. Saídas:
+`build_zeus_wings.py -- --skip-render`, `build_zeus_jewels.py --
+--skip-render` e `build_zeus_cape.py -- --skip-render` regeneram sem
+renderizar. Saídas:
 
 - `prototype/zeus-weapons.blend`: coleções `Zeus Sword` e `Zeus Staff` (origem
   de pega compartilhada; habilitar as duas sobrepõe as alternativas).
@@ -186,9 +201,20 @@ python -m unittest discover -s art-source/zeus -p 'test_*.py' -v
   roundtrip < 1e-6, âncoras Band/Gem/ChainTop/Frame/Eye provadas na superfície
   exportada e silhuetas Tempestade (alta) vs. Sabedoria (larga) distintas.
 - `prototype/renders/`: asas frente/lado/costas + 2 poses de flap + vista
-  equipada no mannequin; pendant e anéis frente/lado/detalhe.
+  equipada no mannequin; pendant e anéis frente/lado/detalhe; capa
+  frente/lado/costas + 2 provas equipadas (`Zeus_CapeSet_equipped_*`, com o
+  fantasma translúcido do cloth como no manto do Poseidon — nunca exportado).
+- `prototype/zeus-cape.blend` (coleção `Zeus Cape` no espaço bind do player),
+  `cape-build-report.json`, `cape-equipped-review-report.json` e
+  `cape-saved-roundtrip-report.json`: orçamento 6.000–10.000 (medido: 7.986
+  triângulos em 5 malhas, 1 osso), link do osso 19 reconstruído e provado por
+  recomputação independente, roundtrip < 1e-6, gates equipados (root follow ≥
+  3, drift de rigidez ≤ 0,75, alcance < 135) e portões de classe documentados.
+- `cape-cloth-contract.md`: estudo do contrato de cloth para a integração
+  (grades do runtime, link, `bCloak` por classe, portões de ID novo).
 - `prototype/texture-dependencies.json`: os 3 atlases ausentes declarados.
-- `native-reference-audit.json`: proveniência, rigs e contratos nativos.
+- `native-reference-audit.json`: proveniência, rigs e contratos nativos
+  (12 modelos, incluindo o precedente de capa `emperor_cape`).
 
 A fonte regenerável são os `*.py`; editar só o `.blend` não altera o gerador.
 Nenhuma instalação em `Data/`, nenhum deploy, nenhuma alteração nas pastas
@@ -196,7 +222,9 @@ Nenhuma instalação em `Data/`, nenhum deploy, nenhuma alteração nas pastas
 
 ## Próximas ondas (não desta lane)
 
-1. Capa com cloth e prova de colisão/vento (única definição ainda em projeto).
+1. Capa na integração: abrir o portão `bCloak` para a família CLASS_DARK
+   (Duel Master), case próprio de cloth para o ID Zeus (sem saia) e prova de
+   colisão/vento in-game — mapa completo em `cape-cloth-contract.md`.
 2. Ícones de inventário do pendant e dos anéis; as aparições no corpo dependem
    de suporte posterior do cliente.
 3. Atlases `Zeus_*` com bordas/frente/costas coerentes e UV final; remover o

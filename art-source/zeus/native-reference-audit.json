@@ -17608,6 +17608,36 @@
       "used_bones": [
         0
       ]
+    },
+    "emperor_cape": {
+      "member": "Data/Item/DarkLordRobe02.bmd",
+      "sha256": "36e033c9db84dfc9febda70f74748d96a0b8d89f2acc15d569cb15f376383807",
+      "model_name": "D:\\Projects\\_work\\\ufffd\ufffd\ufffd\ufffd\\3\ufffd\ufffd \ufffd\ufffd\ufffd\ufffd",
+      "meshes": 3,
+      "triangles": 192,
+      "textures": [
+        "dl_redwings01.jpg",
+        "dl_redwings02.tga",
+        "dl_redwings03.tga"
+      ],
+      "bones": [
+        {
+          "index": 0,
+          "name": "collar",
+          "parent": -1,
+          "dummy": false,
+          "animated_actions": []
+        }
+      ],
+      "action_frames": [
+        1
+      ],
+      "action_locks": [
+        false
+      ],
+      "used_bones": [
+        0
+      ]
     }
   }
 }

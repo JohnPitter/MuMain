@@ -1,0 +1,121 @@
+{
+  "status": "AUTHORED_CAPE_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/zeus/design-spec.md",
+  "cloth_contract": "art-source/zeus/cape-cloth-contract.md",
+  "model_origin": "Original Zeus cape geometry authored in the player bind world space; single-influence binding to the native cape bone \"collar\" through the reconstructed RenderLinkObject matrix, no native mesh reuse",
+  "native_contract": {
+    "member": "Data/Item/DarkLordRobe02.bmd",
+    "native_sha256": "36e033c9db84dfc9febda70f74748d96a0b8d89f2acc15d569cb15f376383807",
+    "bone": "collar",
+    "bones": 1,
+    "pose_frames": [
+      1
+    ],
+    "native_meshes": 3,
+    "native_triangles": 192,
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "c09a6e975f5a7b2e1c02fdc85805ad635f2b8652f73d0e2c931c29424936e4a6"
+  },
+  "link_math": {
+    "bone": 19,
+    "m1_rotation": [
+      0,
+      90,
+      0
+    ],
+    "m1_translation": [
+      -47,
+      -7,
+      0
+    ],
+    "m2_rotation": [
+      145,
+      0,
+      275
+    ],
+    "m2_translation": [
+      0,
+      10,
+      -30
+    ],
+    "source": "ZzzCharacter.cpp RenderLinkObject MODEL_CAPE_OF_EMPEROR branch"
+  },
+  "player_anchor": {
+    "bone": 19,
+    "translation": [
+      0.0001,
+      -0.013,
+      156.3243
+    ]
+  },
+  "cape_root_translation": [
+    0.8421,
+    1.735,
+    79.8802
+  ],
+  "triangle_budget": {
+    "low": 6000,
+    "high": 10000,
+    "justification": "Long cape with a structured twelve-facet collar, the bolt emblem shield and six rigid lightning-tail panels; the concept tails are pointed, so they cannot be cloth (a CPhysicsCloth grid always ends in a straight hem) and must be authored geometry, while the blue fabric mass itself stays procedural cloth owned by the runtime."
+  },
+  "cloth_coordination": {
+    "main_grid_pin": "bone 19 anchor (0, 8, 10), top row 0.6 x 180 wide",
+    "rigid_panel_plane_y": 34.0,
+    "collision_spheres": "bones 17 (r 25-27) and 2 (r 30) kept clear",
+    "class_gate": "bCloak is CLASS_DARK_LORD/CLASS_RAGEFIGHTER (+ literal CLASS_DARK) only; a Duel Master cape needs its own cloth case - see cape-cloth-contract.md"
+  },
+  "texture_dependencies": [
+    {
+      "texture": "Zeus_Blue.jpg",
+      "material_role": "Blue",
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    },
+    {
+      "texture": "Zeus_Platina.jpg",
+      "material_role": "Platina",
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    },
+    {
+      "texture": "Zeus_Emissive.jpg",
+      "material_role": "Emissive",
+      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+    }
+  ],
+  "shared_source_sha256": {
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "export_skinned_bmd.py": "4ebeead43f021d9f905be927b36a66208f697972fea1f160806a6c18d1f21c05",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b",
+    "zeus_materials.py": "3bbb1ca1a57deb080b8cf39602a5b9860fc40d73f591476453555da76140ed46",
+    "zeus_shapes.py": "29e40a6b3514f13b8846995889d86d053ade030aa8e1977ab8b71d3113b0c0a2",
+    "zeus_armor_shapes.py": "5fb4fa4c8a86ebf70f241ff26ae41d519ede7db687dc9ab9fa1b48871f0175aa"
+  },
+  "blend_sha256": "0816afdd775d2d0ab117582d91a8e900da5a191f1c5ab034c22a7202b7234157",
+  "piece": {
+    "file": "Zeus_Cape.bmd",
+    "meshes": 5,
+    "triangles": 7986,
+    "textures": [
+      "Zeus_Blue.jpg",
+      "Zeus_Emissive.jpg",
+      "Zeus_Platina.jpg"
+    ],
+    "bones": 1,
+    "topology": {
+      "objects": 109,
+      "triangles": 7986,
+      "open_edges": 48,
+      "nonmanifold_components": []
+    },
+    "minimum_triangle_area": 0.03313701197325726,
+    "sha256": "c3b9a0b556c7a3d70080a5389ad8b0408d3cb79f02a90b993f9d7c106e719b89",
+    "used_bones": [
+      0
+    ],
+    "roundtrip_max_error": 7.152557373046875e-07
+  }
+}
