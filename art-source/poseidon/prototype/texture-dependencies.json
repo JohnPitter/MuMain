@@ -2,31 +2,49 @@
   {
     "texture": "Poseidon_Black.jpg",
     "material_role": "Black",
-    "status": "MISSING_ATLAS_NOT_FOR_CLIENT",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_poseidon_atlases.py",
     "linear_rgb": [
       0.023,
       0.032,
       0.044
-    ]
+    ],
+    "master": "art-source/poseidon/textures/masters/Poseidon_Black.png",
+    "master_sha256": "907211715dac2e42e0e39b7ace60f6bdf827b534d7513b89569f2c84905cf926",
+    "game_jpeg_sha256": "f02e135222b1b1055ab27bcb80cc690d2387e2400c4be68e39c5789b11f5d950",
+    "ozj_sha256": "a2ea273cce538ef4cf3e332a1932e2bbf8fc2d3a7d5b623513ab4dd36b71fcb9",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
   },
   {
     "texture": "Poseidon_Gold.jpg",
     "material_role": "Gold",
-    "status": "MISSING_ATLAS_NOT_FOR_CLIENT",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_poseidon_atlases.py",
     "linear_rgb": [
       0.72,
       0.4,
       0.105
-    ]
+    ],
+    "master": "art-source/poseidon/textures/masters/Poseidon_Gold.png",
+    "master_sha256": "8dccb3f1cba188057aff9db9ca3960af93217b8c6168738c194a60f1813c8739",
+    "game_jpeg_sha256": "563cb82b7028186b0c7b8b8178253d3b1d42f16be64d64d3c12769de539d1d60",
+    "ozj_sha256": "dde708fa63d4aac0e6fe0728541615a8bd8cfd6af3bbe304e9fa72413d281190",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
   },
   {
     "texture": "Poseidon_Blue.jpg",
     "material_role": "Blue",
-    "status": "MISSING_ATLAS_NOT_FOR_CLIENT",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_poseidon_atlases.py",
     "linear_rgb": [
       0.009,
       0.21,
       0.48
-    ]
+    ],
+    "master": "art-source/poseidon/textures/masters/Poseidon_Blue.png",
+    "master_sha256": "afd9c9d34a14b5bb46dbdaa84c5bd8f6408bb8b297ce01884d60e8fb9c3ab71c",
+    "game_jpeg_sha256": "be102b7b76cd4281e2813a255dfde82cd1789d66d530e3fd3cb61002305dec25",
+    "ozj_sha256": "9edad96e3f298394b46d666ebdbcbd2d40d121224f1ce894bf422c4ff56cc717",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
   }
 ]

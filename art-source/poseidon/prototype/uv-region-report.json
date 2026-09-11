@@ -1,0 +1,4711 @@
+{
+  "status": "UV_LAYOUT_PROOF_FOR_DEFINITIVE_ATLASES",
+  "uv_projection": "per-component planar box projection over the two largest bbox axes, normalized to the full 0-1 square (celestial_geometry.mesh); every component samples the whole atlas, so the masters are full-field engraved finishes, not spatially partitioned charts",
+  "models": {
+    "Trident": {
+      "scene": "poseidon-weapons.blend",
+      "atlas_components": {
+        "Poseidon_Black.jpg": [
+          "Trident_black_grip",
+          "Trident_center_spear_black_metal",
+          "Trident_core_socket_black_metal",
+          "Trident_fluke_-1_black_metal",
+          "Trident_fluke_1_black_metal",
+          "Trident_grip_rib_0",
+          "Trident_grip_rib_1",
+          "Trident_grip_rib_2",
+          "Trident_grip_rib_3",
+          "Trident_grip_rib_4",
+          "Trident_grip_rib_5",
+          "Trident_grip_rib_6",
+          "Trident_grip_rib_7",
+          "Trident_grip_rib_8",
+          "Trident_ocean_finial_black_metal",
+          "Trident_outer_tine_-1_black_metal",
+          "Trident_outer_tine_1_black_metal",
+          "Trident_structural_black_spine"
+        ],
+        "Poseidon_Gold.jpg": [
+          "Trident_center_spear_gold_edge_front",
+          "Trident_center_spear_gold_edge_rear",
+          "Trident_core_socket_gold_edge_front",
+          "Trident_core_socket_gold_edge_rear",
+          "Trident_curl_-1",
+          "Trident_curl_1",
+          "Trident_ferrule_0",
+          "Trident_ferrule_1",
+          "Trident_ferrule_2",
+          "Trident_ferrule_3",
+          "Trident_ferrule_4",
+          "Trident_ferrule_5",
+          "Trident_fluke_-1_gold_edge_front",
+          "Trident_fluke_-1_gold_edge_rear",
+          "Trident_fluke_1_gold_edge_front",
+          "Trident_fluke_1_gold_edge_rear",
+          "Trident_grip_inlay_-1",
+          "Trident_grip_inlay_1",
+          "Trident_ocean_finial_gold_edge_front",
+          "Trident_ocean_finial_gold_edge_rear",
+          "Trident_outer_tine_-1_gold_edge_front",
+          "Trident_outer_tine_-1_gold_edge_rear",
+          "Trident_outer_tine_1_gold_edge_front",
+          "Trident_outer_tine_1_gold_edge_rear",
+          "Trident_spine_gold_rib_-1",
+          "Trident_spine_gold_rib_1",
+          "Trident_structural_shaft",
+          "Trident_tine_fluting_-1",
+          "Trident_tine_fluting_1"
+        ],
+        "Poseidon_Blue.jpg": [
+          "Trident_ocean_core",
+          "Trident_pommel_crystal",
+          "Trident_rear_ocean_seal",
+          "Trident_shaft_diamond_28",
+          "Trident_shaft_diamond_43",
+          "Trident_shaft_diamond_55",
+          "Trident_spear_inlay"
+        ]
+      },
+      "components": [
+        {
+          "component": "Trident_black_grip",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 395.5566,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_center_spear_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 1112.1129,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_center_spear_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 204,
+          "surface_area": 369.9986,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_center_spear_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 204,
+          "surface_area": 369.9986,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_core_socket_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 423.338,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_core_socket_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 137.6474,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_core_socket_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 137.6474,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_curl_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 48.5897,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_curl_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 48.5897,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ferrule_0",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ferrule_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ferrule_2",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9254,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ferrule_3",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9254,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ferrule_4",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ferrule_5",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_fluke_-1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 333.8392,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_fluke_-1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 159.9293,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_fluke_-1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 159.9293,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_fluke_1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 333.8392,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_fluke_1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 159.9293,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_fluke_1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 159.9293,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_inlay_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 37.9684,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_inlay_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 37.9684,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_2",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_3",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_4",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_5",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_6",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_7",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_grip_rib_8",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ocean_core",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 126.5776,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ocean_finial_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 349.311,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ocean_finial_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 170.352,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_ocean_finial_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 170.352,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_outer_tine_-1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 1344.6977,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_outer_tine_-1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 204,
+          "surface_area": 481.3418,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_outer_tine_-1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 204,
+          "surface_area": 481.3418,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_outer_tine_1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 1344.6977,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_outer_tine_1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 204,
+          "surface_area": 481.3418,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_outer_tine_1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 204,
+          "surface_area": 481.3418,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_pommel_crystal",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 23.0997,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_rear_ocean_seal",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 44.833,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_shaft_diamond_28",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 5.8339,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_shaft_diamond_43",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 5.8339,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_shaft_diamond_55",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 5.8339,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_spear_inlay",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 63.547,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_spine_gold_rib_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 44,
+          "surface_area": 72.8948,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_spine_gold_rib_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 44,
+          "surface_area": 72.8948,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_structural_black_spine",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 56,
+          "surface_area": 357.9766,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_structural_shaft",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 1073.4452,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_tine_fluting_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 60,
+          "surface_area": 101.5651,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Trident_tine_fluting_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 60,
+          "surface_area": 101.5651,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "bmd_atlas_texcoords": {
+        "Poseidon_Black.jpg": 74,
+        "Poseidon_Blue.jpg": 11,
+        "Poseidon_Gold.jpg": 424
+      },
+      "bmd_triangles": {
+        "Poseidon_Black.jpg": 172,
+        "Poseidon_Blue.jpg": 98,
+        "Poseidon_Gold.jpg": 2196
+      }
+    },
+    "Scepter": {
+      "scene": "poseidon-weapons.blend",
+      "atlas_components": {
+        "Poseidon_Black.jpg": [
+          "Scepter_black_grip",
+          "Scepter_core_socket_black_metal",
+          "Scepter_crown_peak_black_metal",
+          "Scepter_grip_rib_0",
+          "Scepter_grip_rib_1",
+          "Scepter_grip_rib_2",
+          "Scepter_grip_rib_3",
+          "Scepter_grip_rib_4",
+          "Scepter_grip_rib_5",
+          "Scepter_grip_rib_6",
+          "Scepter_grip_rib_7",
+          "Scepter_grip_rib_8",
+          "Scepter_lateral_crown_-1_black_metal",
+          "Scepter_lateral_crown_1_black_metal",
+          "Scepter_ocean_finial_black_metal",
+          "Scepter_shaft_escutcheon_30_black_metal",
+          "Scepter_shaft_escutcheon_39_black_metal",
+          "Scepter_shaft_escutcheon_49_black_metal",
+          "Scepter_structural_black_spine",
+          "Scepter_wave_crown_-1_black_metal",
+          "Scepter_wave_crown_1_black_metal"
+        ],
+        "Poseidon_Gold.jpg": [
+          "Scepter_core_socket_gold_edge_front",
+          "Scepter_core_socket_gold_edge_rear",
+          "Scepter_crown_peak_gold_edge_front",
+          "Scepter_crown_peak_gold_edge_rear",
+          "Scepter_curl_-1",
+          "Scepter_curl_1",
+          "Scepter_ferrule_0",
+          "Scepter_ferrule_1",
+          "Scepter_ferrule_2",
+          "Scepter_ferrule_3",
+          "Scepter_ferrule_4",
+          "Scepter_ferrule_5",
+          "Scepter_grip_inlay_-1",
+          "Scepter_grip_inlay_1",
+          "Scepter_lateral_crown_-1_gold_edge_front",
+          "Scepter_lateral_crown_-1_gold_edge_rear",
+          "Scepter_lateral_crown_1_gold_edge_front",
+          "Scepter_lateral_crown_1_gold_edge_rear",
+          "Scepter_ocean_finial_gold_edge_front",
+          "Scepter_ocean_finial_gold_edge_rear",
+          "Scepter_shaft_escutcheon_30_gold_edge_front",
+          "Scepter_shaft_escutcheon_30_gold_edge_rear",
+          "Scepter_shaft_escutcheon_39_gold_edge_front",
+          "Scepter_shaft_escutcheon_39_gold_edge_rear",
+          "Scepter_shaft_escutcheon_49_gold_edge_front",
+          "Scepter_shaft_escutcheon_49_gold_edge_rear",
+          "Scepter_spine_gold_rib_-1",
+          "Scepter_spine_gold_rib_1",
+          "Scepter_structural_shaft",
+          "Scepter_wave_crown_-1_gold_edge_front",
+          "Scepter_wave_crown_-1_gold_edge_rear",
+          "Scepter_wave_crown_1_gold_edge_front",
+          "Scepter_wave_crown_1_gold_edge_rear"
+        ],
+        "Poseidon_Blue.jpg": [
+          "Scepter_crown_gem_-1",
+          "Scepter_crown_gem_1",
+          "Scepter_ocean_core",
+          "Scepter_pommel_crystal",
+          "Scepter_rear_ocean_seal"
+        ]
+      },
+      "components": [
+        {
+          "component": "Scepter_black_grip",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 395.5566,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_core_socket_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 581.7286,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_core_socket_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 168.6897,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_core_socket_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 168.6897,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_crown_gem_-1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 31.4917,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_crown_gem_1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 31.4917,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_crown_peak_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 434.6704,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_crown_peak_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 165.7314,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_crown_peak_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 165.7314,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_curl_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 47.4066,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_curl_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 47.4066,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ferrule_0",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ferrule_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ferrule_2",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9254,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ferrule_3",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9254,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ferrule_4",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ferrule_5",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 31.9255,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_inlay_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 37.9684,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_inlay_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 37.9684,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_2",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_3",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_4",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_5",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_6",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_7",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_grip_rib_8",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 17.8125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_lateral_crown_-1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 362.4799,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_lateral_crown_-1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 203.1912,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_lateral_crown_-1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 203.1912,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_lateral_crown_1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 362.4799,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_lateral_crown_1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 203.1912,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_lateral_crown_1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 203.1912,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ocean_core",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 178.752,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ocean_finial_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 44,
+          "surface_area": 349.311,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ocean_finial_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 170.352,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_ocean_finial_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 170.352,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_pommel_crystal",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 23.0997,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_rear_ocean_seal",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 64.8433,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_30_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 68.716,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_30_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 47.0494,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_30_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 47.0494,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_39_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 68.716,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_39_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 47.0494,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_39_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 47.0494,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_49_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 68.716,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_49_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 47.0494,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_shaft_escutcheon_49_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 47.0494,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_spine_gold_rib_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 44,
+          "surface_area": 103.4443,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_spine_gold_rib_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 44,
+          "surface_area": 103.4443,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_structural_black_spine",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 56,
+          "surface_area": 503.1496,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_structural_shaft",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 977.8023,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_wave_crown_-1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 84,
+          "surface_area": 907.5797,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_wave_crown_-1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 366.1358,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_wave_crown_-1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 366.1358,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_wave_crown_1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 84,
+          "surface_area": 907.5797,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_wave_crown_1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 366.1358,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Scepter_wave_crown_1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 188,
+          "surface_area": 366.1358,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "bmd_atlas_texcoords": {
+        "Poseidon_Black.jpg": 62,
+        "Poseidon_Blue.jpg": 11,
+        "Poseidon_Gold.jpg": 29
+      },
+      "bmd_triangles": {
+        "Poseidon_Black.jpg": 192,
+        "Poseidon_Blue.jpg": 70,
+        "Poseidon_Gold.jpg": 76
+      }
+    },
+    "Helm": {
+      "scene": "poseidon-armor.blend",
+      "atlas_components": {
+        "Poseidon_Blue.jpg": [
+          "Helm_axial_ocean_crystal",
+          "Helm_axial_rear_seal",
+          "Helm_forehead_ocean_diamond",
+          "Helm_temple_jewel_-1",
+          "Helm_temple_jewel_1"
+        ],
+        "Poseidon_Black.jpg": [
+          "Helm_brow_black_band",
+          "Helm_cheek_guard_-1",
+          "Helm_cheek_guard_1",
+          "Helm_crown_outer_tine_-1_black_metal",
+          "Helm_crown_outer_tine_1_black_metal",
+          "Helm_crown_trident_blade_black_metal",
+          "Helm_dome_black_crown",
+          "Helm_nape_lamella_0",
+          "Helm_nape_lamella_1",
+          "Helm_nape_lamella_2",
+          "Helm_occipital_diamond_black_metal",
+          "Helm_throat_black_plate"
+        ],
+        "Poseidon_Gold.jpg": [
+          "Helm_brow_gold_line",
+          "Helm_cheek_gold_rim_-1",
+          "Helm_cheek_gold_rim_1",
+          "Helm_crown_outer_tine_-1_gold_edge_front",
+          "Helm_crown_outer_tine_-1_gold_edge_rear",
+          "Helm_crown_outer_tine_1_gold_edge_front",
+          "Helm_crown_outer_tine_1_gold_edge_rear",
+          "Helm_crown_trident_blade_gold_edge_front",
+          "Helm_crown_trident_blade_gold_edge_rear",
+          "Helm_ear_disc_-1",
+          "Helm_ear_disc_1",
+          "Helm_forehead_diamond_setting",
+          "Helm_nape_gold_edge_0",
+          "Helm_nape_gold_edge_1",
+          "Helm_nape_gold_edge_2",
+          "Helm_occipital_diamond_gold_edge_front",
+          "Helm_occipital_diamond_gold_edge_rear",
+          "Helm_temple_wave_-1",
+          "Helm_temple_wave_1",
+          "Helm_throat_gold_band",
+          "Helm_throat_gold_edge",
+          "Helm_tine_gold_fluting_-1",
+          "Helm_tine_gold_fluting_1"
+        ]
+      },
+      "components": [
+        {
+          "component": "Helm_axial_ocean_crystal",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 45.193,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_axial_rear_seal",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 13.8391,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_brow_black_band",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 30,
+          "surface_area": 182.4046,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_brow_gold_line",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 123.6184,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_cheek_gold_rim_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 112.8572,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_cheek_gold_rim_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 112.8572,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_cheek_guard_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 84,
+          "surface_area": 167.9112,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_cheek_guard_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 84,
+          "surface_area": 167.9112,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_outer_tine_-1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 52,
+          "surface_area": 226.9238,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_outer_tine_-1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 160.8331,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_outer_tine_-1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 160.8331,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_outer_tine_1_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 52,
+          "surface_area": 226.9238,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_outer_tine_1_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 160.8331,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_outer_tine_1_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 160.8331,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_trident_blade_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 76,
+          "surface_area": 591.2771,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_trident_blade_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 172,
+          "surface_area": 268.2014,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_crown_trident_blade_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 172,
+          "surface_area": 268.2015,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_dome_black_crown",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 204,
+          "surface_area": 1334.3125,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0659,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_ear_disc_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 54.7892,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_ear_disc_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 54.7892,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_forehead_diamond_setting",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 70.0055,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_forehead_ocean_diamond",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 49.3758,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_nape_gold_edge_0",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 111.3226,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_nape_gold_edge_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 103.2123,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_nape_gold_edge_2",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 90.6973,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_nape_lamella_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 22,
+          "surface_area": 122.854,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_nape_lamella_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 22,
+          "surface_area": 99.6668,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_nape_lamella_2",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 22,
+          "surface_area": 79.0899,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_occipital_diamond_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 71.9351,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_occipital_diamond_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 51.5397,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_occipital_diamond_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 51.5397,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_temple_jewel_-1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 11.9168,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_temple_jewel_1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 11.9168,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_temple_wave_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 58.4034,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_temple_wave_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 58.4034,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_throat_black_plate",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 22,
+          "surface_area": 139.4715,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_throat_gold_band",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 60,
+          "surface_area": 114.1653,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_throat_gold_edge",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 106.1682,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_tine_gold_fluting_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 33.9226,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Helm_tine_gold_fluting_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 33.9226,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "bmd_atlas_texcoords": {
+        "Poseidon_Black.jpg": 219,
+        "Poseidon_Blue.jpg": 16,
+        "Poseidon_Gold.jpg": 194
+      },
+      "bmd_triangles": {
+        "Poseidon_Black.jpg": 698,
+        "Poseidon_Blue.jpg": 70,
+        "Poseidon_Gold.jpg": 516
+      }
+    },
+    "Armor": {
+      "scene": "poseidon-armor.blend",
+      "atlas_components": {
+        "Poseidon_Gold.jpg": [
+          "Armor_abdomen_wave_gold_-1",
+          "Armor_abdomen_wave_gold_1",
+          "Armor_abdominal_spear_gold",
+          "Armor_back_trident_brand_gold_edge_front",
+          "Armor_back_trident_brand_gold_edge_rear",
+          "Armor_back_wave_gold_-1",
+          "Armor_back_wave_gold_1",
+          "Armor_belt_gold",
+          "Armor_belt_lozenge_gold_edge_front",
+          "Armor_belt_lozenge_gold_edge_rear",
+          "Armor_chest_wave_gold_-1",
+          "Armor_chest_wave_gold_1",
+          "Armor_clavicle_stud_-1",
+          "Armor_clavicle_stud_1",
+          "Armor_elbow_gold_ring_-1",
+          "Armor_elbow_gold_ring_1",
+          "Armor_guard_front_spire_0",
+          "Armor_guard_front_spire_1",
+          "Armor_guard_gold_halo_-1",
+          "Armor_guard_wave_undercurl_-1",
+          "Armor_lamella_gold_edge_0",
+          "Armor_lamella_gold_edge_1",
+          "Armor_lamella_gold_edge_2",
+          "Armor_pectoral_gold_border_-1",
+          "Armor_pectoral_gold_border_1",
+          "Armor_plume_gold_spine_0",
+          "Armor_plume_gold_spine_2",
+          "Armor_plume_gold_spine_4",
+          "Armor_scapula_gold_border_-1",
+          "Armor_scapula_gold_border_1",
+          "Armor_sleeve_wave_gold_-1",
+          "Armor_sleeve_wave_gold_1",
+          "Armor_standing_collar_gold",
+          "Armor_sternum_diamond_setting"
+        ],
+        "Poseidon_Black.jpg": [
+          "Armor_anatomical_cuirass_black",
+          "Armor_back_trident_brand_black_metal",
+          "Armor_belt_lozenge_black_metal",
+          "Armor_elbow_cop_-1",
+          "Armor_elbow_cop_1",
+          "Armor_forearm_fin_0",
+          "Armor_forearm_fin_0.001",
+          "Armor_forearm_fin_1",
+          "Armor_forearm_fin_1.001",
+          "Armor_lower_back_lamella_0",
+          "Armor_lower_back_lamella_1",
+          "Armor_lower_back_lamella_2",
+          "Armor_pauldron_curved_guard_-1",
+          "Armor_pauldron_fan_dome_1",
+          "Armor_pauldron_fan_plume_0",
+          "Armor_pauldron_fan_plume_1",
+          "Armor_pauldron_fan_plume_2",
+          "Armor_pauldron_fan_plume_3",
+          "Armor_pauldron_fan_plume_4",
+          "Armor_scapula_shell_-1",
+          "Armor_scapula_shell_1",
+          "Armor_sculpted_pectoral_-1",
+          "Armor_sculpted_pectoral_1",
+          "Armor_upper_arm_sleeve_-1",
+          "Armor_upper_arm_sleeve_1"
+        ],
+        "Poseidon_Blue.jpg": [
+          "Armor_belt_ocean_gem",
+          "Armor_guard_ocean_gem_-1",
+          "Armor_pauldron_ocean_gem_1",
+          "Armor_sternum_ocean_diamond"
+        ]
+      },
+      "components": [
+        {
+          "component": "Armor_abdomen_wave_gold_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 57.2532,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_abdomen_wave_gold_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 57.2532,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_abdominal_spear_gold",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 215.8977,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_anatomical_cuirass_black",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 240,
+          "surface_area": 4348.1909,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_back_trident_brand_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 60,
+          "surface_area": 254.9911,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_back_trident_brand_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 140,
+          "surface_area": 147.0705,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_back_trident_brand_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 140,
+          "surface_area": 147.0705,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_back_wave_gold_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 64.5487,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_back_wave_gold_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 64.5487,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_belt_gold",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 300,
+          "surface_area": 504.9969,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_belt_lozenge_black_metal",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 28,
+          "surface_area": 85.0427,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_belt_lozenge_gold_edge_front",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 54.4066,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_belt_lozenge_gold_edge_rear",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 54.4066,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_belt_ocean_gem",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 27.5923,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_chest_wave_gold_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 74.1743,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_chest_wave_gold_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 74.1743,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_clavicle_stud_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 38.648,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_clavicle_stud_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 38.648,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_elbow_cop_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 60,
+          "surface_area": 288.5652,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_elbow_cop_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 60,
+          "surface_area": 288.5652,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_elbow_gold_ring_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 236,
+          "surface_area": 113.1266,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_elbow_gold_ring_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 236,
+          "surface_area": 113.1266,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_forearm_fin_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 105.4408,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_forearm_fin_0.001",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 105.441,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_forearm_fin_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 91.0684,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_forearm_fin_1.001",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 91.0686,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_guard_front_spire_0",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 117.926,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_guard_front_spire_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 98.8954,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_guard_gold_halo_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 332,
+          "surface_area": 257.2167,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_guard_ocean_gem_-1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 43.3158,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_guard_wave_undercurl_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 64.9601,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_lamella_gold_edge_0",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 131.4523,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_lamella_gold_edge_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 126.2445,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_lamella_gold_edge_2",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 124,
+          "surface_area": 121.0685,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_lower_back_lamella_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 26,
+          "surface_area": 204.7529,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_lower_back_lamella_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 26,
+          "surface_area": 196.0052,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_lower_back_lamella_2",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 26,
+          "surface_area": 187.2619,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_curved_guard_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 180,
+          "surface_area": 1252.576,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_fan_dome_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 144,
+          "surface_area": 744.2091,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_fan_plume_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 68,
+          "surface_area": 194.894,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_fan_plume_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 68,
+          "surface_area": 167.2468,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_fan_plume_2",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 68,
+          "surface_area": 142.5767,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_fan_plume_3",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 68,
+          "surface_area": 120.6528,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_fan_plume_4",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 68,
+          "surface_area": 101.2443,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pauldron_ocean_gem_1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 51.8173,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pectoral_gold_border_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 252,
+          "surface_area": 227.7799,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_pectoral_gold_border_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 252,
+          "surface_area": 227.7799,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_plume_gold_spine_0",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 35.7266,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_plume_gold_spine_2",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 33.1521,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_plume_gold_spine_4",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 31.0788,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_scapula_gold_border_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 252,
+          "surface_area": 150.3454,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_scapula_gold_border_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 252,
+          "surface_area": 150.3454,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_scapula_shell_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 210,
+          "surface_area": 346.0489,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_scapula_shell_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 210,
+          "surface_area": 346.0489,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_sculpted_pectoral_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 210,
+          "surface_area": 630.0652,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_sculpted_pectoral_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 210,
+          "surface_area": 630.0652,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_sleeve_wave_gold_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 78.2682,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_sleeve_wave_gold_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 78.2677,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_standing_collar_gold",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 300,
+          "surface_area": 413.4484,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_sternum_diamond_setting",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 146.6734,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_sternum_ocean_diamond",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 94.5601,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_upper_arm_sleeve_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 96,
+          "surface_area": 1318.6595,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Armor_upper_arm_sleeve_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 96,
+          "surface_area": 1318.6595,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "bmd_atlas_texcoords": {
+        "Poseidon_Black.jpg": 127,
+        "Poseidon_Blue.jpg": 11,
+        "Poseidon_Gold.jpg": 268
+      },
+      "bmd_triangles": {
+        "Poseidon_Black.jpg": 390,
+        "Poseidon_Blue.jpg": 56,
+        "Poseidon_Gold.jpg": 796
+      }
+    },
+    "Boot": {
+      "scene": "poseidon-armor.blend",
+      "atlas_components": {
+        "Poseidon_Gold.jpg": [
+          "Boots_achilles_spine_gold_-1",
+          "Boots_achilles_spine_gold_1",
+          "Boots_ankle_gold_collar_-1",
+          "Boots_ankle_gold_collar_1",
+          "Boots_gilded_sole_-1",
+          "Boots_gilded_sole_1",
+          "Boots_heel_gold_edge_-1",
+          "Boots_heel_gold_edge_1",
+          "Boots_instep_lamella_0_gold_chevron",
+          "Boots_instep_lamella_0_gold_chevron.001",
+          "Boots_instep_lamella_1_gold_chevron",
+          "Boots_instep_lamella_1_gold_chevron.001",
+          "Boots_instep_lamella_2_gold_chevron",
+          "Boots_instep_lamella_2_gold_chevron.001",
+          "Boots_rear_diamond_setting_-1",
+          "Boots_rear_diamond_setting_1",
+          "Boots_shin_diamond_setting_-1",
+          "Boots_shin_diamond_setting_1",
+          "Boots_shin_gold_frame_-1",
+          "Boots_shin_gold_frame_1",
+          "Boots_shin_wave_inner_-1",
+          "Boots_shin_wave_inner_1",
+          "Boots_shin_wave_outer_-1",
+          "Boots_shin_wave_outer_1",
+          "Boots_toe_gold_edge_-1",
+          "Boots_toe_gold_edge_1"
+        ],
+        "Poseidon_Black.jpg": [
+          "Boots_curved_greave_-1",
+          "Boots_curved_greave_1",
+          "Boots_instep_lamella_0",
+          "Boots_instep_lamella_0.001",
+          "Boots_instep_lamella_1",
+          "Boots_instep_lamella_1.001",
+          "Boots_instep_lamella_2",
+          "Boots_instep_lamella_2.001",
+          "Boots_notched_heel_counter_-1",
+          "Boots_notched_heel_counter_1",
+          "Boots_rear_calf_lamella_-1_-1_0",
+          "Boots_rear_calf_lamella_-1_-1_1",
+          "Boots_rear_calf_lamella_-1_1_0",
+          "Boots_rear_calf_lamella_-1_1_1",
+          "Boots_rear_calf_lamella_1_-1_0",
+          "Boots_rear_calf_lamella_1_-1_1",
+          "Boots_rear_calf_lamella_1_1_0",
+          "Boots_rear_calf_lamella_1_1_1",
+          "Boots_sabaton_shell_-1",
+          "Boots_sabaton_shell_1",
+          "Boots_shin_plate_-1",
+          "Boots_shin_plate_1",
+          "Boots_toe_guard_-1",
+          "Boots_toe_guard_1"
+        ],
+        "Poseidon_Blue.jpg": [
+          "Boots_rear_ocean_diamond_-1",
+          "Boots_rear_ocean_diamond_1",
+          "Boots_shin_ocean_diamond_-1",
+          "Boots_shin_ocean_diamond_1"
+        ]
+      },
+      "components": [
+        {
+          "component": "Boots_achilles_spine_gold_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 162.1257,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_achilles_spine_gold_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 162.1257,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_ankle_gold_collar_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 181.9363,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_ankle_gold_collar_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 268,
+          "surface_area": 181.9363,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_curved_greave_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 96,
+          "surface_area": 1583.3651,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_curved_greave_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 96,
+          "surface_area": 1583.3652,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_gilded_sole_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 60,
+          "surface_area": 561.3229,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_gilded_sole_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 60,
+          "surface_area": 561.3229,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_heel_gold_edge_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 140,
+          "surface_area": 104.7798,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_heel_gold_edge_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 140,
+          "surface_area": 104.7798,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 20,
+          "surface_area": 70.7027,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_0.001",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 20,
+          "surface_area": 70.7027,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_0_gold_chevron",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 13.7012,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_0_gold_chevron.001",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 13.7012,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 20,
+          "surface_area": 80.4484,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_1.001",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 20,
+          "surface_area": 80.4484,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_1_gold_chevron",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 14.4296,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_1_gold_chevron.001",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 14.4296,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_2",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 20,
+          "surface_area": 90.307,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_2.001",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 20,
+          "surface_area": 90.307,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_2_gold_chevron",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 15.1946,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_instep_lamella_2_gold_chevron.001",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 32,
+          "surface_area": 15.1946,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_notched_heel_counter_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 30,
+          "surface_area": 156.0649,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_notched_heel_counter_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 30,
+          "surface_area": 156.0649,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_-1_-1_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 89.1102,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_-1_-1_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 85.8533,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_-1_1_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 89.112,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_-1_1_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 85.8548,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_1_-1_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 89.1102,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_1_-1_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 85.8533,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_1_1_0",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 89.112,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_calf_lamella_1_1_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 92,
+          "surface_area": 85.8548,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_diamond_setting_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 37.7075,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_diamond_setting_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 37.7075,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_ocean_diamond_-1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 19.8387,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_rear_ocean_diamond_1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 19.8387,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_sabaton_shell_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 140,
+          "surface_area": 1088.0175,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_sabaton_shell_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 140,
+          "surface_area": 1088.0175,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_diamond_setting_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 53.7504,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_diamond_setting_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 76,
+          "surface_area": 53.7504,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_gold_frame_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 238.1945,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_gold_frame_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 108,
+          "surface_area": 238.1945,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_ocean_diamond_-1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 33.9509,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_ocean_diamond_1",
+          "atlas": "Poseidon_Blue.jpg",
+          "triangles": 14,
+          "surface_area": 33.9509,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_plate_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 84,
+          "surface_area": 576.3752,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_plate_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 84,
+          "surface_area": 576.3752,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_wave_inner_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 55.122,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_wave_inner_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 55.122,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_wave_outer_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 75.301,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_shin_wave_outer_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 116,
+          "surface_area": 75.301,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_toe_gold_edge_-1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 37.4079,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_toe_gold_edge_1",
+          "atlas": "Poseidon_Gold.jpg",
+          "triangles": 92,
+          "surface_area": 37.4079,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_toe_guard_-1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 50,
+          "surface_area": 54.371,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "component": "Boots_toe_guard_1",
+          "atlas": "Poseidon_Black.jpg",
+          "triangles": 50,
+          "surface_area": 54.371,
+          "uv_bounds": {
+            "u": [
+              0.0,
+              1.0
+            ],
+            "v": [
+              0.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "bmd_atlas_texcoords": {
+        "Poseidon_Black.jpg": 375,
+        "Poseidon_Blue.jpg": 9,
+        "Poseidon_Gold.jpg": 86
+      },
+      "bmd_triangles": {
+        "Poseidon_Black.jpg": 1656,
+        "Poseidon_Blue.jpg": 56,
+        "Poseidon_Gold.jpg": 280
+      }
+    }
+  }
+}
