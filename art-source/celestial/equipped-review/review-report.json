@@ -1,8 +1,8 @@
 {
   "status": "attachment-math preview, not ingame or visual acceptance",
   "models": {
-    "Helm": "6440a384f32506dc7adff9ebbdad041d154ee228164d2e4c3474257bc495ac2f",
-    "Armor": "9806cfc0de83caa681e2d6349a6b5fffd717a2e78b4e8141ff3ff2046bb664cc",
+    "Helm": "f298fdc1aa3533ef3aa16b394306f4e404807fd7a96ef89ae887b8e3cc416fee",
+    "Armor": "812e73d01f18990d1d62746ed4a105b843cbd7fd00a9b399a25c6d79c1fb9952",
     "Pants": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599",
     "Gloves": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c",
     "Boots": "3de97201eead854eb739d0021992c3f51c27b96d2bf7fc155af3c0158f3246dc",
@@ -10,7 +10,7 @@
     "Shield": "ddfbacdf436e946918f1475736d81ce8d5d77593156d993e2eda421328b7ab6b",
     "Wings": "ec9d30497f835b8de076958794d86784bea06425563ecdb6de256709f972c21e"
   },
-  "attachment_source_sha256": "51f58faa70bc5552ec49e2c14caedcf9ebc1488310efbda8fd43ccbf6e848ceb",
+  "attachment_source_sha256": "ac384c6130ba4ff30ce3715d7d3cb1213da91e932a3583a4afe5ede5b01d93f9",
   "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
   "head_sha256": "57bc2d602fc82c8908237b83346e0d7ce345c2ac128822185b0d0894300d00ba",
   "views": [

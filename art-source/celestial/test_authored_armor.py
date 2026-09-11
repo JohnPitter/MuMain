@@ -90,6 +90,8 @@ class AuthoredArmorTests(unittest.TestCase):
         report = json.loads((OUTPUT / 'roundtrip-report.json').read_text())
         self.assertEqual(set(report), set(NAMES))
         self.assertEqual(report['Boots']['closed_sabatons'], 2)
+        self.assertEqual(report['Helm']['rear_reliefs'], 21)
+        self.assertEqual(report['Armor']['rear_reliefs'], 48)
         for name, value in report.items():
             validate_proof(value, OUTPUT / 'Data/Player' / f'Celestial_{name}.bmd',
                            OUTPUT / 'celestial-authored-armor.blend')

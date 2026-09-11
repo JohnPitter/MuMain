@@ -1,38 +1,40 @@
 {
   "Helm": {
     "max_error": 2.774326048893272e-07,
-    "triangles": 2506,
-    "minimum_triangle_area": 0.0001137991676398162,
-    "model_sha256": "6440a384f32506dc7adff9ebbdad041d154ee228164d2e4c3474257bc495ac2f",
-    "blend_sha256": "291ebe784eb332a347edc9fd7edfecb72c081bb57022c8240f41227a242a0453"
+    "triangles": 3880,
+    "minimum_triangle_area": 9.738038583166992e-05,
+    "model_sha256": "f298fdc1aa3533ef3aa16b394306f4e404807fd7a96ef89ae887b8e3cc416fee",
+    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef",
+    "rear_reliefs": 21
   },
   "Armor": {
-    "max_error": 5.960464477539062e-07,
-    "triangles": 7098,
-    "minimum_triangle_area": 9.287288841005903e-05,
-    "model_sha256": "9806cfc0de83caa681e2d6349a6b5fffd717a2e78b4e8141ff3ff2046bb664cc",
-    "blend_sha256": "291ebe784eb332a347edc9fd7edfecb72c081bb57022c8240f41227a242a0453"
+    "max_error": 8.940696716308594e-07,
+    "triangles": 9024,
+    "minimum_triangle_area": 9.28432052958629e-05,
+    "model_sha256": "812e73d01f18990d1d62746ed4a105b843cbd7fd00a9b399a25c6d79c1fb9952",
+    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef",
+    "rear_reliefs": 48
   },
   "Pants": {
     "max_error": 3.5762786865234375e-07,
     "triangles": 11906,
     "minimum_triangle_area": 0.0002099653880241214,
     "model_sha256": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599",
-    "blend_sha256": "291ebe784eb332a347edc9fd7edfecb72c081bb57022c8240f41227a242a0453"
+    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef"
   },
   "Gloves": {
     "max_error": 1.1362135410308838e-07,
     "triangles": 2900,
     "minimum_triangle_area": 8.35671454469512e-05,
     "model_sha256": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c",
-    "blend_sha256": "291ebe784eb332a347edc9fd7edfecb72c081bb57022c8240f41227a242a0453"
+    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef"
   },
   "Boots": {
     "max_error": 3.5762786865234375e-07,
     "triangles": 4864,
     "minimum_triangle_area": 7.893890078711785e-05,
     "model_sha256": "3de97201eead854eb739d0021992c3f51c27b96d2bf7fc155af3c0158f3246dc",
-    "blend_sha256": "291ebe784eb332a347edc9fd7edfecb72c081bb57022c8240f41227a242a0453",
+    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef",
     "closed_sabatons": 2
   }
 }

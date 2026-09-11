@@ -3,7 +3,7 @@ import math
 
 import bpy
 import bmesh
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 from celestial_geometry import mesh
 
@@ -45,6 +45,21 @@ def seal_shell_ends(obj):
     topology.to_mesh(obj.data)
     topology.free()
     obj.data.update()
+
+
+def rear_facing(builder):
+    """Reflect front-authored reliefs toward +Y while preserving outward winding."""
+    previous = set(bpy.data.objects)
+    builder()
+    for obj in set(bpy.data.objects) - previous:
+        obj.data.transform(Matrix.Diagonal((1, -1, 1, 1)))
+        topology = bmesh.new()
+        topology.from_mesh(obj.data)
+        bmesh.ops.reverse_faces(topology, faces=list(topology.faces))
+        topology.to_mesh(obj.data)
+        topology.free()
+        obj.data.update()
+        obj['celestial_facing'] = 'rear'
 
 
 def bind_objects(objects, resolver):

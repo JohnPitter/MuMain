@@ -8,7 +8,8 @@ e as poses do personagem são referências de encaixe, não aprovação visual.
 ## Fontes e reprodução
 
 O projeto usa Blender 4.2. As formas estão em `celestial_cuirass.py` e
-`celestial_limb_armor.py`, com relevos compartilhados em `celestial_gilding.py`;
+`celestial_limb_armor.py`, com costas em `celestial_rear_armor.py` e relevos
+compartilhados em `celestial_gilding.py`;
 as superfícies, pesos e exportação são módulos
 separados. Cada vértice tem exatamente uma influência, como exige o renderer
 do MU; o exportador rejeita pesos que seriam silenciosamente perdidos.
@@ -19,6 +20,10 @@ Executar no Blender em background, com `--python-exit-code 1`:
 2. `verify_armor_roundtrip.py`, somente depois de concluir a geração.
 3. `render_armor_motion.py`, para a prévia curta de caminhada.
 4. No Python, `python -m unittest discover -s art-source/celestial -p test_authored_armor.py -v`.
+5. `review_armor_details.py -- <diretório Data/Player>` para frente, costas,
+   lateral e dois closes do elmo sem as asas encobrindo a armadura.
+6. `review_equipped_set.py -- <diretório Data/Player>` para conferir a composição
+   com cajado, escudo, asas e cabeça nas poses nativas.
 
 `--no-render` após o caminho dispensa as quatro imagens, não a geração ou a
 medição das poses. Imagens antigas não comprovam uma geração nova sem render.
@@ -52,7 +57,7 @@ Proporções, placas e ornamentos ainda estão simplificados frente ao conceito.
 do rosto (também Grand Master), painéis da calça em movimento e botas. Falta
 aprovação visual e medição de desempenho. Asas/halo e composição equipada
 agora têm candidatos próprios documentados em `WINGS.md`, não aprovação.
-O lote da armadura soma 29.274 triângulos; não há orçamento
+O lote da armadura soma 32.574 triângulos; não há orçamento
 de desempenho validado para cenas cheias de jogadores.
 
 A prévia MP4 é animação real destas malhas no Blender, não captura do MU.
@@ -66,11 +71,12 @@ Continuam no escopo: cinco peças, cajado, escudo, asas, pendant e duas unidades
 do anel (uma malha compartilhada). O código de inicialização consultado mantém
 nível 400 e classes Soul Master/Grand Master. A defesa base das cinco peças é
 324 contra 251 do Venom Mist; isto não certifica o balanceamento completo.
-Os bônus exclusivos ilustrados no conceito, sockets, opções, progressão e
-obtenção ainda precisam de auditoria. Nenhum estado remoto foi consultado ou
-alterado nesta etapa artística.
+Os bônus completos foram implementados no servidor ca012d180 e a indicação
+visual no cliente 18c1f0d6, ainda locais; ver `docs/gameplay/celestial-equipment-state.md`.
+Sockets, opções, progressão e obtenção ainda precisam de auditoria. Nenhum
+estado remoto foi consultado ou alterado nesta etapa artística.
 
-## Revisão de ornamentos e silhueta
+## Revisão de ornamentos e silhueta — b99ad7e8
 
 As referências originais do usuário estão preservadas em `references/`, sem
 alterações. A revisão adiciona lâminas sobrepostas à coroa, relevos ao peitoral,
@@ -84,3 +90,26 @@ Os oito movimentos e o retorno BMD/Blender foram medidos novamente. Isto não
 aprova a fidelidade: as formas ainda são geométricas/regulares demais perante
 o conceito, e faltam textura/gravura fina, revisão das costas e detalhes do
 encaixe. A cabeça é a nativa do Soul Master, não uma recriação do rosto da arte.
+
+## Revisão traseira — 2026-09-11
+
+Substituído o volume dourado liso do elmo por uma base marfim mais contida,
+com lâminas sobrepostas, crista central, ornamentos na nuca e safira traseira.
+Costas da armadura recebem placas escapulares, lâminas dorsais articuladas,
+relevos e guarnições posteriores dos ombros/braços. O ornamento lombar foi
+aproximado da superfície após inspeção da vista traseira. As novas superfícies
+usam os mesmos materiais e ossos; não há dependência de equipamento nativo.
+
+Elmo: 3.880 triângulos (antes 2.506); armadura: 9.024 (antes 7.098).
+Calça, luvas, botas, cajado, escudo, asas e joias não mudaram nesta revisão.
+Total das cinco peças: 32.574, antes 29.274. Aumento de geometria não implica
+desempenho aprovado. Os 21 relevos traseiros do elmo e 48 da armadura são
+verificados quanto a fechamento, orientação e posição posterior, além da
+conferência existente de todos os cantos/normais/UVs exportados.
+
+As oito sequências foram medidas novamente, quatro renders da fonte, cinco
+vistas do BMD sem asas, cinco vistas equipadas e o vídeo de caminhada atualizados.
+Tudo é prévia de geometria real no Blender, não captura do cliente. Continuam
+diferenças de proporção, riqueza de ornamentos, gravuras e iluminação em
+relação ao conceito. Não está idêntico, não está validado ingame e não foi
+publicado. Conferir também Grand Master e cenas com vários jogadores.

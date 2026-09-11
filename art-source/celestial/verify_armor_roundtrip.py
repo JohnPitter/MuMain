@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import bpy
+import bmesh
 from mathutils import Matrix
 
 ROOT = Path(__file__).resolve().parent
@@ -46,6 +47,21 @@ def verify_closed_sabatons(group):
     return len(shoes)
 
 
+def verify_rear_reliefs(group):
+    reliefs = [obj for obj in group.objects if obj.get('celestial_facing') == 'rear']
+    for obj in reliefs:
+        if sum(vertex.co.y for vertex in obj.data.vertices) <= 0:
+            raise ValueError(f'Rear relief faces the front: {obj.name}')
+        topology = bmesh.new()
+        topology.from_mesh(obj.data)
+        try:
+            if any(not edge.is_manifold for edge in topology.edges) or topology.calc_volume(signed=True) <= 0:
+                raise ValueError(f'Open or inverted rear relief: {obj.name}')
+        finally:
+            topology.free()
+    return len(reliefs)
+
+
 def decoded(model):
     grouped = defaultdict(list)
     for mesh in model['meshes']:
@@ -77,6 +93,8 @@ def main():
                              blend_sha256=digest(OUTPUT / 'celestial-authored-armor.blend'))
         if name == 'Boots':
             reports[name]['closed_sabatons'] = verify_closed_sabatons(group)
+        if name in ('Helm', 'Armor'):
+            reports[name]['rear_reliefs'] = verify_rear_reliefs(group)
     (OUTPUT / 'roundtrip-report.json').write_text(json.dumps(reports, indent=2), encoding='utf-8')
     print('ARMOR_ROUNDTRIP_VERIFIED', json.dumps(reports), flush=True)
 
