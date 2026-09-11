@@ -68,42 +68,66 @@
     {
       "texture": "Poseidon_Black.jpg",
       "material_role": "Black",
+      "status": "AUTHORED_ATLAS_REGENERABLE",
+      "generator": "generate_poseidon_atlases.py",
       "linear_rgb": [
         0.023,
         0.032,
         0.044
       ],
-      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+      "master": "art-source/poseidon/textures/masters/Poseidon_Black.png",
+      "master_sha256": "907211715dac2e42e0e39b7ace60f6bdf827b534d7513b89569f2c84905cf926",
+      "game_jpeg_sha256": "f02e135222b1b1055ab27bcb80cc690d2387e2400c4be68e39c5789b11f5d950",
+      "ozj_sha256": "a2ea273cce538ef4cf3e332a1932e2bbf8fc2d3a7d5b623513ab4dd36b71fcb9",
+      "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
     },
     {
       "texture": "Poseidon_Gold.jpg",
       "material_role": "Gold",
+      "status": "AUTHORED_ATLAS_REGENERABLE",
+      "generator": "generate_poseidon_atlases.py",
       "linear_rgb": [
         0.72,
         0.4,
         0.105
       ],
-      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+      "master": "art-source/poseidon/textures/masters/Poseidon_Gold.png",
+      "master_sha256": "8dccb3f1cba188057aff9db9ca3960af93217b8c6168738c194a60f1813c8739",
+      "game_jpeg_sha256": "563cb82b7028186b0c7b8b8178253d3b1d42f16be64d64d3c12769de539d1d60",
+      "ozj_sha256": "dde708fa63d4aac0e6fe0728541615a8bd8cfd6af3bbe304e9fa72413d281190",
+      "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
     },
     {
       "texture": "Poseidon_Blue.jpg",
       "material_role": "Blue",
+      "status": "AUTHORED_ATLAS_REGENERABLE",
+      "generator": "generate_poseidon_atlases.py",
       "linear_rgb": [
         0.009,
         0.21,
         0.48
       ],
-      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+      "master": "art-source/poseidon/textures/masters/Poseidon_Blue.png",
+      "master_sha256": "afd9c9d34a14b5bb46dbdaa84c5bd8f6408bb8b297ce01884d60e8fb9c3ab71c",
+      "game_jpeg_sha256": "be102b7b76cd4281e2813a255dfde82cd1789d66d530e3fd3cb61002305dec25",
+      "ozj_sha256": "9edad96e3f298394b46d666ebdbcbd2d40d121224f1ce894bf422c4ff56cc717",
+      "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
     },
     {
       "texture": "Poseidon_Pearl.jpg",
       "material_role": "Pearl",
+      "status": "AUTHORED_ATLAS_REGENERABLE",
+      "generator": "generate_poseidon_atlases.py",
       "linear_rgb": [
         0.824,
         0.796,
         0.812
       ],
-      "status": "MISSING_ATLAS_NOT_FOR_CLIENT"
+      "master": "art-source/poseidon/textures/masters/Poseidon_Pearl.png",
+      "master_sha256": "4dc1369926761bdcd26564800fb4968106fd9a4ce7f15a259be58455f9fa240e",
+      "game_jpeg_sha256": "601ad5e0c6193af8dd57316099447968a9599f95edac912bda303f880cf10a39",
+      "ozj_sha256": "34e0698845aeb18ef42167a3f8f9ac1ba51a6006b55074c733bed1ebb0dc974c",
+      "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
     }
   ],
   "shared_source_sha256": {
@@ -114,11 +138,11 @@
     "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b",
-    "poseidon_materials.py": "709b126885f7da3e3267899d082377a40be7c039f195ede7d0c4ca17d49ace89",
+    "poseidon_materials.py": "16d312af338b6e2764a773b7f1a99f394bbae15bae28d4c66028e6ff8bdd6a6c",
     "poseidon_shapes.py": "616fc9397be96e1688ff720b2ac2c3aa0a5565f7e335358d94c32b2a534c9b56",
     "poseidon_armor_shapes.py": "ff1ad0ea3541d6b80464f95776cf20757ed37912ae3402d926acc28581f205bd"
   },
-  "blend_sha256": "69e33a7686cc9e3ae43a52624cc11754fb1aec47be820bd5fc45ceece8be07ea",
+  "blend_sha256": "9566ad082cafebf3cf16c4649ca5debd09cbf1b6d7f825c91acdc8868fc12bef",
   "piece": {
     "file": "Poseidon_Cape.bmd",
     "meshes": 7,

@@ -3,9 +3,9 @@
 Generates the "Asas do Governante" cape from regenerable Python sources in the
 player bind world space, binds every vertex to the single native "collar" bone
 through the reconstructed runtime link matrix (poseidon_cape_rig), exports a
-diagnostic BMD (never installable, atlases deliberately absent), verifies the
-BMD roundtrip against the editable scene and renders front/side/back
-inspections. Run:
+diagnostic BMD (never installable — the atlases exist as authored, regenerable
+art but stay out of any client layout), verifies the BMD roundtrip against the
+editable scene and renders front/side/back inspections. Run:
 blender --background --python-exit-code 1 --python poseidon_cape_build.py [-- --skip-render]
 """
 import argparse
@@ -31,6 +31,7 @@ from poseidon_cape_preview import render_cape, studio
 from poseidon_cape_rig import (cape_bind, decoded_skinned_triangles,
                                digest, load_cape_rig)
 from poseidon_cape_shapes import cape
+from poseidon_materials import atlas_dependencies
 from verify_prop_roundtrip import compare
 
 TRIANGLE_BUDGET = (8000, 12000)
@@ -108,15 +109,7 @@ def _bound_cape(materials):
 
 
 def write_reports(output, report, rig, shared_hashes):
-    textures = [dict(texture='Poseidon_Black.jpg', material_role='Black',
-                     linear_rgb=[0.023, 0.032, 0.044]),
-                dict(texture='Poseidon_Gold.jpg', material_role='Gold',
-                     linear_rgb=[0.72, 0.40, 0.105]),
-                dict(texture='Poseidon_Blue.jpg', material_role='Blue',
-                     linear_rgb=[0.009, 0.21, 0.48]),
-                dict(texture='Poseidon_Pearl.jpg', material_role='Pearl',
-                     linear_rgb=list(PEARL_COLOR))]
-    dependencies = [dict(item, status='MISSING_ATLAS_NOT_FOR_CLIENT') for item in textures]
+    dependencies = atlas_dependencies()
     report_doc = dict(status='AUTHORED_CAPE_PROTOTYPE_PREVIEW_ONLY',
                       renderer='Blender Cycles / AgX, not MU runtime',
                       design_reference='art-source/poseidon/design-spec.md',

@@ -100,7 +100,7 @@ class PoseidonPrototypeTests(unittest.TestCase):
     def test_cannot_be_mistaken_for_installable_package(self):
         self.assertEqual(self.build['status'], 'AUTHORING_PROTOTYPE_ONLY')
         dependencies = json.loads((self.output / 'texture-dependencies.json').read_text())
-        self.assertEqual(len(dependencies), 3)
+        self.assertEqual(len(dependencies), 4)  # Black, Gold, Blue + Pearl (cape ferragem)
         self.assertTrue(all(d['status'] == 'AUTHORED_ATLAS_REGENERABLE' for d in dependencies))
         self.assertFalse((self.output / 'Data').exists())
 

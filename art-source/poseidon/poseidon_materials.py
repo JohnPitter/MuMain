@@ -19,8 +19,11 @@ PALETTE = {
     'Black': ((0.023, 0.032, 0.044), 0.88, 0.23),
     'Gold': ((0.72, 0.40, 0.105), 0.84, 0.24),
     'Blue': ((0.009, 0.21, 0.48), 0.42, 0.18),
+    # Branco Perolado, cape ferragem gleam; metallic/roughness carried over
+    # from the provisional cape pearl (concept swatch #CCCBD2).
+    'Pearl': ((0.824, 0.796, 0.812), 0.35, 0.28),
 }
-GLOW = {'Blue': 0.18}
+GLOW = {'Blue': 0.18, 'Pearl': 0.06}
 DEPENDENCY_STATUS = 'AUTHORED_ATLAS_REGENERABLE'
 GENERATOR = 'generate_poseidon_atlases.py'
 

@@ -189,8 +189,14 @@ class PoseidonCapeTests(unittest.TestCase):
         self.assertEqual(link['bone'], LINK_BONE)
         dependencies = self.build['texture_dependencies']
         self.assertEqual({item['texture'] for item in dependencies}, ATLASES)
-        self.assertTrue(all(item['status'] == 'MISSING_ATLAS_NOT_FOR_CLIENT'
+        # The atlases exist now as authored, regenerable art with hashes; the
+        # package stays preview-only, so the install gate below still holds.
+        self.assertTrue(all(item['status'] == 'AUTHORED_ATLAS_REGENERABLE'
                             for item in dependencies))
+        self.assertTrue(all(item.get('generator') == 'generate_poseidon_atlases.py'
+                            for item in dependencies))
+        self.assertTrue(all(item.get('master_sha256') and item.get('game_jpeg_sha256')
+                            and item.get('ozj_sha256') for item in dependencies))
         self.assertFalse((self.output / 'Data').exists())
         self.assertFalse((self.output / 'Poseidon_Black.jpg').exists())
 

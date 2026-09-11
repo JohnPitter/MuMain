@@ -27,13 +27,13 @@
   },
   "budget_justification": "Native item reference saint.bmd is 313 triangles; the smallest worn piece (helm) is 3484. Jewelry must stay light for inventory/world rendering: the pendant adds the trident relief, bail and chain stub over the framed pedestal, and the two rings are full distinct models with engraved bands, crests and rear detail - each roughly half the helm, well above the native item floor.",
   "shared_source_sha256": {
-    "artifact_proof.py": "939dc3106d685259f50e9495e49ba068795ecbe091cf735a448ef6da855341ce",
-    "celestial_geometry.py": "34317a45d74bc178d36e0a798b7063915104450189e093dc9368fd70bb9b16c6",
-    "export_prop_bmd.py": "26f65f4fb05fca889691773b23f2aa5bf6400f546648864fc0bb79abb752af9a",
-    "inspect_bmd_rig.py": "d3aa1c409faa8b0e2af71e74f7dc296b532cdda08529ca245195658e8712647a",
-    "verify_prop_roundtrip.py": "d5cb7895952bd240eef0aec7ed2b378945cadd79bc22952e63c859695e3b63f5"
+    "artifact_proof.py": "0ee2b908093c9b0b5fe3782baa15fb83d904df0e30b6799b49c97036f11daf7b",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "20d62de5b34bd421adbbfb4248b069bc6e5dbd5505403bfe3efe7b576b338c08",
+  "blend_sha256": "070883d715342d4e948a5f40ae0fa8e307fb7427773ed620b9ac9981c5c20576",
   "pieces": {
     "Pendant": {
       "file": "Poseidon_Pendant.bmd",
@@ -65,7 +65,7 @@
           -0.7
         ]
       },
-      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "status": "PROTOTYPE_NOT_INSTALLABLE; definitive atlases authored in art-source",
       "topology": {
         "objects": 34,
         "triangles": 2288,
@@ -102,7 +102,7 @@
           9.6
         ]
       },
-      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "status": "PROTOTYPE_NOT_INSTALLABLE; definitive atlases authored in art-source",
       "topology": {
         "objects": 18,
         "triangles": 2340,
@@ -139,7 +139,7 @@
           9.2
         ]
       },
-      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "status": "PROTOTYPE_NOT_INSTALLABLE; definitive atlases authored in art-source",
       "topology": {
         "objects": 21,
         "triangles": 1664,

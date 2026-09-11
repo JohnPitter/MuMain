@@ -46,5 +46,21 @@
     "game_jpeg_sha256": "be102b7b76cd4281e2813a255dfde82cd1789d66d530e3fd3cb61002305dec25",
     "ozj_sha256": "9edad96e3f298394b46d666ebdbcbd2d40d121224f1ce894bf422c4ff56cc717",
     "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
+  },
+  {
+    "texture": "Poseidon_Pearl.jpg",
+    "material_role": "Pearl",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_poseidon_atlases.py",
+    "linear_rgb": [
+      0.824,
+      0.796,
+      0.812
+    ],
+    "master": "art-source/poseidon/textures/masters/Poseidon_Pearl.png",
+    "master_sha256": "4dc1369926761bdcd26564800fb4968106fd9a4ce7f15a259be58455f9fa240e",
+    "game_jpeg_sha256": "601ad5e0c6193af8dd57316099447968a9599f95edac912bda303f880cf10a39",
+    "ozj_sha256": "34e0698845aeb18ef42167a3f8f9ac1ba51a6006b55074c733bed1ebb0dc974c",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
   }
 ]

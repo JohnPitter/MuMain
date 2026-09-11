@@ -53,4 +53,4 @@ def export_jewel(collection, name, destination):
                 textures=sorted(grouped),
                 anchors={label: [round(value, 4) for value in position]
                          for label, position in anchors},
-                status='PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES')
+                status='PROTOTYPE_NOT_INSTALLABLE; definitive atlases authored in art-source')

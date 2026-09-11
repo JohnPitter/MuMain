@@ -115,15 +115,15 @@
   },
   "budget_justification": "Proportional to the measured lote 2 pieces (boot 4192, armor 7842, helm 3484 triangles): pants dress both legs plus waist, fauld and free-hanging skirt, landing between boot and armor; gloves are complete pairs of the smallest worn pieces with segmented claw fingers, just above the helm floor.",
   "shared_source_sha256": {
-    "armor_surfaces.py": "d49c5bff7c946180898560fe6a25ab2b83048dde21a7aec660ec35bfa4ab66b3",
-    "celestial_geometry.py": "34317a45d74bc178d36e0a798b7063915104450189e093dc9368fd70bb9b16c6",
-    "export_prop_bmd.py": "26f65f4fb05fca889691773b23f2aa5bf6400f546648864fc0bb79abb752af9a",
-    "export_skinned_bmd.py": "ac24d213e19d2d818d9e2f8e531483fb151903b6b1e88dda0b01126b13db6e58",
-    "import_native_reference.py": "dcc96c75f200c64e88f8d9e0a16dbc25c614dd1b5d70f585b091d6f692b4a80e",
-    "inspect_bmd_rig.py": "d3aa1c409faa8b0e2af71e74f7dc296b532cdda08529ca245195658e8712647a",
-    "verify_prop_roundtrip.py": "d5cb7895952bd240eef0aec7ed2b378945cadd79bc22952e63c859695e3b63f5"
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "export_skinned_bmd.py": "4ebeead43f021d9f905be927b36a66208f697972fea1f160806a6c18d1f21c05",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "0b0cf3f8fe852060c15bdf32ca54a7f87a0b750da20312125fe303610a323821",
+  "blend_sha256": "af60b5f18b884605bb78b4c0d4853baf99d2c77270fbbbb0e2e6cdf10502a05a",
   "pieces": {
     "Pant": {
       "file": "Poseidon_Pant.bmd",

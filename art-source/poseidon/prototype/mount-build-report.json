@@ -89,7 +89,7 @@
     "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
     "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
   },
-  "blend_sha256": "a288a8cf2fc98bc1ddce660a05b1301286f9886adda9a463d13d09531064cd95",
+  "blend_sha256": "ef78663727c9bbcc2cb1d751bcc80c1938bea84d938dc4fe31ac507bdfccdd11",
   "pieces": {
     "Poseidon_Black_Mount": {
       "file": "Poseidon_Black_Mount.bmd",

@@ -156,9 +156,17 @@ IDs/modelos exatos:
 - [ ] Orçamento: ferragem nativa tem só 192 tris; o protótipo Poseidon assume
       8–12 mil tris (gola estruturada + painéis "asa") — dentro do limite por
       mesh do cliente (≤2200 tris/mesh, ≤10000 vértices, ≤50 meshes).
-- [ ] Textura: fabric de cloth é uma imagem inteira esticada na grade (UV
+- [x] Textura: fabric de cloth é uma imagem inteira esticada na grade (UV
       procedural); desenhar `Poseidon_*` pensando nisso, além das UVs 0..1 da
-      ferragem.
+      ferragem. **Declarado e atendido na integração (2026-09-11):** os masters
+      `Poseidon_Black` (massa do manto) e `Poseidon_Pearl.jpg` (brilho
+      perolado, acabamento branco platina aprovado) são acabamentos de
+      **campo cheio**, autorados de propósito para funcionar **esticados na
+      grade 0..1** do cloth procedural — o mesmo papel de `dl_redwings02.tga`
+      no manto nativo (`RenderFace` emite `uv = (i/(hor−1), j/(ver−1))`; as
+      UVs do BMD não participam). Na onda 3, as grades `pCloth[2]`/`[4]`/`[5]`
+      de um ID Poseidon devem apontar o slot `BITMAP_ROBE` para essas texturas
+      (ou derivadas delas), sem charts nem costuras de tile.
 - [ ] Poses: provar parada/andar (a prova equipada usa `PLAYER_STOP_SWORD` e
       `PLAYER_WALK_SWORD` do próprio `player.bmd`); montado/cavalo e skill
       ficam para a onda de integração, junto de vento/colisão reais, que o

@@ -119,7 +119,7 @@ class PoseidonArmorTests(unittest.TestCase):
         self.assertEqual(self.build['native_rig']['archive_sha256'],
                          json.loads((ROOT / 'native-reference-audit.json').read_text())['archive_sha256'])
         dependencies = json.loads((self.output / 'texture-dependencies.json').read_text())
-        self.assertEqual(len(dependencies), 3)
+        self.assertEqual(len(dependencies), 4)  # Black, Gold, Blue + Pearl (cape ferragem)
         self.assertTrue(all(item['status'] == 'AUTHORED_ATLAS_REGENERABLE' for item in dependencies))
         self.assertFalse((self.output / 'Data').exists())
 
