@@ -1,4 +1,4 @@
-"""Preview the existing Soul Master face; never include it in equipment exports."""
+"""Native SM/GM faces for fit reviews only; never include them in equipment exports."""
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -6,6 +6,12 @@ import bpy
 
 from import_native_reference import create_mesh
 from inspect_bmd_rig import inspect
+
+HEAD_MODELS = {'soul-master': 'HelmClass201.bmd', 'grand-master': 'HelmClass301.bmd'}
+
+
+def load_head(directory, character_class='soul-master'):
+    return inspect(directory / HEAD_MODELS[character_class], True)
 
 
 def native_material(directory, texture):
@@ -22,7 +28,7 @@ def native_material(directory, texture):
         image.pack()
     finally:
         path.unlink()
-    material = bpy.data.materials.new('REFERENCE native Soul Master face')
+    material = bpy.data.materials.new('REFERENCE native character / ' + texture)
     material.use_nodes = True
     shader = next(node for node in material.node_tree.nodes if node.type == 'BSDF_PRINCIPLED')
     shader.inputs['Roughness'].default_value = .8
@@ -33,7 +39,7 @@ def native_material(directory, texture):
 
 
 def add_head(directory, rig, bind):
-    model = inspect(directory / 'HelmClass201.bmd', True)
+    model = load_head(directory)
     group = bpy.data.collections.new('REFERENCE ONLY / native Soul Master head')
     bpy.context.scene.collection.children.link(group)
     objects = []

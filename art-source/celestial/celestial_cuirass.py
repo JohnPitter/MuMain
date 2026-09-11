@@ -5,6 +5,7 @@ from armor_surfaces import loft, rear_facing, section, segment_shell
 from celestial_geometry import ellipse, feather, gem, mesh, plate, rim
 from celestial_gilding import chest_relief, inlaid_leaf, scroll, shoulder_relief
 from celestial_rear_armor import backplate, crown_back, shoulder_back
+from curved_armor_plate import curved_plate, rounded_outline
 
 
 def helmet_shell(m):
@@ -72,9 +73,9 @@ def torso(m):
     loft('Armor / anatomical cuirass', rings, m['Ivory'])
     ellipse('Armor / standing collar', (0, 0, 157), ((10, 0, 0), (0, 8, 0)), m['Gold'], .9, 32)
     for side in (-1, 1):
-        chest = [(side * 2, 151), (side * 16, 158), (side * 22, 148),
-                 (side * 16, 135), (side * 2, 132)]
-        plate('Armor / sculpted pectoral', chest, (-11, 3.5), m['Ivory'])
+        chest = rounded_outline([(side * 2, 151), (side * 16, 158), (side * 22, 148),
+                                 (side * 16, 135), (side * 2, 132)])
+        curved_plate('Armor / sculpted pectoral', chest, (-11, 3.5), m['Ivory'])
         rim('Armor / pectoral border', chest, -12, m['Gold'], .65)
         for i in range(3):
             feather('Armor / rib lamella', [(side * 2, -11, 124 - i * 5),
@@ -89,9 +90,9 @@ def torso(m):
 
 
 def shoulder(m, side):
-    shell = [(side * 16, 155), (side * 22, 168), (side * 35, 164),
-             (side * 41, 147), (side * 26, 147)]
-    plate('Armor / domed pauldron', shell, (-3, 7), m['Ivory'])
+    shell = rounded_outline([(side * 16, 155), (side * 22, 168), (side * 35, 164),
+                             (side * 41, 147), (side * 26, 147)])
+    curved_plate('Armor / domed pauldron', shell, (-3, 7), m['Ivory'])
     rim('Armor / pauldron border', shell, -3.5, m['Gold'], .8)
     segment_shell('Armor / upper-arm sleeve', ((side * 20, 0, 154), (side * 27, 0, 119)),
                   [(0, 8, 8), (.35, 9, 8), (.7, 6, 6), (1, 5.5, 5.5)], m['Ivory'])

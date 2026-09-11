@@ -92,6 +92,7 @@ class AuthoredArmorTests(unittest.TestCase):
         self.assertEqual(report['Boots']['closed_sabatons'], 2)
         self.assertEqual(report['Helm']['rear_reliefs'], 21)
         self.assertEqual(report['Armor']['rear_reliefs'], 48)
+        self.assertEqual(report['Armor']['curved_front_plates'], 4)
         for name, value in report.items():
             validate_proof(value, OUTPUT / 'Data/Player' / f'Celestial_{name}.bmd',
                            OUTPUT / 'celestial-authored-armor.blend')

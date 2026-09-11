@@ -4,37 +4,38 @@
     "triangles": 3880,
     "minimum_triangle_area": 9.738038583166992e-05,
     "model_sha256": "f298fdc1aa3533ef3aa16b394306f4e404807fd7a96ef89ae887b8e3cc416fee",
-    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef",
+    "blend_sha256": "eaa516f8cd0be543597ebe7017402c275cad8a7a3d2a30fece0f1d69d86b39e9",
     "rear_reliefs": 21
   },
   "Armor": {
     "max_error": 8.940696716308594e-07,
-    "triangles": 9024,
+    "triangles": 11632,
     "minimum_triangle_area": 9.28432052958629e-05,
-    "model_sha256": "812e73d01f18990d1d62746ed4a105b843cbd7fd00a9b399a25c6d79c1fb9952",
-    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef",
-    "rear_reliefs": 48
+    "model_sha256": "d72e091f1c06e539bac078b61ca95375b448334cade51e9bf16d435c2f8c22ab",
+    "blend_sha256": "eaa516f8cd0be543597ebe7017402c275cad8a7a3d2a30fece0f1d69d86b39e9",
+    "rear_reliefs": 48,
+    "curved_front_plates": 4
   },
   "Pants": {
     "max_error": 3.5762786865234375e-07,
     "triangles": 11906,
     "minimum_triangle_area": 0.0002099653880241214,
     "model_sha256": "c9dcd8394a86210633e703e66177128cde07970100f7436bdddd841b71b37599",
-    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef"
+    "blend_sha256": "eaa516f8cd0be543597ebe7017402c275cad8a7a3d2a30fece0f1d69d86b39e9"
   },
   "Gloves": {
     "max_error": 1.1362135410308838e-07,
     "triangles": 2900,
     "minimum_triangle_area": 8.35671454469512e-05,
     "model_sha256": "8b1bf2c0300383a0273de22bd519e3fa619cd8aa6648415deebd6983a2e9127c",
-    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef"
+    "blend_sha256": "eaa516f8cd0be543597ebe7017402c275cad8a7a3d2a30fece0f1d69d86b39e9"
   },
   "Boots": {
     "max_error": 3.5762786865234375e-07,
     "triangles": 4864,
     "minimum_triangle_area": 7.893890078711785e-05,
     "model_sha256": "3de97201eead854eb739d0021992c3f51c27b96d2bf7fc155af3c0158f3246dc",
-    "blend_sha256": "ecb8fb0551d92779589c8e8d7f954a99074c441fca93e6f9b3d08943804f85ef",
+    "blend_sha256": "eaa516f8cd0be543597ebe7017402c275cad8a7a3d2a30fece0f1d69d86b39e9",
     "closed_sabatons": 2
   }
 }

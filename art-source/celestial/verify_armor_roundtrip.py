@@ -62,6 +62,24 @@ def verify_rear_reliefs(group):
     return len(reliefs)
 
 
+def verify_curved_plates(group):
+    plates = [obj for obj in group.objects if obj.get('celestial_surface') == 'curved_front_plate']
+    if len(plates) != 4:
+        raise ValueError('Expected two pectorals and two curved pauldrons')
+    for obj in plates:
+        topology = bmesh.new()
+        topology.from_mesh(obj.data)
+        try:
+            if any(not edge.is_manifold for edge in topology.edges) or topology.calc_volume(signed=True) <= 0:
+                raise ValueError(f'Open or inverted curved plate: {obj.name}')
+            depths = {round(vertex.co.y, 3) for vertex in obj.data.vertices}
+            if len(depths) < 7 or sum(face.use_smooth for face in obj.data.polygons) < 100:
+                raise ValueError(f'Curved plate lost its crown or normals: {obj.name}')
+        finally:
+            topology.free()
+    return len(plates)
+
+
 def decoded(model):
     grouped = defaultdict(list)
     for mesh in model['meshes']:
@@ -95,6 +113,8 @@ def main():
             reports[name]['closed_sabatons'] = verify_closed_sabatons(group)
         if name in ('Helm', 'Armor'):
             reports[name]['rear_reliefs'] = verify_rear_reliefs(group)
+        if name == 'Armor':
+            reports[name]['curved_front_plates'] = verify_curved_plates(group)
     (OUTPUT / 'roundtrip-report.json').write_text(json.dumps(reports, indent=2), encoding='utf-8')
     print('ARMOR_ROUNDTRIP_VERIFIED', json.dumps(reports), flush=True)
 

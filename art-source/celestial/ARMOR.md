@@ -57,7 +57,7 @@ Proporções, placas e ornamentos ainda estão simplificados frente ao conceito.
 do rosto (também Grand Master), painéis da calça em movimento e botas. Falta
 aprovação visual e medição de desempenho. Asas/halo e composição equipada
 agora têm candidatos próprios documentados em `WINGS.md`, não aprovação.
-O lote da armadura soma 32.574 triângulos; não há orçamento
+O lote atual da armadura soma 35.182 triângulos; não há orçamento
 de desempenho validado para cenas cheias de jogadores.
 
 A prévia MP4 é animação real destas malhas no Blender, não captura do MU.
@@ -113,3 +113,24 @@ Tudo é prévia de geometria real no Blender, não captura do cliente. Continuam
 diferenças de proporção, riqueza de ornamentos, gravuras e iluminação em
 relação ao conceito. Não está idêntico, não está validado ingame e não foi
 publicado. Conferir também Grand Master e cenas com vários jogadores.
+
+## Placas curvas e candidato de Testes — 2026-09-11
+
+Peitorais e ombreiras agora têm quatro superfícies frontais curvas, com
+contornos arredondados e profundidade progressiva, em vez das faces piramidais.
+O verificador exige fechamento, volume positivo, normais suaves e níveis de
+profundidade; mantém a comparação de todos os cantos exportados. Armadura:
+11.632 triângulos, total das cinco peças: 35.182. Demais BMD permanecem iguais.
+
+As prévias foram atualizadas, incluindo caminhada e duas vistas adicionais
+com a cabeça nativa Grand Master (`HelmClass301.bmd`). A referência Soul Master
+continua `HelmClass201.bmd`; nenhuma cabeça é exportada como equipamento.
+Os 29 testes Python passaram. Os renders não comprovam encaixe ou desempenho
+no cliente. A coroa ainda cobre a região dos olhos, e as proporções e o nível
+de detalhe continuam diferentes do conceito.
+
+O usuário autorizou publicar este candidato somente em Testes e prefere fazer
+pessoalmente a validação ingame. Essa autorização não é aprovação artística.
+O pacote deve preservar a DLL de conexão e todos os arquivos não relacionados,
+usar uma base exclusiva de Testes e manter produção inalterada. O registro de
+implantação e seus hashes ficam no CHANGELOG operacional do workspace.

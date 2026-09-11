@@ -13,7 +13,7 @@ from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-from armor_head_reference import native_material
+from armor_head_reference import load_head, native_material
 from build_celestial_props import setup_scene
 from celestial_geometry import materials
 from import_native_reference import create_mesh, world_matrices
@@ -79,7 +79,7 @@ def render_pose(models, pose, palette, head):
 def main():
     directory = Path(sys.argv[sys.argv.index('--') + 1])
     player = inspect(directory / 'player.bmd', True)
-    head = inspect(directory / 'HelmClass201.bmd', True)
+    head = load_head(directory)
     models = load_models()
     palette = {material.name: material for material in materials().values()}
     for mesh in head['meshes']:
