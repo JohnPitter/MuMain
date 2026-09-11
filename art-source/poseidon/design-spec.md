@@ -15,8 +15,12 @@ Class305 auditado, com exportação BMD diagnóstica, provas de roundtrip, prova
 equipada no rig do player e onze renders de inspeção. Terceiro lote entregue:
 calças e luvas autorais na mesma disciplina (ossos exatamente os das peças
 nativas correspondentes, roundtrip abaixo de 1e-6, prova equipada e dezoito
-renders de inspeção no conjunto). Manto, acessórios, pets e efeitos abaixo são
-**projeto**, não malhas concluídas. O aspecto final depende de
+renders de inspeção no conjunto). Quarto lote entregue: pendant Tridente Real e
+os dois anéis distintos do painel ITENS ADICIONAIS (Anel das Marés à esquerda,
+Anel do Imperador à direita - dois modelos autorais, nunca um anel equipado duas
+vezes) como itens rígidos no contrato nativo de item auditado, BMDs diagnósticos,
+roundtrip abaixo de 1e-6 e nove renders de inspeção. Manto, acessórios restantes,
+pets e efeitos abaixo são **projeto**, não malhas concluídas. O aspecto final depende de
 escultura/texturas, ajuste de equipamento e aprovação visual no cliente; não existe
 promessa de identidade pixel a pixel.
 
@@ -62,9 +66,9 @@ fossem a aparência nova. Os modelos nativos documentam rig e comportamento apen
 | Manto | Tecido preto longo com abertura inferior, bordas douradas sinuosas e brasão de tridente; ponte de ombro e fechos metálicos | Cloth do Lord Emperor separado da ferragem BMD; colisão com torso/cavalo e vento | Projeto |
 | Tridente | Três lâminas altas independentes, vazios entre pontas, cristal oceânico central, canaletas ouro, haste delgada e ponteira | Alternativa longa de arma; âncora de pega e FX próprias; classificação funcional pendente | Protótipo autoral BMD/Blender |
 | Cetro oceânico | Coroa mais baixa/larga, garras em onda e núcleo azul; não é apenas o tridente reescalado | Alternativa ao tridente, não par obrigatório; compatibilidade de cetro DL a validar | Protótipo autoral BMD/Blender |
-| Pendant | Marca de tridente dourada em pedestal negro, losango azul, corrente fina | Ícone e malha independentes; aparição no corpo depende de suporte posterior | Projeto |
-| Anel da Maré | Aro negro com bordas ouro e cristal azul central, coroa de três garras | Modelo/ícone próprio; sem efeito de transformação implícito | Projeto |
-| Anel do Abismo | Aro com ondas cruzadas e cristal menor; identidade de par sem duplicar integralmente o anterior | Segundo anel e ícone próprio; diferenças estéticas sem números aprovados | Projeto |
+| Pendant | Marca de tridente dourada em pedestal negro, losango azul, corrente fina | Ícone e malha independentes; aparição no corpo depende de suporte posterior | Protótipo autoral BMD/Blender |
+| Anel das Marés (esquerdo) | Aro negro com bordas ouro, assento arredondado, ondas em volta da gota azul e bolhas de espuma | Modelo/ícone próprio; sem efeito de transformação implícito | Protótipo autoral BMD/Blender |
+| Anel do Imperador (direito) | Aro facetado com coroa de cinco pontas e losango azul angular; par distinto do anterior, sem repetir malha | Segundo anel e ícone próprios; diferenças estéticas sem números aprovados | Protótipo autoral BMD/Blender |
 | Cavalo negro metálico | Barda articulada negra/ouro, crista na testa/pescoço, joias azuis, cascos metálicos, cauda em faixas | Rig DarkHorse; preservar locomoção/ataque e sela/posição do cavaleiro | Projeto |
 | Águia Imperial | Penas negras em camadas com borda ouro, cristal peitoral, olhar azul e garras reais | Rig DarkSpirit separado do personagem; voo, retorno e ataque em prova futura | Projeto |
 
@@ -161,6 +165,8 @@ python art-source/poseidon/audit_native_references.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_legs_hands.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_legs_hands.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_legs_hands_equipped.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_jewels.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_jewels.py
 python -m unittest discover -s art-source/poseidon -p 'test_*.py' -v
 ```
 
@@ -201,6 +207,13 @@ diagnósticos `Poseidon_{Pant,Glove}.bmd`, seis vistas de inspeção, prova equi
   reabrindo o Blender salvo.
 - `prototype/legs-hands-equipped-review-report.json`: prova de encaixe das calças e
   luvas no rig do player, com deslocamento mínimo entre as poses parada/caminhada.
+- `prototype/poseidon-jewels.blend`: pendant e dois anéis como itens rígidos
+  (contrato do item nativo auditado: malhas rígidas, pose única, geometria no
+  osso 0; âncoras de montagem nomeiam bail/gema/banda).
+- `prototype/jewels-build-report.json`: orçamentos de joia justificados, âncoras
+  em espaço item, contrato do item nativo e prova de geração.
+- `prototype/jewels-saved-roundtrip-report.json`: roundtrip dos três BMDs
+  reabrindo o Blender salvo.
 - `native-reference-audit.json`: proveniência/rigs e contratos nativos verificados.
 
 Nenhuma imagem de textura foi criada por Pillow nem houve alteração de arquivos

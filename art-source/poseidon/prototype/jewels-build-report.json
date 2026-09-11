@@ -1,0 +1,155 @@
+{
+  "status": "AUTHORED_JEWELS_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/poseidon/design-spec.md",
+  "model_origin": "Original Poseidon jewelry geometry as rigid item prototypes on the audited native item contract (Data/Item reference: rigid meshes, single static pose, geometry on bone 0); anchor bones name the mount points; no native mesh reuse and no player-rig skinning - in-body appearance stays deferred per design-spec",
+  "native_item_contract": {
+    "reference": "native_scepter_orientation_only",
+    "member": "Data/Item/saint.bmd",
+    "sha256": "f2bb77961fa992b7318af07d719c986e5d2540fc2f4fef2f65850b23350f1335",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "5987bc37b1c6670971caa6d4d785f812a8aa16e6ac3e7e24e15e6f4cc9cba88e",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80"
+  },
+  "triangle_budgets": {
+    "Pendant": [
+      1900,
+      3400
+    ],
+    "RingTide": [
+      1600,
+      3000
+    ],
+    "RingEmperor": [
+      1600,
+      3000
+    ]
+  },
+  "budget_justification": "Native item reference saint.bmd is 313 triangles; the smallest worn piece (helm) is 3484. Jewelry must stay light for inventory/world rendering: the pendant adds the trident relief, bail and chain stub over the framed pedestal, and the two rings are full distinct models with engraved bands, crests and rear detail - each roughly half the helm, well above the native item floor.",
+  "shared_source_sha256": {
+    "artifact_proof.py": "939dc3106d685259f50e9495e49ba068795ecbe091cf735a448ef6da855341ce",
+    "celestial_geometry.py": "34317a45d74bc178d36e0a798b7063915104450189e093dc9368fd70bb9b16c6",
+    "export_prop_bmd.py": "26f65f4fb05fca889691773b23f2aa5bf6400f546648864fc0bb79abb752af9a",
+    "inspect_bmd_rig.py": "d3aa1c409faa8b0e2af71e74f7dc296b532cdda08529ca245195658e8712647a",
+    "verify_prop_roundtrip.py": "d5cb7895952bd240eef0aec7ed2b378945cadd79bc22952e63c859695e3b63f5"
+  },
+  "blend_sha256": "20d62de5b34bd421adbbfb4248b069bc6e5dbd5505403bfe3efe7b576b338c08",
+  "pieces": {
+    "Pendant": {
+      "file": "Poseidon_Pendant.bmd",
+      "meshes": 3,
+      "bones": 3,
+      "action_frames": [
+        1
+      ],
+      "triangles": 2288,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "anchors": {
+        "Seat": [
+          0.0,
+          5.0,
+          0.1
+        ],
+        "Bail": [
+          0.0,
+          -11.9,
+          0.1
+        ],
+        "Drop": [
+          0.0,
+          20.6,
+          -0.7
+        ]
+      },
+      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "topology": {
+        "objects": 34,
+        "triangles": 2288,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.0016428972029367693,
+      "sha256": "6104f719d54c741f1c9440b672ad25ef37cc51dad8f55c377720a67bc0889519",
+      "native_item_contract_sha256": "f2bb77961fa992b7318af07d719c986e5d2540fc2f4fef2f65850b23350f1335",
+      "roundtrip_max_error": 3.5762786865234375e-07
+    },
+    "RingTide": {
+      "file": "Poseidon_RingTide.bmd",
+      "meshes": 3,
+      "bones": 2,
+      "action_frames": [
+        1
+      ],
+      "triangles": 2340,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "anchors": {
+        "Band": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Gem": [
+          0.0,
+          -3.5,
+          9.6
+        ]
+      },
+      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "topology": {
+        "objects": 18,
+        "triangles": 2340,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.012364855440041013,
+      "sha256": "28d0c411d60be17009b0c446132f45ce2aa30296835d3eb511077d460c7f6c7e",
+      "native_item_contract_sha256": "f2bb77961fa992b7318af07d719c986e5d2540fc2f4fef2f65850b23350f1335",
+      "roundtrip_max_error": 4.172325134277344e-07
+    },
+    "RingEmperor": {
+      "file": "Poseidon_RingEmperor.bmd",
+      "meshes": 3,
+      "bones": 2,
+      "action_frames": [
+        1
+      ],
+      "triangles": 1664,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "anchors": {
+        "Band": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Gem": [
+          0.0,
+          -3.6,
+          9.2
+        ]
+      },
+      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "topology": {
+        "objects": 21,
+        "triangles": 1664,
+        "open_edges": 0,
+        "nonmanifold_components": []
+      },
+      "minimum_triangle_area": 0.029906146360858525,
+      "sha256": "333203b2a1b554cf772744828639e30a39dc7365ffafb696c8ff42cead7be39e",
+      "native_item_contract_sha256": "f2bb77961fa992b7318af07d719c986e5d2540fc2f4fef2f65850b23350f1335",
+      "roundtrip_max_error": 4.76837158203125e-07
+    }
+  }
+}

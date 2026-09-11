@@ -1,0 +1,20 @@
+{
+  "saved_blend_sha256": "20d62de5b34bd421adbbfb4248b069bc6e5dbd5505403bfe3efe7b576b338c08",
+  "models": {
+    "Pendant": {
+      "max_error": 3.5762786865234375e-07,
+      "triangles": 2288,
+      "sha256": "6104f719d54c741f1c9440b672ad25ef37cc51dad8f55c377720a67bc0889519"
+    },
+    "RingTide": {
+      "max_error": 4.172325134277344e-07,
+      "triangles": 2340,
+      "sha256": "28d0c411d60be17009b0c446132f45ce2aa30296835d3eb511077d460c7f6c7e"
+    },
+    "RingEmperor": {
+      "max_error": 4.76837158203125e-07,
+      "triangles": 1664,
+      "sha256": "333203b2a1b554cf772744828639e30a39dc7365ffafb696c8ff42cead7be39e"
+    }
+  }
+}
