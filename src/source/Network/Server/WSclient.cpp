@@ -7,6 +7,7 @@
 #include "Guild/GuildCache.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Render/Models/PoseidonModels.h"
+#include "Render/Models/ZeusModels.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
 #include "Engine/Object/ZzzCharacter.h"
@@ -2824,7 +2825,8 @@ void ReceiveChangePlayer(std::span<const BYTE> ReceiveBuffer)
                 c->Wing.Type == MODEL_CAPE_OF_OVERRULE ||
                 c->Wing.Type == MODEL_WING + 135 ||
                 c->Wing.Type == MODEL_CAPE_OF_EMPEROR ||
-                Render::Items::Poseidon::HasClothCape(c->Wing.Type))
+                Render::Items::Poseidon::HasClothCape(c->Wing.Type) ||
+                Render::Items::Zeus::HasClothCape(c->Wing.Type))
             {
                 DeleteCloth(c, o);
             }
@@ -2841,7 +2843,8 @@ void ReceiveChangePlayer(std::span<const BYTE> ReceiveBuffer)
                 c->Wing.Type == MODEL_CAPE_OF_OVERRULE ||
                 c->Wing.Type == MODEL_WING + 135 ||
                 c->Wing.Type == MODEL_CAPE_OF_EMPEROR ||
-                Render::Items::Poseidon::HasClothCape(c->Wing.Type))
+                Render::Items::Poseidon::HasClothCape(c->Wing.Type) ||
+                Render::Items::Zeus::HasClothCape(c->Wing.Type))
             {
                 DeleteCloth(c, o);
             }

@@ -164,6 +164,9 @@ CLASS_TYPE CCharacterManager::ChangeServerClassTypeToClientClassType(const SERVE
 
 CLASS_TYPE CCharacterManager::GetBaseClass(CLASS_TYPE iClass)
 {
+    // NOTE: the CLASS_DARK-family folds below are mirrored by the constexpr
+    // Character::Cloth::ClothBaseClass (Character/ClothGate.h) used by the
+    // bCloak gate; keep the two in sync if a fold ever changes.
     switch (iClass)
     {
     case CLASS_GRANDMASTER:

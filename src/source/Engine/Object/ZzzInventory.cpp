@@ -8394,6 +8394,11 @@ void RenderObjectScreen(int Type, int ItemLevel, int excellentFlags, int ancient
         Position[1] += 0.05f;
         Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
     }
+    else if (Type == MODEL_ZEUS_CAPE)
+    {
+        Position[1] += 0.05f;
+        Vector(270.f, -10.f, 0.f, ObjectSelect.Angle);
+    }
     else if (Type == MODEL_WINGS_OF_DESPAIR)
     {
         Position[1] += 0.05f;

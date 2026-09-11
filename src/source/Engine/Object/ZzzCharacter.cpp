@@ -8,8 +8,10 @@
 #include "stdafx.h"
 #include "Render/Models/CelestialModels.h"
 #include "Render/Models/PoseidonModels.h"
+#include "Render/Models/ZeusModels.h"
 #include "Render/Models/HelmetAppearance.h"
 #include "Character/CharacterMovementEffects.h"
+#include "Character/ClothGate.h"
 #include <execution>
 #include <algorithm>
 #include <span>
@@ -8586,6 +8588,7 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         case MODEL_CAPE_OF_EMPEROR:        // Cape of Emperor
         case MODEL_CAPE_OF_OVERRULE:        // Cape of Overrule
         case MODEL_POSEIDON_CAPE:        // Authored Poseidon cape (cloth grades)
+        case MODEL_ZEUS_CAPE:        // Authored Zeus cape (cloth grades)
         case MODEL_WING + 130:        // Small Cape of Lord
         case MODEL_WING + 135:        // Little Warrior's Cloak
             b->RenderBodyShadow(-1, -1, -1, -1, o->m_pCloth, o->m_byNumCloth);
@@ -9314,8 +9317,7 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
 
     bool bCloak = false;
 
-    if ((c->Class == CLASS_DARK || gCharacterManager.GetBaseClass(c->Class) == CLASS_DARK_LORD
-        || gCharacterManager.GetBaseClass(c->Class) == CLASS_RAGEFIGHTER) && o->Type == MODEL_PLAYER)
+    if ((Character::Cloth::ClassOpensCloakGate(c->Class)) && o->Type == MODEL_PLAYER)
     {
         if (c->Change == false || (c->Change == true && c->Object.Type == MODEL_PLAYER))
         {
@@ -9995,6 +9997,35 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
 
                 o->m_pCloth = (void*)pCloth;
                 o->m_byNumCloth = numCloth;
+            }
+            else if (Render::Items::Zeus::HasClothCape(c->Wing.Type))
+            {
+                // Authored Zeus cape (12/54) for the CLASS_DARK family: the
+                // main cape grade uses the emperor-cape precedent (cape-cloth-
+                // contract.md, section 4) plus two side panels; the authored
+                // BMD collar covers the pinned top line, so there are no
+                // shoulder-cap grades. No skirt grade is ever created here:
+                // the native skirt stays keyed to the DL/LE armor skins and
+                // the Zeus faldao lives in the pants geometry. Fabric comes
+                // from the dedicated BITMAP_ROBE+14 slot.
+                auto* pCloth = new CPhysicsCloth[3];
+
+                pCloth[0].Create(o, 19, 0.0f, 8.0f, 10.0f, 10, 10, 180.0f, 180.0f, Render::Items::Zeus::CapeClothFabricSlot, Render::Items::Zeus::CapeClothFabricSlot, PCT_CURVED | PCT_SHORT_SHOULDER | PCT_HEAVY | PCT_MASK_ALPHA);
+                pCloth[0].AddCollisionSphere(-10.f, -10.0f, -10.0f, 25.0f, 17);
+                pCloth[0].AddCollisionSphere(10.f, -10.0f, -10.0f, 25.0f, 17);
+                pCloth[0].AddCollisionSphere(-10.f, -10.0f, 20.0f, 27.0f, 17);
+                pCloth[0].AddCollisionSphere(10.f, -10.0f, 20.0f, 27.0f, 17);
+
+                pCloth[1].Create(o, 19, 30.0f, 15.0f, 10.0f, 2, 5, 12.0f, 200.0f, Render::Items::Zeus::CapeClothFabricSlot, Render::Items::Zeus::CapeClothFabricSlot, PCT_FLAT | PCT_SHAPE_NORMAL | PCT_COTTON | PCT_MASK_ALPHA);
+                pCloth[1].AddCollisionSphere(0.0f, -15.0f, -20.0f, 30.0f, 2);
+                pCloth[1].AddCollisionSphere(0.f, 0.0f, 0.0f, 35.0f, 17);
+
+                pCloth[2].Create(o, 19, -30.0f, 20.0f, 10.0f, 2, 5, 12.0f, 200.0f, Render::Items::Zeus::CapeClothFabricSlot, Render::Items::Zeus::CapeClothFabricSlot, PCT_FLAT | PCT_SHAPE_NORMAL | PCT_COTTON | PCT_MASK_ALPHA);
+                pCloth[2].AddCollisionSphere(0.0f, -15.0f, -20.0f, 30.0f, 2);
+                pCloth[2].AddCollisionSphere(0.f, 0.0f, 0.0f, 35.0f, 17);
+
+                o->m_pCloth = (void*)pCloth;
+                o->m_byNumCloth = 3;
             }
             else
             {
@@ -15716,10 +15747,12 @@ bool RenderCharacterBackItem(CHARACTER* c, OBJECT* o, bool bTranslate)
                 case MODEL_CAPE_OF_EMPEROR:
                 case MODEL_CAPE_OF_OVERRULE:
                 case MODEL_POSEIDON_CAPE:
-                    // The authored cape rig (poseidon_cape_rig.cape_root) was
-                    // built from the same link matrix chain as the native
-                    // capes (cape-cloth-contract.md, section 3), so it reuses
-                    // the RenderLinkObject cape branch instead of a new case.
+                case MODEL_ZEUS_CAPE:
+                    // The authored capes reuse the RenderLinkObject cape
+                    // branch: their rigs (poseidon_cape_rig.cape_root /
+                    // Zeus_Cape collar bone) were built from the same link
+                    // matrix chain as the native capes (cape-cloth-contract.md,
+                    // section 3), so bone 19 and no new matrix case are needed.
                     w->LinkBone = Render::Items::Poseidon::CapeLinkBone;
                     RenderLinkObject(0.f, 0.f, 15.f, c, w, w->Type, w->Level, w->ExcellentFlags, true, bTranslate);
                     break;
