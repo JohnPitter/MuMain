@@ -1,0 +1,59 @@
+{
+  "status": "AUTHORING_PROTOTYPE_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "reference": "concept-herdeiro-de-zeus-mg-20260911.png (sha256 7d5bd6e0370f792f06faa4048987433e163916ff3992e94762399c76b249d573)",
+  "model_origin": "Original Zeus geometry; generic shared primitives/encoder only",
+  "shared_source_sha256": {
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
+  },
+  "blend_sha256": "aebe0d1ada59328e9dff852f7e88c2ed5097b482a59dd550a2ff803c6e1efbcd",
+  "models": {
+    "Sword": {
+      "file": "Zeus_Sword.bmd",
+      "mesh_count": 5,
+      "bones": 3,
+      "action_frames": [
+        1
+      ],
+      "triangles": 6214,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "status": "PROTOTYPE_NOT_INSTALLABLE_INTEGRATION_PENDING",
+      "topology": {
+        "objects": 48,
+        "polygons": 3041,
+        "nonmanifold_components": []
+      },
+      "sha256": "e26a35db7823928b49f2407a924745a6c2be7c185c7aeb71c624500213b5c737",
+      "roundtrip_max_error": 4.645411308956682e-07
+    },
+    "Staff": {
+      "file": "Zeus_Staff.bmd",
+      "mesh_count": 5,
+      "bones": 3,
+      "action_frames": [
+        1
+      ],
+      "triangles": 6746,
+      "textures": [
+        "Zeus_Blue.jpg",
+        "Zeus_Emissive.jpg",
+        "Zeus_Platina.jpg"
+      ],
+      "status": "PROTOTYPE_NOT_INSTALLABLE_INTEGRATION_PENDING",
+      "topology": {
+        "objects": 51,
+        "polygons": 3271,
+        "nonmanifold_components": []
+      },
+      "sha256": "a52dc9d3f7a200f13ac2bbd2774b02ef0d7b33053c0a42d9f3505239b9d21459",
+      "roundtrip_max_error": 5.960464477539062e-07
+    }
+  }
+}

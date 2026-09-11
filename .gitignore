@@ -46,3 +46,5 @@ build-linux/
 **/*.log
 # Local-only files
 docs/reviews/
+__pycache__/
+*.blend1

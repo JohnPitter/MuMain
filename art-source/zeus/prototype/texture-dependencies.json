@@ -1,0 +1,50 @@
+[
+  {
+    "texture": "Zeus_Blue.jpg",
+    "material_role": "Blue",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_zeus_atlases.py",
+    "linear_rgb": [
+      0.035,
+      0.22,
+      0.62
+    ],
+    "master": "art-source/zeus/textures/masters/Zeus_Blue.png",
+    "master_sha256": "600acba17b3f16661fd2edecbab613cf84a98b44f5f9d5a0583f8e05774a4704",
+    "game_jpeg_sha256": "ce14054c86f08edad75b1e8223cc900f153877155a7507a7d13617ed1fb8d330",
+    "ozj_sha256": "104f3ea89fe6e8fe7a07d1d44b76d6678c6b1015e2e095381c3c9b8659169c02",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
+  },
+  {
+    "texture": "Zeus_Platina.jpg",
+    "material_role": "Platina",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_zeus_atlases.py",
+    "linear_rgb": [
+      0.843,
+      0.827,
+      0.831
+    ],
+    "master": "art-source/zeus/textures/masters/Zeus_Platina.png",
+    "master_sha256": "cd7249083806dbc534cd6bb4ec86ba641160da8d463acaffa0818ca9814d3c08",
+    "game_jpeg_sha256": "75d0fb9f3825bfecfe3dd1bcb9cd0244687eb0686d5a171109b216a164d3cdd4",
+    "ozj_sha256": "14d2b65521a367acccca2dd69a9596acff41bba32eb119afcd9a40ddd1629475",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
+  },
+  {
+    "texture": "Zeus_Emissive.jpg",
+    "material_role": "Emissive",
+    "status": "AUTHORED_ATLAS_REGENERABLE",
+    "generator": "generate_zeus_atlases.py",
+    "linear_rgb": [
+      0.1,
+      0.45,
+      1.0
+    ],
+    "master": "art-source/zeus/textures/masters/Zeus_Emissive.png",
+    "master_sha256": "12e23a3238eed3201f1014e01b07ff472cb043f7a44ab1e8babdf082c0105a28",
+    "game_jpeg_sha256": "c4c5e3fdf231ab923d622e12867a0babecd283c15847f7a930218bb1c929b898",
+    "ozj_sha256": "07c776f6dee36d3e56a8d773aa345df75fdbb12c3f4622fe3eee26f9773f7e73",
+    "ozj_wrapper": "24 zero bytes + RGB JPEG (same contract as the Celestial atlases)"
+  }
+]

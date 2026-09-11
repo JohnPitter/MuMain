@@ -1,0 +1,47 @@
+{
+  "status": "ATTACHMENT_MATH_PREVIEW_NOT_INGAME",
+  "mannequin": "PREVIEW_fit_mannequin generic tubes; never exported",
+  "cloth_proxy": "PREVIEW_cloth_proxy translucent envelope of the runtime procedural main grid; never exported",
+  "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+  "player_bones": 60,
+  "native_cape_sha256": "36e033c9db84dfc9febda70f74748d96a0b8d89f2acc15d569cb15f376383807",
+  "link_bone": 19,
+  "cape_root_translation": [
+    0.8421,
+    1.735,
+    79.8802
+  ],
+  "anchor_gates": {
+    "farthest_below": 135.0,
+    "root_follow_min": 3.0,
+    "rigidity_drift_max": 0.75,
+    "root_follow": 36.5921,
+    "rigidity_drift": 0.0
+  },
+  "poses": [
+    {
+      "render": "Zeus_CapeSet_equipped_front.png",
+      "clip": "PLAYER_STOP_SWORD",
+      "action": 4,
+      "frame": 0,
+      "view": "front"
+    },
+    {
+      "render": "Zeus_CapeSet_equipped_back.png",
+      "clip": "PLAYER_WALK_SWORD",
+      "action": 17,
+      "frame": 3,
+      "view": "back"
+    }
+  ],
+  "span_probes": [
+    {
+      "nearest": 35.5573,
+      "farthest": 102.0932
+    },
+    {
+      "nearest": 35.5573,
+      "farthest": 102.0932
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "saved_blend_sha256": "aebe0d1ada59328e9dff852f7e88c2ed5097b482a59dd550a2ff803c6e1efbcd",
+  "models": {
+    "Sword": {
+      "max_error": 4.645411308956682e-07,
+      "triangles": 6214,
+      "sha256": "e26a35db7823928b49f2407a924745a6c2be7c185c7aeb71c624500213b5c737"
+    },
+    "Staff": {
+      "max_error": 5.960464477539062e-07,
+      "triangles": 6746,
+      "sha256": "a52dc9d3f7a200f13ac2bbd2774b02ef0d7b33053c0a42d9f3505239b9d21459"
+    }
+  }
+}

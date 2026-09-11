@@ -1,0 +1,181 @@
+{
+  "status": "AUTHORED_ZEUS_WINGS_PROTOTYPE_PREVIEW_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "design_reference": "art-source/zeus/design-spec.md",
+  "model_origin": "Original Zeus wing geometry authored in the Wing44 frame-0 bind space; single-influence binding to the frozen 47-bone skeleton, no native mesh reuse",
+  "native_rig": {
+    "archive": "C:\\Users\\joaop\\Desenvolvimento\\openmu\\scratchpad\\celestial-ultimate-20260911\\ultimate-base-downloaded.zip",
+    "archive_sha256": "baedcdbe3b66dc2763a9a6538f8d0fd592bc7cccd76844952ec174ca323d3c80",
+    "audit": "native-reference-audit.json",
+    "audit_sha256": "c09a6e975f5a7b2e1c02fdc85805ad635f2b8652f73d0e2c931c29424936e4a6",
+    "wing44_sha256": "c6e2aec2f52d6df93fedebd5d77a5cd47d5fd96a5b4b84b9a1be98f1781009a8",
+    "bones": 47,
+    "action_frames": [
+      9
+    ],
+    "action_locks": [
+      true
+    ],
+    "used_bones": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      24,
+      25,
+      26,
+      27,
+      28
+    ]
+  },
+  "fit_anchors": {
+    "0": [
+      0.5293,
+      6.8659,
+      -21.2767
+    ],
+    "1": [
+      0.4888,
+      6.8659,
+      -7.5434
+    ],
+    "2": [
+      39.8395,
+      -2.5474,
+      16.194
+    ],
+    "3": [
+      53.7442,
+      -12.7119,
+      51.0021
+    ],
+    "4": [
+      90.4468,
+      -13.134,
+      83.2383
+    ],
+    "5": [
+      114.201,
+      6.0722,
+      130.7728
+    ],
+    "24": [
+      0.4888,
+      6.8659,
+      -7.5434
+    ],
+    "25": [
+      -31.6897,
+      -1.4082,
+      13.2078
+    ],
+    "26": [
+      -50.3423,
+      -8.6697,
+      52.8448
+    ],
+    "27": [
+      -77.7534,
+      -5.4377,
+      89.0216
+    ],
+    "28": [
+      -93.8053,
+      19.8867,
+      137.8311
+    ]
+  },
+  "triangle_budget": [
+    12000,
+    20000
+  ],
+  "budget_justification": "Wings are the largest set piece: the authored Celestial wing candidate measures 28,870 triangles; the Zeus design replaces layered plumage with 78 faceted blades, storm channels and a star crest, landing near half that cost while staying far above the armor pieces (max 9,400).",
+  "shared_source_sha256": {
+    "armor_animation.py": "70379d3c01502665c8476f4fbdb5b02881d63dee5cc690b7c2d3a05d3c8e70a7",
+    "armor_surfaces.py": "3b1c981bb3aaa4970dfe04994e725fdd81ede6b150340935f3685e54985531c2",
+    "celestial_geometry.py": "bb7052cc04070c1a60d4b6ecf2ce9ffc696bacb140be88ba27eb0f4d59814323",
+    "export_prop_bmd.py": "0487c29155c438bdfe1a557a071ba81012b99eaca4118217bac245ff3755f480",
+    "export_skinned_bmd.py": "4ebeead43f021d9f905be927b36a66208f697972fea1f160806a6c18d1f21c05",
+    "import_native_reference.py": "b86f5fd0ffaf28ad6a12f3ff0e258a74c7b7fdc9f4a3487c8b646ba79d3e0716",
+    "inspect_bmd_rig.py": "37bc553a0289084eaa62117eee6ae4ce142241f3a012cbb5c3a15f4ba28b650f",
+    "verify_prop_roundtrip.py": "0855b3c6104bc6d909ab04502ff87a61c55a75e4a6186be498bd103f4fb55a6b"
+  },
+  "blend_sha256": "195f2a3e189e976e15ca7bfe8696d2d7bfaab981c43a8744587b1051c8c7ebb2",
+  "wings": {
+    "file": "Zeus_Wings.bmd",
+    "meshes": 9,
+    "triangles": 16004,
+    "textures": [
+      "Zeus_Blue.jpg",
+      "Zeus_Emissive.jpg",
+      "Zeus_Platina.jpg"
+    ],
+    "bones": 47,
+    "topology": {
+      "objects": 296,
+      "triangles": 16004,
+      "open_edges": 0,
+      "nonmanifold_components": []
+    },
+    "minimum_triangle_area": 0.0003082363136560385,
+    "sha256": "ddfdd88ee4e0664fc7a722373cc29ae8da9545096a9d567f57c4200e1433b4ce",
+    "used_bones": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      24,
+      25,
+      26,
+      27,
+      28
+    ],
+    "roundtrip_max_error": 7.152557373046875e-07,
+    "motion": {
+      "proof_frames": [
+        0,
+        4,
+        8
+      ],
+      "checked_vertices": 77346,
+      "maximum_pose_error": 0.00010349014256477765,
+      "vertices_per_pose": 8594,
+      "moving_vertices_pose4": 8114,
+      "loop_seam_distance": 1.5728399755926745e-05
+    },
+    "equipped": {
+      "status": "ATTACHMENT_MATH_PREVIEW_NOT_INGAME",
+      "render": "Zeus_Wings_equipped_front.png",
+      "player_sha256": "2964e7c41dcf686b79e53a74261192ebfc6879d36bc030c2e503ef0b8cef38ef",
+      "player_bones": 60,
+      "clip": "PLAYER_STOP_SWORD",
+      "attach_bone": 47,
+      "attach_local_offset": [
+        0,
+        0,
+        15
+      ],
+      "attachment_precedent": "RenderLinkObject wing link as applied by the authored Celestial equipped review (player bone 47 + local Z 15)",
+      "wing_center_on_rig": [
+        2.58,
+        8.9,
+        232.94
+      ],
+      "plausibility_gates": {
+        "max_abs_center_x": 25.0,
+        "center_y_range": [
+          0.0,
+          60.0
+        ],
+        "center_z_range": [
+          150.0,
+          280.0
+        ]
+      }
+    }
+  }
+}
