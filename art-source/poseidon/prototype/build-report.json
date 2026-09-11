@@ -1,0 +1,59 @@
+{
+  "status": "AUTHORING_PROTOTYPE_ONLY",
+  "renderer": "Blender Cycles / AgX, not MU runtime",
+  "reference": "codex-clipboard-04794f6e-f53a-4555-a521-d0a673490353.png",
+  "model_origin": "Original Poseidon geometry; generic shared primitives/encoder only",
+  "shared_source_sha256": {
+    "celestial_geometry.py": "34317a45d74bc178d36e0a798b7063915104450189e093dc9368fd70bb9b16c6",
+    "export_prop_bmd.py": "26f65f4fb05fca889691773b23f2aa5bf6400f546648864fc0bb79abb752af9a",
+    "inspect_bmd_rig.py": "d3aa1c409faa8b0e2af71e74f7dc296b532cdda08529ca245195658e8712647a",
+    "verify_prop_roundtrip.py": "d5cb7895952bd240eef0aec7ed2b378945cadd79bc22952e63c859695e3b63f5"
+  },
+  "blend_sha256": "97da7714a95d1e11cad23246b40352715407d9bb67d30f0b56f8b89539762925",
+  "models": {
+    "Trident": {
+      "file": "Poseidon_Trident.bmd",
+      "mesh_count": 5,
+      "bones": 3,
+      "action_frames": [
+        1
+      ],
+      "triangles": 6866,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "topology": {
+        "objects": 54,
+        "polygons": 3325,
+        "nonmanifold_components": []
+      },
+      "sha256": "9e350ee9929c7230a79f803bda72df742794fa088085611dd9db60384d25fd20",
+      "roundtrip_max_error": 5.364418029785156e-07
+    },
+    "Scepter": {
+      "file": "Poseidon_Scepter.bmd",
+      "mesh_count": 6,
+      "bones": 3,
+      "action_frames": [
+        1
+      ],
+      "triangles": 6938,
+      "textures": [
+        "Poseidon_Black.jpg",
+        "Poseidon_Blue.jpg",
+        "Poseidon_Gold.jpg"
+      ],
+      "status": "PROTOTYPE_NOT_INSTALLABLE_MISSING_TEXTURE_ATLASES",
+      "topology": {
+        "objects": 59,
+        "polygons": 3339,
+        "nonmanifold_components": []
+      },
+      "sha256": "c8f2f871f24dcadd172e2be8aac0dc3eeecbef9df862ceb74abb0788b60a60e7",
+      "roundtrip_max_error": 6.854534149169922e-07
+    }
+  }
+}

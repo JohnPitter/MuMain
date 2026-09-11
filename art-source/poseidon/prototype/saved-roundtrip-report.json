@@ -1,0 +1,15 @@
+{
+  "saved_blend_sha256": "97da7714a95d1e11cad23246b40352715407d9bb67d30f0b56f8b89539762925",
+  "models": {
+    "Trident": {
+      "max_error": 5.364418029785156e-07,
+      "triangles": 6866,
+      "sha256": "9e350ee9929c7230a79f803bda72df742794fa088085611dd9db60384d25fd20"
+    },
+    "Scepter": {
+      "max_error": 6.854534149169922e-07,
+      "triangles": 6938,
+      "sha256": "c8f2f871f24dcadd172e2be8aac0dc3eeecbef9df862ceb74abb0788b60a60e7"
+    }
+  }
+}
