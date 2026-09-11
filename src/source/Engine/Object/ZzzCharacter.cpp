@@ -7,6 +7,7 @@
 
 #include "stdafx.h"
 #include "Render/Models/CelestialModels.h"
+#include "Render/Models/PoseidonModels.h"
 #include "Render/Models/HelmetAppearance.h"
 #include "Character/CharacterMovementEffects.h"
 #include <execution>
@@ -8584,6 +8585,7 @@ void RenderLinkObject(float x, float y, float z, CHARACTER* c, PART_t* f, int Ty
         case MODEL_CAPE_OF_FIGHTER:      // Cape of Fighter
         case MODEL_CAPE_OF_EMPEROR:        // Cape of Emperor
         case MODEL_CAPE_OF_OVERRULE:        // Cape of Overrule
+        case MODEL_POSEIDON_CAPE:        // Authored Poseidon cape (cloth grades)
         case MODEL_WING + 130:        // Small Cape of Lord
         case MODEL_WING + 135:        // Little Warrior's Cloak
             b->RenderBodyShadow(-1, -1, -1, -1, o->m_pCloth, o->m_byNumCloth);
@@ -9843,8 +9845,9 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
         {
             if (gCharacterManager.GetBaseClass(c->Class) == CLASS_DARK_LORD)
             {
+                using Render::Items::Poseidon::HasClothCape;
                 int numCloth = 4;
-                if (c->Wing.Type == MODEL_CAPE_OF_EMPEROR)
+                if (c->Wing.Type == MODEL_CAPE_OF_EMPEROR || HasClothCape(c->Wing.Type))
                 {
                     numCloth = 6;
                 }
@@ -9853,14 +9856,19 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
                     numCloth = 4;
                 }
 
+                // The authored Poseidon cape points its cloth grades at its own
+                // BITMAP_ROBE slots; the native capes keep ROBE+6/+9/+10.
+                const int shoulderTexture = HasClothCape(c->Wing.Type)
+                    ? Render::Items::Poseidon::CapeClothShoulderSlot : BITMAP_ROBE + 6;
+
                 auto* pCloth = new CPhysicsCloth[numCloth];
 
-                pCloth[0].Create(o, 20, 0.0f, 0.0f, 20.0f, 6, 5, 30.0f, 70.0f, BITMAP_ROBE + 6, BITMAP_ROBE + 6, PCT_CURVED | PCT_RUBBER2 | PCT_MASK_LIGHT | PLS_STRICTDISTANCE | PCT_SHORT_SHOULDER | PCT_NORMAL_THICKNESS | PCT_OPT_HAIR);
+                pCloth[0].Create(o, 20, 0.0f, 0.0f, 20.0f, 6, 5, 30.0f, 70.0f, shoulderTexture, shoulderTexture, PCT_CURVED | PCT_RUBBER2 | PCT_MASK_LIGHT | PLS_STRICTDISTANCE | PCT_SHORT_SHOULDER | PCT_NORMAL_THICKNESS | PCT_OPT_HAIR);
                 pCloth[0].SetWindMinMax(10, 50);
                 pCloth[0].AddCollisionSphere(-10.f, 20.0f, 20.0f, 27.0f, 17);
                 pCloth[0].AddCollisionSphere(10.f, 20.0f, 20.0f, 27.0f, 17);
 
-                pCloth[1].Create(o, 20, 0.0f, 5.0f, 18.0f, 5, 5, 30.0f, 70.0f, BITMAP_ROBE + 6, BITMAP_ROBE + 6, PCT_CURVED | PCT_RUBBER2 | PCT_MASK_BLEND | PLS_STRICTDISTANCE | PCT_SHORT_SHOULDER | PCT_NORMAL_THICKNESS | PCT_OPT_HAIR);
+                pCloth[1].Create(o, 20, 0.0f, 5.0f, 18.0f, 5, 5, 30.0f, 70.0f, shoulderTexture, shoulderTexture, PCT_CURVED | PCT_RUBBER2 | PCT_MASK_BLEND | PLS_STRICTDISTANCE | PCT_SHORT_SHOULDER | PCT_NORMAL_THICKNESS | PCT_OPT_HAIR);
                 pCloth[1].SetWindMinMax(8, 40);
                 pCloth[1].AddCollisionSphere(-10.f, 20.0f, 20.0f, 27.0f, 17);
                 pCloth[1].AddCollisionSphere(10.f, 20.0f, 20.0f, 27.0f, 17);
@@ -9868,6 +9876,14 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
                 if (c->Wing.Type == MODEL_CAPE_OF_EMPEROR)
                 {
                     pCloth[2].Create(o, 19, 0.0f, 8.0f, 10.0f, 10, 10, 180.0f, 180.0f, BITMAP_ROBE + 9, BITMAP_ROBE + 9, PCT_CURVED | PCT_SHORT_SHOULDER | PCT_HEAVY | PCT_MASK_ALPHA);
+                    pCloth[2].AddCollisionSphere(-10.f, -10.0f, -10.0f, 25.0f, 17);
+                    pCloth[2].AddCollisionSphere(10.f, -10.0f, -10.0f, 25.0f, 17);
+                    pCloth[2].AddCollisionSphere(-10.f, -10.0f, 20.0f, 27.0f, 17);
+                    pCloth[2].AddCollisionSphere(10.f, -10.0f, 20.0f, 27.0f, 17);
+                }
+                else if (HasClothCape(c->Wing.Type))
+                {
+                    pCloth[2].Create(o, 19, 0.0f, 8.0f, 10.0f, 10, 10, 180.0f, 180.0f, Render::Items::Poseidon::CapeClothMainSlot, Render::Items::Poseidon::CapeClothMainSlot, PCT_CURVED | PCT_SHORT_SHOULDER | PCT_HEAVY | PCT_MASK_ALPHA);
                     pCloth[2].AddCollisionSphere(-10.f, -10.0f, -10.0f, 25.0f, 17);
                     pCloth[2].AddCollisionSphere(10.f, -10.0f, -10.0f, 25.0f, 17);
                     pCloth[2].AddCollisionSphere(-10.f, -10.0f, 20.0f, 27.0f, 17);
@@ -9891,7 +9907,7 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
                     pCloth[2].AddCollisionSphere(10.f, -10.0f, 20.0f, 27.0f, 17);
                 }
 
-                if (c->Wing.Type == MODEL_CAPE_OF_EMPEROR)
+                if (c->Wing.Type == MODEL_CAPE_OF_EMPEROR || HasClothCape(c->Wing.Type))
                 {
                     numCloth = 6;
                 }
@@ -9918,6 +9934,16 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
                     pCloth[4].AddCollisionSphere(0.f, 0.0f, 0.0f, 35.0f, 17);
 
                     pCloth[5].Create(o, 19, -30.0f, 20.0f, 10.0f, 2, 5, 12.0f, 200.0f, BITMAP_ROBE + 10, BITMAP_ROBE + 10, PCT_FLAT | PCT_SHAPE_NORMAL | PCT_COTTON | PCT_MASK_ALPHA);
+                    pCloth[5].AddCollisionSphere(0.0f, -15.0f, -20.0f, 30.0f, 2);
+                    pCloth[5].AddCollisionSphere(0.f, 0.0f, 0.0f, 35.0f, 17);
+                }
+                else if (HasClothCape(c->Wing.Type))
+                {
+                    pCloth[4].Create(o, 19, 30.0f, 15.0f, 10.0f, 2, 5, 12.0f, 200.0f, Render::Items::Poseidon::CapeClothSideSlot, Render::Items::Poseidon::CapeClothSideSlot, PCT_FLAT | PCT_SHAPE_NORMAL | PCT_COTTON | PCT_MASK_ALPHA);
+                    pCloth[4].AddCollisionSphere(0.0f, -15.0f, -20.0f, 30.0f, 2);
+                    pCloth[4].AddCollisionSphere(0.f, 0.0f, 0.0f, 35.0f, 17);
+
+                    pCloth[5].Create(o, 19, -30.0f, 20.0f, 10.0f, 2, 5, 12.0f, 200.0f, Render::Items::Poseidon::CapeClothSideSlot, Render::Items::Poseidon::CapeClothSideSlot, PCT_FLAT | PCT_SHAPE_NORMAL | PCT_COTTON | PCT_MASK_ALPHA);
                     pCloth[5].AddCollisionSphere(0.0f, -15.0f, -20.0f, 30.0f, 2);
                     pCloth[5].AddCollisionSphere(0.f, 0.0f, 0.0f, 35.0f, 17);
                 }
@@ -10078,7 +10104,7 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
             {
                 if (gCharacterManager.GetBaseClass(c->Class) == CLASS_DARK_LORD)
                 {
-                    if (i == 2 && ((c->Wing.Type != MODEL_CAPE_OF_LORD && c->Wing.Type != MODEL_CAPE_OF_EMPEROR && c->Wing.Type != MODEL_WING + 130) && (CloakLight[0] == 1.f && CloakLight[1] == 1.f && CloakLight[2] == 1.f)))
+                    if (i == 2 && ((c->Wing.Type != MODEL_CAPE_OF_LORD && c->Wing.Type != MODEL_CAPE_OF_EMPEROR && !Render::Items::Poseidon::HasClothCape(c->Wing.Type) && c->Wing.Type != MODEL_WING + 130) && (CloakLight[0] == 1.f && CloakLight[1] == 1.f && CloakLight[2] == 1.f)))
                     {
                         continue;
                     }
@@ -15689,7 +15715,12 @@ bool RenderCharacterBackItem(CHARACTER* c, OBJECT* o, bool bTranslate)
                 {
                 case MODEL_CAPE_OF_EMPEROR:
                 case MODEL_CAPE_OF_OVERRULE:
-                    w->LinkBone = 19;
+                case MODEL_POSEIDON_CAPE:
+                    // The authored cape rig (poseidon_cape_rig.cape_root) was
+                    // built from the same link matrix chain as the native
+                    // capes (cape-cloth-contract.md, section 3), so it reuses
+                    // the RenderLinkObject cape branch instead of a new case.
+                    w->LinkBone = Render::Items::Poseidon::CapeLinkBone;
                     RenderLinkObject(0.f, 0.f, 15.f, c, w, w->Type, w->Level, w->ExcellentFlags, true, bTranslate);
                     break;
                 default:
