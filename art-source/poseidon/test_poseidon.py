@@ -101,8 +101,15 @@ class PoseidonPrototypeTests(unittest.TestCase):
         self.assertEqual(self.build['status'], 'AUTHORING_PROTOTYPE_ONLY')
         dependencies = json.loads((self.output / 'texture-dependencies.json').read_text())
         self.assertEqual(len(dependencies), 3)
-        self.assertTrue(all(d['status'] == 'MISSING_ATLAS_NOT_FOR_CLIENT' for d in dependencies))
+        self.assertTrue(all(d['status'] == 'AUTHORED_ATLAS_REGENERABLE' for d in dependencies))
         self.assertFalse((self.output / 'Data').exists())
+
+    def test_textured_inspection_renders_exist(self):
+        renders = self.output / 'renders'
+        for name in self.models:
+            for view in ('front', 'side', 'back'):
+                self.assertTrue((renders / f'Poseidon_{name}_{view}.png').exists(),
+                                f'Poseidon_{name}_{view}.png')
 
     def test_native_rig_evidence_keeps_pet_and_owner_separate(self):
         audit = json.loads((ROOT / 'native-reference-audit.json').read_text())

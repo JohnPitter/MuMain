@@ -28,7 +28,7 @@ from poseidon_armor_preview import render_piece, studio
 from poseidon_armor_rig import (decoded_skinned_triangles, digest, load_native_rig,
                                 USED_BONE_CONTRACT)
 from poseidon_armor_shapes import armor, boots, helm
-from poseidon_materials import PALETTE, create_materials
+from poseidon_materials import atlas_dependencies, create_materials
 from verify_prop_roundtrip import compare
 
 PIECES = (('Helm', helm), ('Armor', armor), ('Boot', boots))
@@ -110,10 +110,8 @@ def fit_anchors(rig):
 
 
 def write_reports(output, reports, rig, shared_hashes):
-    (output / 'texture-dependencies.json').write_text(json.dumps(
-        [dict(texture=f'Poseidon_{role}.jpg', material_role=role,
-              status='MISSING_ATLAS_NOT_FOR_CLIENT', linear_rgb=list(values[0]))
-         for role, values in PALETTE.items()], indent=2), encoding='utf-8')
+    (output / 'texture-dependencies.json').write_text(json.dumps(atlas_dependencies(), indent=2),
+                                                      encoding='utf-8')
     report = dict(status='AUTHORED_ARMOR_PROTOTYPE_PREVIEW_ONLY',
                   renderer='Blender Cycles / AgX, not MU runtime',
                   design_reference='art-source/poseidon/design-spec.md',

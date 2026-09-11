@@ -44,7 +44,7 @@ def render_weapon(collections, name, destination):
     scene = bpy.context.scene
     for key, collection in collections.items():
         collection.hide_render = key != name
-    for view, degrees in (('front', 0), ('side', 72)):
+    for view, degrees in (('front', 0), ('side', 72), ('back', 180)):
         angle = math.radians(degrees)
         scene.camera.location = (300 * math.sin(angle), -300 * math.cos(angle), 25)
         point_at(scene.camera, (0, 0, 25))

@@ -1,0 +1,124 @@
+{
+  "round": "poseidon-definitive-atlases",
+  "uv_layout": "prototype/uv-region-report.json",
+  "palette": {
+    "sampled": {
+      "dourado_real_principal": "#d8a066",
+      "dourado_real_corpo": "#a07040",
+      "preto_abissal_principal": "#111114",
+      "preto_abissal_profundo": "#080808",
+      "azul_oceanico_principal": "#3684dd",
+      "azul_oceanico_profundo": "#104898",
+      "branco_perolado_principal": "#e5e5ec",
+      "branco_perolado_brilho": "#f8f8f8"
+    },
+    "anchors": {
+      "Black": {
+        "shadow": "#08080a",
+        "mid": "#111114",
+        "highlight": "#3b4150"
+      },
+      "Gold": {
+        "shadow": "#503418",
+        "mid": "#d8a066",
+        "highlight": "#f7e3b4"
+      },
+      "Blue": {
+        "shadow": "#0a2f66",
+        "mid": "#3684dd",
+        "highlight": "#d8efff"
+      }
+    },
+    "seeds": {
+      "Black": 20260911,
+      "Gold": 20260912,
+      "Blue": 20260913
+    }
+  },
+  "master_size": 1024,
+  "game_size": 512,
+  "jpeg_parameters": {
+    "quality": 95,
+    "subsampling": 0,
+    "progressive": false,
+    "optimize": false
+  },
+  "ozj_wrapper": "24 zero bytes + RGB JPEG (Celestial contract, see package_candidate)",
+  "atlases": {
+    "Black": {
+      "master": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/masters/Poseidon_Black.png",
+        "size": 1024,
+        "sha256": "907211715dac2e42e0e39b7ace60f6bdf827b534d7513b89569f2c84905cf926",
+        "luminance_p05": 10,
+        "luminance_p50": 23,
+        "luminance_p95": 58,
+        "contrast_span_p95_p05": 48
+      },
+      "game_jpeg": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/Poseidon_Black.jpg",
+        "size": 512,
+        "sha256": "f02e135222b1b1055ab27bcb80cc690d2387e2400c4be68e39c5789b11f5d950",
+        "luminance_p05": 10,
+        "luminance_p50": 22,
+        "luminance_p95": 58,
+        "contrast_span_p95_p05": 48
+      },
+      "ozj": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/ozj/Poseidon_Black.OZJ",
+        "sha256": "a2ea273cce538ef4cf3e332a1932e2bbf8fc2d3a7d5b623513ab4dd36b71fcb9",
+        "bytes": 69376
+      }
+    },
+    "Gold": {
+      "master": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/masters/Poseidon_Gold.png",
+        "size": 1024,
+        "sha256": "8dccb3f1cba188057aff9db9ca3960af93217b8c6168738c194a60f1813c8739",
+        "luminance_p05": 81,
+        "luminance_p50": 156,
+        "luminance_p95": 211,
+        "contrast_span_p95_p05": 130
+      },
+      "game_jpeg": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/Poseidon_Gold.jpg",
+        "size": 512,
+        "sha256": "563cb82b7028186b0c7b8b8178253d3b1d42f16be64d64d3c12769de539d1d60",
+        "luminance_p05": 81,
+        "luminance_p50": 157,
+        "luminance_p95": 211,
+        "contrast_span_p95_p05": 130
+      },
+      "ozj": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/ozj/Poseidon_Gold.OZJ",
+        "sha256": "dde708fa63d4aac0e6fe0728541615a8bd8cfd6af3bbe304e9fa72413d281190",
+        "bytes": 115851
+      }
+    },
+    "Blue": {
+      "master": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/masters/Poseidon_Blue.png",
+        "size": 1024,
+        "sha256": "afd9c9d34a14b5bb46dbdaa84c5bd8f6408bb8b297ce01884d60e8fb9c3ab71c",
+        "luminance_p05": 48,
+        "luminance_p50": 92,
+        "luminance_p95": 179,
+        "contrast_span_p95_p05": 131
+      },
+      "game_jpeg": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/Poseidon_Blue.jpg",
+        "size": 512,
+        "sha256": "be102b7b76cd4281e2813a255dfde82cd1789d66d530e3fd3cb61002305dec25",
+        "luminance_p05": 48,
+        "luminance_p50": 92,
+        "luminance_p95": 180,
+        "contrast_span_p95_p05": 132
+      },
+      "ozj": {
+        "path": "C:/_wt-poseidon-atlas/art-source/poseidon/textures/ozj/Poseidon_Blue.OZJ",
+        "sha256": "9edad96e3f298394b46d666ebdbcbd2d40d121224f1ce894bf422c4ff56cc717",
+        "bytes": 92464
+      }
+    }
+  }
+}

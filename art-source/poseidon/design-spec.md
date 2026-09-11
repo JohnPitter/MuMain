@@ -26,12 +26,23 @@ As silhuetas Poseidon têm fonte própria em `poseidon_shapes.py`.
 Nenhuma mudança de runtime, regras backend, IDs ou formato de rede nesta pasta.
 
 O arquivo Blender é editável, mas as formas em Python são a fonte regenerável.
-Editar manualmente apenas o `.blend` não altera o gerador; alterações aprovadas
-devem voltar à fonte. Materiais de apresentação são procedimentos PBR 3D, sem
-bitmap novo. Os BMD mencionam três futuros atlas, ausentes deliberadamente:
-`Poseidon_Black.jpg`, `Poseidon_Gold.jpg`, `Poseidon_Blue.jpg`.
-**Não copiar estes BMD para um cliente:** o renderer legado não interpreta PBR e
-falharia ao resolver os atlas. `prototype/texture-dependencies.json` explicita isso.
+Editar manualmente o `.blend` não altera o gerador; alterações aprovadas
+devem voltar à fonte. Os três atlas declarados (`Poseidon_Black.jpg`,
+`Poseidon_Gold.jpg`, `Poseidon_Blue.jpg`) agora existem como arte autoral
+regenerável: masters 1024 com acabamento gravado em
+`textures/masters/`, exportação do jogo 512 JPEG RGB q95 em `textures/` e
+empacotamento OZJ (cabeçalho de 24 bytes zero + JPEG, o mesmo contrato
+Celestial) em `textures/ozj/`, tudo produzido por `generate_poseidon_atlases.py`
+com `--check` de determinismo. Os materiais Blender amostram os atlas definitivos
+(`poseidon_materials.py`); os nomes de material/textura nos BMDs não mudaram, e
+os BMDs reconstruídos continuaram **byte a byte idênticos**. `Branco Perolado`
+existe na paleta do conceito como acessório/brilho; as cinco peças modeladas têm
+só os três papéis declarados, e o perolado entra como âncora de brilho dos
+masters, aguardando peças de acessório com UV própria. **Continua proibido
+copiar estes BMDs para um cliente:** são protótipos diagnósticos; a instalação
+dos atlas e dos modelos é decisão explícita de integração.
+`prototype/texture-dependencies.json` registra os hashes e o status
+`AUTHORED_ATLAS_REGENERABLE`.
 
 ## Linguagem visual
 
@@ -133,9 +144,12 @@ explícita: renomear BMD não ativa o cloth automaticamente.
    visual e atlases próprios continuam pendentes.
 3. Construir peças restantes, manto com cloth e pets, sem trocar esqueletos por
    primitivas. Provar poses preservadas e meshes dentro dos limites do cliente.
-4. Produzir atlas próprios e UV finais com bordas/frente/costas coerentes;
-   refletância PBR das prévias não substitui textura MU. Remover o bloqueio de
-   protótipo apenas após todas as dependências existirem e serem auditadas.
+4. Atlas definitivos autorados para os três papéis declarados, com acabamento
+   gravado, paleta amostrada do conceito e provas de determinismo, contraste e
+   roundtrip. Pendente na mesma linha: UV final por região (chart particionado
+   por peça, com bordas/frente/costas dedicadas) quando a geometria evoluir —
+   os masters atuais já cobrem qualquer re-UV como acabamento de campo cheio.
+   Instalação no cliente continua bloqueada até a decisão de integração.
 5. Somente com escopo aprovado: IDs, requisitos, categoria, bônus e fases no
    backend, apresentação no cliente/painel, pacote de testes isolado e avaliação
    pessoal do usuário. Não publicar um conjunto incompleto como pronto.
@@ -146,11 +160,13 @@ A partir da raiz deste worktree, com Blender 4.2:
 
 ```powershell
 python art-source/poseidon/audit_native_references.py
+python art-source/poseidon/generate_poseidon_atlases.py  # --check prova determinismo
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/build_poseidon_armor.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/verify_poseidon_armor.py
 & 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/poseidon_armor_equipped.py
+& 'C:\Program Files\Blender Foundation\Blender 4.2\blender.exe' --background --python-exit-code 1 --python art-source/poseidon/inspect_poseidon_uvs.py
 python -m unittest discover -s art-source/poseidon -p 'test_*.py' -v
 ```
 
@@ -169,8 +185,20 @@ encaixe, não captura in-game.
 
 - `prototype/poseidon-weapons.blend`: malhas 3D, materiais e estúdio.
 - `prototype/models/`: BMD de diagnóstico **não instaláveis**.
-- `prototype/renders/`: seis PNGs de estúdio (frontal, lateral oblíqua a 72° e
-  detalhe), não imagens do jogo.
+- `prototype/renders/`: vistas de inspeção frente/lado/costas das duas armas,
+  do elmo, do peitoral e das botas, prova equipada e painel de paleta
+  (`Poseidon_atlas_palette.png`); nenhuma é imagem do jogo.
+- `textures/masters/`: masters definitivos 1024 dos três atlas (gravura
+  procedural determinística; `generate_poseidon_atlases.py --check`).
+- `textures/Poseidon_{Black,Gold,Blue}.jpg`: exportação do jogo 512 JPEG RGB q95.
+- `textures/ozj/Poseidon_{Black,Gold,Blue}.OZJ`: wrapper do cliente
+  (24 bytes zero + JPEG), mesmo contrato dos atlas Celestial.
+- `textures/atlas-report.json`: paleta amostrada, âncoras, sementes, hashes e
+  contraste P95−P05 por atlas.
+- `prototype/uv-region-report.json`: prova do layout UV — projeção planar por
+  componente cobrindo o quadrado 0-1 inteiro, com o mapa componente→atlas dos
+  cinco modelos; por isso os masters são acabamentos gravados de campo cheio,
+  não charts particionados.
 - `prototype/build-report.json`: contagens, hashes e prova durante geração.
 - `prototype/saved-roundtrip-report.json`: prova reabrindo o Blender salvo.
 - `prototype/texture-dependencies.json`: atlas pendentes explicitamente declarados.
@@ -180,5 +208,8 @@ encaixe, não captura in-game.
 - `prototype/equipped-review-report.json`: prova de encaixe no rig do player.
 - `native-reference-audit.json`: proveniência/rigs e contratos nativos verificados.
 
-Nenhuma imagem de textura foi criada por Pillow nem houve alteração de arquivos
-Celestial, modelos nativos, runtime ou instalação do jogador.
+As imagens de textura são geradas por Pillow em script determinístico
+(`generate_poseidon_atlases.py`), versionadas junto com os BMDs; nenhuma
+imagem nativa do cliente foi alterada, nenhum atlas foi instalado em `Data/`
+e não houve alteração de arquivos Celestial, modelos nativos, runtime ou
+instalação do jogador.

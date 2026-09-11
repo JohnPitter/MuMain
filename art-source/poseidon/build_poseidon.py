@@ -17,7 +17,7 @@ from export_prop_bmd import triangle_groups
 from inspect_bmd_rig import inspect
 from verify_prop_roundtrip import compare, decoded_triangles
 from poseidon_export import HAND_TRANSFORM, export_weapon
-from poseidon_materials import PALETTE, create_materials
+from poseidon_materials import atlas_dependencies, create_materials
 from poseidon_preview import render_head, render_weapon, studio
 from poseidon_shapes import scepter, trident
 
@@ -57,10 +57,8 @@ def build_models(materials, output):
 
 
 def write_reports(output, reports, shared_hashes):
-    dependencies = [dict(texture=f'Poseidon_{role}.jpg', material_role=role,
-                         status='MISSING_ATLAS_NOT_FOR_CLIENT', linear_rgb=list(values[0]))
-                    for role, values in PALETTE.items()]
-    (output / 'texture-dependencies.json').write_text(json.dumps(dependencies, indent=2), encoding='utf-8')
+    (output / 'texture-dependencies.json').write_text(
+        json.dumps(atlas_dependencies(), indent=2), encoding='utf-8')
     report = dict(status='AUTHORING_PROTOTYPE_ONLY', renderer='Blender Cycles / AgX, not MU runtime',
                   reference='codex-clipboard-04794f6e-f53a-4555-a521-d0a673490353.png',
                   model_origin='Original Poseidon geometry; generic shared primitives/encoder only',
