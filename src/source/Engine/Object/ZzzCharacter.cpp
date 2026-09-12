@@ -8,6 +8,8 @@
 #include "stdafx.h"
 #include "Render/Models/CelestialModels.h"
 #include "Render/Models/PoseidonModels.h"
+#include "Render/Models/AuthorSetFX.h"
+#include "Render/Models/PoseidonPets.h"
 #include "Render/Models/ZeusModels.h"
 #include "Render/Models/HelmetAppearance.h"
 #include "Character/CharacterMovementEffects.h"
@@ -333,7 +335,7 @@ void SetPlayerStop(CHARACTER* c)
                     SetAction(&c->Object, PLAYER_FENRIR_STAND);
             }
         }
-        else if (c->Helper.Type == MODEL_DARK_HORSE_ITEM && !c->SafeZone)
+        else if (Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type) && !c->SafeZone)
         {
             if (c->Weapon[0].Type == -1 && c->Weapon[1].Type == -1)
                 SetAction(&c->Object, PLAYER_STOP_RIDE_HORSE);
@@ -621,7 +623,7 @@ void SetPlayerWalk(CHARACTER* c)
                 SetAction_Fenrir_Run(c, &c->Object);
             }
         }
-        else if (c->Helper.Type == MODEL_DARK_HORSE_ITEM && !c->SafeZone)
+        else if (Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type) && !c->SafeZone)
         {
             SetAction(&c->Object, PLAYER_RUN_RIDE_HORSE);
         }
@@ -826,7 +828,7 @@ void SetPlayerWalk(CHARACTER* c)
     PlayMonsterSound(o);
     if (o->Type == MODEL_BALROG)
         PlayBuffer(SOUND_BONE2, o);
-    else if (gCharacterManager.GetBaseClass(c->Class) == CLASS_DARK_LORD && c->Helper.Type == MODEL_DARK_HORSE_ITEM && !c->SafeZone)
+    else if (gCharacterManager.GetBaseClass(c->Class) == CLASS_DARK_LORD && Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type) && !c->SafeZone)
     {
         PlayBuffer(static_cast<ESound>(SOUND_RUN_DARK_HORSE_1 + rand() % 3), o);
     }
@@ -1170,7 +1172,7 @@ void SetPlayerAttack(CHARACTER* c)
                 SetAction(&c->Object, PLAYER_FENRIR_ATTACK_DARKLORD_SWORD);
             }
         }
-        else if (c->Helper.Type == MODEL_DARK_HORSE_ITEM && !c->SafeZone)
+        else if (Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type) && !c->SafeZone)
         {
             SetAction(&c->Object, PLAYER_ATTACK_RIDE_HORSE_SWORD);
         }
@@ -1459,7 +1461,7 @@ void SetPlayerShock(CHARACTER* c, int Hit)
 {
     if (c->Dead > 0) return;
     if (c->Helper.Type == MODEL_HORN_OF_UNIRIA || c->Helper.Type == MODEL_HORN_OF_DINORANT) return;
-    if (c->Helper.Type == MODEL_DARK_HORSE_ITEM) return;
+    if (Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type)) return;
 
     OBJECT* o = &c->Object;
 
@@ -4653,7 +4655,8 @@ void MoveCharacter(CHARACTER* c, OBJECT* o)
             VectorCopy(ap, pObj->Position);
             pObj->Angle[2] = BkO;
 
-            if ((c->Helper.Type >= MODEL_HORN_OF_UNIRIA && c->Helper.Type <= MODEL_DARK_HORSE_ITEM) && !c->SafeZone)
+            if (((c->Helper.Type >= MODEL_HORN_OF_UNIRIA && c->Helper.Type <= MODEL_DARK_HORSE_ITEM)
+                || Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type)) && !c->SafeZone)
             {
                 SetAction(o, PLAYER_ATTACK_RIDE_STRIKE);
             }
@@ -11173,6 +11176,7 @@ void RenderCharacter(CHARACTER* c, OBJECT* o, int Select)
         }
 
         RenderCelestialSetAura(c, o, b);
+        Render::Items::SetFX::RenderSetEffects(c, o, b);
 
         if (gMapManager.InChaosCastle() == false)
         {
@@ -13194,6 +13198,7 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
 
     // Helper:
     int HelperVariant = 0;
+    const int previousHelperType = c->Helper.Type;
     {
         c->Helper.Type = -1;
         c->Helper.Level = 0;
@@ -13219,6 +13224,10 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
         DeleteMount(o);
         if (c->Helper.Type >= MODEL_ITEM)
             ThePetProcess().DeletePet(c, c->Helper.Type - MODEL_ITEM, true);
+        // The authored eagle rides on the CSPetSystem layer, not on the
+        // PetProcess table: release it when the helper slot no longer holds it.
+        if (previousHelperType == MODEL_POSEIDON_EAGLE_ITEM && c->Helper.Type != MODEL_POSEIDON_EAGLE_ITEM)
+            giPetManager::DeletePetForObject(c, MODEL_POSEIDON_EAGLE_ITEM);
     }
     else
     {
@@ -13261,6 +13270,17 @@ void ReadEquipmentExtended(int Key, BYTE flags, BYTE* Equipment, CHARACTER* pCha
             CreateMount(MODEL_DARK_HORSE, o->Position, o);
         else
             CreateMountSub(MODEL_DARK_HORSE, o->Position, o, pHelper);
+        break;
+    case MODEL_POSEIDON_HORSE_ITEM:
+        // Authored mount: registered model address, native DarkHorse ride
+        // contract (Render::Items::Poseidon::HorseAction slots).
+        if (pHelper == NULL)
+            CreateMount(MODEL_POSEIDON_HORSE_ITEM, o->Position, o);
+        else
+            CreateMountSub(MODEL_POSEIDON_HORSE_ITEM, o->Position, o, pHelper);
+        break;
+    case MODEL_POSEIDON_EAGLE_ITEM:
+        giPetManager::CreatePetPoseidonEagle(c);
         break;
     case MODEL_HORN_OF_FENRIR:
         int type = MODEL_FENRIR_RED;

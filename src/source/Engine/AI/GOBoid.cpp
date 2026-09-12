@@ -16,6 +16,7 @@
 #include "Engine/Object/ZzzOpenData.h"
 #include "GameLogic/Events/CSChaosCastle.h"
 #include "GameLogic/Events/Cinematic/CDirection.h"
+#include "Render/Models/PoseidonPets.h"
 #include "Audio/DSPlaySound.h"
 #include "World/MapInfra/MapManager.h"
 #include "Camera/CameraMove.h"
@@ -54,6 +55,7 @@ bool IsMount(ITEM* pItem)
         || pItem->Type == ITEM_HORN_OF_UNIRIA
         || pItem->Type == ITEM_HORN_OF_DINORANT
         || pItem->Type == ITEM_DARK_HORSE_ITEM
+        || pItem->Type == Render::Items::Poseidon::HorseItemId
         || pItem->Type == ITEM_DARK_RAVEN_ITEM
         || pItem->Type == ITEM_HORN_OF_FENRIR
         )
@@ -106,6 +108,7 @@ bool CreateMountSub(int Type, vec3_t Position, OBJECT* Owner, OBJECT* o, int Sub
             o->Scale = 0.9f;
             break;
         case MODEL_DARK_HORSE:
+        case MODEL_POSEIDON_HORSE_ITEM:
             o->Scale = 1.f;
             break;
         case MODEL_PEGASUS:
@@ -321,6 +324,11 @@ bool MoveMount(OBJECT* o, bool bForceRender)
             }
             break;
         case MODEL_DARK_HORSE:
+        // The authored Poseidon mount shares the native DarkHorse contract:
+        // same skeleton (60 bones, animation block preserved bit for bit),
+        // same action slots (0 stand, 1 gallop, 3 earthshake) and same rider
+        // state mapping — see Render::Items::Poseidon::HorseAction.
+        case MODEL_POSEIDON_HORSE_ITEM:
             if ((TerrainWall[TERRAIN_INDEX_REPEAT((int)(o->Owner->Position[0] / TERRAIN_SCALE), (int)(o->Owner->Position[1] / TERRAIN_SCALE))] & TW_SAFEZONE) == TW_SAFEZONE
                 && bForceRender == FALSE)
             {

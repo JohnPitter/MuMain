@@ -4,6 +4,11 @@ mu_add_test(
 )
 
 mu_add_test(
+    NAME test_poseidon_pets
+    SOURCES test_poseidon_pets.cpp
+)
+
+mu_add_test(
     NAME test_poseidon_catalog
     SOURCES
         test_poseidon_catalog.cpp

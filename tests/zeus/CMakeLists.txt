@@ -21,3 +21,8 @@ mu_add_test(
         ../../src/source/Character/EquipmentBonusCatalog.cpp
         ../../src/source/Character/EquipmentCatalogCache.cpp
 )
+
+mu_add_test(
+    NAME test_authored_set_fx
+    SOURCES test_authored_set_fx.cpp
+)

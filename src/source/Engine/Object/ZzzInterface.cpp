@@ -8,6 +8,7 @@
 #include "Render/Textures/ZzzOpenglUtil.h"
 #include "Render/Core/RenderConfig.h"
 #include "Render/Models/ZzzBMD.h"
+#include "Render/Models/PoseidonPets.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -1879,7 +1880,7 @@ void Action(CHARACTER* c, OBJECT* o, bool Now)
                 }
                 if (Sit)
                 {
-                    if ((!c->SafeZone) && (c->Helper.Type == MODEL_HORN_OF_FENRIR || c->Helper.Type == MODEL_HORN_OF_UNIRIA || c->Helper.Type == MODEL_HORN_OF_DINORANT || c->Helper.Type == MODEL_DARK_HORSE_ITEM))
+                    if ((!c->SafeZone) && (c->Helper.Type == MODEL_HORN_OF_FENRIR || c->Helper.Type == MODEL_HORN_OF_UNIRIA || c->Helper.Type == MODEL_HORN_OF_DINORANT || Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type)))
                         return;
 
                     if (!gCharacterManager.IsFemale(c->Class))

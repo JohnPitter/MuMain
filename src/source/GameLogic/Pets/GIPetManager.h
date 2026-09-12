@@ -20,6 +20,8 @@ namespace giPetManager
     void    MovePet(CHARACTER* c);
     void    RenderPet(CHARACTER* c);
     void    DeletePet(CHARACTER* c);
+    void    DeletePetForObject(CHARACTER* c, int objectType);
+    void    CreatePetPoseidonEagle(CHARACTER* c);
 
     void    InitItemBackup(void);
     void SetPetInfo(std::uint8_t InvType, std::uint8_t InvPos, PET_INFO* pPetinfo);

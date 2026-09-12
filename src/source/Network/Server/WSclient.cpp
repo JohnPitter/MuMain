@@ -7,6 +7,7 @@
 #include "Guild/GuildCache.h"
 #include "Render/Models/ZzzBMD.h"
 #include "Render/Models/PoseidonModels.h"
+#include "Render/Models/PoseidonPets.h"
 #include "Render/Models/ZeusModels.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -2867,6 +2868,8 @@ void ReceiveChangePlayer(std::span<const BYTE> ReceiveBuffer)
             case ITEM_HORN_OF_UNIRIA:CreateMount(MODEL_UNICON, o->Position, o); break;
             case ITEM_HORN_OF_DINORANT:CreateMount(MODEL_PEGASUS, o->Position, o); break;
             case ITEM_DARK_HORSE_ITEM:CreateMount(MODEL_DARK_HORSE, o->Position, o); break;
+            case Render::Items::Poseidon::HorseItemId:CreateMount(MODEL_POSEIDON_HORSE_ITEM, o->Position, o); break;
+            case Render::Items::Poseidon::EagleItemId:giPetManager::CreatePetPoseidonEagle(c); break;
             case ITEM_HORN_OF_FENRIR:
                 c->Helper.ExcellentFlags = Data->ExcellentFlags;
                 if (Data->ExcellentFlags == 0x01)

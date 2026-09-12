@@ -186,6 +186,33 @@ namespace giPetManager
         c->m_pPet = new CSPetDarkSpirit(c);
     }
 
+    void DeletePetForObject(CHARACTER* c, int objectType)
+    {
+        if (auto* petSystem = ResolvePetSystem(c))
+        {
+            if (petSystem->GetObjectType() != objectType)
+            {
+                return;
+            }
+
+            TerminateOwnerEffectObject(objectType);
+            delete petSystem;
+            c->m_pPet = nullptr;
+        }
+    }
+
+    void CreatePetPoseidonEagle(CHARACTER* c)
+    {
+        DeletePetForObject(c, MODEL_POSEIDON_EAGLE_ITEM);
+
+        if (gMapManager.InChaosCastle())
+        {
+            return;
+        }
+
+        c->m_pPet = new CSPetPoseidonEagle(c);
+    }
+
     void CreatePetDarkSpirit_Now(CHARACTER* c)
     {
         if (c->Weapon[1].Type == MODEL_DARK_RAVEN_ITEM)
@@ -288,6 +315,12 @@ namespace giPetManager
     {
         auto* petSystem = ResolvePetSystem(c);
         if (petSystem == nullptr)
+        {
+            return false;
+        }
+
+        // Authored companion pets have no server pet protocol.
+        if (petSystem->GetPetType() == PET_TYPE_NONE)
         {
             return false;
         }

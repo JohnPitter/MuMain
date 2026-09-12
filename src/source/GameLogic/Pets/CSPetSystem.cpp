@@ -11,6 +11,8 @@
 
 #include "Core/Utilities/Random.h"
 #include "CSPetSystem.h"
+#include "Engine/Object/PlayerActionState.h"
+#include "Render/Models/PoseidonPets.h"
 #include "World/MapInfra/MapManager.h"
 #include "GameLogic/Combat/DuelMgr.h"
 #include "UI/Legacy/UIManager.h"
@@ -34,7 +36,33 @@ bool IsValidCharacterIndex(int index)
 {
     return index >= 0 && index < MAX_CHARACTERS_CLIENT;
 }
+
+// Flight cadence shared by the darkspirit and the authored Poseidon eagle.
+constexpr float PetFlightPlaySpeed = 0.4f;
+
+// Eagle hover/dive tuning, mirroring the darkspirit flight contract.
+constexpr float EagleFlyRange = 150.f;
+constexpr float EagleSpawnHeight = 300.f;
+constexpr float EaglePerchOffsetX = -10.f;
+constexpr float EaglePerchOffsetZ = 10.f;
+constexpr float EaglePerchAngleOffset = 120.f;
+constexpr float EaglePerchArriveDistance = 50.f;
+constexpr float EagleRiderHeight = 350.f;
+constexpr float EagleCatchUpHeight = 250.f;
+constexpr float EagleCatchUpLimit = 90.f;
+constexpr float EagleCatchUpDistanceSquared = 409600.f;
+constexpr float EagleDiveStrikeDistance = 20.f;
+constexpr float EagleDiveEscapeDistance = EagleFlyRange + 100.f;
+constexpr float EagleDiveTrailMinimumHeight = 100.f;
 } // namespace
+
+// Authored eagle action slots and perch bones live beside the model contract.
+using Render::Items::Poseidon::EagleActionFly;
+using Render::Items::Poseidon::EagleActionFlying;
+using Render::Items::Poseidon::EagleActionStand;
+using Render::Items::Poseidon::EagleActionEscape;
+using Render::Items::Poseidon::EaglePerchBone;
+using Render::Items::Poseidon::EaglePerchReturnBone;
 
 extern bool g_PetEnableDuel;
 
@@ -207,7 +235,8 @@ bool CSPetSystem::PlayAnimation(OBJECT* o)
     switch (m_PetType)
     {
     case PET_TYPE_DARK_SPIRIT:
-        playSpeed = 0.4f;
+    case PET_TYPE_NONE: // authored pets (Poseidon eagle) fly on the same cadence
+        playSpeed = PetFlightPlaySpeed;
         break;
     }
 
@@ -799,5 +828,381 @@ void CSPetDarkSpirit::AttackEffect(CHARACTER* c, OBJECT* o)
 
     default:
         break;
+    }
+}
+
+CSPetPoseidonEagle::CSPetPoseidonEagle(CHARACTER* c)
+{
+    // The eagle has no server pet protocol: PET_TYPE_NONE keeps the command
+    // UI, pet info requests and duel logic out of its path.
+    m_PetType = PET_TYPE_NONE;
+    m_PetOwner = c;
+
+    m_PetCharacter.Object.BoneTransform = NULL;
+    CreatePetPointer(MODEL_POSEIDON_EAGLE_ITEM, c->PositionX, c->PositionY, 0.f);
+
+    m_PetCharacter.Object.Position[2] += EagleSpawnHeight;
+    m_PetCharacter.Object.CurrentAction = EagleActionFly;
+}
+
+CSPetPoseidonEagle::~CSPetPoseidonEagle(void) = default;
+
+void CSPetPoseidonEagle::CalcPetInformation(const PET_INFO& Petinfo)
+{
+}
+
+void CSPetPoseidonEagle::RenderPetInventory(void)
+{
+    // No command bar: the eagle is not player-commanded.
+}
+
+void CSPetPoseidonEagle::RenderPet(int PetState)
+{
+    CHARACTER* c = &m_PetCharacter;
+    OBJECT* o = &c->Object;
+
+    if (o == nullptr)
+    {
+        return;
+    }
+
+    if (o->Live)
+    {
+        o->Visible = TestFrustrum2D(o->Position[0] * 0.01f, o->Position[1] * 0.01f, -20.f);
+        if (o->Visible)
+        {
+            if (m_PetOwner->Object.Type != MODEL_PLAYER && o->Type != MODEL_POSEIDON_EAGLE_ITEM)
+                return;
+
+            RenderObject(o, false, 0, PetState);
+        }
+        else
+        {
+            // Off screen: drift back towards the owner instead of diving.
+            o->Velocity = 3.f;
+            if (o->AI != PET_STAND_START)
+            {
+                o->AI = PET_FLYING;
+            }
+        }
+    }
+}
+
+void CSPetPoseidonEagle::Eff_LevelUp(void)
+{
+    OBJECT* o = &m_PetCharacter.Object;
+
+    vec3_t Angle = { 0.f, 0.f, 0.f };
+    vec3_t Position = { o->Position[0], o->Position[1], o->Position[2] };
+
+    for (int i = 0; i < 5; ++i)
+    {
+        CreateJoint(BITMAP_FLARE, Position, Position, Angle, 0, o, 40, 2);
+    }
+}
+
+void CSPetPoseidonEagle::Eff_LevelDown(void)
+{
+    OBJECT* o = &m_PetCharacter.Object;
+
+    vec3_t Position = { o->Position[0], o->Position[1], o->Position[2] };
+
+    for (int i = 0; i < 15; ++i)
+    {
+        CreateJoint(BITMAP_FLARE, Position, o->Position, o->Angle, 0, o, 40, 2);
+    }
+}
+
+void CSPetPoseidonEagle::MoveFlight(OBJECT* o, OBJECT* Owner, const vec3_t& TargetPosition, float FlyRange)
+{
+    BMD* b = &Models[o->Type];
+    o->m_bActionStart = false;
+
+    vec3_t p, Pos, Light;
+    Vector(0.3f, 0.4f, 0.7f, Light);
+    Vector(0.f, 0.f, 0.f, p);
+
+    if (!g_isCharacterBuff(Owner, eBuff_Cloaking))
+    {
+        const int boneCount = b->NumBones;
+        if (boneCount > 0 && o->BoneTransform != nullptr)
+        {
+            b->TransformPosition(o->BoneTransform[Random::RangeInt(0, boneCount - 1)], p, Pos);
+            CreateParticleFpsChecked(BITMAP_SPARK + 1, Pos, o->Angle, Light, 5, 0.8f);
+        }
+    }
+
+    vec3_t Range;
+    VectorSubtract(TargetPosition, o->Position, Range);
+    const float Distance = Range[0] * Range[0] + Range[1] * Range[1];
+    if (Distance >= FlyRange * FlyRange)
+    {
+        float Angle = CreateAngle2D(o->Position, TargetPosition);
+        o->Angle[2] = TurnAngle2(o->Angle[2], Angle, (Random::RangeFloat(0, 14) + 5.f) * FPS_ANIMATION_FACTOR);
+    }
+    AngleMatrix(o->Angle, o->Matrix);
+
+    vec3_t Direction;
+    VectorRotate(o->Direction, o->Matrix, Direction);
+    VectorAddScaled(o->Position, Direction, o->Position, FPS_ANIMATION_FACTOR);
+
+    int speedRandom = 28;
+    float riderHeight = 250.f;
+    if (Render::Items::Poseidon::IsDarkHorseRideHelper(m_PetOwner->Helper.Type) || gMapManager.WorldActive == WD_55LOGINSCENE)
+    {
+        riderHeight = EagleRiderHeight;
+    }
+
+    const float Height = TargetPosition[2] + riderHeight;
+    if (o->Position[2] < Height)
+    {
+        speedRandom = 10;
+        o->Angle[0] -= 2.f * FPS_ANIMATION_FACTOR;
+        if (o->Angle[0] < -15.f) o->Angle[0] = -15.f;
+    }
+    else if (o->Position[2] > Height + 100)
+    {
+        speedRandom = 20;
+        o->Angle[0] += 2.f * FPS_ANIMATION_FACTOR;
+        if (o->Angle[0] > 15.f) o->Angle[0] = 15.f;
+    }
+
+    float Speed = 0;
+    if (rand_fps_check(speedRandom))
+    {
+        if (Distance >= FlyRange * FlyRange)
+        {
+            Speed = -(Random::RangeFloat(0, 63) + 128.f) * 0.1f;
+        }
+        else
+        {
+            Speed = -(Random::RangeFloat(0, 7) + 32.f) * 0.1f;
+            o->Angle[2] += Random::RangeFloat(0, 59);
+        }
+
+        Speed += o->Direction[1];
+        Speed = Speed / 2.f;
+
+        o->Direction[0] = 0.f;
+        o->Direction[1] = Speed;
+        o->Direction[2] = Random::RangeFloat(-32, 31) * 0.1f;
+    }
+
+    if (o->Direction[1] < -12.f)
+    {
+        if (o->AI != PET_FLYING)
+        {
+            SetAI(PET_FLYING);
+        }
+    }
+    else if (o->AI != PET_FLY)
+    {
+        SetAI(PET_FLY);
+    }
+}
+
+void CSPetPoseidonEagle::MoveDive(OBJECT* o, const vec3_t& TargetPosition)
+{
+    vec3_t Range;
+    VectorSubtract(TargetPosition, o->Position, Range);
+
+    if (o->AI == PET_ATTACK)
+    {
+        vec3_t Target;
+        Vector(TargetPosition[0], TargetPosition[1], TargetPosition[2] + 50.f * FPS_ANIMATION_FACTOR, Target);
+        const float Distance = MoveHumming(o->Position, o->Angle, Target, o->Velocity);
+        if (Distance < EagleDiveStrikeDistance || o->LifeTime > 20)
+        {
+            SetAI(PET_ESCAPE);
+            o->Angle[0] = -45.f;
+            if (m_byCommand != PET_CMD_TARGET)
+            {
+                o->m_bActionStart = false;
+            }
+        }
+        o->Velocity += o->Gravity * FPS_ANIMATION_FACTOR;
+        o->Gravity += 0.2f * FPS_ANIMATION_FACTOR;
+        o->LifeTime += FPS_ANIMATION_FACTOR;
+    }
+    else if (o->AI == PET_ESCAPE)
+    {
+        const float Distance = Range[0] * Range[0] + Range[1] * Range[1];
+        if (Distance >= EagleDiveEscapeDistance * EagleDiveEscapeDistance)
+        {
+            SetAI(PET_FLYING);
+        }
+        o->Velocity -= 1.f * FPS_ANIMATION_FACTOR;
+    }
+    SetAction(o, EagleActionEscape);
+}
+
+void CSPetPoseidonEagle::MoveDiveEffect(OBJECT* o)
+{
+    // Feather trail while diving above the rider, mirroring the darkspirit's
+    // air-force streak but anchored on the authored wing bone.
+    if (o->Position[2] > (m_PetOwner->Object.Position[2] + EagleDiveTrailMinimumHeight))
+    {
+        BMD* b = &Models[o->Type];
+        vec3_t p, Pos;
+        Vector(50.f, 0.f, 0.f, p);
+        b->TransformPosition(o->BoneTransform[6], p, Pos);
+        CreateEffect(MODEL_AIR_FORCE, Pos, o->Angle, o->Light, 0, o);
+    }
+}
+
+void CSPetPoseidonEagle::MovePerch(OBJECT* o, const CHARACTER* owner)
+{
+    BMD* ownerModel = &Models[owner->Object.Type];
+    vec3_t p;
+
+    Vector(EaglePerchOffsetX, 0.f, EaglePerchOffsetZ, p);
+    ownerModel->TransformPosition(owner->Object.BoneTransform[EaglePerchBone], p, o->Position, true);
+    VectorCopy(owner->Object.Angle, o->Angle);
+    o->Angle[2] -= EaglePerchAngleOffset;
+}
+
+void CSPetPoseidonEagle::MoveReturnToPerch(OBJECT* o, const CHARACTER* owner)
+{
+    BMD* ownerModel = &Models[owner->Object.Type];
+    vec3_t p, Pos;
+
+    AngleMatrix(o->Angle, o->Matrix);
+    if (o->Velocity != 0.0f)
+    {
+        Vector(0.f, -o->Velocity, 0.f, p);
+        VectorRotate(p, o->Matrix, Pos);
+        VectorAddScaled(o->Position, Pos, o->Position, FPS_ANIMATION_FACTOR);
+    }
+    Vector(0.f, 0.f, 0.f, p);
+    ownerModel->TransformPosition(owner->Object.BoneTransform[EaglePerchReturnBone], p, Pos, true);
+
+    const float Distance = MoveHumming(o->Position, o->Angle, Pos, o->Velocity);
+    o->Velocity++;
+    if (Distance < EaglePerchArriveDistance)
+    {
+        SetAI(PET_STAND);
+    }
+}
+
+void CSPetPoseidonEagle::MovePet(void)
+{
+    CHARACTER* c = &m_PetCharacter;
+    OBJECT* o = &c->Object;
+    OBJECT* Owner = &m_PetOwner->Object;
+
+    if (g_isCharacterBuff(Owner, eDeBuff_Stun))
+        return;
+
+    // Safe zones send the eagle home to the shoulder; in the field it flies.
+    if (m_PetOwner->SafeZone)
+    {
+        if (o->AI != PET_STAND && o->AI != PET_STAND_START)
+        {
+            const float dx = o->Position[0] - Owner->Position[0];
+            const float dy = o->Position[1] - Owner->Position[1];
+            const float Distance = dx * dx + dy * dy;
+
+            SetAI(PET_STAND);
+            if (Distance > EaglePerchArriveDistance || (o->AI >= PET_FLYING && o->AI <= PET_STAND))
+            {
+                SetAI(PET_STAND_START);
+                o->Velocity = 3.f;
+            }
+        }
+    }
+    else if (o->AI == PET_STAND || o->AI == PET_STAND_START)
+    {
+        SetAI(PET_FLYING);
+    }
+
+    // Visual-only dive: while the owner swings at a live target, the eagle
+    // strikes along (no server packets — purely cosmetic companionship).
+    if (!m_PetOwner->SafeZone
+        && (o->AI == PET_FLY || o->AI == PET_FLYING)
+        && (Engine::Object::IsAttackAction(Owner->CurrentAction) || Owner->CurrentAction == PLAYER_ATTACK_DARKHORSE)
+        && IsValidCharacterIndex(m_PetOwner->TargetCharacter)
+        && CharactersClient[m_PetOwner->TargetCharacter].Object.Live)
+    {
+        m_PetTarget = &CharactersClient[m_PetOwner->TargetCharacter];
+        c->TargetCharacter = m_PetOwner->TargetCharacter;
+        c->AttackTime = 0;
+        c->LastAttackEffectTime = -1;
+        o->m_bActionStart = true;
+        SetAI(PET_ATTACK);
+        o->Velocity = Random::RangeFloat(0, 9) + 20.f;
+        o->Gravity = 0.5f;
+    }
+
+    const bool chaseLiveTarget = o->m_bActionStart
+        && m_PetTarget != nullptr
+        && m_PetTarget->Object.Live;
+
+    vec3_t TargetPosition;
+    if (chaseLiveTarget)
+    {
+        VectorCopy(m_PetTarget->Object.Position, TargetPosition);
+    }
+    else
+    {
+        o->m_bActionStart = false;
+        VectorCopy(Owner->Position, TargetPosition);
+    }
+
+    const bool Play = PlayAnimation(o);
+    if (Play == false)
+    {
+        switch (o->AI)
+        {
+        case PET_FLY:           SetAction(o, EagleActionFly); break;
+        case PET_FLYING:        SetAction(o, EagleActionFlying); break;
+        case PET_STAND:         SetAction(o, EagleActionStand); break;
+        case PET_STAND_START:   SetAction(o, EagleActionFlying); break;
+        case PET_ATTACK:
+        case PET_ESCAPE:        SetAction(o, EagleActionEscape); break;
+        default:                SetAction(o, EagleActionFly); break;
+        }
+    }
+
+    if (o->AI == PET_FLY || o->AI == PET_FLYING)
+    {
+        MoveFlight(o, Owner, TargetPosition, EagleFlyRange);
+    }
+    else if (o->AI == PET_ATTACK || o->AI == PET_ESCAPE)
+    {
+        MoveDive(o, TargetPosition);
+        MoveDiveEffect(o);
+    }
+    else if (o->AI == PET_STAND)
+    {
+        MovePerch(o, m_PetOwner);
+    }
+    else if (o->AI == PET_STAND_START)
+    {
+        MoveReturnToPerch(o, m_PetOwner);
+    }
+
+    if (o->AI >= PET_ATTACK && o->AI <= PET_ATTACK_MAGIC)
+    {
+        c->AttackTime += FPS_ANIMATION_FACTOR;
+        if (c->AttackTime >= 15)
+        {
+            c->AttackTime = 15;
+        }
+    }
+
+    // Lost too far from the owner (teleport, wall): reposition beside them.
+    vec3_t Range;
+    VectorCopy(m_PetOwner->Object.Position, TargetPosition);
+    VectorSubtract(TargetPosition, o->Position, Range);
+    float Distance = Range[0] * Range[0] + Range[1] * Range[1];
+    if (o->Position[2] < (TargetPosition[2] - 200.f) || Distance > EagleCatchUpDistanceSquared)
+    {
+        o->LifeTime += FPS_ANIMATION_FACTOR;
+    }
+    if (o->LifeTime > EagleCatchUpLimit)
+    {
+        o->LifeTime = 0;
+        VectorCopy(TargetPosition, o->Position);
+        o->Position[2] += EagleCatchUpHeight;
     }
 }

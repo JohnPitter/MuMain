@@ -10,6 +10,7 @@
 #include "UI/Legacy/UIManager.h"
 #include "Render/Textures/ZzzOpenglUtil.h"
 #include "Render/Models/ZzzBMD.h"
+#include "Render/Models/PoseidonPets.h"
 #include "Render/Terrain/ZzzLodTerrain.h"
 #include "Engine/Object/ZzzInfomation.h"
 #include "Engine/Object/ZzzObject.h"
@@ -950,7 +951,7 @@ void AttackKnight(CHARACTER* c, ActionSkillType Skill, float Distance)
 
                     if (Skill == AT_SKILL_THUNDER_STRIKE)
                     {
-                        if (c->Helper.Type == MODEL_DARK_HORSE_ITEM && !c->SafeZone)
+                        if (Render::Items::Poseidon::IsDarkHorseRideHelper(c->Helper.Type) && !c->SafeZone)
                         {
                             SetAction(o, PLAYER_ATTACK_RIDE_ATTACK_FLASH);
                         }

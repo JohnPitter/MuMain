@@ -71,3 +71,30 @@ public:
     void    AttackEffect(CHARACTER* c, OBJECT* o);
     void    RenderCmdType(void);
 };
+
+// Authored Poseidon eagle (item 13/206). Follows the CSPetSystem flight
+// contract of the darkspirit (fly / flying / stand / escape) with the authored
+// model, but it is a visual companion: no server pet commands, no duel state
+// and no pet info packets. Dives at the owner's target while the owner swings,
+// otherwise glides along and perches on the owner's shoulder in safe zones.
+class CSPetPoseidonEagle : public CSPetSystem
+{
+private:
+    void MoveFlight(OBJECT* o, OBJECT* Owner, const vec3_t& TargetPosition, float FlyRange);
+    void MoveDive(OBJECT* o, const vec3_t& TargetPosition);
+    void MovePerch(OBJECT* o, const CHARACTER* owner);
+    void MoveReturnToPerch(OBJECT* o, const CHARACTER* owner);
+    void MoveDiveEffect(OBJECT* o);
+
+public:
+    CSPetPoseidonEagle(CHARACTER* c);
+    virtual ~CSPetPoseidonEagle(void);
+
+    virtual void MovePet(void);
+    virtual void CalcPetInformation(const PET_INFO& Petinfo);
+    virtual void RenderPetInventory(void);
+    virtual void RenderPet(int PetState = 0);
+
+    virtual void Eff_LevelUp(void);
+    virtual void Eff_LevelDown(void);
+};

@@ -13,6 +13,7 @@ extern bool SelectFlag;
 #include "UI/NewUI/Dialogs/NewUICustomMessageBox.h"
 #include "Engine/AI/GOBoid.h"
 #include "Render/Effects/ZzzEffect.h"
+#include "Render/Models/PoseidonPets.h"
 #include "GameLogic/Pets/GIPetManager.h"
 #include "GameLogic/Pets/w_PetProcess.h"
 #include "Character/CSParts.h"
@@ -170,6 +171,12 @@ void CNewUIMyInventory::UnequipItem(int iIndex)
             {
                 DeletePet(Hero);
                 Hero->InitPetInfo(PET_TYPE_DARK_SPIRIT);
+            }
+            else if (pEquippedItem->Type == Render::Items::Poseidon::EagleItemId)
+            {
+                // The eagle's mount despawn goes through DeleteEquippingEffectBug
+                // (HorseItemId is a mount); the pet itself releases here.
+                DeletePetForObject(Hero, MODEL_POSEIDON_EAGLE_ITEM);
             }
 
             if (pEquippedItem->Type != ITEM_DARK_RAVEN_ITEM)
@@ -1008,6 +1015,14 @@ void CNewUIMyInventory::CreateEquippingEffect(ITEM* pItem)
             CreateMount(MODEL_DARK_HORSE, pHeroObject->Position, pHeroObject);
             if (!Hero->SafeZone)
                 CreateEffect(BITMAP_MAGIC + 1, pHeroObject->Position, pHeroObject->Angle, pHeroObject->Light, 1, pHeroObject);
+            break;
+        case Render::Items::Poseidon::HorseItemId:
+            CreateMount(MODEL_POSEIDON_HORSE_ITEM, pHeroObject->Position, pHeroObject);
+            if (!Hero->SafeZone)
+                CreateEffect(BITMAP_MAGIC + 1, pHeroObject->Position, pHeroObject->Angle, pHeroObject->Light, 1, pHeroObject);
+            break;
+        case Render::Items::Poseidon::EagleItemId:
+            giPetManager::CreatePetPoseidonEagle(Hero);
             break;
         case ITEM_HORN_OF_FENRIR:
             Hero->Helper.ExcellentFlags = pItem->ExcellentFlags;
