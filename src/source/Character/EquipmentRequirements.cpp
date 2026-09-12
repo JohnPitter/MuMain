@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Character/EquipmentRequirements.h"
 
-#include <algorithm>
+#include "Character/AuthoredSetWearer.h"
 #include "Character/EquipmentCatalogCache.h"
 #include "Engine/Object/ZzzInfomation.h"
 
@@ -11,12 +11,15 @@ namespace Character::Equipment
     {
         auto attributes = ItemAttribute[itemType];
         const auto& catalog = GetCatalog();
-        constexpr unsigned GrandMasterCatalogClass = 3;
-        constexpr BYTE ThirdEvolution = 3;
-        if (catalog.Contains(itemType) && catalog.RequiredClass == GrandMasterCatalogClass)
+        // Item.bmd has no rows for the authored families, so their RequireClass
+        // arrives as all zeros and MatchesDisplayedClass answers false for every
+        // class - the client refuses the equip before the server ever sees it.
+        // The catalog knows who wears the family; rewrite the requirement from
+        // it. This used to be hard-coded to the Grand Master, which is why only
+        // Celestial could be worn.
+        if (catalog.Contains(itemType))
         {
-            std::fill(std::begin(attributes.RequireClass), std::end(attributes.RequireClass), BYTE{0});
-            attributes.RequireClass[CLASS_WIZARD] = ThirdEvolution;
+            ApplyAuthoredRequirement(attributes.RequireClass, catalog.RequiredClass);
         }
         attributes.RequireLevel = static_cast<WORD>(catalog.DisplayLevel(itemType, attributes.RequireLevel));
         return attributes;
@@ -24,13 +27,8 @@ namespace Character::Equipment
 
     bool MatchesDisplayedClass(int itemType, int baseClass, int classStep)
     {
-        if (baseClass < 0 || baseClass >= MAX_CLASS)
-            return false;
         const auto attributes = DisplayRequirements(itemType);
-        const auto required = attributes.RequireClass[baseClass];
-        const bool hybrid = baseClass == CLASS_DARK && attributes.RequireClass[CLASS_WIZARD]
-            && attributes.RequireClass[CLASS_KNIGHT];
-        return (required != 0 || hybrid) && required <= classStep;
+        return ClassPassesRequirement(attributes.RequireClass, baseClass, classStep);
     }
 
     unsigned DisplayLevel(int itemType, unsigned legacyLevel)

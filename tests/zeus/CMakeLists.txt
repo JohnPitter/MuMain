@@ -26,3 +26,8 @@ mu_add_test(
     NAME test_authored_set_fx
     SOURCES test_authored_set_fx.cpp
 )
+
+mu_add_test(
+    NAME test_authored_set_wearer
+    SOURCES test_authored_set_wearer.cpp
+)
